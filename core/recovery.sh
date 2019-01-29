@@ -12,6 +12,7 @@ sudo rm -rf /home/minerstat/minerstat-os
 cd /home/minerstat
 ls
 git clone https://github.com/minerstat/minerstat-os
+chmod 777 minerstat-os
 cd /home/minerstat/minerstat-os
 sudo npm install
 chmod -R 777 *
