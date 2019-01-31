@@ -25,6 +25,7 @@ if [ $1 ]; then
     CORECLOCK=$3
     FANSPEED=$4
     VDDC=$5
+    VDDCI=$6
 
     echo "--**--**-- GPU $1 : VEGA 56/64 --**--**--"
 
@@ -39,7 +40,7 @@ if [ $1 ]; then
     then
         echo ""
     else
-        $VDDC="1200" # DEFAULT FOR 1630Mhz @1200mV
+        VDDC="1200" # DEFAULT FOR 1630Mhz @1200mV
     fi
 
     if [ "$VDDC" != "skip" ]
