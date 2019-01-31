@@ -26,6 +26,8 @@ if [ $1 ]; then
     FANSPEED=$4
     VDDC=$5
 
+    echo "--**--**-- GPU $1 : VEGA 56/64 --**--**--"
+  
     # Requirements
     sudo su -c "echo 1 > /sys/class/drm/card0/device/hwmon/hwmon0/pwm1_enable"
     sudo su -c "echo manual > /sys/class/drm/card0/device/power_dpm_force_performance_level"
@@ -50,7 +52,6 @@ if [ $1 ]; then
     fi
 
     # Check current states
-    echo "--**--**-- GPU $1 : VEGA 56/64 --**--**--"
     sudo su -c "cat /sys/class/drm/card0/device/pp_od_clk_voltage"
     #sudo cat /sys/kernel/debug/dri/0/amdgpu_pm_info
 
