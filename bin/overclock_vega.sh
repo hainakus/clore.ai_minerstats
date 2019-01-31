@@ -47,7 +47,7 @@ if [ $1 ]; then
     then
       if [ "$CORECLOCK" != "skip" ]
       then
-    echo "INFO: SETTING CORECLOCK > $CORECLOCK Mhz @ $VDDC mV"
+    echo "INFO: SETTING CORECLOCK : $CORECLOCK Mhz @ $VDDC mV"
     sudo su -c "echo 's 7 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
     sudo su -c "echo 0 > /sys/class/drm/card0/device/pp_sclk_od"
     sudo su -c "echo 1 > /sys/class/drm/card0/device/pp_sclk_od"
@@ -58,7 +58,7 @@ if [ $1 ]; then
 
     if [ "$MEMCLOCK" != "skip" ]
     then
-    echo "INFO: SETTING MEMCLOCK > $MEMCLOCK Mhz"
+    echo "INFO: SETTING MEMCLOCK : $MEMCLOCK Mhz"
     sudo su -c "echo 'm 3 $MEMCLOCK 1100' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
     sudo su -c "echo 0 > /sys/class/drm/card0/device/pp_mclk_od"
     sudo su -c "echo 1 > /sys/class/drm/card0/device/pp_mclk_od"
