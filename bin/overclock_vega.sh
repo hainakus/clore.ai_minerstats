@@ -4,7 +4,7 @@ exec 2>/dev/null
 if [ ! $1 ]; then
     echo ""
     echo "--- EXAMPLE ---"
-    echo "./overclock_vega.sh 1 2 3 4 5 6"
+    echo "./overclock_vega.sh 1 2 3 4 5"
     echo "1 = GPUID"
     echo "2 = Memory Clock"
     echo "3 = Core Clock"
@@ -30,9 +30,9 @@ if [ $1 ]; then
     echo "--**--**-- GPU $1 : VEGA 56/64 --**--**--"
 
     # Requirements
-    sudo su -c "echo 1 > /sys/class/drm/card0/device/hwmon/hwmon0/pwm1_enable"
-    sudo su -c "echo manual > /sys/class/drm/card0/device/power_dpm_force_performance_level"
-    sudo su -c "echo 4 > /sys/class/drm/card0/device/pp_power_profile_mode" # Compute Mode
+    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon0/pwm1_enable"
+    sudo su -c "echo manual > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
+    sudo su -c "echo 4 > /sys/class/drm/card$GPUID/device/pp_power_profile_mode" # Compute Mode
 
     # Core clock & VDDC
 
@@ -49,8 +49,8 @@ if [ $1 ]; then
       then
     echo "INFO: SETTING CORECLOCK : $CORECLOCK Mhz @ $VDDC mV"
     sudo su -c "echo 's 7 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-    sudo su -c "echo 0 > /sys/class/drm/card0/device/pp_sclk_od"
-    sudo su -c "echo 1 > /sys/class/drm/card0/device/pp_sclk_od"
+    sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/pp_sclk_od"
+    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_sclk_od"
       fi
     fi
 
@@ -59,9 +59,9 @@ if [ $1 ]; then
     if [ "$MEMCLOCK" != "skip" ]
     then
     echo "INFO: SETTING MEMCLOCK : $MEMCLOCK Mhz"
-    sudo su -c "echo 'm 3 $MEMCLOCK 1100' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-    sudo su -c "echo 0 > /sys/class/drm/card0/device/pp_mclk_od"
-    sudo su -c "echo 1 > /sys/class/drm/card0/device/pp_mclk_od"
+    sudo su -c "echo 'm 3 $MEMCLOCK 1100' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
+    sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
+    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
     fi
 
     # FANS
@@ -73,7 +73,7 @@ if [ $1 ]; then
     fi
 
     # Check current states
-    sudo su -c "cat /sys/class/drm/card0/device/pp_od_clk_voltage"
+    sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
     #sudo cat /sys/kernel/debug/dri/0/amdgpu_pm_info
 
     exit 1
