@@ -4,7 +4,7 @@ exec 2>/dev/null
 if [ ! $1 ]; then
     echo ""
     echo "--- EXAMPLE ---"
-    echo "./overclock_nvidia 1 2 3 4"
+    echo "./overclock_nvidia.sh 1 2 3 4"
     echo "1 = POWER LIMIT in Watts (Example: 120 = 120W) [ROOT REQUIRED]"
     echo "2 = GLOBAL FAN SPEED (100 = 100%)"
     echo "3 = Memory Offset"

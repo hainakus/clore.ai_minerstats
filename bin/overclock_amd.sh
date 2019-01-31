@@ -4,7 +4,7 @@ exec 2>/dev/null
 if [ ! $1 ]; then
     echo ""
     echo "--- EXAMPLE ---"
-    echo "./overclock_amd 1 2 3 4 5 6"
+    echo "./overclock_amd.sh 1 2 3 4 5 6"
     echo "1 = GPUID"
     echo "2 = Memory Clock"
     echo "3 = Core Clock"
@@ -45,7 +45,19 @@ if [ $1 ]; then
     R9="";
 
     # Check this is older R, or RX Series
-    isThisR9=$(sudo ./amdcovc -a 0 | grep "R9"| sed 's/^.*R9/R9/' | cut -f1 -d' ' | sed 's/[^A-Z0-9]*//g')
+    isThisR9=$(sudo ./amdcovc -a $1 | grep "R9"| sed 's/^.*R9/R9/' | cut -f1 -d' ' | sed 's/[^A-Z0-9]*//g')
+    isThisVega=$(sudo ./amdcovc -a $1 | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
+
+    ########## VEGA ##################
+    if [ "$isThisVega" != "Vega" ]
+    then
+      echo ""
+    else
+      echo "Loading VEGA OC Script.."
+      sudo ./overclock_vega.sh $1 $2 $3 $4 $5 $6 $7
+      exit 1
+    fi
+    ################################
 
     if [ "$isThisR9" != "R9" ]
     then
