@@ -13,7 +13,7 @@ if [ ! $1 ]; then
     echo "6 = VDDCI"
     echo ""
     echo "-- Full Example --"
-    echo "./overclock_amd 0 2100 1140 80 850 900"
+    echo "./overclock_amd.sh 0 2100 1140 80 850 900"
     echo ""
 fi
 

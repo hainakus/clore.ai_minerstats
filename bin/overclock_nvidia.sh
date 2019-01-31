@@ -12,7 +12,7 @@ if [ ! $1 ]; then
     echo "5 = Core Offset"
     echo ""
     echo "-- Full Example --"
-    echo "./overclock_nvidia 0 120 80 1300 100"
+    echo "./overclock_nvidia.sh 0 120 80 1300 100"
     echo ""
 fi
 

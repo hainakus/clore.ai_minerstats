@@ -12,7 +12,7 @@ if [ ! $1 ]; then
     echo "5 = VDDC"
     echo ""
     echo "-- Full Example --"
-    echo "./overclock_vega 0 945 1100 80 950"
+    echo "./overclock_vega.sh 0 945 1100 80 950"
     echo ""
 fi
 
@@ -31,10 +31,6 @@ if [ $1 ]; then
     sudo su -c "echo manual > /sys/class/drm/card0/device/power_dpm_force_performance_level"
     sudo su -c "echo 4 > /sys/class/drm/card0/device/pp_power_profile_mode" # Compute Mode
 
-    # Check current states
-    sudo su -c "cat /sys/class/drm/card0/device/pp_od_clk_voltage"
-    #sudo cat /sys/kernel/debug/dri/0/amdgpu_pm_info
-
     # Core clock & VDDC
     sudo su -c "echo 's 7 $3 $5' > /sys/class/drm/card$1/device/pp_od_clk_voltage"
     sudo su -c "echo 0 > /sys/class/drm/card0/device/pp_sclk_od"
@@ -52,5 +48,12 @@ if [ $1 ]; then
     else
         sudo ./amdcovc fanspeed:$GPUID=70 | grep "Setting"
     fi
+
+    # Check current states
+    echo "--**--**-- GPU $1 : VEGA 56/64 --**--**--"
+    sudo su -c "cat /sys/class/drm/card0/device/pp_od_clk_voltage"
+    #sudo cat /sys/kernel/debug/dri/0/amdgpu_pm_info
+
+    exit 1
 
 fi
