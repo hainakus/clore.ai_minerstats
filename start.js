@@ -406,7 +406,7 @@ module.exports = {
                 "z-enemy": "start.bash",
                 "zjazz-x22i": "start.bash",
                 "zm-zec": "start.bash",
-				"gminer": "start.bash"
+				        "gminer": "start.bash"
             };
             global.file = "clients/" + miner + "/" + MINER_CONFIG_FILE[miner];
             needle.get('https://api.minerstat.com/v2/conf/gpu/' + global.accesskey + '/' + global.worker + '/' + miner.toLowerCase(), function(error, response) {
@@ -426,9 +426,9 @@ module.exports = {
                         var stringifyArray = ["sgminer", "sgminer-gm", "sgminer-avermore", "trex", "lolminer", "xmrig"];
                         if (stringifyArray.indexOf(miner) > -1) {
                             str = jsFriendlyJSONStringify(str);
-			    str = str.replace(/\\/g, '');
-			    str = str.replace('"{', '{');
-			    str = str.replace('}"', '}');
+			                      str = str.replace(/\\/g, '');
+			                      str = str.replace('"{', '{');
+			                      str = str.replace('}"', '}');
                         }
                         writeStream.write("" + str);
                         writeStream.end();

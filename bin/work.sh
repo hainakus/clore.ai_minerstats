@@ -14,7 +14,7 @@ if ! screen -list | grep -q "dummy"; then
     sudo systemctl disable NetworkManager-wait-online.service
 
     NVIDIA="$(nvidia-smi -L)"
-        
+
     echo ""
     echo "-------- INITIALIZING FAKE DUMMY PLUG -------------"
     echo "Please wait.."
@@ -40,30 +40,44 @@ if ! screen -list | grep -q "dummy"; then
 
     #sudo screen -A -m -d -S restartnet sudo /etc/init.d/networking restart
 
-    if [ "$SSID" -gt 0 ]; then
-        cd /home/minerstat/minerstat-os/core
-        sudo sh wifi.sh
+    HAVECONNECTION="true"
 
-    else
+    while ! sudo ping minerstat.com -w 1 | grep "0%"; do
+        HAVECONNECTION="false"
+        break
+    done
 
-        if [ "$DHCP" != "NO" ]
-        then
-            cd /home/minerstat/minerstat-os/bin
-            sudo sh dhcp.sh
-        else
-            cd /home/minerstat/minerstat-os/bin
-            sudo sh static.sh
-        fi
+
+    if [ "$HAVECONNECTION" != "true" ]
+    then
+
+
+      if [ "$SSID" -gt 0 ]; then
+          cd /home/minerstat/minerstat-os/core
+          sudo sh wifi.sh
+
+      else
+
+          if [ "$DHCP" != "NO" ]
+          then
+              cd /home/minerstat/minerstat-os/bin
+              sudo sh dhcp.sh
+          else
+              cd /home/minerstat/minerstat-os/bin
+              sudo sh static.sh
+          fi
+
+      fi
+
 
     fi
 
-    sleep 2
+    sleep 1
 
-    echo " "
     echo "-------- WAITING FOR CONNECTION -----------------"
     echo ""
 
-    while ! sudo ping minerstat.farm -w 1 | grep "0%"; do
+    while ! sudo ping minerstat.com -w 1 | grep "0%"; do
         sleep 1
     done
 
@@ -72,11 +86,41 @@ if ! screen -list | grep -q "dummy"; then
     echo ""
     sudo update-pciids
     cd /home/minerstat/minerstat-os
-    sudo sh git.sh
+    #sudo sh git.sh
     echo ""
     sudo chmod -R 777 /home/minerstat/minerstat-os/*
     echo "Moving MSOS config.js to / (LINUX)"
     sudo cp -rf "/media/storage/config.js" "/home/minerstat/minerstat-os/"
+
+    if grep -q experimental "/etc/lsb-release"; then
+      if [ "$AMDDEVICE" -gt 0 ]; then
+        echo "INFO: Seems you have AMD Device enabled, activating OpenCL Support."
+        echo "INFO: Nvidia / AMD Mixing not supported. If you want to use OS on another rig, do mrecovery."
+        sudo apt-get install libegl1-amdgpu-pro:amd64 libegl1-amdgpu-pro:i386
+      fi
+    fi
+
+    if [ ! -z "$NVIDIA" ]; then
+
+        if echo "$NVIDIA" | grep -iq "^GPU 0:" ;then
+
+            ETHPILLARGS=$(cat /media/storage/settings.txt 2>/dev/null | grep 'OHGODARGS="' | sed 's/OHGODARGS="//g' | sed 's/"//g')
+            ETHPILLDELAY=$(cat /media/storage/settings.txt 2>/dev/null | grep 'OHGODADELAY=' | sed 's/[^0-9]*//g')
+
+          if grep -q experimental "/etc/lsb-release"; then
+            # Remove OpenCl support because of NVIDIA
+            sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
+          fi
+
+            if [ "$ETHPILLDELAY" != "999" ]
+            then
+                cd /home/minerstat/minerstat-os/bin
+                sudo chmod 777 /home/minerstat/minerstat-os/bin/OhGodAnETHlargementPill-r2
+                screen -A -m -d -S ethboost sudo sh ethpill.sh $ETHPILLARGS $ETHPILLDELAY
+            fi
+
+        fi
+    fi
 
     echo " "
     echo "-------- OVERCLOCKING ---------------------------"
@@ -105,23 +149,6 @@ if ! screen -list | grep -q "dummy"; then
     echo ""
     echo "Minerstat has been started in the background.."
     echo "Waiting for console output.."
-
-    if [ ! -z "$NVIDIA" ]; then
-
-        if echo "$NVIDIA" | grep -iq "^GPU 0:" ;then
-
-            ETHPILLARGS=$(cat /media/storage/settings.txt 2>/dev/null | grep 'OHGODARGS="' | sed 's/OHGODARGS="//g' | sed 's/"//g')
-            ETHPILLDELAY=$(cat /media/storage/settings.txt 2>/dev/null | grep 'OHGODADELAY=' | sed 's/[^0-9]*//g')
-
-            if [ "$ETHPILLDELAY" != "999" ]
-            then
-                cd /home/minerstat/minerstat-os/bin
-                sudo chmod 777 /home/minerstat/minerstat-os/bin/OhGodAnETHlargementPill-r2
-                screen -A -m -d -S ethboost sudo sh ethpill.sh $ETHPILLARGS $ETHPILLDELAY
-            fi
-
-        fi
-    fi
 
     sleep 5
     sudo chvt 1

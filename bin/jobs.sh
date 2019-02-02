@@ -15,7 +15,7 @@ sudo cp /home/minerstat/minerstat-os/core/environment /etc/environment
 export CUDA_DEVICE_ORDER=PCI_BUS_ID
 sudo su -c "export CUDA_DEVICE_ORDER=PCI_BUS_ID"
 # libc-ares2 && libuv1-dev
-sudo apt-get --yes --force-yes install libcurl3/bionic | grep "install"
+# sudo apt-get --yes --force-yes install libcurl3/bionic | grep "install"
 # Max performance
 #export GPU_FORCE_64BIT_PTR=1 #causes problems
 export GPU_USE_SYNC_OBJECTS=1
@@ -41,7 +41,11 @@ cd /home/minerstat/minerstat-os/bin
 sudo su minerstat -c "screen -A -m -d -S telp sh teleconsole.sh"
 # Change hostname
 WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
-sudo sed -i s/"$WNAME"/"minerstat"/ /etc/hosts    
-#sudo su -c "echo '$WNAME' > /etc/hostname"      
+sudo sed -i s/"$WNAME"/"minerstat"/ /etc/hosts
+#sudo su -c "echo '$WNAME' > /etc/hostname"
 sudo su -c "echo 'minerstat' > /etc/hostname"
 sudo hostname -F /etc/hostname
+# CloudFlare DNS
+sudo echo "" > /etc/resolv.conf
+sudo echo "nameserver 1.1.1.1" >> /etc/resolv.conf
+sudo echo "nameserver 1.0.0.1" >> /etc/resolv.conf

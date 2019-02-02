@@ -9,7 +9,7 @@ echo "Configuring LAN DHCP for: "$INTERFACE
 echo ""
 
 echo -n > /etc/network/interfaces
-echo auto $INTERFACE  >> /etc/network/interfaces
+echo allow-hotplug $INTERFACE  >> /etc/network/interfaces
 echo iface $INTERFACE inet dhcp  >> /etc/network/interfaces
 #echo dns-nameservers 1.1.1.1 >> /etc/network/interfaces
 /etc/init.d/networking restart
