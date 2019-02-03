@@ -48,7 +48,10 @@ if [ $1 ]; then
       if [ "$CORECLOCK" != "skip" ]
       then
     echo "INFO: SETTING CORECLOCK : $CORECLOCK Mhz @ $VDDC mV"
+    #sudo su -c "echo 's 6 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
     sudo su -c "echo 's 7 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+    # NITRO has 8 core state ?!
+    sudo su -c "echo 's 8 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
     sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/pp_sclk_od"
     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_sclk_od"
       fi
