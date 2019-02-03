@@ -51,7 +51,8 @@ if ! screen -list | grep -q "dummy"; then
     if [ "$HAVECONNECTION" != "true" ]
     then
 
-
+    sudo resolvconf -u
+    
       if [ "$SSID" -gt 0 ]; then
           cd /home/minerstat/minerstat-os/core
           sudo sh wifi.sh
