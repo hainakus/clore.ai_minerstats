@@ -39,7 +39,7 @@ const chalk = require('chalk');
 process.on('SIGINT', function() {
     var execProc = require('child_process').exec,
         childrenProc;
-    console.log("Ctrl + C --> Closing running miner & minerstat");
+    console.log("CTRL + C --> Closing running miner & minerstat");
     tools.killall();
     childrenProc = execProc("SID=$(screen -list | grep minerstat-console | cut -f1 -d'.' | sed 's/[^0-9]*//g'); screen -X -S $SID'.minerstat-console' quit;", function(error, stdout, stderr) {});
     process.exit();
@@ -68,7 +68,8 @@ function getDateTime() {
 function jsFriendlyJSONStringify (s) {
 	return JSON.stringify(s).
 		replace(/\\r/g, '\r').
-		replace(/\\n/g, '\n')
+		replace(/\\n/g, '\n').
+		replace(/\\t/g, '\t')
 }
 module.exports = {
     callBackSync: function(gpuSyncDone, cpuSyncDone) {
@@ -193,14 +194,14 @@ module.exports = {
                     }
                 }, function(error, response, body) {
                     console.log(chalk.gray("•´¯`•.•´¯`•.•´¯`•.•´¯`•.•´¯`•.•´¯`•.•´¯`• "));
-                    console.log(chalk.green.bold(getDateTime() + " MINERSTAT.COM: Waiting for the first sync.. (30 sec)"));
+                    console.log(chalk.green.bold(getDateTime() + " MINERSTAT.COM: Waiting for the first sync ... (30 sec)"));
                     console.log(chalk.gray(" .•´¯`• .•´¯`• .•´¯`• .•´¯`• .•´¯`• .•´¯`•"));
                 });
             } else {
                 console.log("ERROR => " + error);
                 clearInterval(global.timeout);
                 clearInterval(global.hwmonitor);
-                console.log(chalk.hex('#ff9970').bold(getDateTime() + " Waiting for connection.."));
+                console.log(chalk.hex('#ff9970').bold(getDateTime() + " Waiting for connection ..."));
                 sleep.sleep(10);
                 tools.restart();
             }
@@ -208,7 +209,7 @@ module.exports = {
         if (global.reboot === "yes") {
             var childp = require('child_process').exec,
                 queries = childp("sudo reboot -f", function(error, stdout, stderr) {
-                    console.log("System going to reboot now..");
+                    console.log("System will reboot now ...");
                 });
         }
         // Remove directory recursively
@@ -444,7 +445,7 @@ module.exports = {
                     if (clientType == "gpu") {
                         console.log(chalk.gray(getDateTime() + " ONLINE CONFIG GPU TYPE: " + global.minerType));
                         console.log(chalk.gray(getDateTime() + " LOCAL GPU TYPE: " + global.gputype));
-                        console.log("*** Hardware monitor is running in the background.. ***");
+                        console.log("*** Hardware monitor is running in the background ... ***");
                         global.dlGpuFinished = true;
                     }
                     if (clientType == "cpu") {
