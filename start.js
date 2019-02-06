@@ -23,6 +23,7 @@ global.B_DURATION;
 global.B_CLIENT;
 global.B_CONFIG;
 global.watchnum = 0;
+global.osversion;
 var colors = require('colors'),
     exec = require('child_process').exec,
     fs = require('fs'),
@@ -65,11 +66,12 @@ function getDateTime() {
     sec = (sec < 10 ? "0" : "") + sec;
     return hour + ":" + min + ":" + sec;
 }
-function jsFriendlyJSONStringify (s) {
-	return JSON.stringify(s).
-		replace(/\\r/g, '\r').
-		replace(/\\n/g, '\n').
-		replace(/\\t/g, '\t')
+
+function jsFriendlyJSONStringify(s) {
+    return JSON.stringify(s).
+    replace(/\\r/g, '\r').
+    replace(/\\n/g, '\n').
+    replace(/\\t/g, '\t')
 }
 module.exports = {
     callBackSync: function(gpuSyncDone, cpuSyncDone) {
@@ -139,13 +141,13 @@ module.exports = {
         var tools = require('./tools.js');
         tools.killall();
     },
-	fetch: function() {
+    fetch: function() {
         var tools = require('./tools.js');
         tools.fetch(global.client, global.minerCpu, global.cpuDefault);
     },
-	benchmark: function() {
+    benchmark: function() {
         var tools = require('./tools.js');
-		global.benchmark = true;
+        global.benchmark = true;
         tools.benchmark();
     },
     main: function() {
@@ -165,7 +167,22 @@ module.exports = {
         global.cpu_data = "";
         global.dlGpuFinished = false;
         global.dlCpuFinished = false;
-		    global.minerRunning = false;
+        global.minerRunning = false;
+
+        // OS Version
+        global.osversion = "stable";
+        fs.readFile("/etc/lsb-release", function(err, data) {
+            if (!err) {
+                if (data.indexOf('experimental') >= 0) {
+                    global.osversion = "experimental";
+                }
+            } else {
+                console.log(err);
+            }
+            console.log(chalk.gray(getDateTime() + " VERSION: " + global.osversion));
+        });
+
+
         //global.watchnum = 0;
         console.log(chalk.gray(getDateTime() + " WORKER: " + global.worker));
         // GET DEFAULT CLIENT AND SEND STATUS TO THE SERVER
@@ -175,9 +192,9 @@ module.exports = {
         needle.get('https://api.minerstat.com/v2/node/gpu/' + global.accesskey + '/' + global.worker, function(error, response) {
             if (error === null) {
                 console.log(response.body);
-				if (global.benchmark.toString() != "true") {
-					global.client = response.body.default;
-				}
+                if (global.benchmark.toString() != "true") {
+                    global.client = response.body.default;
+                }
                 global.cpuDefault = response.body.cpuDefault;
                 global.minerType = response.body.type;
                 global.minerOverclock = response.body.overclock;
@@ -306,27 +323,47 @@ module.exports = {
             var chmodQuery = require('child_process').exec;
             try {
                 var setChmod = chmodQuery("cd /home/minerstat/minerstat-os/; sudo chmod -R 777 *", function(error, stdout, stderr) {
-                    console.log(minerName + " => New permissions has been applied to the downloaded files => 0777");
-                    dlconf(minerName, minerType);
+                    console.log(minerName.replace("_10", "") + " => New permissions has been applied to the downloaded files => 0777");
+                    dlconf(minerName.replace("_10", ""), minerType);
                 });
             } catch (error) {
                 console.error(error);
                 var setChmod = chmodQuery("sync; cd /home/minerstat/minerstat-os/; sudo chmod -R 777 *", function(error, stdout, stderr) {
-                    console.log(minerName + " => New permissions has been applied to the downloaded files => 0777");
-                    dlconf(minerName, minerType);
+                    console.log(minerName.replace("_10", "") + " => New permissions has been applied to the downloaded files => 0777");
+                    dlconf(minerName.replace("_10", ""), minerType);
                 });
             }
         }
         // Callback downloadMiners(<#gpuMiner#>, <#isCpu#>, <#cpuMiner#>)
         function callbackVersion(dlGpu, isCpu, dlCpu, callbackType, gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion) {
             if (callbackType == "gpu") {
-                if (dlGpu == true) {
-                    deleteFolder('clients/' + gpuMiner.toLowerCase() + '/');
-                    sleep.sleep(2);
-                    downloadCore(gpuMiner.toLowerCase(), "gpu", gpuServerVersion);
-                } else {
-                    applyChmod(gpuMiner.toLowerCase(), "gpu");
-                }
+                var request = require('request');
+                request.get({
+                    url: 'https://static.minerstat.farm/miners/linux/cuda.json'
+                }, function(cudaerror, cudaresponse, cudabody) {
+
+                    var minerNameWithCuda = gpuMiner.toLowerCase().replace("_10", "");
+
+                    if (cudaerror != "null" && global.osversion == "experimental") {
+                        var parseData = JSON.parse(cudabody);
+                        var cudaVersion = parseData[gpuMiner.toLowerCase().replace("_10", "")];
+
+                        if (cudaVersion == "10" || cudaVersion == 10) {
+                            minerNameWithCuda = gpuMiner.toLowerCase().replace("_10", "") + "_10";
+
+                        }
+
+                    }
+
+                    if (dlGpu == true) {
+                        deleteFolder('clients/' + gpuMiner.toLowerCase().replace("_10", "") + '/');
+                        sleep.sleep(2);
+                        downloadCore(minerNameWithCuda, "gpu", gpuServerVersion);
+                    } else {
+                        applyChmod(gpuMiner.toLowerCase().replace("_10", ""), "gpu");
+                    }
+
+                })
             }
             if (callbackType == "cpu") {
                 if (isCpu.toString() == "true" || isCpu.toString() == "True") {
@@ -359,22 +396,22 @@ module.exports = {
                 const decompress = require('decompress');
                 console.log(chalk.green.bold(getDateTime() + " Download complete: " + miner));
                 console.log(chalk.gray(getDateTime() + " Decompressing: " + miner));
-                decompress(miner + '.zip', global.path + '/clients/' + miner).then(files => {
+                decompress(miner + '.zip', global.path + '/clients/' + miner.replace("_10", "")).then(files => {
                     console.log(chalk.green.bold(getDateTime() + " Decompressing complete: " + miner));
                     // Remove .zip
                     deleteFile(miner + ".zip");
                     // Store version
                     try {
-                        fs.writeFile('clients/' + miner + '/msVersion.txt', '' + serverVersion.trim(), function(err) {});
+                        fs.writeFile('clients/' + miner.replace("_10", "") + '/msVersion.txt', '' + serverVersion.trim(), function(err) {});
                     } catch (error) {}
                     // Start miner
-                    applyChmod(miner, clientType);
+                    applyChmod(miner.replace("_10", ""), clientType);
                 });
             });
         }
         //// GET CONFIG TO YOUR DEFAULT MINER
         async function dlconf(miner, clientType) {
-			console.log("BENCHMARK ACTIVE? %s", global.benchmark.toString());
+            console.log("BENCHMARK ACTIVE? %s", global.benchmark.toString());
             // MINER DEFAULT CONFIG file
             // IF START ARGS start.bash if external config then use that.
             const MINER_CONFIG_FILE = {
@@ -393,7 +430,7 @@ module.exports = {
                 "ewbf-zec": "start.bash",
                 "ewbf-zhash": "start.bash",
                 "lolminer": "user_config.json",
-				        "mkxminer": "start.bash",
+                "mkxminer": "start.bash",
                 "phoenix-eth": "config.txt",
                 "progpowminer": "start.bash",
                 "sgminer-avermore": "sgminer.conf",
@@ -407,29 +444,30 @@ module.exports = {
                 "z-enemy": "start.bash",
                 "zjazz-x22i": "start.bash",
                 "zm-zec": "start.bash",
-				        "gminer": "start.bash"
+                "gminer": "start.bash"
             };
-            global.file = "clients/" + miner + "/" + MINER_CONFIG_FILE[miner];
-            needle.get('https://api.minerstat.com/v2/conf/gpu/' + global.accesskey + '/' + global.worker + '/' + miner.toLowerCase(), function(error, response) {
+            global.file = "clients/" + miner.replace("_10", "") + "/" + MINER_CONFIG_FILE[miner.replace("_10", "")];
+            needle.get('https://api.minerstat.com/v2/conf/gpu/' + global.accesskey + '/' + global.worker + '/' + miner.toLowerCase().replace("_10", ""), function(error, response) {
                 if (error === null) {
-					var str = response.body;
+                    var str = response.body;
                     if (clientType == "cpu") {
                         global.chunkCpu = str;
                     } else {
                         global.chunk = str;
                     }
-					if (global.benchmark.toString() == "true" && clientType != "cpu") {
-						str = global.B_CONFIG;
-					}
-                    if (miner != "ewbf-zec" && miner != "cast-xmr" && miner != "gminer"  && miner != "wildrig-multi" && miner != "zjazz-x22i" && miner != "mkxminer" && miner != "teamredminer" && miner != "progpowminer" && miner != "bminer" && miner != "xmrig-amd" && miner != "ewbf-zhash" && miner != "ethminer" && miner != "zm-zec" && miner != "z-enemy" && miner != "cryptodredge" && miner.indexOf("ccminer") === -1 && miner.indexOf("cpu") === -1) {
+                    if (global.benchmark.toString() == "true" && clientType != "cpu") {
+                        str = global.B_CONFIG;
+                    }
+                    miner = miner.replace("_10", "");
+                    if (miner != "ewbf-zec" && miner != "cast-xmr" && miner != "gminer" && miner != "wildrig-multi" && miner != "zjazz-x22i" && miner != "mkxminer" && miner != "teamredminer" && miner != "progpowminer" && miner != "bminer" && miner != "xmrig-amd" && miner != "ewbf-zhash" && miner != "ethminer" && miner != "zm-zec" && miner != "z-enemy" && miner != "cryptodredge" && miner.indexOf("ccminer") === -1 && miner.indexOf("cpu") === -1) {
                         var writeStream = fs.createWriteStream(global.path + "/" + global.file);
                         // This ARRAY only need to fill if the miner using JSON config.
                         var stringifyArray = ["sgminer", "sgminer-gm", "sgminer-avermore", "trex", "lolminer", "xmrig"];
                         if (stringifyArray.indexOf(miner) > -1) {
                             str = jsFriendlyJSONStringify(str);
-			                      str = str.replace(/\\/g, '');
-			                      str = str.replace('"{', '{');
-			                      str = str.replace('}"', '}');
+                            str = str.replace(/\\/g, '');
+                            str = str.replace('"{', '{');
+                            str = str.replace('}"', '}');
                         }
                         writeStream.write("" + str);
                         writeStream.end();
@@ -466,17 +504,17 @@ module.exports = {
         	Notice: If you modify this you will 'rate limited' [banned] from the sync server
         */
         (function() {
-			console.log("BM STATE %s",global.benchmark.toString());
-			if (global.benchmark.toString() == "false") {
-				global.timeout = setInterval(function() {
-					// Start sync after compressing has been finished
-					if (global.dlGpuFinished == true) {
-						var tools = require('./tools.js');
-						global.sync_num++;
-						tools.fetch(global.client, global.minerCpu, global.cpuDefault);
-					}
-				}, 30000);
-			}
+            console.log("BM STATE %s", global.benchmark.toString());
+            if (global.benchmark.toString() == "false") {
+                global.timeout = setInterval(function() {
+                    // Start sync after compressing has been finished
+                    if (global.dlGpuFinished == true) {
+                        var tools = require('./tools.js');
+                        global.sync_num++;
+                        tools.fetch(global.client, global.minerCpu, global.cpuDefault);
+                    }
+                }, 30000);
+            }
         })();
         /*
         	END LOOP
