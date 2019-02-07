@@ -97,7 +97,7 @@ if ! screen -list | grep -q "dummy"; then
       if [ "$AMDDEVICE" -gt 0 ]; then
         echo "INFO: Seems you have AMD Device enabled, activating OpenCL Support."
         echo "INFO: Nvidia / AMD Mixing not supported. If you want to use OS on another rig, do mrecovery."
-        sudo apt-get install libegl1-amdgpu-pro:amd64 libegl1-amdgpu-pro:i386 cuda-libraries-10-0 --fix-broken
+        sudo apt-get install libegl1-amdgpu-pro:amd64 libegl1-amdgpu-pro:i386 cuda-libraries-10-0 cuda-cudart-10-0 --fix-broken
       fi
     fi
 
