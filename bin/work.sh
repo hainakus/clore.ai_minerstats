@@ -97,7 +97,7 @@ if ! screen -list | grep -q "dummy"; then
       if [ "$AMDDEVICE" -gt 0 ]; then
         echo "INFO: Seems you have AMD Device enabled, activating OpenCL Support."
         echo "INFO: Nvidia / AMD Mixing not supported. If you want to use OS on another rig, do mrecovery."
-        sudo apt-get install libegl1-amdgpu-pro:amd64 libegl1-amdgpu-pro:i386 --fix-broken
+        sudo apt-get install libegl1-amdgpu-pro:amd64 libegl1-amdgpu-pro:i386
       fi
     fi
 
@@ -110,8 +110,9 @@ if ! screen -list | grep -q "dummy"; then
 
           if grep -q experimental "/etc/lsb-release"; then
             # Remove OpenCl support because of NVIDIA
-            sudo apt-get install cuda-libraries-10-0 cuda-cudart-10-0 --fix-broken
-            sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
+             sudo apt --fix-broken install
+             sudo apt-get install cuda-libraries-10-0 cuda-cudart-10-0
+             sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
           fi
 
             if [ "$ETHPILLDELAY" != "999" ]
