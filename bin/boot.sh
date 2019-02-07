@@ -134,7 +134,7 @@ if ! screen -list | grep -q "dummy"; then
           # Solves NVIDIA-SETTINGS OC ISSUE
           # amdgpu_device_initialize: amdgpu_get_auth (1) failed (-1)
           sudo apt --fix-broken install
-          sudo apt-get install cuda-libraries-10-0 cuda-cudart-10-0
+          sudo apt-get install cuda-libraries-10-0 cuda-cudart-10-0 libcurl4
           sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
           # To enable back AMD-OpenCL
           # sudo apt-get install libegl1-amdgpu-pro:amd64 libegl1-amdgpu-pro:i386
