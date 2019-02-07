@@ -111,7 +111,7 @@ if ! screen -list | grep -q "dummy"; then
           if grep -q experimental "/etc/lsb-release"; then
             # Remove OpenCl support because of NVIDIA
              sudo apt --fix-broken install
-             sudo apt-get install cuda-libraries-10-0 cuda-cudart-10-0
+             sudo apt-get install cuda-libraries-10-0 cuda-cudart-10-0 libcurl4
              sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
           fi
 
