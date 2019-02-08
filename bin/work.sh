@@ -8,7 +8,7 @@ if ! screen -list | grep -q "dummy"; then
     sudo find /var/log -type f -delete
 
     cd /home/minerstat/minerstat-os/bin
-    ./shellinaboxd --port 4200 -b --css "/home/minerstat/shellinabox/shellinabox/white-on-black.css" --disable-ssl
+    ./shellinaboxd --port 4200 -b --css "/home/minerstat/minerstat-os/core/white-on-black.css" --disable-ssl
 
     # Fix Slow start bug
     sudo systemctl disable NetworkManager-wait-online.service
