@@ -47,15 +47,23 @@ if [ $1 ]; then
     # Check this is older R, or RX Series
     isThisR9=$(sudo ./amdcovc -a $1 | grep "R9"| sed 's/^.*R9/R9/' | cut -f1 -d' ' | sed 's/[^A-Z0-9]*//g')
     isThisVega=$(sudo ./amdcovc -a $1 | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
+    isThisVegaVII=$(sudo ./amdcovc -a $1 | grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g')
 
     ########## VEGA ##################
     if [ "$isThisVega" != "Vega" ]
     then
       echo ""
     else
-      echo "Loading VEGA OC Script.."
-      sudo ./overclock_vega.sh $1 $2 $3 $4 $5
-      exit 1
+      if [ "$isThisVegaVII" != "VII" ]
+      then
+        echo "Loading VEGA OC Script.."
+        sudo ./overclock_vega.sh $1 $2 $3 $4 $5
+        exit 1
+      else
+        echo "Loading VEGA VII OC Script.."
+        sudo ./overclock_vega7.sh $1 $2 $3 $4 $5
+        exit 1
+      fi
     fi
     ################################
 
@@ -161,7 +169,7 @@ if [ $1 ]; then
                 if [ "$maxMemState" != "2" ]
                 then
                     #OHGOD1=" --core-state $currentCoreState --core-clock $CORECLOCK"
-                    for corestate in 3 4 5 6; do
+                    for corestate in 3 4 5 6 7 8; do
                         sudo ./ohgodatool -i $GPUID --core-state $corestate --core-clock $CORECLOCK
                     done
                 else
