@@ -40,6 +40,8 @@ if [ $1 ]; then
     then
     sudo su -c "echo 'm 1 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
+    echo "GPU$GPUID : MEMCLOCK => $MEMCLOCK Mhz"
+
     sudo su -c "echo '0' > /sys/class/drm/card$GPUID/device/pp_mclk_od"
     sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_mclk_od"
 
@@ -62,6 +64,8 @@ if [ $1 ]; then
         sudo su -c "echo 'vc 1 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
         sudo su -c "echo 'vc 2 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
+        echo "GPU$GPUID : CORECLOCK => $CORECLOCK Mhz ($VDDC mV)"
+
         sudo su -c "echo '0' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
         sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
 
@@ -83,10 +87,12 @@ if [ $1 ]; then
     then
         FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $FANSPEED}")
         FANVALUE=$(printf "%.0f\n" $FANVALUE)
+        echo "GPU$GPUID : FANSPEED => $FANSPEED% ($FANVALUE)"
         sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon0/pwm1" # user input %
     else
         FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * 70}")
         FANVALUE=$(printf "%.0f\n" $FANVALUE)
+        echo "GPU$GPUID : FANSPEED => 70% ($FANVALUE)"
         sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon0/pwm1" # 70%
     fi
 
