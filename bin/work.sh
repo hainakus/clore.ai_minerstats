@@ -8,7 +8,7 @@ if ! screen -list | grep -q "dummy"; then
     sudo find /var/log -type f -delete
 
     cd /home/minerstat/minerstat-os/bin
-    ./shellinaboxd --port 4200 -b --css "/home/minerstat/shellinabox/shellinabox/white-on-black.css" --disable-ssl
+    ./shellinaboxd --port 4200 -b --css "/home/minerstat/minerstat-os/core/white-on-black.css" --disable-ssl
 
     # Fix Slow start bug
     sudo systemctl disable NetworkManager-wait-online.service
@@ -110,7 +110,9 @@ if ! screen -list | grep -q "dummy"; then
 
           if grep -q experimental "/etc/lsb-release"; then
             # Remove OpenCl support because of NVIDIA
-            sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
+             sudo apt --fix-broken install
+             sudo apt-get install cuda-libraries-10-0 cuda-cudart-10-0 libcurl4
+             sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
           fi
 
             if [ "$ETHPILLDELAY" != "999" ]
