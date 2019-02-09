@@ -29,7 +29,12 @@ if [ $1 ]; then
 
     echo "--**--**-- GPU $1 : VEGA VII --**--**--"
 
-    MAXFAN=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon0/pwm1_max)
+    for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+        TEST=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon0/pwm1_max &>0)
+        if [ ! -z "$TEST" ]; then
+                  MAXFAN=$TEST
+        fi
+    done
 
     # Requirements
     sudo su -c "echo manual > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
