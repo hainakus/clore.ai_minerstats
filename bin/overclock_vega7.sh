@@ -30,7 +30,7 @@ if [ $1 ]; then
     echo "--**--**-- GPU $1 : VEGA VII --**--**--"
 
     for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-        TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" &>0)
+        TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
         echo $TEST;
         if [ ! -z "$TEST" ]; then
                   MAXFAN=$TEST
