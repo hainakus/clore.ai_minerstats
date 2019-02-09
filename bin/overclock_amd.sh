@@ -54,16 +54,20 @@ if [ $1 ]; then
     then
       echo ""
     else
-      if [ "$isThisVegaVII" != "VII" ]
-      then
-        echo "Loading VEGA OC Script.."
-        sudo ./overclock_vega.sh $1 $2 $3 $4 $5
-        exit 1
-      else
-        echo "Loading VEGA VII OC Script.."
-        sudo ./overclock_vega7.sh $1 $2 $3 $4 $5
-        exit 1
-      fi
+      echo "Loading VEGA OC Script.."
+      sudo ./overclock_vega.sh $1 $2 $3 $4 $5
+      exit 1
+    fi
+    ################################
+
+    ########## VEGA VII ############
+    if [ "$isThisVegaVII" != "VII" ]
+    then
+      echo ""
+    else
+      echo "Loading VEGA VII OC Script.."
+      sudo ./overclock_vega7.sh $1 $2 $3 $4 $5
+      exit 1
     fi
     ################################
 
