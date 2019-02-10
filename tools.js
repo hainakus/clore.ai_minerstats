@@ -282,6 +282,13 @@ const MINER_JSON = {
         "apiPort": 3333,
         "apiPath": "/api/v1/status",
         "apiType": "http"
+    },
+  "grinprominer": {
+        "args": "",
+        "execFile": "GrinProMiner",
+        "apiPort": 5777,
+        "apiPath": "/api/status",
+        "apiType": "http"
     }
 };
 module.exports = {
@@ -543,6 +550,7 @@ module.exports = {
             fkill('teamredminer').then(() => {});
             fkill('cast_xmr-vega').then(() => {});
             fkill('zjazz_cuda').then(() => {});
+            fkill('GrinProMiner').then(() => {});
             var killQuery = require('child_process').exec,
                 killQueryProc = killQuery("sudo kill $(sudo lsof -t -i:42000)", function(error, stdout, stderr) {}),
                 killQueryProcPort = killQuery("sudo ufw allow 42000", function(error, stdout, stderr) {});

@@ -444,7 +444,8 @@ module.exports = {
                 "z-enemy": "start.bash",
                 "zjazz-x22i": "start.bash",
                 "zm-zec": "start.bash",
-                "gminer": "start.bash"
+                "gminer": "start.bash",
+                "grinprominer": "config.xml"
             };
             global.file = "clients/" + miner.replace("_10", "") + "/" + MINER_CONFIG_FILE[miner.replace("_10", "")];
             needle.get('https://api.minerstat.com/v2/conf/gpu/' + global.accesskey + '/' + global.worker + '/' + miner.toLowerCase().replace("_10", ""), function(error, response) {
@@ -459,7 +460,7 @@ module.exports = {
                         str = global.B_CONFIG;
                     }
                     miner = miner.replace("_10", "");
-                    if (miner != "ewbf-zec" && miner != "cast-xmr" && miner != "gminer" && miner != "wildrig-multi" && miner != "zjazz-x22i" && miner != "mkxminer" && miner != "teamredminer" && miner != "progpowminer" && miner != "bminer" && miner != "xmrig-amd" && miner != "ewbf-zhash" && miner != "ethminer" && miner != "zm-zec" && miner != "z-enemy" && miner != "cryptodredge" && miner.indexOf("ccminer") === -1 && miner.indexOf("cpu") === -1) {
+                    if (miner != "ewbf-zec" && miner != "cast-xmr" && miner != "gminer" && miner != "grinprominer" && miner != "wildrig-multi" && miner != "zjazz-x22i" && miner != "mkxminer" && miner != "teamredminer" && miner != "progpowminer" && miner != "bminer" && miner != "xmrig-amd" && miner != "ewbf-zhash" && miner != "ethminer" && miner != "zm-zec" && miner != "z-enemy" && miner != "cryptodredge" && miner.indexOf("ccminer") === -1 && miner.indexOf("cpu") === -1) {
                         var writeStream = fs.createWriteStream(global.path + "/" + global.file);
                         // This ARRAY only need to fill if the miner using JSON config.
                         var stringifyArray = ["sgminer", "sgminer-gm", "sgminer-avermore", "trex", "lolminer", "xmrig"];
