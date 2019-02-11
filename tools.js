@@ -233,6 +233,13 @@ const MINER_JSON = {
         "apiPath": "/summary",
         "apiType": "http"
     },
+    "lolminer-beam": {
+        "args": "auto",
+        "execFile": "lolMiner",
+        "apiPort": 3333,
+        "apiPath": "/summary",
+        "apiType": "http"
+    },
     "mkxminer": {
         "args": "auto",
         "execFile": "mkxminer",

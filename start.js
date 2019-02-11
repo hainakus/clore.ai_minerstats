@@ -430,6 +430,7 @@ module.exports = {
                 "ewbf-zec": "start.bash",
                 "ewbf-zhash": "start.bash",
                 "lolminer": "user_config.json",
+                "lolminer-beam": "start.bash",
                 "mkxminer": "start.bash",
                 "phoenix-eth": "config.txt",
                 "progpowminer": "start.bash",
@@ -460,7 +461,7 @@ module.exports = {
                         str = global.B_CONFIG;
                     }
                     miner = miner.replace("_10", "");
-                    if (miner != "ewbf-zec" && miner != "cast-xmr" && miner != "gminer" && miner != "grinprominer" && miner != "wildrig-multi" && miner != "zjazz-x22i" && miner != "mkxminer" && miner != "teamredminer" && miner != "progpowminer" && miner != "bminer" && miner != "xmrig-amd" && miner != "ewbf-zhash" && miner != "ethminer" && miner != "zm-zec" && miner != "z-enemy" && miner != "cryptodredge" && miner.indexOf("ccminer") === -1 && miner.indexOf("cpu") === -1) {
+                if (miner != "ewbf-zec" && miner != "cast-xmr" && miner != "lolminer-beam" && miner != "gminer" && miner != "grinprominer" && miner != "wildrig-multi" && miner != "zjazz-x22i" && miner != "mkxminer" && miner != "teamredminer" && miner != "progpowminer" && miner != "bminer" && miner != "xmrig-amd" && miner != "ewbf-zhash" && miner != "ethminer" && miner != "zm-zec" && miner != "z-enemy" && miner != "cryptodredge" && miner.indexOf("ccminer") === -1 && miner.indexOf("cpu") === 1) {
                         var writeStream = fs.createWriteStream(global.path + "/" + global.file);
                         // This ARRAY only need to fill if the miner using JSON config.
                         var stringifyArray = ["sgminer", "sgminer-gm", "sgminer-avermore", "trex", "lolminer", "xmrig"];
