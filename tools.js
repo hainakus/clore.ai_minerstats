@@ -231,7 +231,7 @@ const MINER_JSON = {
         "execFile": "lolMiner",
         "apiPort": 3333,
         "apiPath": "/summary",
-        "apiType": "curl"
+        "apiType": "http"
     },
     "mkxminer": {
         "args": "auto",
