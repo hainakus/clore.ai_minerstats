@@ -93,6 +93,13 @@ if ! screen -list | grep -q "dummy"; then
     echo "Moving MSOS config.js to / (LINUX)"
     sudo cp -rf "/media/storage/config.js" "/home/minerstat/minerstat-os/"
 
+    CHECKAPT=$(dpkg -l | grep libnetpacket-perl | wc -l)
+
+    if [ ! "$CHECKAPT" -gt "0" ]; then
+        sudo apt --fix-broken install
+        sudo apt-get install libnetpacket-perl  libnet-pcap-perl libnet-rawip-perl
+    fi
+
     if grep -q experimental "/etc/lsb-release"; then
       if [ "$AMDDEVICE" -gt 0 ]; then
         echo "INFO: Seems you have AMD Device enabled, activating OpenCL Support."
