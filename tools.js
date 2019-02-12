@@ -559,8 +559,7 @@ module.exports = {
             fkill('zjazz_cuda').then(() => {});
             fkill('GrinProMiner').then(() => {});
             var killQuery = require('child_process').exec,
-                killQueryProc = killQuery("sudo kill $(sudo lsof -t -i:42000)", function(error, stdout, stderr) {}),
-                killQueryProcPort = killQuery("sudo ufw allow 42000", function(error, stdout, stderr) {});
+                killQueryProc = killQuery("sudo /home/minerstat/minerstat-os/core/killport.sh", function(error, stdout, stderr) {}),
         } catch (err) {}
     },
     /*
