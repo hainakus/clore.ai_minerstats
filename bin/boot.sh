@@ -116,6 +116,13 @@ if ! screen -list | grep -q "dummy"; then
     fi
 
 
+    CHECKAPT=$(dpkg -l | grep libnetpacket-perl | wc -l)
+
+    if [ ! "$CHECKAPT" -gt "0" ]; then
+        sudo apt --fix-broken install
+        sudo apt-get install libnetpacket-perl  libnet-pcap-perl libnet-rawip-perl
+    fi
+
     #########################
     # <IF EXPERIMENTAL
     if grep -q experimental "/etc/lsb-release"; then
