@@ -111,26 +111,28 @@ module.exports = {
                     cpuSync = cpuSyncDone;
                 if (sync.toString() === "true") {
                     global.watchnum = 0;
-                    console.log(chalk.green.bold(getDateTime() + " minerstat: " + global.client + " Updated  [" + global.worker + "]"));
+                    console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;32mUpdated " + global.worker + " (" + global.client + ")\x1b[0m");
                 } else {
-                    console.log(chalk.hex('#ff9970').bold(getDateTime() + " minerstat: ERROR  [" + global.worker + "]"));
-                    console.log(chalk.hex('#ff9970').bold(getDateTime() + " REASON => " + global.client + " not hashing!"));
+					console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;31mError (Not hashing)\x1b[0m");
+                    console.log("\x1b[1;94m== \x1b[0mWorker: " + global.worker);
+                    console.log("\x1b[1;94m== \x1b[0mClient: " + global.client);
                 }
                 if (global.minerCpu.toString() === "true") {
                     if (cpuSync.toString() === "true") {
-                        console.log(chalk.green.bold(getDateTime() + " minerstat: " + global.cpuDefault.toLowerCase() + " Updated  [" + global.worker + "]"));
+						console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;32mUpdated " + global.worker + " (" + global.cpuDefault.toLowerCase() + ")\x1b[0m");
                     } else {
-                        console.log(chalk.hex('#ff9970').bold(getDateTime() + " minerstat: ERROR  [" + global.worker + "]"));
-                        console.log(chalk.hex('#ff9970').bold(getDateTime() + " REASON => " + global.cpuDefault.toLowerCase() + " not hashing!"));
+						console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;31mError (Not hashing)\x1b[0m");
+						console.log("\x1b[1;94m== \x1b[0mWorker: " + global.worker);
+						console.log("\x1b[1;94m== \x1b[0mClient: " + global.cpuDefault.toLowerCase());
                     }
                 }
             } else {
-                console.log("ERROR => " + error);
-                console.log(chalk.hex('#ff9970').bold(getDateTime() + " MINERSTAT.COM: CONNECTION LOST  [" + global.worker + "]"));
+				console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;31mConnection lost (" + error + ")\x1b[0m");
+				console.log("\x1b[1;94m== \x1b[0mWorker: " + global.worker);
                 sleep.sleep(10);
                 console.log('\x1Bc');
             }
-            console.log(chalk.gray(" .•´¯`• .•´¯`• .•´¯`• .•´¯`• .•´¯`• .•´¯`•"));
+            console.log("\x1b[1;94m==========================================\x1b[0m");
         });
     },
     boot: function(miner, startArgs) {
@@ -179,12 +181,12 @@ module.exports = {
             } else {
                 console.log(err);
             }
-            console.log(chalk.gray(getDateTime() + " VERSION: " + global.osversion));
+            console.log("\x1b[1;94m== \x1b[0mOS Version: " + global.osversion);
         });
 
 
         //global.watchnum = 0;
-        console.log(chalk.gray(getDateTime() + " WORKER: " + global.worker));
+        console.log("\x1b[1;94m== \x1b[0mWorker: " + global.worker);
         // GET DEFAULT CLIENT AND SEND STATUS TO THE SERVER
         sleep.sleep(1);
         const https = require('https');
@@ -210,15 +212,15 @@ module.exports = {
                         dump: "minerstatOSInit"
                     }
                 }, function(error, response, body) {
-                    console.log(chalk.gray("•´¯`•.•´¯`•.•´¯`•.•´¯`•.•´¯`•.•´¯`•.•´¯`• "));
-                    console.log(chalk.green.bold(getDateTime() + " MINERSTAT.COM: Waiting for the first sync ... (30 sec)"));
-                    console.log(chalk.gray(" .•´¯`• .•´¯`• .•´¯`• .•´¯`• .•´¯`• .•´¯`•"));
+                    console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
+                    console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;32mFirst sync (~30 sec)\x1b[0m");
+                    console.log("\x1b[1;94m==========================================\x1b[0m");
                 });
             } else {
-                console.log("ERROR => " + error);
+                console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;31mError (" + error + ")\x1b[0m");
                 clearInterval(global.timeout);
                 clearInterval(global.hwmonitor);
-                console.log(chalk.hex('#ff9970').bold(getDateTime() + " Waiting for connection ..."));
+                console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;33mWaiting for connection\x1b[0m");
                 sleep.sleep(10);
                 tools.restart();
             }
@@ -226,7 +228,7 @@ module.exports = {
         if (global.reboot === "yes") {
             var childp = require('child_process').exec,
                 queries = childp("sudo reboot -f", function(error, stdout, stderr) {
-                    console.log("System will reboot now ...");
+                    console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;33mSystem is rebooting\x1b[0m");
                 });
         }
         // Remove directory recursively
@@ -323,13 +325,13 @@ module.exports = {
             var chmodQuery = require('child_process').exec;
             try {
                 var setChmod = chmodQuery("cd /home/minerstat/minerstat-os/; sudo chmod -R 777 *", function(error, stdout, stderr) {
-                    console.log(minerName.replace("_10", "") + " => New permissions has been applied to the downloaded files => 0777");
+					console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;32mPermissions applied (" + minerName.replace("_10", "") + ")\x1b[0m");
                     dlconf(minerName.replace("_10", ""), minerType);
                 });
             } catch (error) {
                 console.error(error);
                 var setChmod = chmodQuery("sync; cd /home/minerstat/minerstat-os/; sudo chmod -R 777 *", function(error, stdout, stderr) {
-                    console.log(minerName.replace("_10", "") + " => New permissions has been applied to the downloaded files => 0777");
+                    console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;32mPermissions applied (" + minerName.replace("_10", "") + ")\x1b[0m");
                     dlconf(minerName.replace("_10", ""), minerType);
                 });
             }
@@ -391,13 +393,13 @@ module.exports = {
         async function downloadCore(miner, clientType, serverVersion) {
             var miner = miner;
             const download = require('download');
-            console.log(chalk.gray(getDateTime() + " Downloading: " + miner));
+            console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;33mDownloading (" + miner + ")\x1b[0m");
             download('http://static.minerstat.farm/miners/linux/' + miner + '.zip', global.path + '/').then(() => {
                 const decompress = require('decompress');
-                console.log(chalk.green.bold(getDateTime() + " Download complete: " + miner));
-                console.log(chalk.gray(getDateTime() + " Decompressing: " + miner));
+				console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;32mDownload complete (" + miner + ")\x1b[0m");
+				console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;33mDecompressing (" + miner + ")\x1b[0m");
                 decompress(miner + '.zip', global.path + '/clients/' + miner.replace("_10", "")).then(files => {
-                    console.log(chalk.green.bold(getDateTime() + " Decompressing complete: " + miner));
+                    console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;32mDecompressing complete (" + miner + ")\x1b[0m");
                     // Remove .zip
                     deleteFile(miner + ".zip");
                     // Store version
@@ -411,7 +413,13 @@ module.exports = {
         }
         //// GET CONFIG TO YOUR DEFAULT MINER
         async function dlconf(miner, clientType) {
-            console.log("BENCHMARK ACTIVE? %s", global.benchmark.toString());
+			
+			if(global.benchmark.toString()=='true'){
+				console.log("\x1b[1;94m== \x1b[0mBenchmark Status: \x1b[1;32mActive\x1b[0m");
+			}else{
+				console.log("\x1b[1;94m== \x1b[0mBenchmark Status: \x1b[1;33mInactive\x1b[0m");
+			}
+			
             // MINER DEFAULT CONFIG file
             // IF START ARGS start.bash if external config then use that.
             const MINER_CONFIG_FILE = {
@@ -463,8 +471,10 @@ module.exports = {
                     miner = miner.replace("_10", "");
                     //if (miner != "ewbf-zec" && miner != "cast-xmr" && miner != "gminer" && miner != "wildrig-multi" && miner != "zjazz-x22i" && miner != "mkxminer" && miner != "teamredminer" && miner != "progpowminer" && miner != "bminer" && miner != "xmrig-amd" && miner != "ewbf-zhash" && miner != "ethminer" && miner != "zm-zec" && miner != "z-enemy" && miner != "cryptodredge" && miner.indexOf("ccminer") === -1 && miner.indexOf("cpu") === 1) {
                       if (MINER_CONFIG_FILE[miner.toLowerCase()] != "start.bash") {
-			console.log("Saving online config to disk");
-			var writeStream = fs.createWriteStream(global.path + "/" + global.file);
+
+						console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;32mSaving config\x1b[0m");
+						var writeStream = fs.createWriteStream(global.path + "/" + global.file);
+						
                         // This ARRAY only need to fill if the miner using JSON config.
                         var stringifyArray = ["sgminer", "sgminer-gm", "sgminer-avermore", "trex", "lolminer", "xmrig"];
                         if (stringifyArray.indexOf(miner) > -1) {
@@ -485,9 +495,15 @@ module.exports = {
                         tools.autoupdate(miner, str);
                     }
                     if (clientType == "gpu") {
-                        console.log(chalk.gray(getDateTime() + " ONLINE CONFIG GPU TYPE: " + global.minerType));
-                        console.log(chalk.gray(getDateTime() + " LOCAL GPU TYPE: " + global.gputype));
-                        console.log("*** Hardware monitor is running in the background ... ***");
+
+						if(global.minerType!=global.gputype){
+							console.log("\x1b[1;94m== \x1b[0mHardware Status: \x1b[1;31mError (GPU type mismatch)\x1b[0m");
+							console.log("\x1b[1;94m== \x1b[0m[Online] GPU Type: " + global.minerType);
+							console.log("\x1b[1;94m== \x1b[0m[Local] GPU Type: " + global.gputype);						
+						}
+						
+						console.log("\x1b[1;94m== \x1b[0mMonitor Status: \x1b[1;32mRunning\x1b[0m");
+						
                         global.dlGpuFinished = true;
                     }
                     if (clientType == "cpu") {
@@ -495,7 +511,7 @@ module.exports = {
                     }
                 } else {
                     // Error (Restart)
-                    console.log("ERROR => " + error);
+                    console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;31mError (" + error + ")\x1b[0m");
                     clearInterval(global.timeout);
                     clearInterval(global.hwmonitor);
                     sleep.sleep(10);
@@ -503,12 +519,19 @@ module.exports = {
                 }
             });
         }
+		
         /*
         	START LOOP
         	Notice: If you modify this you will 'rate limited' [banned] from the sync server
         */
         (function() {
-            console.log("BM STATE %s", global.benchmark.toString());
+			
+			if(global.benchmark.toString()=='true'){
+				console.log("\x1b[1;94m== \x1b[0mBenchmark Status: Active");
+			}else{
+				console.log("\x1b[1;94m== \x1b[0mBenchmark Status: Inactive");
+			}
+
             if (global.benchmark.toString() == "false") {
                 global.timeout = setInterval(function() {
                     // Start sync after compressing has been finished
