@@ -101,7 +101,7 @@ module.exports = {
                 hwPower: power_data
             }
         }, function(error, response, body) {
-            console.log(chalk.gray("•´¯`•.•´¯`•.•´¯`•.•´¯`•.•´¯`•.•´¯`•.•´¯`• "));
+            console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
             if (error == null) {
                 // Process Remote Commands
                 var tools = require('./tools.js');
