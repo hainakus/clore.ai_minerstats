@@ -40,15 +40,15 @@ function restartNode() {
     var main = require('./start.js');
     global.watchnum++;
     if (global.watchnum == 2 || global.watchnum == 4) {
-        console.log(chalk.hex('#ff9970').bold(getDateTime() + " minerstat: Error detected  [" + global.worker + "]"));
-        console.log(chalk.hex('#ff9970').bold(getDateTime() + " minerstat: Restarting software..    [" + global.worker + "]"));
+		console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;31mError (" + global.watchnum + "/6)\x1b[0m");
+		console.log("\x1b[1;94m== \x1b[0mAction: Restarting client ...");
         clearInterval(global.timeout);
         clearInterval(global.hwmonitor);
         main.main();
     }
     if (global.watchnum >= 6) {
-        console.log(chalk.hex('#ff9970').bold(getDateTime() + " minerstat: Error detected  [" + global.worker + "]"));
-        console.log(chalk.hex('#ff9970').bold(getDateTime() + " minerstat: Rebooting..     [" + global.worker + "]"));
+		console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;31mError (" + global.watchnum + "/6)\x1b[0m");
+		console.log("\x1b[1;94m== \x1b[0mAction: Rebooting ...");
         clearInterval(global.timeout);
         clearInterval(global.hwmonitor);
         var exec = require('child_process').exec;
@@ -308,7 +308,7 @@ module.exports = {
             parse = require('parse-spawn-args').parse,
             sleep = require('sleep'),
             miner = miner.toLowerCase();
-        console.log(chalk.gray.bold(getDateTime() + " STARTING MINER: " + miner));
+        console.log("\x1b[1;94m== \x1b[0mAction: Starting " + miner + " ...");
         console.log(chalk.white(getDateTime() + " " + miner + " => " + startArgs));
         sleep.sleep(2);
         args = MINER_JSON[miner]["args"];
@@ -470,8 +470,8 @@ module.exports = {
     */
     remotecommand: function(command) {
         if (command !== "") {
-            console.log(chalk.hex('#ff8656')("REMOTE COMMAND: " + command));
-            console.log(chalk.gray.bold("•´¯`•.•´¯`•.•´¯`•.•´¯`•.•´¯`•.•´¯`•.•´¯`• "));
+			console.log("\x1b[1;94m== \x1b[0mRemote command: " + command);
+            console.log("\x1b[1;94m==========================================\x1b[0m");
             var exec = require('child_process').exec,
                 main = require('./start.js'),
                 sleep = require('sleep');
@@ -497,7 +497,7 @@ module.exports = {
                     break;
                 case 'RESTARTWATTS':
                 case 'DOWNLOADWATTS':
-                    console.log("CLOCKTUNE => OVERCLOCKING / UNDERVOLTING IN PROGRESS..");
+                    console.log("\x1b[1;94m== \x1b[0mAction: Overclocking/Undervolting ...");
                     clearInterval(global.timeout);
                     clearInterval(global.hwmonitor);
                     main.killall();
@@ -505,24 +505,25 @@ module.exports = {
                     main.killall();
                     sleep.sleep(2);
                     var queryWattRes = exec("cd " + global.path + "/bin; sudo sh " + global.path + "/bin/overclock.sh", function(error, stdout, stderr) {
-                        console.log("CLOCKTUNE => NEW CLOCKS APPLIED");
+                        console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;32mNew clocks applied\x1b[0m");
                         console.log(stdout + " " + stderr);
                         sleep.sleep(2);
                         main.main();
                     });
                     break;
                 case 'SETFANS':
-                    console.log("SETFANS => APPLY NEW FAN SETTINGS");
+                    console.log("\x1b[1;94m== \x1b[0mAction: Applying new fans ...");
                     var queryFans = exec("cd " + global.path + "/bin; sudo sh " + global.path + "/bin/setfans.sh", function(error, stdout, stderr) {
                         console.log(stdout + " " + stderr);
                     });
                     break;
                 case 'REBOOT':
                     console.log("REBOOT => 3.. 2...");
+					console.log("\x1b[1;94m== \x1b[0mAction: Rebooting ...");
                     var queryBoot = exec("sudo su -c 'echo 1 > /proc/sys/kernel/sysrq'; sudo su -c 'echo b > /proc/sysrq-trigger';", function(error, stdout, stderr) {});
                     break;
                 default:
-                    console.log('Sorry this remote command: ' + expr + ', not found.');
+					console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;31mError (Unknown remote command: " + expr + ")\x1b[0m");
             }
         }
     },
