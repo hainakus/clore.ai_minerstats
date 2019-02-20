@@ -1,16 +1,25 @@
 #!/bin/bash
 
+OFFLINE_COUNT=0
+OFFLINE_NUM=40
+IS_ONLINE="YES"
+DETECT="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g')"
+PART=$DETECT"1"
+DISK="$(df -hm | grep $PART | awk '{print $2}')"
+
 while true
 do
 
     echo "-*- BACKGROUND SERVICE -*-"
+
+    RESPONSE="null"
 
     #HOSTNAME
     TOKEN="$(cat /media/storage/config.js | grep 'global.accesskey' | sed 's/global.accesskey =//g' | sed 's/;//g')"
     WORKER="$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =//g' | sed 's/;//g')"
 
     #FREE SPACE in Megabyte - SDA1
-    STR1="$(df -hm | grep sda1 | awk '{print $4}')"
+    STR1="$(df -hm | grep $DISK | awk '{print $4}')"
 
     #CPU USAGE
     STR2="$(mpstat | awk '$13 ~ /[0-9.]+/ { print 100 - $13 }')"
@@ -36,13 +45,35 @@ do
     echo "Remote IP: $STR4"
     echo ""
 
-    #SEND INFO
-    wget -qO- "https://api.minerstat.com/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&remoteip=$STR4&freemem=$STR5&teleid=$TELEID" ; echo
+    IS_ONLINE="YES"
 
-    echo "-*- MINERSTAT LISTENER -*-"
-    RESPONSE="$(wget -qO- "https://api.minerstat.com/v2/os_listener.php?token=$TOKEN&worker=$WORKER" ; echo)"
+    while ! ping minerstat.com -w 1 | grep "0%"; do
+        OFFLINE_COUNT=$(($OFFLINE_COUNT + $OFFLINE_NUM))
+        echo "$OFFLINE_COUNT"
+        IS_ONLINE="NO"
+        break
+    done
 
-    echo "RESPONSE: $RESPONSE"
+    if [ "$IS_ONLINE" = "YES" ]; then
+
+        OFFLINE_COUNT=0
+
+        #SEND INFO
+        wget -qO- "https://api.minerstat.com/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&remoteip=$STR4&freemem=$STR5&teleid=$TELEID" ; echo
+
+        echo "-*- MINERSTAT LISTENER -*-"
+        RESPONSE="$(wget -qO- "https://api.minerstat.com/v2/os_listener.php?token=$TOKEN&worker=$WORKER" ; echo)"
+
+        echo "RESPONSE: $RESPONSE"
+
+    fi
+
+    if [ "$IS_ONLINE" = "NO" ]; then
+      if [ "$OFFLINE_COUNT" = "400" ]; then
+          # Reboot after 10 min of connection lost
+          RESPONSE="REBOOT"
+        fi
+    fi
 
     if [ $RESPONSE = "REBOOT" ]; then
         #sudo reboot -f
@@ -61,4 +92,5 @@ do
     fi
 
     sleep 40
+
 done
