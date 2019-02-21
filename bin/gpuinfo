@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# ==================================
+# = NVIDIA
+# ==================================
+
+if [[ $1 == "nvidia" ]]; then
+  TEST_NVIDIA=$(nvidia-smi -L)
+  TEST_AMD=""
+  if [[ $TEST_NVIDIA == *"GPU 0"* ]]; then
+    NVIDIA_NUM=$(nvidia-smi --query-gpu=count --format=csv,noheader | tail -n1)
+    NVIDIA_INUM=$((NVIDIA_NUM-1))
+    x="0"
+    JSON_EOF='{'
+    until [ $NVIDIA_NUM == "$x" ]; do
+      QUERY=$(nvidia-smi -i $x --query-gpu=name,temperature.gpu,fan.speed,power.draw,clocks.current.sm,clocks.current.memory,pci.bus_id --format=csv,noheader | tail -n1)
+      JSON_EOF=$JSON_EOF'"'$x'":'
+
+      if [[ $NVIDIA_INUM == "$x" ]]; then
+        COMMA=""
+      else
+        COMMA=","
+      fi
+
+      JSON_EOF=$JSON_EOF'"'$QUERY'"'$COMMA''
+      x=$((x+1))
+    done
+    JSON_EOF=$JSON_EOF'}'
+    echo $JSON_EOF
+  fi
+fi
+
+# ==================================
+# = AMD
+# ==================================
+
+if [[ $1 == "amd" ]]; then
+
+/home/minerstat/minerstat-os/bin/amdinfo
+
+fi
