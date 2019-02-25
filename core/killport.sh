@@ -10,6 +10,7 @@ fi
 
 for con in `sudo netstat -anp | grep 3333 | awk '{print $5}'`; do
  #sudo /home/minerstat/minerstat-os/core/killcx.pl $con lo
+ echo ""
 done
 
 for con in `sudo netstat -anp | grep $PORT | grep TIME_WAIT | awk '{print $5}'`; do
