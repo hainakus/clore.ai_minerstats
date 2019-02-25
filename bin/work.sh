@@ -96,15 +96,15 @@ if ! screen -list | grep -q "dummy"; then
     CHECKAPT=$(dpkg -l | grep libnetpacket-perl | wc -l)
 
     if [ ! "$CHECKAPT" -gt "0" ]; then
-        sudo apt --fix-broken install
-        sudo apt-get install libnetpacket-perl  libnet-pcap-perl libnet-rawip-perl
+        sudo apt -y --fix-broken install
+        sudo apt-get -y install libnetpacket-perl  libnet-pcap-perl libnet-rawip-perl
     fi
 
     if grep -q experimental "/etc/lsb-release"; then
       if [ "$AMDDEVICE" -gt 0 ]; then
         echo "INFO: Seems you have AMD Device enabled, activating OpenCL Support."
         echo "INFO: Nvidia / AMD Mixing not supported. If you want to use OS on another rig, do mrecovery."
-        sudo apt-get install libegl1-amdgpu-pro:amd64 libegl1-amdgpu-pro:i386
+        sudo apt-get -y install libegl1-amdgpu-pro:amd64 libegl1-amdgpu-pro:i386
       fi
     fi
 
@@ -117,8 +117,8 @@ if ! screen -list | grep -q "dummy"; then
 
           if grep -q experimental "/etc/lsb-release"; then
             # Remove OpenCl support because of NVIDIA
-             sudo apt --fix-broken install
-             sudo apt-get install cuda-libraries-10-0 cuda-cudart-10-0 libcurl4
+             sudo apt -y --fix-broken install
+             sudo apt-get -y install cuda-libraries-10-0 cuda-cudart-10-0 libcurl4
              sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
           fi
 
