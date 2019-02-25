@@ -331,8 +331,8 @@ module.exports = {
         writeStream.write("" + str);
         writeStream.end();
         writeStream.on('finish', function() {
-            console.log(chalk.gray.bold(getDateTime() + " DELAYED MINER START (10s): " + miner));
-            sleep.sleep(10);
+            console.log(chalk.gray.bold(getDateTime() + " DELAYED MINER START (2s): " + miner));
+            sleep.sleep(2);
             runMiner(miner, execFile, args);
         });
     },
