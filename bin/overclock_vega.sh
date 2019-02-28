@@ -66,6 +66,30 @@ if [ $1 ]; then
     sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
     fi
+    
+     # FANS (for safety) from Radeon VII solution
+    for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+        TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
+        if [ ! -z "$TEST" ]; then
+                  MAXFAN=$TEST
+        fi
+    done
+    
+    if [ "$FANSPEED" != 0 ]
+    then
+        FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $FANSPEED}")
+        FANVALUE=$(printf "%.0f\n" $FANVALUE)
+        echo "GPU$GPUID : FANSPEED => $FANSPEED% ($FANVALUE)"
+    else
+        FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * 70}")
+        FANVALUE=$(printf "%.0f\n" $FANVALUE)
+        echo "GPU$GPUID : FANSPEED => 70% ($FANVALUE)"
+    fi
+
+    for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+        sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_enable"
+        sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1" # 70%
+    done
 
     # FANS
     if [ "$FANSPEED" != 0 ]
