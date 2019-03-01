@@ -561,9 +561,7 @@ module.exports = {
             fkill('cast_xmr-vega').then(() => {});
             fkill('zjazz_cuda').then(() => {});
             fkill('GrinProMiner').then(() => {});
-            var killQuery = require('child_process').exec,
-                killQueryProc = killQuery("sudo /home/minerstat/minerstat-os/core/killport.sh", function(error, stdout, stderr) {});
-        } catch (err) {}
+            } catch (err) {}
     },
     /*
     	START
