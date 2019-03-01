@@ -333,7 +333,9 @@ module.exports = {
         writeStream.on('finish', function() {
             console.log(chalk.gray.bold(getDateTime() + " DELAYED MINER START (2s): " + miner));
             sleep.sleep(2);
-            runMiner(miner, execFile, args);
+            var killQuery = require('child_process').exec,
+                killQueryProc = killQuery("sudo /home/minerstat/minerstat-os/core/killport.sh " + MINER_JSON[miner]["apiPort"], function(error, stdout, stderr) {  console.log(stdout); runMiner(miner, execFile, args); });
+
         });
     },
     /*
