@@ -44,7 +44,8 @@ function restartNode() {
 		console.log("\x1b[1;94m== \x1b[0mAction: Restarting client ...");
         clearInterval(global.timeout);
         clearInterval(global.hwmonitor);
-        main.main();
+       	var killMinerQueryB = require('child_process').exec,
+        killMinerQueryProcB = killMinerQuery("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {   main.main(); });
     }
     if (global.watchnum >= 6) {
 		console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;31mError (" + global.watchnum + "/6)\x1b[0m");
@@ -315,6 +316,7 @@ module.exports = {
         if (args === "auto") {
             args = startArgs;
         }
+	global.startMinerName = miner;
         execFile = MINER_JSON[miner]["execFile"];
         // FOR SAFE RUNNING MINER NEED TO CREATE START.BASH
         var writeStream = fs.createWriteStream(global.path + "/" + "clients/" + miner + "/start.bash"),
@@ -397,7 +399,9 @@ module.exports = {
 								main.killall();
 								sleep.sleep(2);
 								global.benchmark = false;
-								main.main();
+								var killMinerQueryF = require('child_process').exec,
+                    						killMinerQueryProcF = killMinerQuery("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {   main.main(); });
+ 
 							} else {
 								clearInterval(spec);
 								nextCoin(waitingArray[0]);
@@ -434,8 +438,10 @@ module.exports = {
 					console.log(waitingArray);
 					waitingArray.splice(0, 1);
 					console.log(waitingArray);
-                    main.main();
-                    spec = setInterval(B_FINISH, delay);
+                                        var killMinerQueryE = require('child_process').exec,
+                    			killMinerQueryProcE = killMinerQuery("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {   main.main(); });
+ 
+                  			spec = setInterval(B_FINISH, delay);
 					var disablesync = setInterval(ds, 5000);
 					function ds() {
 						clearInterval(disablesync);
@@ -451,7 +457,9 @@ module.exports = {
 				} else {
 					global.benchmark = false;
 					sleep.sleep(2);
-                    main.main();
+                                        var killMinerQueryD = require('child_process').exec,
+                    			killMinerQueryProcD = killMinerQuery("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {   main.main(); });
+ 
 				}
 
             } else {
@@ -463,7 +471,9 @@ module.exports = {
                 sleep.sleep(3);
                 main.killall();
                 sleep.sleep(2);
-                main.main();
+                var killMinerQueryC = require('child_process').exec,
+                killMinerQueryProcC = killMinerQuery("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {   main.main(); });
+ 
             }
         });
     },
@@ -495,7 +505,8 @@ module.exports = {
                     main.killall();
                     sleep.sleep(2);
                     global.benchmark = false;
-                    main.main();
+	            var killMinerQuery = require('child_process').exec,
+                    killMinerQueryProc = killMinerQuery("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {   main.main(); });
                     break;
                 case 'RESTARTWATTS':
                 case 'DOWNLOADWATTS':
@@ -510,7 +521,8 @@ module.exports = {
                         console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;32mNew clocks applied\x1b[0m");
                         console.log(stdout + " " + stderr);
                         sleep.sleep(2);
-                        main.main();
+                        var killMinerQueryA = require('child_process').exec,
+                    	killMinerQueryProcA = killMinerQuery("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {   main.main(); });
                     });
                     break;
                 case 'SETFANS':
