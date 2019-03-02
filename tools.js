@@ -45,7 +45,7 @@ function restartNode() {
         clearInterval(global.timeout);
         clearInterval(global.hwmonitor);
        	var killMinerQueryB = require('child_process').exec,
-        killMinerQueryProcB = killMinerQuery("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {   main.main(); });
+        killMinerQueryProcB = killMinerQueryB("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {   main.main(); });
     }
     if (global.watchnum >= 6) {
 		console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;31mError (" + global.watchnum + "/6)\x1b[0m");
@@ -400,7 +400,7 @@ module.exports = {
 								sleep.sleep(2);
 								global.benchmark = false;
 								var killMinerQueryF = require('child_process').exec,
-                    						killMinerQueryProcF = killMinerQuery("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {   main.main(); });
+                    						killMinerQueryProcF = killMinerQueryF("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {   main.main(); });
  
 							} else {
 								clearInterval(spec);
@@ -439,7 +439,7 @@ module.exports = {
 					waitingArray.splice(0, 1);
 					console.log(waitingArray);
                                         var killMinerQueryE = require('child_process').exec,
-                    			killMinerQueryProcE = killMinerQuery("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {   main.main(); });
+                    			killMinerQueryProcE = killMinerQueryE("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {   main.main(); });
  
                   			spec = setInterval(B_FINISH, delay);
 					var disablesync = setInterval(ds, 5000);
@@ -458,7 +458,7 @@ module.exports = {
 					global.benchmark = false;
 					sleep.sleep(2);
                                         var killMinerQueryD = require('child_process').exec,
-                    			killMinerQueryProcD = killMinerQuery("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {   main.main(); });
+                    			killMinerQueryProcD = killMinerQueryD("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {   main.main(); });
  
 				}
 
@@ -472,7 +472,7 @@ module.exports = {
                 main.killall();
                 sleep.sleep(2);
                 var killMinerQueryC = require('child_process').exec,
-                killMinerQueryProcC = killMinerQuery("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {   main.main(); });
+                killMinerQueryProcC = killMinerQueryC("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {   main.main(); });
  
             }
         });
@@ -522,7 +522,7 @@ module.exports = {
                         console.log(stdout + " " + stderr);
                         sleep.sleep(2);
                         var killMinerQueryA = require('child_process').exec,
-                    	killMinerQueryProcA = killMinerQuery("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {   main.main(); });
+                    	killMinerQueryProcA = killMinerQueryA("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {   main.main(); });
                     });
                     break;
                 case 'SETFANS':
