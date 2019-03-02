@@ -9,35 +9,39 @@ This software **only works with [my.minerstat.com](https://my.minerstat.com) int
 ## Commands
 
 ```
-miner       | show miner screen.
+miner         | show miner screen.
 
-mstart      | (re)start mining progress.
+mstart        | (re)start mining progress.
 
-mstop       | close mining progress.
+mstop         | close mining progress.
 
-mrecovery   | restore everything to default. (all data and miner config stay in safe)
+mrecovery     | restore everything to default. (all data and miner config stay in safe)
 
-mupdate     | update miners, clients. (Auto-update only starts on boot)
+mupdate       | update miners, clients. (Auto-update only starts on boot)
 
-mreconf     | simulate first boot: configure DHCP, creating fake dummy for NVIDIA (ideal, if overclocking not work)
+mreconf       | simulate first boot: configure DHCP, creating fake dummy for NVIDIA (ideal, if overclocking not work)
 
-mclock      | Set clocks to match with the online interface.
+mclock        | Set clocks to match with the online interface.
 
-mreboot     | Reboot
+mreboot       | Reboot
 
-mshutdown   | Power off 
+mshutdown     | Power off 
 
-mfind       | "Find my GPU" e.g. - mfind 0 (All fans to 0% except GPU0 for 5 seconds)
+forcereboot   | Force Reboot (<0.1 sec)
 
-mlang       | Set temporary keyboard layout e.g. - mlang de
+forceshutdown | Power off (<0.1 sec)
 
-atiflash    | AMD - Bios (.rom) Flasher
+mfind         | "Find my GPU" e.g. - mfind 0 (All fans to 0% except GPU0 for 5 seconds)
 
-atiflashall | AMD - Flash .rom to all available GPUs on the system 
+mlang         | Set temporary keyboard layout e.g. - mlang de
 
-atidumpall  | AMD - Dump all bios from all available GPUs on the system.
+atiflash      | AMD - Bios (.rom) Flasher
 
-mhelp       | List all available commands.
+atiflashall   | AMD - Flash .rom to all available GPUs on the system 
+
+atidumpall    | AMD - Dump all bios from all available GPUs on the system.
+
+mhelp         | List all available commands.
 
 ```
 
