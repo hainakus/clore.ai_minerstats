@@ -53,3 +53,8 @@ sudo echo "nameserver 8.8.8.8" >> /etc/resolv.conf
 sudo echo "nameserver 8.8.4.4" >> /etc/resolv.conf
 sudo resolvconf -u
 sudo chmod -R 777 * /home/minerstat/minerstat-os
+sudo rm /home/minerstat/minerstat-os/bin/amdmeminfo.txt
+if [ "$1" -gt 0 ] || [ "$AMDDEVICE" -gt 0 ]; then
+        sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q > /home/minerstat/minerstat-os/bin/amdmeminfo.txt
+        sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
+fi
