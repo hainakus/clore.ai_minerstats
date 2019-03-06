@@ -83,21 +83,22 @@ module.exports = {
             monitor.HWamd(gpuSyncDone, cpuSyncDone);
         }
     },
-    callBackHardware: function(hwdatas, gpuSyncDone, cpuSyncDone, hwPower) {
+    callBackHardware: function(hwdatas, gpuSyncDone, cpuSyncDone, hwPower, hwmemory) {
         // WHEN HARDWARE INFO FETCHED SEND BOTH RESPONSE TO THE SERVER
         var sync = global.sync,
             res_data = global.res_data,
             cpu_data = global.cpu_data,
             power_data = hwPower;
-        //console.log(res_data);         //SHOW SYNC OUTPUT
+        //console.log(res_data);         //SHOW SYNC OUTPUT 
         // SEND LOG TO SERVER
         var request = require('request');
         request.post({
-            url: 'https://api.minerstat.com/v2/set_node_config.php?token=' + global.accesskey + '&worker=' + global.worker + '&miner=' + global.client.toLowerCase() + '&ver=4&cpuu=' + global.minerCpu + '&cpud=HASH' + '&os=linux&currentcpu=' + global.cpuDefault.toLowerCase() + '&hwType=' + global.minerType,
+            url: 'https://api.minerstat.com/v2/set_node_config.php?token=' + global.accesskey + '&worker=' + global.worker + '&miner=' + global.client.toLowerCase() + '&ver=4&cpuu=' + global.minerCpu + '&cpud=HASH' + '&os=linux&hwNew=true&currentcpu=' + global.cpuDefault.toLowerCase() + '&hwType=' + global.minerType,
             form: {
                 minerData: res_data,
                 cpuData: cpu_data,
                 hwData: hwdatas,
+                hwMemory: hwmemory,
                 hwPower: power_data
             }
         }, function(error, response, body) {
@@ -413,13 +414,13 @@ module.exports = {
         }
         //// GET CONFIG TO YOUR DEFAULT MINER
         async function dlconf(miner, clientType) {
-			
+
 			if(global.benchmark.toString()=='true'){
 				console.log("\x1b[1;94m== \x1b[0mBenchmark Status: \x1b[1;32mActive\x1b[0m");
 			}else{
 				console.log("\x1b[1;94m== \x1b[0mBenchmark Status: \x1b[1;33mInactive\x1b[0m");
 			}
-			
+
             // MINER DEFAULT CONFIG file
             // IF START ARGS start.bash if external config then use that.
             const MINER_CONFIG_FILE = {
@@ -474,7 +475,7 @@ module.exports = {
 
 						console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;32mSaving config\x1b[0m");
 						var writeStream = fs.createWriteStream(global.path + "/" + global.file);
-						
+
                         // This ARRAY only need to fill if the miner using JSON config.
                         var stringifyArray = ["sgminer", "sgminer-gm", "sgminer-avermore", "trex", "lolminer", "xmrig"];
                         if (stringifyArray.indexOf(miner) > -1) {
@@ -499,11 +500,11 @@ module.exports = {
 						if(global.minerType!=global.gputype){
 							console.log("\x1b[1;94m== \x1b[0mHardware Status: \x1b[1;31mError (GPU type mismatch)\x1b[0m");
 							console.log("\x1b[1;94m== \x1b[0m[Online] GPU Type: " + global.minerType);
-							console.log("\x1b[1;94m== \x1b[0m[Local] GPU Type: " + global.gputype);						
+							console.log("\x1b[1;94m== \x1b[0m[Local] GPU Type: " + global.gputype);
 						}
-						
+
 						console.log("\x1b[1;94m== \x1b[0mMonitor Status: \x1b[1;32mRunning\x1b[0m");
-						
+
                         global.dlGpuFinished = true;
                     }
                     if (clientType == "cpu") {
@@ -519,13 +520,13 @@ module.exports = {
                 }
             });
         }
-		
+
         /*
         	START LOOP
         	Notice: If you modify this you will 'rate limited' [banned] from the sync server
         */
         (function() {
-			
+
 			if(global.benchmark.toString()=='true'){
 				console.log("\x1b[1;94m== \x1b[0mBenchmark Status: Active");
 			}else{
