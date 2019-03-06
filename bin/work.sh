@@ -146,7 +146,7 @@ if ! screen -list | grep -q "dummy"; then
     screen -S listener -X quit # kill running process
     screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
     cd /home/minerstat/minerstat-os/bin
-    sudo sh jobs.sh
+    sudo sh jobs.sh $AMDDEVICE
     echo ""
 
     sleep 1
@@ -166,11 +166,6 @@ if ! screen -list | grep -q "dummy"; then
     sleep 5
     sudo chvt 1
     sleep 9
-    if [ "$AMDDEVICE" -gt 0 ]; then
-        sudo rm /home/minerstat/minerstat-os/bin/amdmeminfo.txt
-        sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q > /home/minerstat/minerstat-os/bin/amdmeminfo.txt
-        sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
-    fi
     screen -x minerstat-console
     sleep 1
     exec bash
