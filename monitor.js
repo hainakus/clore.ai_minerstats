@@ -31,10 +31,12 @@ module.exports = {
     */
     HWamd: function(gpuSyncDone, cpuSyncDone) {
         var exec = require('child_process').exec,
-            query = exec(global.path + "/bin/amdcovc", function(error, stdout, stderr) {
+            query = exec("cd " + global.path + "/bin/; sudo ./amdinfo", function(error, stdout, stderr) {
                 var amdResponse = stdout,
                     queryPower = exec("cd " + global.path + "/bin/; sudo ./rocm-smi -P | grep 'GPU Power' | sed 's/.*://' | sed 's/W/''/g' | xargs", function(error, stdout, stderr) {
-                        isfinished(amdResponse, "amd", gpuSyncDone, cpuSyncDone, stdout);
+                      var hwmemory = exec("cd " + global.path + "/bin/; cat amdmeminfo.txt", function(memerror, memstdout, memstderr) {
+                          isfinished(amdResponse, "amd", gpuSyncDone, cpuSyncDone, stdout, memstdout);
+                      });
                     });
             });
     },
@@ -42,35 +44,17 @@ module.exports = {
     	NVIDIA-SMI - NVIDIA
     */
     HWnvidia: function(gpuSyncDone, cpuSyncDone) {
-        var lstart = -1;
-        exec = require('child_process').exec,
-        gpunum = 0;
-        gpunum = exec("nvidia-smi --query-gpu=count --format=csv,noheader | tail -n1", function(error, stdout, stderr) {
-            var response = stdout;
-            while (lstart != (response - 1)) {
-                lstart++;
-                processNvidia(lstart, gpuSyncDone, cpuSyncDone, response);
-            }
-        });
+      var exec = require('child_process').exec,
+          fetchNvidia = exec("cd " + global.path + "/bin/; sudo ./gpuinfo nvidia", function(error, stdout, stderr) {
+                  isfinished(stdout, "nvidia", gpuSyncDone, cpuSyncDone, "", "");
+          });
+
     }
 }
-async function processNvidia(lstart, gpuSyncDone, cpuSyncDone, gpuNum) {
-    var idFix = lstart,
-    	q2 = exec("nvidia-smi -i " + lstart + " --query-gpu=name,temperature.gpu,fan.speed,power.draw --format=csv,noheader | tail -n1", function(error, stdout, stderr) {
-        // New Key - Value
-        monitorObject[idFix] = stdout;
-        if (idFix == (gpuNum - 1)) {
-            //console.log(monitorObject);
-            setTimeout(function() {
-            	isfinished(monitorObject, "nvidia", gpuSyncDone, cpuSyncDone, "");
-            }, 5 * 1000);
-        }
-    });
-}
 
-function isfinished(hwdatar, typ, gpuSyncDone, cpuSyncDone, powerResponse) {
+function isfinished(hwdatar, typ, gpuSyncDone, cpuSyncDone, powerResponse, hwmemory) {
     if (typ === "nvidia") {
-        var hwdatas = JSON.stringify(hwdatar);
+        var hwdatas = hwdatar;
     } else {
         var hwdatas = hwdatar,
             hwPower = powerResponse;
@@ -85,5 +69,5 @@ function isfinished(hwdatar, typ, gpuSyncDone, cpuSyncDone, powerResponse) {
     // UNSET
     monitorObject = {};
     var main = require('./start.js');
-    main.callBackHardware(hwdatas, gpuSyncDone, cpuSyncDone, hwPower);
+    main.callBackHardware(hwdatas, gpuSyncDone, cpuSyncDone, hwPower, hwmemory);
 }
