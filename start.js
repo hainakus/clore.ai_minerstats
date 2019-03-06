@@ -32,8 +32,10 @@ var colors = require('colors'),
     sleep = require('sleep'),
     tools = require('./tools.js'),
     monitor = require('./monitor.js'),
-    settings = require("./config.js");
+    settings = require("./config.js"),
+    generateMemory = exec("sudo rm /home/minerstat/minerstat-os/bin/amdmeminfo.txt; sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q > /home/minerstat/minerstat-os/bin/amdmeminfo.txt; sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt", function(error, stdout, stderr) {});
 const chalk = require('chalk');
+
 /*
 	CATCH ERROR's
 */
