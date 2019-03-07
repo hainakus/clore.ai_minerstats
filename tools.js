@@ -255,6 +255,13 @@ const MINER_JSON = {
         "apiPath": "/",
         "apiType": "http"
     },
+    "xmrig-nvidia": {
+        "args": "auto",
+        "execFile": "xmrig-nvidia",
+        "apiPort": 4028,
+        "apiPath": "/",
+        "apiType": "http"
+    },
     "wildrig-multi": {
         "args": "auto",
         "execFile": "wildrig-multi",
@@ -565,6 +572,7 @@ module.exports = {
             fkill('xmrig').then(() => {});
             fkill('xmrig').then(() => {}); // yes twice
             fkill('xmrig-amd').then(() => {});
+	    fkill('xmrig-nvidia').then(() => {});
             fkill('z-enemy').then(() => {});
             fkill('PhoenixMiner').then(() => {});
             fkill('wildrig-multi').then(() => {});
