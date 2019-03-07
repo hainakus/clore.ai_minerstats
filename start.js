@@ -453,6 +453,7 @@ module.exports = {
                 "xmr-stak": "pools.txt",
                 "xmrig": "config.json",
                 "xmrig-amd": "start.bash",
+		"xmrig-nvidia": "start.bash",
                 "z-enemy": "start.bash",
                 "zjazz-x22i": "start.bash",
                 "zm-zec": "start.bash",
