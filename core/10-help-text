@@ -1,0 +1,56 @@
+#!/bin/sh
+#
+#    10-help-text - print the help text associated with the distro
+#    Copyright (C) 2009-2010 Canonical Ltd.
+#
+#    Authors: Dustin Kirkland <kirkland@canonical.com>,
+#             Brian Murray <brian@canonical.com>
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+printf "\n"
+printf "            _                     _        _   \n"
+printf "           (_)                   | |_     | |_ \n"
+printf "   ___ ___  _  ___   ___  __  ___|  _|__ _|  _|\n"
+printf " /  _ ' _ \| |/ _ \ / _ \/ _\/ __| | / _' | |  \n"
+printf " | | | | | | | | | |  __/ |  \__ \ || (_| | |_ \n"
+printf " |_| |_| |_|_|_| |_|\___|_|  |___/\__\__,_|\__|\n"
+printf "\n\n"
+printf " * Website:\thttps://minerstat.com\n"
+printf " * Dashboard:\thttps://my.minerstat.com\n"
+printf " * Discord:\thttps://discord.gg/d679vuP\n"
+
+root_usage=`df -h / | awk '/\// {print $(NF-1)}'`
+time=`uptime | grep -ohe 'up .*' | sed 's/,/\ hours/g' | awk '{ printf $2" "$3 }'`
+ip=`ifconfig $(route | grep default | awk '{ print $8 }') | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}'`
+version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
+
+if grep -q experimental "/etc/lsb-release"; then
+  version_type="experimental"
+else
+  version_type="stable"
+fi
+
+printf "\n"
+printf " OS Version:\t%s\n" "$version ($version_type)"
+printf " IP Address:\t%s\n" $ip
+printf " System Uptime:\t%s\n" "$time"
+printf " Usage On /:\t%s" $root_usage
+printf "\n\n"
+printf " Type $(tput -T xterm smul)mhelp$(tput -T xterm sgr0) for all available commands"
+echo ""
+echo ""
+
+sudo sh /home/minerstat/minerstat-os/bin/dumper.sh
