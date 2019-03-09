@@ -36,3 +36,5 @@ chmod -R 777 *
 
 # NPM UPDATE
 # npm update
+
+sudo /home/minerstat/minerstat-os/bin/jobs.sh
