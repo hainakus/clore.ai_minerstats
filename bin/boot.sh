@@ -142,6 +142,7 @@ if ! screen -list | grep -q "dummy"; then
           # amdgpu_device_initialize: amdgpu_get_auth (1) failed (-1)
           sudo apt --yes --force-yes --fix-broken install
           sudo apt-get --yes --force-yes install cuda-libraries-10-0 cuda-cudart-10-0 libcurl4
+          sudo apt-get --yes --force-yes install libcurl3 libcurl-openssl1.0-dev
           sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
           # To enable back AMD-OpenCL
           # sudo apt-get install libegl1-amdgpu-pro:amd64 libegl1-amdgpu-pro:i386
