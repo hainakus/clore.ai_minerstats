@@ -107,6 +107,7 @@ if ! screen -list | grep -q "dummy"; then
         echo "INFO: Seems you have AMD Device enabled, activating OpenCL Support."
         echo "INFO: Nvidia / AMD Mixing not supported. If you want to use OS on another rig, do mrecovery."
         sudo apt-get --yes --force-yes install libegl1-amdgpu-pro:amd64 libegl1-amdgpu-pro:i386
+        sudo apt-get --yes --force-yes install libcurl3 libcurl-openssl1.0-dev
       fi
     fi
 
