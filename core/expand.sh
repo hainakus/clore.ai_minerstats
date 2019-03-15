@@ -5,7 +5,7 @@ DEFAULTSIZE=7200 # MB
 
 echo "-*- Expanding /dev/$DETECT Partition -*-"
 
-if [ "$STR1" -gt 7300 ]; then
+if [ "$STR1" -gt 7550 ]; then
     echo "=== ALREADY RESIZED ==="
 else
     echo "=== RESIZING ==="
