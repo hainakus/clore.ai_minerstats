@@ -4,36 +4,38 @@
 
 **minerstat OS** is the most advanced ***open source*** crypto [mining OS](https://minerstat.com/software/mining-os) available. It will automatically configure and optimize itself to mine with your ***AMD or NVIDIA*** cards. ***You only need to download, flash it, set your token in the config file and boot it!***
 
-This software **only works with [my.minerstat.com](https://my.minerstat.com) interface**, it's **not in sync** with our old system
+This software **only works with [my.minerstat.com](https://my.minerstat.com) interface**
 
 ## Commands
 
 ```
-miner         | show miner screen.
+miner         | Show mining client screen
 
-mstart        | (re)start mining progress.
+mstart        | (Re)start mining
 
-mstop         | close mining progress.
+mstop         | Stop mining
 
-mrecovery     | restore everything to default. (all data and miner config stay in safe)
+mrecovery     | Restore system to default
 
-mupdate       | update miners, clients. (Auto-update only starts on boot)
+mupdate       | Update system (clients, fixes, ...)
 
-mreconf       | simulate first boot: configure DHCP, creating fake dummy for NVIDIA (ideal, if overclocking not work)
+mreconf       | Simulate first boot: configure DHCP, creating fake dummy
 
-mclock        | Set clocks to match with the online interface.
+mclock        | Fetch OC from the dashboard
 
-mreboot       | Reboot
+mreboot       | Reboot the rig
 
-mshutdown     | Power off 
+mshutdown     | Shut down the rig 
 
 forcereboot   | Force Reboot (<0.1 sec)
 
 forceshutdown | Power off (<0.1 sec)
 
-mfind         | "Find my GPU" e.g. - mfind 0 (All fans to 0% except GPU0 for 5 seconds)
+mfind         | Find GPU (e.g. mfind 0 - will set fans to 0% except GPU0 for 5 seconds)
 
-mlang         | Set temporary keyboard layout e.g. - mlang de
+minfo         | Show welcome screen and msOS version
+
+mlang         | Set keyboard layout (e.g. mlang de)
 
 atiflash      | AMD - Bios (.rom) Flasher
 
@@ -41,7 +43,7 @@ atiflashall   | AMD - Flash .rom to all available GPUs on the system
 
 atidumpall    | AMD - Dump all bios from all available GPUs on the system.
 
-mhelp         | List all available commands.
+mhelp         | List all available commands
 
 ```
 
