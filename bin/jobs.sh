@@ -41,10 +41,13 @@ cd /home/minerstat/minerstat-os/bin
 sudo su minerstat -c "screen -A -m -d -S telp sh teleconsole.sh"
 # Change hostname
 WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
-sudo sed -i s/"$WNAME"/"minerstat"/ /etc/hosts
-#sudo su -c "echo '$WNAME' > /etc/hostname"
-sudo su -c "echo 'minerstat' > /etc/hostname"
+sudo sed -i s/"minerstat"/"$WNAME"/ /etc/hosts
+sudo su -c "echo '$WNAME' > /etc/hostname"
 sudo hostname -F /etc/hostname
+#WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
+#sudo sed -i s/"$WNAME"/"minerstat"/ /etc/hosts
+#sudo su -c "echo 'minerstat' > /etc/hostname"
+#sudo hostname -F /etc/hostname
 # CloudFlare DNS
 sudo echo "" > /etc/resolv.conf
 sudo echo "nameserver 1.1.1.1" >> /etc/resolv.conf
