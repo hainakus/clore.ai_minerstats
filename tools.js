@@ -538,6 +538,12 @@ module.exports = {
                         console.log(stdout + " " + stderr);
                     });
                     break;
+		case 'MEMORYTWEAK':
+                    console.log("\x1b[1;94m== \x1b[0mAction: Applying new memory straps ...");
+                    var queryMemTool = exec("cd " + global.path + "/bin; sudo sh " + global.path + "/bin/setmem.sh", function(error, stdout, stderr) {
+                        console.log(stdout + " " + stderr);
+                    });
+                    break;
                 case 'REBOOT':
                     console.log("REBOOT => 3.. 2...");
 					console.log("\x1b[1;94m== \x1b[0mAction: Rebooting ...");
