@@ -85,13 +85,13 @@ module.exports = {
             monitor.HWamd(gpuSyncDone, cpuSyncDone);
         }
     },
-    callBackHardware: function(hwdatas, gpuSyncDone, cpuSyncDone, hwPower, hwmemory) {
+    callBackHardware: function(hwdatas, gpuSyncDone, cpuSyncDone, hwPower, hwmemory, hwstrap) {
         // WHEN HARDWARE INFO FETCHED SEND BOTH RESPONSE TO THE SERVER
         var sync = global.sync,
             res_data = global.res_data,
             cpu_data = global.cpu_data,
             power_data = hwPower;
-        //console.log(res_data);         //SHOW SYNC OUTPUT 
+        //console.log(res_data);         //SHOW SYNC OUTPUT
         // SEND LOG TO SERVER
         var request = require('request');
         request.post({
@@ -101,7 +101,8 @@ module.exports = {
                 cpuData: cpu_data,
                 hwData: hwdatas,
                 hwMemory: hwmemory,
-                hwPower: power_data
+                hwPower: power_data,
+                hwStrap: hwstrap
             }
         }, function(error, response, body) {
             console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
