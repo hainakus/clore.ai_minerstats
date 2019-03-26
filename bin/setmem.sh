@@ -48,8 +48,14 @@ if [ ! $1 ]; then
         then
             echo "Integrated Graphics ID: "$SKIP
         fi
+        
+        if grep -q experimental "/etc/lsb-release"; then
+            OSVERSION="experimental"
+        else
+            OSVERSION="stable"
+        fi
 
-        wget -qO domem.sh "https://api.minerstat.com/v2/getstraps.php?token=$TOKEN&worker=$WORKER&nums=$AMDDEVICE&starts=$STARTS&skip=$SKIP"
+        wget -qO domem.sh "https://api.minerstat.com/v2/getstraps.php?token=$TOKEN&worker=$WORKER&nums=$AMDDEVICE&starts=$STARTS&skip=$SKIP&osversion=$OSVERSION"
         sleep 1.5
         sudo chmod 777 domem.sh
         sleep 0.5
