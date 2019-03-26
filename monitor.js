@@ -30,12 +30,18 @@ module.exports = {
     	AMDCOVC - AMD
     */
     HWamd: function(gpuSyncDone, cpuSyncDone) {
+        
+        var strapFileName = "amdmemorytweak-stable";
+        if (global.osversion == "experimental") {
+            strapFileName = "amdmemorytweak";
+        }
+        
         var exec = require('child_process').exec,
             query = exec("cd " + global.path + "/bin/; sudo ./amdinfo", function(error, stdout, stderr) {
                 var amdResponse = stdout,
                     queryPower = exec("cd " + global.path + "/bin/; sudo ./rocm-smi -P | grep 'GPU Power' | sed 's/.*://' | sed 's/W/''/g' | xargs", function(error, stdout, stderr) {
                       var hwmemory = exec("cd " + global.path + "/bin/; cat amdmeminfo.txt", function(memerror, memstdout, memstderr) {
-                        var hwstraps = exec("cd " + global.path + "/bin/; sudo ./amdmemorytweak --current-minerstat", function(straperror, strapstdout, strapstderr) {
+                        var hwstraps = exec("cd " + global.path + "/bin/; sudo ./" + strapFileName + " --current-minerstat", function(straperror, strapstdout, strapstderr) {
                             isfinished(amdResponse, "amd", gpuSyncDone, cpuSyncDone, stdout, memstdout, strapstdout);
                           });
                       });
