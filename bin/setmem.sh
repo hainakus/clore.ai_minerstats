@@ -16,9 +16,6 @@ if [ ! $1 ]; then
     WORKER="$(cat /home/minerstat/minerstat-os/config.js | grep 'global.worker' | sed 's/global.worker =//g' | sed 's/;//g')"
 
     echo ""
-    echo "-------- APPLY NEW FAN SETTINGS --------"
-
-    echo ""
     echo "--- GRAPHICS CARDS ---"
     echo "FOUND AMD    :  $AMDDEVICE"
     echo ""
