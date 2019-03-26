@@ -35,7 +35,9 @@ module.exports = {
                 var amdResponse = stdout,
                     queryPower = exec("cd " + global.path + "/bin/; sudo ./rocm-smi -P | grep 'GPU Power' | sed 's/.*://' | sed 's/W/''/g' | xargs", function(error, stdout, stderr) {
                       var hwmemory = exec("cd " + global.path + "/bin/; cat amdmeminfo.txt", function(memerror, memstdout, memstderr) {
-                          isfinished(amdResponse, "amd", gpuSyncDone, cpuSyncDone, stdout, memstdout);
+                        var hwstraps = exec("cd " + global.path + "/bin/; sudo ./amdmemorytweak --current-minerstat", function(straperror, strapstdout, strapstderr) {
+                            isfinished(amdResponse, "amd", gpuSyncDone, cpuSyncDone, stdout, memstdout, strapstdout);
+                          });
                       });
                     });
             });
@@ -46,13 +48,13 @@ module.exports = {
     HWnvidia: function(gpuSyncDone, cpuSyncDone) {
       var exec = require('child_process').exec,
           fetchNvidia = exec("cd " + global.path + "/bin/; sudo ./gpuinfo nvidia", function(error, stdout, stderr) {
-                  isfinished(stdout, "nvidia", gpuSyncDone, cpuSyncDone, "", "");
+                  isfinished(stdout, "nvidia", gpuSyncDone, cpuSyncDone, "", "", "");
           });
 
     }
 }
 
-function isfinished(hwdatar, typ, gpuSyncDone, cpuSyncDone, powerResponse, hwmemory) {
+function isfinished(hwdatar, typ, gpuSyncDone, cpuSyncDone, powerResponse, hwmemory, hwstrap) {
     if (typ === "nvidia") {
         var hwdatas = hwdatar;
     } else {
@@ -69,5 +71,5 @@ function isfinished(hwdatar, typ, gpuSyncDone, cpuSyncDone, powerResponse, hwmem
     // UNSET
     monitorObject = {};
     var main = require('./start.js');
-    main.callBackHardware(hwdatas, gpuSyncDone, cpuSyncDone, hwPower, hwmemory);
+    main.callBackHardware(hwdatas, gpuSyncDone, cpuSyncDone, hwPower, hwmemory, hwstrap);
 }
