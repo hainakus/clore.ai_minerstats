@@ -4,9 +4,6 @@ if ! screen -list | grep -q "dummy"; then
     screen -S listener -X quit # kill running process
     screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
 
-    # FIX CTRL + ALT + F1
-    screen -A -m -d -S chvt sudo watch -n1 sudo chvt 1
-
     sudo find /var/log -type f -delete
 
     cd /home/minerstat/minerstat-os/bin
@@ -143,15 +140,19 @@ if ! screen -list | grep -q "dummy"; then
     sudo service dgm stop
     sleep 3
     screen -A -m -d -S display sudo X
-    echo ""
-    sleep 3
+    # FIX CTRL + ALT + F1
+    screen -A -m -d -S chvt sudo watch -n1 sudo chvt 1
     sudo chvt 1
+    echo ""
 
     echo " "
     echo "-------- OVERCLOCKING ---------------------------"
     cd /home/minerstat/minerstat-os/bin
     echo "To run Overclock script manually type: mclock"
     echo "Adjusting clocks in the background.."
+    sleep 2
+    sudo chvt 1
+    sleep 1
     sudo sh /home/minerstat/minerstat-os/bin/overclock.sh
     sudo chvt 1
 
