@@ -1,6 +1,8 @@
 if ! screen -list | grep -q "dummy"; then
 
     screen -A -m -d -S dummy sleep 86400
+    screen -S listener -X quit # kill running process
+    screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
 
     sudo echo "boot" > /home/minerstat/minerstat-os/bin/random.txt
     sudo find /var/log -type f -delete
@@ -8,21 +10,8 @@ if ! screen -list | grep -q "dummy"; then
     # Fix Slow start bug
     sudo systemctl disable NetworkManager-wait-online.service
 
-    echo ""
-    echo "-------- INSTALLING FAKE DUMMY PLUG ------------"
-    echo "Please wait.."
-    sleep 1
-    #sudo update-grub
-    sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=28 --use-display-device="DFP-0" --connected-monitor="DFP-0" --enable-all-gpus
-    sudo service gdm stop >/dev/null
-    #screen -A -m -d -S display sudo X
-    sleep 5
-
     # FIX CTRL + ALT + F1
     screen -A -m -d -S chvt sudo watch -n1 sudo chvt 1
-    sudo chvt 1
-
-    echo ""
 
     #echo "-------- OVERCLOCKING ---------------------------"
     #cd /home/minerstat/minerstat-os/bin
@@ -52,7 +41,7 @@ if ! screen -list | grep -q "dummy"; then
     then
 
     sudo resolvconf -u
-    
+
       if [ "$SSID" -gt 0 ]; then
           cd /home/minerstat/minerstat-os/core
           sudo sh wifi.sh
@@ -152,6 +141,20 @@ if ! screen -list | grep -q "dummy"; then
     fi
     # />
     #########################
+
+    echo ""
+    echo "-------- INSTALLING FAKE DUMMY PLUG ------------"
+    echo "Please wait.."
+    sleep 1
+    #sudo update-grub
+    sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=28 --use-display-device="DFP-0" --connected-monitor="DFP-0" --enable-all-gpus
+    sudo service gdm stop >/dev/null
+    #screen -A -m -d -S display sudo X
+    sleep 5
+
+    sudo chvt 1
+
+    echo ""
 
 
     echo "-------- REBOOT IN 3 SEC -----------"
