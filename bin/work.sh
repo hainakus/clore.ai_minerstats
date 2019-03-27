@@ -139,7 +139,7 @@ if ! screen -list | grep -q "dummy"; then
     sleep 1
     sudo service dgm stop
     sleep 3
-    if [ ! -z "$NVIDIA" ]; then
+    if [ "$NVIDIADEVICE" -gt 0 ]; then
         screen -A -m -d -S display sudo X
     fi
     # FIX CTRL + ALT + F1
