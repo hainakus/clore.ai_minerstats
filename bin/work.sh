@@ -139,7 +139,9 @@ if ! screen -list | grep -q "dummy"; then
     sleep 1
     sudo service dgm stop
     sleep 3
-    screen -A -m -d -S display sudo X
+    if [ ! -z "$NVIDIA" ]; then
+        screen -A -m -d -S display sudo X
+    fi
     # FIX CTRL + ALT + F1
     screen -A -m -d -S chvt sudo watch -n1 sudo chvt 1
     sudo chvt 1
@@ -155,6 +157,12 @@ if ! screen -list | grep -q "dummy"; then
     sleep 1
     sudo sh /home/minerstat/minerstat-os/bin/overclock.sh
     sudo chvt 1
+    
+    if [ "$AMDDEVICE" -gt 0 ]; then
+     echo ""
+     echo "--- Apply Strap (AMD TWEAK) from DB ---"
+     sudo sh /home/minerstat/minerstat-os/bin/setmem.sh
+    fi
 
     echo " "
     echo "-------- INITALIZING MINERSTAT CLIENT -----------"
