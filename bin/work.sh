@@ -73,7 +73,7 @@ if ! screen -list | grep -q "dummy"; then
     echo ""
     sudo update-pciids
     cd /home/minerstat/minerstat-os
-    #sudo sh git.sh
+    sudo sh git.sh
     echo ""
     sudo chmod -R 777 /home/minerstat/minerstat-os/*
     echo "Moving MSOS config.js to / (LINUX)"
