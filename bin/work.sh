@@ -1,6 +1,7 @@
 if ! screen -list | grep -q "dummy"; then
 
     screen -A -m -d -S dummy sleep 22176000
+    screen -S listener -X quit # kill running process
     screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
 
     # FIX CTRL + ALT + F1
@@ -15,17 +16,6 @@ if ! screen -list | grep -q "dummy"; then
     sudo systemctl disable NetworkManager-wait-online.service
 
     NVIDIA="$(nvidia-smi -L)"
-
-    echo ""
-    echo "-------- INITIALIZING FAKE DUMMY PLUG -------------"
-    echo "Please wait.."
-    sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=28 --use-display-device="DFP-0" --connected-monitor="DFP-0" --enable-all-gpus
-    sleep 1
-    sudo service dgm stop
-    sleep 3
-    screen -A -m -d -S display sudo X
-    echo ""
-
     AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
     NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
 
@@ -54,7 +44,7 @@ if ! screen -list | grep -q "dummy"; then
     then
 
     sudo resolvconf -u
-    
+
       if [ "$SSID" -gt 0 ]; then
           cd /home/minerstat/minerstat-os/core
           sudo sh wifi.sh
@@ -69,10 +59,7 @@ if ! screen -list | grep -q "dummy"; then
               cd /home/minerstat/minerstat-os/bin
               sudo sh static.sh
           fi
-
       fi
-
-
     fi
 
     sleep 1
@@ -137,16 +124,7 @@ if ! screen -list | grep -q "dummy"; then
     fi
 
     echo " "
-    echo "-------- OVERCLOCKING ---------------------------"
-    cd /home/minerstat/minerstat-os/bin
-    echo "To run Overclock script manually type: mclock"
-    echo "Adjusting clocks in the background.."
-    sudo sh /home/minerstat/minerstat-os/bin/overclock.sh
-
-    echo " "
     echo "-------- RUNNING JOBS ---------------------------"
-    screen -S listener -X quit # kill running process
-    screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
     cd /home/minerstat/minerstat-os/bin
     sudo sh jobs.sh $AMDDEVICE
     echo ""
@@ -156,6 +134,26 @@ if ! screen -list | grep -q "dummy"; then
 
     cd /home/minerstat/minerstat-os/core
     sudo sh expand.sh
+
+    echo ""
+    echo "-------- INITIALIZING FAKE DUMMY PLUG -------------"
+    echo "Please wait.."
+    sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=28 --use-display-device="DFP-0" --connected-monitor="DFP-0" --enable-all-gpus
+    sleep 1
+    sudo service dgm stop
+    sleep 3
+    screen -A -m -d -S display sudo X
+    echo ""
+    sleep 3
+    sudo chvt 1
+
+    echo " "
+    echo "-------- OVERCLOCKING ---------------------------"
+    cd /home/minerstat/minerstat-os/bin
+    echo "To run Overclock script manually type: mclock"
+    echo "Adjusting clocks in the background.."
+    sudo sh /home/minerstat/minerstat-os/bin/overclock.sh
+    sudo chvt 1
 
     echo " "
     echo "-------- INITALIZING MINERSTAT CLIENT -----------"
