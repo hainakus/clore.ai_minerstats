@@ -5,3 +5,5 @@ until sudo screen -x minew; do
     echo "Waiting for miner to start"
     sleep 1
 done
+
+sleep 3
