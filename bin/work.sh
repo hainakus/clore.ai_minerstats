@@ -103,11 +103,14 @@ if ! screen -list | grep -q "dummy"; then
             ETHPILLDELAY=$(cat /media/storage/settings.txt 2>/dev/null | grep 'OHGODADELAY=' | sed 's/[^0-9]*//g')
 
           if grep -q experimental "/etc/lsb-release"; then
+            CHECKAPTX=$(dpkg -l | grep cuda-libraries-10-0 | wc -l)
+            if [ ! "$CHECKAPTX" -gt "0" ]; then
             # Remove OpenCl support because of NVIDIA
              sudo apt --yes --force-yes --fix-broken install
-             sudo apt-get --yes --force-yes install cuda-libraries-10-0 cuda-cudart-10-0 libcurl4
+             sudo apt-get --yes --force-yes install cuda-libraries-10-0 cuda-cudart-10-0
              sudo apt-get --yes --force-yes install libcurl3 libcurl-openssl1.0-dev
              sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
+            fi
           fi
 
             if [ "$ETHPILLDELAY" != "999" ]
