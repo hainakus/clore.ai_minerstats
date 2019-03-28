@@ -139,11 +139,13 @@ if ! screen -list | grep -q "dummy"; then
     sleep 1
     sudo service dgm stop
     sleep 3
+    # FIX CTRL + ALT + F1
+    screen -A -m -d -S chvt watch -n1 sudo chvt 1
+    screen -A -m -d -S fix sudo chvt 1
     if [ "$NVIDIADEVICE" -gt 0 ]; then
         screen -A -m -d -S display sudo X
+        screen -A -m -d -S fixer sudo chvt 1
     fi
-    # FIX CTRL + ALT + F1
-    screen -A -m -d -S chvt sudo watch -n1 sudo chvt 1
     sudo chvt 1
     echo ""
 
@@ -152,11 +154,8 @@ if ! screen -list | grep -q "dummy"; then
     cd /home/minerstat/minerstat-os/bin
     echo "To run Overclock script manually type: mclock"
     echo "Adjusting clocks in the background.."
-    sleep 2
     sudo chvt 1
-    sleep 1
     sudo sh /home/minerstat/minerstat-os/bin/overclock.sh
-    sudo chvt 1
     
     if [ "$AMDDEVICE" -gt 0 ]; then
      echo ""
