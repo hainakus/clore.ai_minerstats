@@ -108,7 +108,7 @@ if ! screen -list | grep -q "dummy"; then
             # Remove OpenCl support because of NVIDIA
              sudo apt --yes --force-yes --fix-broken install
              sudo apt-get --yes --force-yes install cuda-libraries-10-0 cuda-cudart-10-0
-             sudo apt-get --yes --force-yes install libcurl3 libcurl-openssl1.0-dev
+             sudo apt-get --yes --force-yes install libcurl4
              sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
             fi
           fi
