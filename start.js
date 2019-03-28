@@ -44,7 +44,7 @@ process.on('SIGINT', function() {
         childrenProc;
     console.log("CTRL + C --> Closing running miner & minerstat");
     tools.killall();
-    childrenProc = execProc("SID=$(screen -list | grep minerstat-console | cut -f1 -d'.' | sed 's/[^0-9]*//g'); screen -X -S $SID'.minerstat-console' quit;", function(error, stdout, stderr) {});
+    childrenProc = execProc("SID=$(screen -list | grep minerstat-console | cut -f1 -d'.' | sed 's/[^0-9]*//g'); sudo su -c 'sudo screen -X -S minew quit'; sudo su minerstat -c 'screen -X -S minerstat-console quit' screen -X -S $SID'.minerstat-console' quit;", function(error, stdout, stderr) {});
     process.exit();
 });
 process.on('uncaughtException', function(err) {

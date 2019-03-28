@@ -159,7 +159,7 @@ if ! screen -list | grep -q "dummy"; then
     echo "Adjusting clocks in the background.."
     sudo chvt 1
     sudo sh /home/minerstat/minerstat-os/bin/overclock.sh
-    
+
     if [ "$AMDDEVICE" -gt 0 ]; then
      echo ""
      echo "--- Apply Strap (AMD TWEAK) from DB ---"
