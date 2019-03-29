@@ -1,8 +1,10 @@
 #!/bin/bash
 
 sleep 15
-sudo screen -S minew -X stuff ""
 
-until sudo screen -S minew -X stuff ""; do
+while true
+do
+  screen -S minerstat-console -X stuff ""
+  sudo screen -S minew -X stuff ""
   sleep 10
 done
