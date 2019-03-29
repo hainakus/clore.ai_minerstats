@@ -77,14 +77,27 @@ do
 
     if [ $RESPONSE = "REBOOT" ]; then
         #sudo reboot -f
-        sudo su -c "echo 1 > /proc/sys/kernel/sysrq";
+        sudo su -c "echo 1 > /proc/sys/kernel/sysrq"
         sudo su -c "echo b > /proc/sysrq-trigger"
     fi
 
     if [ $RESPONSE = "SHUTDOWN" ]; then
         #sudo shutdown -h now
-        sudo su -c "echo 1 > /proc/sys/kernel/sysrq";
-        sudo su -c "echo o > /proc/sysrq-trigger";
+        sudo su -c "echo 1 > /proc/sys/kernel/sysrq"
+        sudo su -c "echo o > /proc/sysrq-trigger"
+    fi
+
+    if [ $RESPONSE = "RESTART" ] || [ $RESPONSE = "START" ]; then
+        sudo su minerstat -c "screen -X -S minerstat-console quit"
+        sleep 2
+        screen -A -m -d -S minerstat-console sudo sh start.sh
+    fi
+
+    if [ $RESPONSE = "STOP" ]; then
+        sudo su minerstat -c "screen -X -S minerstat-console quit"
+        sudo su -c "sudo screen -X -S minew quit"
+        sudo su -c "sudo screen -X -S fakescreen quit"
+        sudo su minerstat -c "screen -X -S fakescreen quit"
     fi
 
     if [ $RESPONSE = "null" ]; then
