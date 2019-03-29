@@ -6,5 +6,5 @@ while true
 do
   screen -S minerstat-console -X stuff ""
   sudo screen -S minew -X stuff ""
-  sleep 10
+  sleep 5
 done
