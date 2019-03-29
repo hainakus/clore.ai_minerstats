@@ -71,3 +71,5 @@ fi
 # Update motd.d
 sudo chmod 777 /etc/update-motd.d/10-help-text
 sudo cp /home/minerstat/minerstat-os/core/10-help-text /etc/update-motd.d
+# Update tmux design
+sudo cp /home/minerstat/minerstat-os/core/.tmux.conf /home/minerstat
