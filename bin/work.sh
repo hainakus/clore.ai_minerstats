@@ -1,5 +1,8 @@
 if ! screen -list | grep -q "dummy"; then
 
+    # FIX CTRL + ALT + F1
+    screen -A -m -d -S chvt sudo /home/minerstat/minerstat-os/bin/chvta
+
     screen -A -m -d -S dummy sleep 22176000
     screen -S listener -X quit # kill running process
     screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
@@ -142,9 +145,6 @@ if ! screen -list | grep -q "dummy"; then
     sleep 1
     sudo service dgm stop
     sleep 3
-    # FIX CTRL + ALT + F1
-    screen -A -m -d -S chvt watch -n1 sudo chvt 1
-    screen -A -m -d -S fix sudo chvt 1
     if [ "$NVIDIADEVICE" -gt 0 ]; then
         screen -A -m -d -S display sudo X
         screen -A -m -d -S fixer sudo chvt 1
