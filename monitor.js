@@ -30,12 +30,12 @@ module.exports = {
     	AMDCOVC - AMD
     */
     HWamd: function(gpuSyncDone, cpuSyncDone) {
-        
+
         var strapFileName = "amdmemorytweak-stable";
         if (global.osversion == "experimental") {
             strapFileName = "amdmemorytweak";
         }
-        
+
         var exec = require('child_process').exec,
             query = exec("cd " + global.path + "/bin/; sudo ./amdinfo", function(error, stdout, stderr) {
                 var amdResponse = stdout,
@@ -70,7 +70,7 @@ function isfinished(hwdatar, typ, gpuSyncDone, cpuSyncDone, powerResponse, hwmem
     /*
     	MAIN FUNCTIONS
     */
-    console.log("[" + typ + "] Hardware Monitor: " + hwdatas);
+    //console.log("[" + typ + "] Hardware Monitor: " + hwdatas);
     /*
     	SEND DATA TO ENDPOINT
     */

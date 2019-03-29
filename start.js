@@ -44,8 +44,9 @@ process.on('SIGINT', function() {
         childrenProc;
     console.log("CTRL + C --> Closing running miner & minerstat");
     tools.killall();
-    childrenProc = execProc("SID=$(screen -list | grep minerstat-console | cut -f1 -d'.' | sed 's/[^0-9]*//g'); sudo su -c 'sudo screen -X -S minew quit'; sudo su minerstat -c 'screen -X -S minerstat-console quit' screen -X -S $SID'.minerstat-console' quit;", function(error, stdout, stderr) {});
-    process.exit();
+    childrenProc = execProc("SID=$(screen -list | grep minerstat-console | cut -f1 -d'.' | sed 's/[^0-9]*//g'); sudo su -c 'sudo screen -X -S minew quit'; sudo su minerstat -c 'screen -X -S minerstat-console quit' screen -X -S $SID'.minerstat-console' quit;", function(error, stdout, stderr) {
+          process.exit();
+    });
 });
 process.on('uncaughtException', function(err) {
     console.log(err);
@@ -115,28 +116,33 @@ module.exports = {
                     cpuSync = cpuSyncDone;
                 if (sync.toString() === "true") {
                     global.watchnum = 0;
-                    console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;32mUpdated " + global.worker + " (" + global.client + ")\x1b[0m");
+                    console.log("\x1b[1;94m== \x1b[0m"+getDateTime()+": \x1b[1;32mUpdated " + global.worker + " (" + global.client + ")\x1b[0m");
+                    console.log("\x1b[1;94m== \x1b[0m[" + global.minerType + "] \x1b " + hwdatas.replace(/(\r\n|\n|\r)/gm, ""));
                 } else {
-					console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;31mError (Not hashing)\x1b[0m");
+					console.log("\x1b[1;94m== \x1b[0m"+getDateTime()+": \x1b[1;31mError (Not hashing)\x1b[0m");
                     console.log("\x1b[1;94m== \x1b[0mWorker: " + global.worker);
                     console.log("\x1b[1;94m== \x1b[0mClient: " + global.client);
+                    console.log("\x1b[1;94m== \x1b[0m[" + global.minerType + "] \x1b " + hwdatas.replace(/(\r\n|\n|\r)/gm, ""));
                 }
                 if (global.minerCpu.toString() === "true") {
                     if (cpuSync.toString() === "true") {
-						console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;32mUpdated " + global.worker + " (" + global.cpuDefault.toLowerCase() + ")\x1b[0m");
+						console.log("\x1b[1;94m== \x1b[0m"+getDateTime()+": \x1b[1;32mUpdated " + global.worker + " (" + global.cpuDefault.toLowerCase() + ")\x1b[0m");
                     } else {
-						console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;31mError (Not hashing)\x1b[0m");
+						console.log("\x1b[1;94m== \x1b[0m"+getDateTime()+": \x1b[1;31mError (Not hashing)\x1b[0m");
 						console.log("\x1b[1;94m== \x1b[0mWorker: " + global.worker);
 						console.log("\x1b[1;94m== \x1b[0mClient: " + global.cpuDefault.toLowerCase());
+            console.log("\x1b[1;94m== \x1b[0m[" + global.minerType + "] \x1b " + hwdatas.replace(/(\r\n|\n|\r)/gm, ""));
                     }
                 }
             } else {
-				console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;31mConnection lost (" + error + ")\x1b[0m");
+				console.log("\x1b[1;94m== \x1b[0m"+getDateTime()+": \x1b[1;31mConnection lost (" + error + ")\x1b[0m");
 				console.log("\x1b[1;94m== \x1b[0mWorker: " + global.worker);
+        console.log("\x1b[1;94m== \x1b[0m[" + global.minerType + "] \x1b " + hwdatas.replace(/(\r\n|\n|\r)/gm, ""));
                 sleep.sleep(10);
                 console.log('\x1Bc');
             }
             console.log("\x1b[1;94m==========================================\x1b[0m");
+            console.log("\n");
         });
     },
     boot: function(miner, startArgs) {
@@ -217,14 +223,14 @@ module.exports = {
                     }
                 }, function(error, response, body) {
                     console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
-                    console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;32mFirst sync (~30 sec)\x1b[0m");
+                    console.log("\x1b[1;94m== \x1b[0m"+getDateTime()+": \x1b[1;32mFirst sync (~30 sec)\x1b[0m");
                     console.log("\x1b[1;94m==========================================\x1b[0m");
                 });
             } else {
-                console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;31mError (" + error + ")\x1b[0m");
+                console.log("\x1b[1;94m== \x1b[0m"+getDateTime()+": \x1b[1;31mError (" + error + ")\x1b[0m");
                 clearInterval(global.timeout);
                 clearInterval(global.hwmonitor);
-                console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;33mWaiting for connection\x1b[0m");
+                console.log("\x1b[1;94m== \x1b[0m"+getDateTime()+": \x1b[1;33mWaiting for connection\x1b[0m");
                 sleep.sleep(10);
                 tools.restart();
             }
@@ -232,7 +238,7 @@ module.exports = {
         if (global.reboot === "yes") {
             var childp = require('child_process').exec,
                 queries = childp("sudo reboot -f", function(error, stdout, stderr) {
-                    console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;33mSystem is rebooting\x1b[0m");
+                    console.log("\x1b[1;94m== \x1b[0m"+getDateTime()+": \x1b[1;33mSystem is rebooting\x1b[0m");
                 });
         }
         // Remove directory recursively
@@ -516,7 +522,7 @@ module.exports = {
                     }
                 } else {
                     // Error (Restart)
-                    console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;31mError (" + error + ")\x1b[0m");
+                    console.log("\x1b[1;94m== \x1b[0m"+getDateTime()+": \x1b[1;31mError (" + error + ")\x1b[0m");
                     clearInterval(global.timeout);
                     clearInterval(global.hwmonitor);
                     sleep.sleep(10);

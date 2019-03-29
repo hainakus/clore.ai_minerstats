@@ -20,7 +20,7 @@ function runMiner(miner, execFile, args, plus) {
     try {
         var chmodQuery = require('child_process').exec;
         //console.log(miner + " => Clearing RAM, Please wait.. (1-30sec)");
-        var setChmod = chmodQuery("cd /home/minerstat/minerstat-os/clients/; sudo chmod -R 777 *; sudo screen -X -S minew quit; sleep 1; sudo screen -A -m -d -S minew sudo /home/minerstat/minerstat-os/clients/" + miner + "/start.bash; sudo tmux split-window 'sudo /home/minerstat/minerstat-os/core/wrapper' \;", function(error, stdout, stderr) {
+        var setChmod = chmodQuery("cd /home/minerstat/minerstat-os/clients/; sudo chmod -R 777 *; sudo screen -X -S minew quit; sleep 1; sudo screen -A -m -d -S minew sudo /home/minerstat/minerstat-os/clients/" + miner + "/start.bash; sudo tmux split-window 'sudo /home/minerstat/minerstat-os/core/wrapper' \; sudo tmux select-layout even-horizontal \; sudo tmux swap-pane -s 1 -t 0 \;", function(error, stdout, stderr) {
           global.minerRunning = true;
           /*
             execa.shell('sudo screen -x miners', {
@@ -539,7 +539,7 @@ module.exports = {
                         console.log(stdout + " " + stderr);
                     });
                     break;
-		case 'MEMORYTWEAK':
+		            case 'MEMORYTWEAK':
                     console.log("\x1b[1;94m== \x1b[0mAction: Applying new memory straps ...");
                     var queryMemTool = exec("cd " + global.path + "/bin; sudo sh " + global.path + "/bin/setmem.sh", function(error, stdout, stderr) {
                         console.log(stdout + " " + stderr);
@@ -551,7 +551,7 @@ module.exports = {
                     var queryBoot = exec("sudo su -c 'echo 1 > /proc/sys/kernel/sysrq'; sudo su -c 'echo b > /proc/sysrq-trigger';", function(error, stdout, stderr) {});
                     break;
                 default:
-					console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;31mError (Unknown remote command: " + expr + ")\x1b[0m");
+					console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;31mError (Unknown remote command: " + command + ")\x1b[0m");
             }
         }
     },
