@@ -1,0 +1,26 @@
+#!/bin/bash
+
+HOW_MANY_WINDOW=$(sudo tmux list-windows | grep "panes" | head -n 1 | cut -f1 -d")" | awk -F'(' '{print $2}' | sed 's/[^.0-9]*//g')
+
+# Disable Copy mod first on tmux
+screen -S minerstat-console -X stuff ""
+screen -S minerstat-console -X stuff ""
+screen -S minerstat-console -X stuff ""
+screen -S minerstat-console -X stuff ""
+
+if [ "$HOW_MANY_WINDOW" = "2" ]; then
+  # Miner window is set
+  echo ""
+  sudo tmux kill-pane -t 0 \;
+  sudo tmux split-window 'sudo /home/minerstat/minerstat-os/core/wrapper' \;
+  sudo tmux select-layout even-horizontal \;
+  sudo tmux swap-pane -s 1 -t 0 \;
+  screen -x minerstat-console
+else
+  # Miner window is not set
+  echo ""
+  sudo tmux split-window 'sudo /home/minerstat/minerstat-os/core/wrapper' \;
+  sudo tmux select-layout even-horizontal \;
+  sudo tmux swap-pane -s 1 -t 0 \;
+  screen -x minerstat-console
+fi
