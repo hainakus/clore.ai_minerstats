@@ -11,6 +11,8 @@ This software **only works with [my.minerstat.com](https://my.minerstat.com) int
 ```
 miner         | Show mining client screen
 
+agent         | Show minerstat agent + miner screen
+
 mstart        | (Re)start mining
 
 mstop         | Stop mining
@@ -25,7 +27,7 @@ mclock        | Fetch OC from the dashboard
 
 mreboot       | Reboot the rig
 
-mshutdown     | Shut down the rig 
+mshutdown     | Shut down the rig
 
 forcereboot   | Force Reboot (<0.1 sec)
 
@@ -39,7 +41,7 @@ mlang         | Set keyboard layout (e.g. mlang de)
 
 atiflash      | AMD - Bios (.rom) Flasher
 
-atiflashall   | AMD - Flash .rom to all available GPUs on the system 
+atiflashall   | AMD - Flash .rom to all available GPUs on the system
 
 atidumpall    | AMD - Dump all bios from all available GPUs on the system.
 
@@ -56,14 +58,14 @@ You can see mining process by type `miner` to the terminal.
 **Ctrl + C** command quit from the process / close minerstat.
 
 
-## 
+##
 
 ***© minerstat OÜ*** in 2018
 
 
-***Contact:*** app [ @ ] minerstat.com 
+***Contact:*** app [ @ ] minerstat.com
 
 
 ***Mail:*** Sepapaja tn 6, Lasnamäe district, Tallinn city, Harju county, 15551, Estonia
 
-## 
+##
