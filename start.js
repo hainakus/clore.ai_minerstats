@@ -430,7 +430,7 @@ module.exports = {
                     try {
                         fs.writeFile('clients/' + miner.replace("_10", "") + '/msVersion.txt', '' + serverVersion.trim(), function(err) {});
                     } catch (error) {}
-                    if (miner == "xmr-stak") {
+                    if (miner == "xmr-stak" || miner == "xmr-stak_10" ) {
                       var xmrConfigQueryStak = require('child_process').exec;
                       var copyXmrConfigsStak = xmrConfigQueryStak("cp /tmp/amd.txt /home/minerstat/minerstat-os/clients/xmr-stak/; cp /tmp/cpu.txt /home/minerstat/minerstat-os/clients/xmr-stak/; cp /tmp/nvidia.txt /home/minerstat/minerstat-os/clients/xmr-stak/; cp /tmp/config.txt /home/minerstat/minerstat-os/clients/xmr-stak/;", function(error, stdout, stderr) {
                         console.log("XMR-STAK Config Restored");
