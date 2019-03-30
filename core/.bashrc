@@ -116,7 +116,8 @@ if ! shopt -oq posix; then
   fi
 fi
 alias mstart='sudo su minerstat -c "screen -X -S minerstat-console quit"; cd /home/minerstat/minerstat-os/; sudo node stop; sleep 1; screen -A -m -d -S minerstat-console sudo sh start.sh; echo "Minerstat has been re(started)! type: miner to check output, anytime!"; sleep 1; screen -x minerstat-console '
-alias miner='sh /home/minerstat/minerstat-os/core/view'
+alias miner='sudo screen -x minew'
+alias agent='sh /home/minerstat/minerstat-os/core/view'
 alias mstop='cd /home/minerstat/minerstat-os/; sudo node stop; sudo su minerstat -c "screen -X -S minerstat-console quit"; sudo su -c "sudo screen -X -S minew quit"'
 alias mrecovery='cd /home/minerstat/minerstat-os/core/; sudo sh recovery.sh'
 alias mupdate='cd /home/minerstat/minerstat-os/; sudo sh git.sh; source ~/.bashrc'

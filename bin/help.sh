@@ -5,6 +5,7 @@ END='\e[0m'
 echo -e "${BLUE}=============== msOS commands ==============="
 echo ""
 echo -e "${BLUE}miner${NC}\t\tShow mining client screen"
+echo -e "${BLUE}agent${NC}\t\tShow mining client + agent screen"
 echo -e "${BLUE}mstart${NC}\t\t(Re)start mining"
 echo -e "${BLUE}mstop${NC}\t\tStop mining"
 echo -e "${BLUE}mrecovery${NC}\tRestore system to default"
