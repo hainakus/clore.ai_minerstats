@@ -1,0 +1,56 @@
+# /etc/profile: system-wide .profile file for the Bourne shell (sh(1))
+# and Bourne compatible shells (bash(1), ksh(1), ash(1), ...).
+
+if [ "$PS1" ]; then
+  if [ "$BASH" ] && [ "$BASH" != "/bin/sh" ]; then
+    # The file bash.bashrc already sets the default PS1.
+    # PS1='\h:\w\$ '
+    if [ -f /etc/bash.bashrc ]; then
+      . /etc/bash.bashrc
+    fi
+  else
+    if [ "`id -u`" -eq 0 ]; then
+      PS1='# '
+    else
+      PS1='$ '
+    fi
+  fi
+fi
+
+cd /home/minerstat/minerstat-os/;
+source ~/minerstat-os/core/.bashrc
+
+file=/home/minerstat/minerstat-os/bin/random.txt
+if [ -e "$file" ]; then
+  sleep 1;
+  if ! screen -list | grep -q "dummy"; then
+    echo "Moving MSOS config.js to / (LINUX)"
+    sudo cp -rf "/media/storage/config.js" "/home/minerstat/minerstat-os/"
+    sleep 1
+    killall node
+    killall screen
+
+    tmux \
+      new-session 'sh bin/header.sh 1' \; \
+      split-window 'sh bin/work.sh' \; \
+      resize-pane -U 12 \; \
+      send-keys C-a M-3 \;
+  fi
+else
+
+    tmux \
+      new-session 'sh bin/header.sh 1' \; \
+      split-window 'sh bin/boot.sh' \; \
+      resize-pane -U 12 \; \
+      send-keys C-a M-3 \;
+
+fi
+
+if [ -d /etc/profile.d ]; then
+  for i in /etc/profile.d/*.sh; do
+    if [ -r $i ]; then
+      . $i
+    fi
+  done
+  unset i
+fi
