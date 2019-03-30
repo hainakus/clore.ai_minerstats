@@ -139,3 +139,5 @@ if grep -q experimental "/etc/lsb-release"; then
 else
   alias amdmemtool='sudo /home/minerstat/minerstat-os/bin/amdmemorytweak-stable'
 fi
+
+alias nvflash='sudo /home/minerstat/minerstat-os/bin/nvflash_linux'

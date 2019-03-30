@@ -19,4 +19,5 @@ echo -e "${BLUE}mfind${NC}\t\tFind GPU (e.g. mfind 0 - will set fans to 0% excep
 echo -e "${BLUE}minfo${NC}\t\tShow welcome screen and msOS version"
 echo -e "${BLUE}mlang${NC}\t\tSet keyboard layout (e.g. mlang de)"
 echo -e "${BLUE}amdmemtool${NC}\tAMD Memory Tweak"
+echo -e "${BLUE}nvflash${NC}\tNVIDIA VBIOS Flasher"
 echo -e "${END}"
