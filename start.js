@@ -366,11 +366,25 @@ module.exports = {
                         }
 
                     }
-
                     if (dlGpu == true) {
-                        deleteFolder('clients/' + gpuMiner.toLowerCase().replace("_10", "") + '/');
-                        sleep.sleep(2);
-                        downloadCore(minerNameWithCuda, "gpu", gpuServerVersion);
+                        try {
+                          if (gpuMiner == "xmr-stak") {
+                              var xmrConfigQuery = require('child_process').exec;
+                              var copyXmrConfigs = xmrConfigQuery("cp /home/minerstat/minerstat-os/clients/xmr-stak/amd.txt /tmp; cp /home/minerstat/minerstat-os/clients/xmr-stak/nvidia.txt /tmp; cp /home/minerstat/minerstat-os/clients/xmr-stak/cpu.txt /tmp; cp /home/minerstat/minerstat-os/clients/xmr-stak/config.txt /tmp;", function(error, stdout, stderr) {
+                                console.log("XMR-STAK Config Protected");
+                                sleep.sleep(1);
+                                deleteFolder('clients/' + gpuMiner.toLowerCase().replace("_10", "") + '/');
+                                sleep.sleep(2);
+                                downloadCore(minerNameWithCuda, "gpu", gpuServerVersion);
+                              });
+                          }
+                        } catch (copyError) {}
+                        if (gpuMiner != "xmr-stak") {
+                          sleep.sleep(1);
+                          deleteFolder('clients/' + gpuMiner.toLowerCase().replace("_10", "") + '/');
+                          sleep.sleep(2);
+                          downloadCore(minerNameWithCuda, "gpu", gpuServerVersion);
+                        }
                     } else {
                         applyChmod(gpuMiner.toLowerCase().replace("_10", ""), "gpu");
                     }
@@ -416,8 +430,15 @@ module.exports = {
                     try {
                         fs.writeFile('clients/' + miner.replace("_10", "") + '/msVersion.txt', '' + serverVersion.trim(), function(err) {});
                     } catch (error) {}
+                    var xmrConfigQueryStak = require('child_process').exec;
+                    var copyXmrConfigsStak = xmrConfigQuery("cp /tmp/amd.txt /home/minerstat/minerstat-os/clients/xmr-stak/; cp /tmp/cpu.txt /home/minerstat/minerstat-os/clients/xmr-stak/; cp /tmp/nvidia.txt /home/minerstat/minerstat-os/clients/xmr-stak/; cp /tmp/config.txt /home/minerstat/minerstat-os/clients/xmr-stak/;", function(error, stdout, stderr) {
+                      console.log("XMR-STAK Config Restored");
+                      applyChmod(miner.replace("_10", ""), clientType);
+                    });
                     // Start miner
-                    applyChmod(miner.replace("_10", ""), clientType);
+                    if (miner != "xmr-stak") {
+                      applyChmod(miner.replace("_10", ""), clientType);
+                    }
                 });
             });
         }
