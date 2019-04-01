@@ -16,21 +16,31 @@ function getDateTime() {
 }
 
 function runMiner(miner, execFile, args, plus) {
+
+    var isCPU = "false";
+    var isCMD = "cd /home/minerstat/minerstat-os/clients/; sudo chmod -R 777 *; sudo screen -X -S minew quit; sleep 1; sudo screen -A -m -d -S minew sudo /home/minerstat/minerstat-os/clients/" + miner + "/start.bash; sleep 5; sudo tmux split-window 'sudo /home/minerstat/minerstat-os/core/wrapper' \; sudo tmux select-layout even-horizontal \; sudo tmux swap-pane -s 1 -t 0 \; screen -S minerstat-console -X stuff ''; sudo screen -S minew -X stuff ''; ";
+
+    if (miner == "xmrig" | miner == "cpuminer-opt") {
+      isCMD = "cd /home/minerstat/minerstat-os/clients/; sudo chmod -R 777 *;";
+      isCPU = "true";
+    }
+
     const execa = require('execa');
     try {
         var chmodQuery = require('child_process').exec;
         //console.log(miner + " => Clearing RAM, Please wait.. (1-30sec)");
-        var setChmod = chmodQuery("cd /home/minerstat/minerstat-os/clients/; sudo chmod -R 777 *; sudo screen -X -S minew quit; sleep 1; sudo screen -A -m -d -S minew sudo /home/minerstat/minerstat-os/clients/" + miner + "/start.bash; sleep 5; sudo tmux split-window 'sudo /home/minerstat/minerstat-os/core/wrapper' \; sudo tmux select-layout even-horizontal \; sudo tmux swap-pane -s 1 -t 0 \; screen -S minerstat-console -X stuff ''; sudo screen -S minew -X stuff ''; ", function(error, stdout, stderr) {
+        var setChmod = chmodQuery(isCMD, function(error, stdout, stderr) {
           global.minerRunning = true;
-          /*
-            execa.shell('sudo screen -x miners', {
-                cwd: process.cwd(),
-                detached: false,
-                stdio: "inherit"
-            }).then(result => {
-                console.log("MINER => Closed");
-                global.minerRunning = false;
-            });                               */
+          if (isCPU == "true") {
+              execa.shell("/home/minerstat/minerstat-os/clients/" + miner + "/start.bash", {
+                  cwd: process.cwd(),
+                  detached: false,
+                  stdio: "inherit"
+                }).then(result => {
+                  console.log("CPU MINER => Closed");
+                  global.minerRunning = false;
+                });
+          }
         });
     } catch (err) {
         console.log(err);
