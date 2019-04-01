@@ -95,7 +95,7 @@ module.exports = {
         //console.log(res_data);         //SHOW SYNC OUTPUT
         // SEND LOG TO SERVER
         var request = require('request');
-        console.log(res_data);
+        //console.log(res_data);
         request.post({
             url: 'https://api.minerstat.com/v2/set_node_config.php?token=' + global.accesskey + '&worker=' + global.worker + '&miner=' + global.client.toLowerCase() + '&ver=4&cpuu=' + global.minerCpu + '&cpud=HASH' + '&os=linux&hwNew=true&currentcpu=' + global.cpuDefault.toLowerCase() + '&hwType=' + global.minerType,
             form: {
