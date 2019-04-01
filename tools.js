@@ -305,7 +305,14 @@ const MINER_JSON = {
         "apiPort": 5777,
         "apiPath": "/api/status",
         "apiType": "http"
-    }
+    },
+    "miniz": {
+        "args": "auto",
+        "execFile": "miniZ",
+        "apiPort": 20000,
+        "apiType": "tcp",
+        "apiCArg": "{\"id\":0, \"method\":\"getstat\"}\n"
+    },
 };
 module.exports = {
     /*
@@ -660,6 +667,7 @@ module.exports = {
         }
         // CCMINER with all fork's
         if (MINER_JSON[gpuMiner]["apiType"] === "tcp") {
+            global.res_data = "";
             const ccminerClient = telNet.createConnection({
                 port: MINER_JSON[gpuMiner]["apiPort"]
             }, () => {
@@ -667,10 +675,12 @@ module.exports = {
             });
             ccminerClient.on('data', (data) => {
                 //console.log(data.toString());
-                global.res_data = data.toString();
+                global.res_data = global.res_data + "" + data.toString();
                 gpuSyncDone = true;
                 global.sync = true;
-                ccminerClient.end();
+                setTimeout(function(){
+                    ccminerClient.end();
+                }, 4000);
             });
             ccminerClient.on('error', () => {
                 gpuSyncDone = false;
