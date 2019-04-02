@@ -46,8 +46,8 @@ if [ $1 ]; then
 
     # Check this is older R, or RX Series
     isThisR9=$(sudo ./amdcovc -a $1 | grep "R9"| sed 's/^.*R9/R9/' | cut -f1 -d' ' | sed 's/[^A-Z0-9]*//g')
-    isThisVega=$(sudo ./amdcovc -a 0 | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
-    isThisVegaVII=$(sudo ./amdcovc -a 0| grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g')
+    isThisVega=$(sudo ./amdcovc -a $1 | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
+    isThisVegaVII=$(sudo ./amdcovc -a $1| grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g')
 
     ########## VEGA ##################
     if [ "$isThisVega" != "Vega" ]
