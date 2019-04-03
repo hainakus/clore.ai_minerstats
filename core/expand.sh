@@ -2,9 +2,15 @@
 
 DRIVE_NUMBER=$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g')
 DRIVE_PARTITION=$DRIVE_NUMBER"1"
-DRIVE_MAX_SIZE_IN_GB=$(lsblk | grep sdc | grep disk | awk '{print $4}' | sed 's/[^.0-9]*//g')
-PARTITION_MAX_SIZE_IN_GB=$(lsblk | grep sdc | grep part | head -n 1 | awk '{print $4}' | sed 's/[^.0-9]*//g')
-SIZE_DIFFERENCE=$(python -c "print ($DRIVE_MAX_SIZE_IN_GB - $PARTITION_MAX_SIZE_IN_GB) * 1000" | cut -f1 -d".") # 0.1 x 1000 = 100Mb
+PARTITION_MAX_SIZE_IN_GB=$(lsblk | grep $DRIVE_PARTITION | grep part | head -n 1 | awk '{print $4}' | sed 's/[^.0-9]*//g')
+CURRENT_PARTITION_SIZE_IN_GB=$(df -h | grep $DRIVE_PARTITION | awk '{print $2}' | sed 's/[^.0-9]*//g')
+SIZE_DIFFERENCE=$(python -c "print ($PARTITION_MAX_SIZE_IN_GB - $CURRENT_PARTITION_SIZE_IN_GB) * 1000" | cut -f1 -d".") # 0.1 x 1000 = 100Mb
+
+echo $DRIVE_NUMBER
+echo $DRIVE_PARTITION
+echo $PARTITION_MAX_SIZE_IN_GB
+echo $CURRENT_PARTITION_SIZE_IN_GB
+echo $SIZE_DIFFERENCE
 
 echo "-*- Expanding /dev/$DRIVE_PARTITION Partition -*-"
 
