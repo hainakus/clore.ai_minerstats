@@ -6,12 +6,6 @@ PARTITION_MAX_SIZE_IN_GB=$(lsblk | grep $DRIVE_PARTITION | grep part | head -n 1
 CURRENT_PARTITION_SIZE_IN_GB=$(df -h | grep $DRIVE_PARTITION | awk '{print $2}' | sed 's/[^.0-9]*//g')
 SIZE_DIFFERENCE=$(python -c "print ($PARTITION_MAX_SIZE_IN_GB - $CURRENT_PARTITION_SIZE_IN_GB) * 1000" | cut -f1 -d".") # 0.1 x 1000 = 100Mb
 
-echo $DRIVE_NUMBER
-echo $DRIVE_PARTITION
-echo $PARTITION_MAX_SIZE_IN_GB
-echo $CURRENT_PARTITION_SIZE_IN_GB
-echo $SIZE_DIFFERENCE
-
 echo "-*- Expanding /dev/$DRIVE_PARTITION Partition -*-"
 
 # Keep 200Mb difference between drive and partition size for check
