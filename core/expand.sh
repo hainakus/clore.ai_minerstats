@@ -9,7 +9,7 @@ SIZE_DIFFERENCE=$(python -c "print ($PARTITION_MAX_SIZE_IN_GB - $CURRENT_PARTITI
 echo "-*- Expanding /dev/$DRIVE_PARTITION Partition -*-"
 
 # Keep 200Mb difference between drive and partition size for check
-if [ "$SIZE_DIFFERENCE" -lt "200" ]; then
+if [ "$SIZE_DIFFERENCE" -lt "300" ]; then
   RESIZED="RESIZED"
 else
   RESIZED="NEED"
