@@ -119,6 +119,10 @@ if ! screen -list | grep -q "dummy"; then
              sudo apt-get --yes --force-yes install libcurl4
              sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
             fi
+	    CHECKAPTXN=$(dpkg -l | grep "libegl1-amdgpu-pro" | wc -l)
+	    if [ ! "$CHECKAPTXN" -gt "0" ]; then
+	    	sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
+	    fi
           fi
 
             if [ "$ETHPILLDELAY" != "999" ]
