@@ -13,23 +13,23 @@ GATEWAY=$(cat /media/storage/network.txt | grep 'GATEWAY="' | sed 's/GATEWAY="//
 echo "Configuring LAN for: "$INTERFACE
 echo ""
 
-echo -n > /etc/network/interfaces
-echo auto $INTERFACE  >> /etc/network/interfaces
-echo iface $INTERFACE inet static  >> /etc/network/interfaces
-echo address $ADDRESS >> /etc/network/interfaces
-echo netmask $NETMASK >> /etc/network/interfaces
-echo gateway $GATEWAY >> /etc/network/interfaces
-echo dns-nameservers 1.1.1.1 >> /etc/network/interfaces
+sudo su -c "echo -n > /etc/network/interfaces"
+sudo su -c "echo auto $INTERFACE  >> /etc/network/interfaces"
+sudo su -c "echo iface $INTERFACE inet static  >> /etc/network/interfaces"
+sudo su -c "echo address $ADDRESS >> /etc/network/interfaces"
+sudo su -c "echo netmask $NETMASK >> /etc/network/interfaces"
+sudo su -c "echo gateway $GATEWAY >> /etc/network/interfaces"
+sudo su -c "echo dns-nameservers 1.1.1.1 >> /etc/network/interfaces"
 
 # CloudFlare DNS
-sudo echo "" > /etc/resolv.conf
-sudo echo "nameserver 1.1.1.1" >> /etc/resolv.conf
-sudo echo "nameserver 1.0.0.1" >> /etc/resolv.conf
-sudo echo "nameserver 8.8.8.8" >> /etc/resolv.conf
-sudo echo "nameserver 8.8.4.4" >> /etc/resolv.conf
+sudo su -c 'echo "" > /etc/resolv.conf'
 sudo resolvconf -u
+sudo su -c 'echo "nameserver 1.1.1.1" >> /etc/resolv.conf'
+sudo su -c 'echo "nameserver 1.0.0.1" >> /etc/resolv.conf'
+sudo su -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf'
+sudo su -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf'
 
-/etc/init.d/networking restart
+sudo su -c '/etc/init.d/networking restart'
 sudo su -c "systemctl restart systemd-networkd"
 
 echo ""
