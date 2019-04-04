@@ -50,12 +50,12 @@ sudo hostname -F /etc/hostname
 #sudo su -c "echo 'minerstat' > /etc/hostname"
 #sudo hostname -F /etc/hostname
 # CloudFlare DNS
-sudo echo "" > /etc/resolv.conf
-sudo echo "nameserver 1.1.1.1" >> /etc/resolv.conf
-sudo echo "nameserver 1.0.0.1" >> /etc/resolv.conf
-sudo echo "nameserver 8.8.8.8" >> /etc/resolv.conf
-sudo echo "nameserver 8.8.4.4" >> /etc/resolv.conf
+sudo su -c 'echo "" > /etc/resolv.conf'
 sudo resolvconf -u
+sudo su -c 'echo "nameserver 1.1.1.1" >> /etc/resolv.conf'
+sudo su -c 'echo "nameserver 1.0.0.1" >> /etc/resolv.conf'
+sudo su -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf'
+sudo su -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf'
 sudo chmod -R 777 * /home/minerstat/minerstat-os
 sudo rm /home/minerstat/minerstat-os/bin/amdmeminfo.txt
 
