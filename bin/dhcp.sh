@@ -8,19 +8,19 @@ INTERFACE="$(sudo cat /proc/net/dev | tail -n1 | awk -F '\\:' '{print $1}')"
 echo "Configuring LAN DHCP for: "$INTERFACE
 echo ""
 
-echo -n > /etc/network/interfaces
-echo allow-hotplug $INTERFACE  >> /etc/network/interfaces
-echo iface $INTERFACE inet dhcp  >> /etc/network/interfaces
+sudo su -c "echo -n > /etc/network/interfaces"
+sudo su -c "echo allow-hotplug $INTERFACE  >> /etc/network/interfaces"
+sudo su -c "echo iface $INTERFACE inet dhcp  >> /etc/network/interfaces"
 
 # CloudFlare DNS
-sudo echo "" > /etc/resolv.conf
-sudo echo "nameserver 1.1.1.1" >> /etc/resolv.conf
-sudo echo "nameserver 1.0.0.1" >> /etc/resolv.conf
-sudo echo "nameserver 8.8.8.8" >> /etc/resolv.conf
-sudo echo "nameserver 8.8.4.4" >> /etc/resolv.conf
+sudo su -c 'echo "" > /etc/resolv.conf'
 sudo resolvconf -u
+sudo su -c 'echo "nameserver 1.1.1.1" >> /etc/resolv.conf'
+sudo su -c 'echo "nameserver 1.0.0.1" >> /etc/resolv.conf'
+sudo su -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf'
+sudo su -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf'
 
-/etc/init.d/networking restart
+sudo su -c '/etc/init.d/networking restart'
 sudo su -c "systemctl restart systemd-networkd"
 
 echo ""
