@@ -47,12 +47,19 @@ if [ $1 ]; then
     # Check this is older R, or RX Series
     isThisR9=$(sudo ./amdcovc -a $1 | grep "R9"| sed 's/^.*R9/R9/' | cut -f1 -d' ' | sed 's/[^A-Z0-9]*//g')
     isThisVega=$(sudo ./amdcovc -a 0 | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
-    isThisVegaVII=$(sudo ./amdcovc -a 0| grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g')
+    isThisVega2=$(sudo ./amdcovc -a 1 | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
+    isThisVegaVII=$(sudo ./amdcovc -a 0 | grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g')
+    isThisVegaVII2=$(sudo ./amdcovc -a 1 | grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g')
 
     ########## VEGA ##################
     if [ "$isThisVega" != "Vega" ]
     then
       echo ""
+      if [ "$isThisVega2" = "Vega" ]; then
+        echo "Loading VEGA OC Script.."
+        sudo ./overclock_vega.sh $1 $2 $3 $4 $5
+        exit 1
+      fi
     else
       echo "Loading VEGA OC Script.."
       sudo ./overclock_vega.sh $1 $2 $3 $4 $5
@@ -64,6 +71,11 @@ if [ $1 ]; then
     if [ "$isThisVegaVII" != "VII" ]
     then
       echo ""
+      if [ "$isThisVegaVII" = "VII" ]; then
+        echo "Loading VEGA VII OC Script.."
+        sudo ./overclock_vega7.sh $1 $2 $3 $4 $5
+        exit 1
+      fi
     else
       echo "Loading VEGA VII OC Script.."
       sudo ./overclock_vega7.sh $1 $2 $3 $4 $5
