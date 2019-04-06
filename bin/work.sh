@@ -50,11 +50,6 @@ if ! screen -list | grep -q "dummy"; then
 	sudo su -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf'
 	sudo su -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf'
 
-	# Cache management
-	sudo systemd-resolve --flush-caches
-	sudo su -c "ifdown lo"
-	sudo su -c "ifup lo"
-
       if [ "$SSID" -gt 0 ]; then
           cd /home/minerstat/minerstat-os/core
           sudo sh wifi.sh
@@ -65,6 +60,7 @@ if ! screen -list | grep -q "dummy"; then
           then
               cd /home/minerstat/minerstat-os/bin
               sudo sh dhcp.sh
+	      sudo dhclient -v -r
           else
               cd /home/minerstat/minerstat-os/bin
               sudo sh static.sh
@@ -76,6 +72,11 @@ if ! screen -list | grep -q "dummy"; then
 
     echo "-------- WAITING FOR CONNECTION -----------------"
     echo ""
+    
+    # Cache management
+    sudo systemd-resolve --flush-caches
+    sudo su -c "ifdown lo"
+    sudo su -c "ifup lo"
 
     while ! sudo ping minerstat.com -w 1 | grep "0%"; do
         sleep 1
