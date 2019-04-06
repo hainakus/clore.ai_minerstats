@@ -55,7 +55,7 @@ if [ $1 ]; then
     if [ "$isThisVega" != "Vega" ]
     then
       echo ""
-      if [ "$isThisVega2" = "Vega" ]; then
+      if [ "$isThisVega2" = "AdapterPCIVegaXTXRadeonVegaFrontierEdition" ]; then
         echo "Loading VEGA OC Script.."
         sudo ./overclock_vega.sh $1 $2 $3 $4 $5
         exit 1
