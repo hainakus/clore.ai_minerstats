@@ -18,7 +18,7 @@ function getDateTime() {
 function runMiner(miner, execFile, args, plus) {
 
     var isCPU = "false";
-    var isCMD = "cd /home/minerstat/minerstat-os/clients/; sudo chmod -R 777 *; sudo screen -X -S minew quit; sleep 1; sudo screen -A -m -d -S minew sudo /home/minerstat/minerstat-os/clients/" + miner + "/start.bash; sleep 5; sudo tmux split-window 'sudo /home/minerstat/minerstat-os/core/wrapper' \; sudo tmux select-layout even-horizontal \; sudo tmux swap-pane -s 1 -t 0 \; screen -S minerstat-console -X stuff ''; sudo screen -S minew -X stuff ''; ";
+    var isCMD = "cd /home/minerstat/minerstat-os/clients/; sudo chmod -R 777 *; sudo screen -X -S minew quit; sleep 1; sudo screen -A -m -d -S minew sudo /home/minerstat/minerstat-os/clients/" + miner + "/start.bash; sleep 5; sudo tmux split-window 'sudo /home/minerstat/minerstat-os/core/wrapper' \; sudo tmux select-layout main-horizontal \; sudo tmux swap-pane -s 1 -t 0 \; screen -S minerstat-console -X stuff ''; sudo screen -S minew -X stuff ''; ";
 
     if (miner == "xmrig" | miner == "cpuminer-opt") {
       isCMD = "cd /home/minerstat/minerstat-os/clients/; sudo chmod -R 777 *;";
