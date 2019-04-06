@@ -22,6 +22,8 @@ sudo su -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf'
 
 sudo su -c '/etc/init.d/networking restart'
 sudo su -c "systemctl restart systemd-networkd"
+sudo ifdown $INTERFACE
+sudo ifup $INTERFACE
 
 echo ""
 TEST="$(ping google.com -w 1 | grep '1 packets transmitted')"
