@@ -72,7 +72,7 @@ if ! screen -list | grep -q "dummy"; then
 
     echo "-------- WAITING FOR CONNECTION -----------------"
     echo ""
-    
+
     # Cache management
     sudo systemd-resolve --flush-caches
     #sudo su -c "ifdown lo"
@@ -184,7 +184,7 @@ if ! screen -list | grep -q "dummy"; then
     echo " "
     echo "-------- INITALIZING MINERSTAT CLIENT -----------"
     cd /home/minerstat/minerstat-os
-    screen -A -m -d -S minerstat-console sh /home/minerstat/minerstat-os/start.sh;
+    screen -A -m -d -S minerstat-console sh /home/minerstat/minerstat-os/start.sh &
     echo ""
     echo "Minerstat has been started in the background.."
     echo "Waiting for console output.."
