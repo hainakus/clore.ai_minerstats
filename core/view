@@ -13,14 +13,14 @@ if [ "$HOW_MANY_WINDOW" = "2" ]; then
   echo ""
   sudo tmux kill-pane -t 0 \;
   sudo tmux split-window 'sudo /home/minerstat/minerstat-os/core/wrapper' \;
-  sudo tmux select-layout main-horizontal \;
+  #sudo tmux select-layout main-horizontal \;
   sudo tmux swap-pane -s 1 -t 0 \;
   screen -x minerstat-console
 else
   # Miner window is not set
   echo ""
   sudo tmux split-window 'sudo /home/minerstat/minerstat-os/core/wrapper' \;
-  sudo tmux select-layout main-horizontal \;
+  #sudo tmux select-layout main-horizontal \;
   sudo tmux swap-pane -s 1 -t 0 \;
   screen -x minerstat-console
 fi
