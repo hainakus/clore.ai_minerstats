@@ -60,7 +60,7 @@ if ! screen -list | grep -q "dummy"; then
           then
               cd /home/minerstat/minerstat-os/bin
               sudo sh dhcp.sh
-	      sudo dhclient -v -r
+	      #sudo dhclient -v -r
           else
               cd /home/minerstat/minerstat-os/bin
               sudo sh static.sh
@@ -75,8 +75,8 @@ if ! screen -list | grep -q "dummy"; then
     
     # Cache management
     sudo systemd-resolve --flush-caches
-    sudo su -c "ifdown lo"
-    sudo su -c "ifup lo"
+    #sudo su -c "ifdown lo"
+    #sudo su -c "ifup lo"
 
     while ! sudo ping minerstat.com -w 1 | grep "0%"; do
         sleep 1
