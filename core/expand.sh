@@ -15,10 +15,10 @@ CURRENT_PARTITION_SIZE_IN_MB=$(python -c "print $CURRENT_PARTITION_SIZE_IN_BYTE 
 SIZE_DIFFERENCE=$(python -c "print $PARTITION_MAX_SIZE_IN_MB - $CURRENT_PARTITION_SIZE_IN_MB" | cut -f1 -d".") # 0.1 x 1000 = 100Mb
 
 #echo $PARTITION_MAX_SIZE_IN_BYTE
-echo "Drive max size: $PARTITION_MAX_SIZE_IN_MB"
+echo "Drive max size: $PARTITION_MAX_SIZE_IN_MB Mb"
 #echo $CURRENT_PARTITION_SIZE_IN_GB
-#echo $CURRENT_PARTITION_SIZE_IN_MB
-#echo $SIZE_DIFFERENCE
+echo "Current max size: $CURRENT_PARTITION_SIZE_IN_MB"
+echo "Difference in size: $SIZE_DIFFERENCE"
 
 echo "-*- Expanding /dev/$DRIVE_PARTITION Partition -*-"
 
