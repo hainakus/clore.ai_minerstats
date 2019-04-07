@@ -43,17 +43,23 @@ else
             FREE_SPACE_END=$(echo $FREE_SECTORS | awk '{print $2}')
             FIRST_SECTOR=$(python -c "print $FREE_SPACE_END - 88064")
 
-#            sudo umount /dev/$DRIVE_EFI
-#            (
-#                echo d # Delete partition
-#                echo 3 # Delete EFI
-#                echo n # New partition
-#                echo p # Primary
-#                echo 3 # EFI PARTition
-#                echo $FIRST_SECTOR # First sector (Accept default: 1)
-#                echo   # Last sector (Accept default: varies)
-#                echo w # Write changes
-#            ) | sudo fdisk /dev/$DRIVE_NUMBER
+            echo "Free Space Last Sector: $FREE_SPACE_END"
+            echo "Target Sector for EFI: $FIRST_SECTOR"
+
+              if [ -z "$FIRST_SECTOR" ]; then 
+                echo "Moving EFI Partition to END of the Drive"
+#               sudo umount /dev/$DRIVE_EFI
+#               (
+#                 echo d # Delete partition
+#                 echo 3 # Delete EFI
+#                 echo n # New partition
+#                 echo p # Primary
+#                 echo 3 # EFI PARTition
+#                 echo $FIRST_SECTOR # First sector (Accept default: 1)
+#                 echo   # Last sector (Accept default: varies)
+#                 echo w # Write changes
+#                ) | sudo fdisk /dev/$DRIVE_NUMBER
+              fi
 
             fi
         fi
