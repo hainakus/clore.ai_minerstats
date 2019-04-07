@@ -2,6 +2,7 @@
 
 DRIVE_NUMBER=$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g')
 DRIVE_PARTITION=$DRIVE_NUMBER"1"
+DRIVE_EFI=$DRIVE_NUMBER"3"
 #echo $DRIVE_NUMBER
 #PARTITION_MAX_SIZE_IN_GB=$(lsblk | grep $DRIVE_PARTITION | grep part | head -n 1 | awk '{print $4}' | sed 's/[^.0-9]*//g')
 #sudo cat /proc/partitions | grep $DRIVE_NUMBER | head -n1 | awk '{print $3}'
@@ -31,6 +32,32 @@ fi
 if [ "$RESIZED" = "RESIZED" ]; then
     echo "=== ALREADY RESIZED ==="
 else
+    if grep -q experimental "/etc/lsb-release"; then
+        EFI=$(sudo cat /proc/partitions | grep "$DRIVE_EFI" | awk '{print $3}')
+        echo $EFI
+        if [ "$EFI" = "44032" ]; then
+          if [ "$SIZE_DIFFERENCE" -gt "600" ]; then
+
+            LIST_FREE_SECTORS=$(echo 'F' | sudo fdisk /dev/sda)
+            FREE_SECTORS=${LIST_FREE_SECTORS##*Size}
+            FREE_SPACE_END=$(echo $FREE_SECTORS | awk '{print $2}')
+            FIRST_SECTOR=$(python -c "print $FREE_SPACE_END - 88064")
+
+            sudo umount /dev/$DRIVE_EFI
+            (
+                echo d # Delete partition
+                echo 3 # Delete EFI
+                echo n # New partition
+                echo p # Primary
+                echo 3 # EFI PARTition
+                echo $FIRST_SECTOR # First sector (Accept default: 1)
+                echo   # Last sector (Accept default: varies)
+                echo w # Write changes
+            ) | sudo fdisk /dev/$DRIVE_NUMBER
+
+            fi
+        fi
+    fi
     echo "=== RESIZING ==="
     (
         echo d # Delete partition
