@@ -40,7 +40,7 @@ if [ $1 ]; then
   then
     echo ""
   else
-    VDDC="1200" # DEFAULT FOR 1630Mhz @1200mV
+    VDDC="1000" # DEFAULT FOR 1630Mhz @1200mV
   fi
 
   if [ "$VDDC" != "skip" ]
