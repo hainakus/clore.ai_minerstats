@@ -29,11 +29,11 @@ echo ""
 TEST="$(ping google.com -w 1 | grep '1 packets transmitted')"
 
 if echo "$TEST" | grep "0%" ;then
-    echo ""
-    echo "Success! You have active internet connection."
+  echo ""
+  echo "Success! You have active internet connection."
 else
-    echo ""
-    echo "Oh! Something went wrong, you are not connected to the internet."
+  echo ""
+  echo "Oh! Something went wrong, you are not connected to the internet."
 fi
 
 echo ""

@@ -36,6 +36,6 @@ fi
 
 if [[ $1 == "amd" ]]; then
 
-/home/minerstat/minerstat-os/bin/amdinfo
+  /home/minerstat/minerstat-os/bin/amdinfo
 
 fi

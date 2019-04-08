@@ -11,10 +11,10 @@ cd /home/minerstat/minerstat-os/bin
 
 if [ "$AMDDEVICE" != 0 ]
 then
-	echo ""
-	else
-	echo "No AMD GPU's detected"
-	exit 1
+  echo ""
+else
+  echo "No AMD GPU's detected"
+  exit 1
 fi
 
 echo "=== VBIOS DUMP ==="
@@ -23,8 +23,8 @@ echo "Saving your gpu rom's to /home/minerstat/minerstat-os/bin/bios"
 echo ""
 
 for (( i=0; i < $AMDN; i++ )); do
-	echo "=== Exporting GPU$i VBIOS ==="
-	sudo ./atiflash -s $i "bios/"$i"_bios.rom"
+  echo "=== Exporting GPU$i VBIOS ==="
+  sudo ./atiflash -s $i "bios/"$i"_bios.rom"
 done
 
 sudo chmod -R 777 /home/minerstat/minerstat-os/bin/bios

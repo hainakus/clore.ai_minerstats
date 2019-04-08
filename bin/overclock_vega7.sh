@@ -2,47 +2,47 @@
 exec 2>/dev/null
 
 if [ ! $1 ]; then
-    echo ""
-    echo "--- EXAMPLE ---"
-    echo "./overclock_vega7.sh 1 2 3 4 5"
-    echo "1 = GPUID"
-    echo "2 = Memory Clock"
-    echo "3 = Core Clock"
-    echo "4 = Fan Speed"
-    echo "5 = VDDC"
-    echo ""
-    echo "-- Full Example --"
-    echo "./overclock_vega7.sh 0 1000 1800 90 980"
-    echo ""
+  echo ""
+  echo "--- EXAMPLE ---"
+  echo "./overclock_vega7.sh 1 2 3 4 5"
+  echo "1 = GPUID"
+  echo "2 = Memory Clock"
+  echo "3 = Core Clock"
+  echo "4 = Fan Speed"
+  echo "5 = VDDC"
+  echo ""
+  echo "-- Full Example --"
+  echo "./overclock_vega7.sh 0 1000 1800 90 980"
+  echo ""
 fi
 
 if [ $1 ]; then
 
-    #################################£
-    # Declare
-    GPUID=$1
-    MEMCLOCK=$2
-    CORECLOCK=$3
-    FANSPEED=$4
-    VDDC=$5
-    VDDCI=$6
+  #################################£
+  # Declare
+  GPUID=$1
+  MEMCLOCK=$2
+  CORECLOCK=$3
+  FANSPEED=$4
+  VDDC=$5
+  VDDCI=$6
 
-    echo "--**--**-- GPU $1 : VEGA VII --**--**--"
+  echo "--**--**-- GPU $1 : VEGA VII --**--**--"
 
-    for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-        TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
-        if [ ! -z "$TEST" ]; then
-                  MAXFAN=$TEST
-        fi
-    done
+  for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+    TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
+    if [ ! -z "$TEST" ]; then
+      MAXFAN=$TEST
+    fi
+  done
 
-    # Requirements
-    sudo su -c "echo manual > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
-    sudo su -c "echo 4 > /sys/class/drm/card$GPUID/device/pp_power_profile_mode"
+  # Requirements
+  sudo su -c "echo manual > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
+  sudo su -c "echo 4 > /sys/class/drm/card$GPUID/device/pp_power_profile_mode"
 
-    # MemoryClock
-    if [ "$MEMCLOCK" != "skip" ]
-    then
+  # MemoryClock
+  if [ "$MEMCLOCK" != "skip" ]
+  then
     sudo su -c "echo 'm 1 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
     echo "GPU$GPUID : MEMCLOCK => $MEMCLOCK Mhz"
@@ -51,60 +51,60 @@ if [ $1 ]; then
     sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_mclk_od"
 
     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-    fi
+  fi
 
-    # CoreClock
-    if [ "$VDDC" != "0" ]
+  # CoreClock
+  if [ "$VDDC" != "0" ]
+  then
+    echo ""
+  else
+    VDDC="1114" # DEFAULT FOR 1801Mhz @1114mV
+  fi
+
+  if [ "$VDDC" != "skip" ]
+  then
+    if [ "$CORECLOCK" != "skip" ]
     then
-        echo ""
-    else
-        VDDC="1114" # DEFAULT FOR 1801Mhz @1114mV
+      sudo su -c "echo 's 1 $CORECLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      #sudo su -c "echo 'vc 1 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 'vc 2 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+
+      echo "GPU$GPUID : CORECLOCK => $CORECLOCK Mhz ($VDDC mV)"
+
+      sudo su -c "echo '0' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
+      sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
+
+      sudo su -c "echo 7 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+      sudo su -c "echo 8 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
     fi
+  fi
 
-    if [ "$VDDC" != "skip" ]
-    then
-      if [ "$CORECLOCK" != "skip" ]
-      then
-        sudo su -c "echo 's 1 $CORECLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-        #sudo su -c "echo 'vc 1 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-        sudo su -c "echo 'vc 2 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+  # Apply Changes
+  sudo su -c "echo 'c'> /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
-        echo "GPU$GPUID : CORECLOCK => $CORECLOCK Mhz ($VDDC mV)"
+  # ECHO Changes
+  echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
+  sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+  echo "-÷-*-****** MEM  CLOCKS *****-*-*÷-"
+  sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
 
-        sudo su -c "echo '0' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
-        sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
+  # FANS
+  if [ "$FANSPEED" != 0 ]
+  then
+    FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $FANSPEED}")
+    FANVALUE=$(printf "%.0f\n" $FANVALUE)
+    echo "GPU$GPUID : FANSPEED => $FANSPEED% ($FANVALUE)"
+  else
+    FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * 70}")
+    FANVALUE=$(printf "%.0f\n" $FANVALUE)
+    echo "GPU$GPUID : FANSPEED => 70% ($FANVALUE)"
+  fi
 
-        sudo su -c "echo 7 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-        sudo su -c "echo 8 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-      fi
-    fi
+  for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_enable"
+    sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1" # 70%
+  done
 
-    # Apply Changes
-    sudo su -c "echo 'c'> /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-
-    # ECHO Changes
-    echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
-    sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-    echo "-÷-*-****** MEM  CLOCKS *****-*-*÷-"
-    sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-
-    # FANS
-    if [ "$FANSPEED" != 0 ]
-    then
-        FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $FANSPEED}")
-        FANVALUE=$(printf "%.0f\n" $FANVALUE)
-        echo "GPU$GPUID : FANSPEED => $FANSPEED% ($FANVALUE)"
-    else
-        FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * 70}")
-        FANVALUE=$(printf "%.0f\n" $FANVALUE)
-        echo "GPU$GPUID : FANSPEED => 70% ($FANVALUE)"
-    fi
-
-    for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-        sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_enable"
-        sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1" # 70%
-    done
-
-    exit 1
+  exit 1
 
 fi

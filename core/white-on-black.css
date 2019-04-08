@@ -1,31 +1,31 @@
 #vt100 #cursor.bright {
   background-color: #5867FF;
-  color:            black;
+  color: black;
 }
 
 #vt100 #cursor.dim {
   background-color: black;
-  opacity:          0.2;
-  -moz-opacity:     0.2;
-  filter:           alpha(opacity=20);
+  opacity: 0.2;
+  -moz-opacity: 0.2;
+  filter: alpha(opacity=20);
 }
 
 #vt100 #scrollable {
-  color:            #ffffff;
+  color: #ffffff;
   background-color: #000000;
 }
 
 #vt100 #scrollable.inverted {
-  color:            #000000;
+  color: #000000;
   background-color: #ffffff;
 }
 
 #vt100 .ansiDef {
-  color:            #ffffff;
+  color: #ffffff;
 }
 
 #vt100 .ansiDefR {
-  color:            #000000;
+  color: #000000;
 }
 
 #vt100 .bgAnsiDef {
@@ -37,11 +37,11 @@
 }
 
 #vt100 #scrollable.inverted .ansiDef {
-  color:            #000000;
+  color: #000000;
 }
 
 #vt100 #scrollable.inverted .ansiDefR {
-  color:            #ffffff;
+  color: #ffffff;
 }
 
 #vt100 #scrollable.inverted .bgAnsiDef {

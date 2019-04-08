@@ -15,15 +15,15 @@ sleep 1
 if grep -q "merge" /home/minerstat/debug.txt;
 then
 
-sleep 2
+  sleep 2
 
-sudo git commit -a -m "Init"
-sudo git merge --no-edit
-sudo git add * -f
-sudo git commit -a -m "Fix done"
+  sudo git commit -a -m "Init"
+  sudo git merge --no-edit
+  sudo git add * -f
+  sudo git commit -a -m "Fix done"
 
-cd /home/minerstat/minerstat-os/
-chmod -R 777 *
+  cd /home/minerstat/minerstat-os/
+  chmod -R 777 *
 
 fi
 

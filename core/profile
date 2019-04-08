@@ -36,8 +36,8 @@ if [ -e "$file" ]; then
   fi
 else
 
-    screen -A -m -d -S boot_process /home/minerstat/minerstat-os/bin/boot.sh
-    screen -x boot_process
+  screen -A -m -d -S boot_process /home/minerstat/minerstat-os/bin/boot.sh
+  screen -x boot_process
 
 fi
 

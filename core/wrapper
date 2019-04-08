@@ -2,6 +2,6 @@
 exec 2>/dev/null
 
 until sudo screen -x minew; do
-    echo "Waiting for miner to start"
-    sleep 0.2
+  echo "Waiting for miner to start"
+  sleep 0.2
 done

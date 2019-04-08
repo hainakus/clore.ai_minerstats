@@ -2,6 +2,6 @@
 
 while true
 do
-	sudo chvt 1
-	sleep 1
+  sudo chvt 1
+  sleep 1
 done
