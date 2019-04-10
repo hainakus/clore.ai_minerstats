@@ -75,11 +75,13 @@ if [ ! -z "$DOAMD" ]; then
   i=0
   SKIP=""
   while [ $i -le $AMDDEVICE ]; do
-    if [ -f "/sys/class/drm/card$i/device/pp_table" ]
-    then
-      SKIP=$SKIP
-    else
-      SKIP=$SKIP"-$i"
+    if [ "$i" -lt "10" ]; then
+      if [ -f "/sys/class/drm/card$i/device/pp_table" ]
+      then
+        SKIP=$SKIP
+      else
+        SKIP=$SKIP"-$i"
+      fi
     fi
     i=$(($i+1))
   done
