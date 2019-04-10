@@ -73,7 +73,7 @@ if [ $1 ]; then
   ################################
 
   ########## BACKUP ##################
-  if [ "$isThisVegaII" != "AdapterPCIVegaXTXRadeonVegaFrontierEdition" ]
+  if [ "$isThisVegaII" != "VegaFrontierEdition" ]
   then
     echo ""
   else
