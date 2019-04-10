@@ -39,7 +39,7 @@ module.exports = {
     var exec = require('child_process').exec,
       query = exec("cd " + global.path + "/bin/; sudo ./amdinfo", function(error, stdout, stderr) {
         var amdResponse = stdout,
-          queryPower = exec("cd " + global.path + "/bin/; sudo ./rocm-smi -P | grep 'GPU Power' | sed 's/.*://' | sed 's/W/''/g' | xargs", function(error, stdout, stderr) {
+          queryPower = exec("cd " + global.path + "/bin/; sudo ./rocm-smi -P | grep 'Average Graphics Package Power:' | sed 's/.*://' | sed 's/W/''/g' | xargs", function(error, stdout, stderr) {
             var hwmemory = exec("cd " + global.path + "/bin/; cat amdmeminfo.txt", function(memerror, memstdout, memstderr) {
               var hwstraps = exec("cd " + global.path + "/bin/; sudo ./" + strapFileName + " --current-minerstat", function(straperror, strapstdout, strapstderr) {
                 isfinished(amdResponse, "amd", gpuSyncDone, cpuSyncDone, stdout, memstdout, strapstdout);
