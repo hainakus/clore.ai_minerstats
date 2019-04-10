@@ -48,7 +48,8 @@ if [ $1 ]; then
     if [ "$CORECLOCK" != "skip" ]
     then
       echo "INFO: SETTING CORECLOCK : $CORECLOCK Mhz @ $VDDC mV"
-      #sudo su -c "echo 's 6 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 's 5 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 's 6 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 's 7 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       # NITRO has 8 core state ?!
       sudo su -c "echo 's 8 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
@@ -94,11 +95,14 @@ if [ $1 ]; then
   # FANS
   if [ "$FANSPEED" != 0 ]
   then
-    sudo ./amdcovc fanspeed:$GPUID=$FANSPEED | grep "Setting"
+    sudo ./rocm-smi --setfan $FANSPEED"%"
   else
-    sudo ./amdcovc fanspeed:$GPUID=70 | grep "Setting"
+    sudo ./rocm-smi --setfan 70%
   fi
 
+  # Apply
+  sudo ./rocm-smi --setsclk 5
+  sudo ./rocm-smi --setmclk 3
   # Check current states
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
   #sudo cat /sys/kernel/debug/dri/0/amdgpu_pm_info
