@@ -63,9 +63,12 @@ if [ $1 ]; then
   if [ "$MEMCLOCK" != "skip" ]
   then
     echo "INFO: SETTING MEMCLOCK : $MEMCLOCK Mhz"
+    sudo su -c "echo 'm 1 $MEMCLOCK 1000' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
+    sudo su -c "echo 'm 2 $MEMCLOCK 1050' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
     sudo su -c "echo 'm 3 $MEMCLOCK 1100' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
     sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
+    sudo ./rocm-smi --setmclk 2
   fi
 
   # FANS (for safety) from Radeon VII solution
