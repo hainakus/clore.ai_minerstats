@@ -7,6 +7,10 @@ if ! screen -list | grep -q "dummy"; then
   screen -S listener -X quit # kill running process
   screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
 
+  # TELEPROXY
+  cd /home/minerstat/minerstat-os/bin
+  sudo su minerstat -c "screen -A -m -d -S telp sh teleconsole.sh"
+
   sudo find /var/log -type f -delete
 
   cd /home/minerstat/minerstat-os/bin

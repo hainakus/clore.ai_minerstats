@@ -39,9 +39,6 @@ export LC_ALL=en_US.UTF-8
 export OpenCL_ROOT=/opt/amdgpu-pro/lib/x86_64-linux-gnu
 # FSCK
 sudo sed -i s/"#FSCKFIX=no"/"FSCKFIX=yes"/ /etc/default/rcS
-# TELEPROXY
-cd /home/minerstat/minerstat-os/bin
-sudo su minerstat -c "screen -A -m -d -S telp sh teleconsole.sh"
 # Change hostname
 WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
 sudo sed -i s/"minerstat"/"$WNAME"/ /etc/hosts
@@ -78,3 +75,6 @@ sudo cp /home/minerstat/minerstat-os/core/.tmux.conf /home/minerstat
 # Update profile
 sudo chmod 777 /etc/profile
 sudo cp /home/minerstat/minerstat-os/core/profile /etc
+# Restart listener, Maintenance Process, Also from now it can be updated in runtime (mupdate)
+screen -S listener -X quit # kill running process
+screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh

@@ -32,40 +32,6 @@ fi
 if [ "$RESIZED" = "RESIZED" ]; then
   echo "=== ALREADY RESIZED ==="
 else
-  if grep -q experimental "/etc/lsb-release"; then
-    EFI=$(sudo cat /proc/partitions | grep "$DRIVE_EFI" | awk '{print $3}')
-    echo "Debug Code for EFI: $EFI"
-    if [ "$EFI" = "44032" ]; then
-      echo "=== MOVING EFI PARTITION ==="
-      if [ "$SIZE_DIFFERENCE" -gt "600" ]; then
-
-        LIST_FREE_SECTORS=$(echo 'F' | sudo fdisk /dev/$DRIVE_NUMBER)
-        FREE_SECTORS=${LIST_FREE_SECTORS##*Size}
-        FREE_SPACE_END=$(echo $FREE_SECTORS | awk '{print $2}')
-        FIRST_SECTOR=$(python -c "print $FREE_SPACE_END - 88064")
-
-        echo "Free Space Last Sector: $FREE_SPACE_END"
-        echo "Target Sector for EFI: $FIRST_SECTOR"
-
-        if [ ! -z "$FIRST_SECTOR" ]; then
-          echo "Moving EFI Partition to END of the Drive"
-          echo "Not finished yet"
-          #                sudo umount /dev/$DRIVE_EFI
-          #                (
-          #                  echo d # Delete partition
-          #                  echo 3 # Delete EFI
-          #                  echo n # New partition
-          #                  echo p # Primary
-          #                  echo 3 # EFI PARTition
-          #                  echo $FIRST_SECTOR # First sector (Accept default: 1)
-          #                  echo   # Last sector (Accept default: varies)
-          #                  echo w # Write changes
-          #               ) | sudo fdisk /dev/$DRIVE_NUMBER
-        fi
-
-      fi
-    fi
-  fi
   echo "=== RESIZING ==="
   (
     echo d # Delete partition
