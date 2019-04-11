@@ -49,7 +49,7 @@ mhelp         | List all available commands
 
 ```
 
-## Informations
+## Information
 
 You can see mining process by type `miner` to the terminal.
 
