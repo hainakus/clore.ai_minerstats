@@ -59,7 +59,7 @@ You can see mining process by type `miner` to the terminal.
 
 ## Private, Custom Miner Support
 
-Example API [https://github.com/minerstat/minerstat-os/blob/master/api](file).
+Example API [file](https://github.com/minerstat/minerstat-os/blob/master/api).
 
 ##
 
