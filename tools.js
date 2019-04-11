@@ -20,7 +20,7 @@ function runMiner(miner, execFile, args, plus) {
   var isCPU = "false";
   var isCMD = "cd /home/minerstat/minerstat-os/clients/; sudo chmod -R 777 *; sudo screen -X -S minew quit; sleep 1; sudo screen -A -m -d -S minew sudo /home/minerstat/minerstat-os/clients/" + miner + "/start.bash; sleep 5; sudo tmux split-window 'sudo /home/minerstat/minerstat-os/core/wrapper' \; sudo tmux swap-pane -s 1 -t 0 \; screen -S minerstat-console -X stuff ''; sudo screen -S minew -X stuff ''; ";
 
-  if (miner == "xmrig" | miner == "cpuminer-opt") {
+  if (miner == "xmrig" || miner == "cpuminer-opt") {
     isCMD = "cd /home/minerstat/minerstat-os/clients/; sudo chmod -R 777 *;";
     isCPU = "true";
   }
@@ -339,12 +339,29 @@ module.exports = {
     console.log("\x1b[1;94m== \x1b[0mAction: Starting " + miner + " ...");
     console.log(chalk.white(getDateTime() + " " + miner + " => " + startArgs));
     sleep.sleep(2);
-    args = MINER_JSON[miner]["args"];
-    if (args === "auto") {
-      args = startArgs;
+
+    if (global.PrivateMiner == "True" && miner != "xmrig" && miner != "cpuminer-opt") {
+      if (global.PrivateMinerType == "args") {
+        //args = "auto";
+        args = startArgs + "" + global.PrivateMinerStartArgs;
+      } else {
+        args = "" + global.PrivateMinerStartArgs;
+      }
+      global.startMinerName = miner;
+      execFile = global.PrivateMinerStartFile;
+    } else {
+      try {
+        args = MINER_JSON[miner]["args"];
+        if (miner != "xmrig" && miner != "cpuminer-opt") {
+          global.startMinerName = miner;
+        }
+        execFile = MINER_JSON[miner]["execFile"];
+      } catch (testMiner) {}
+      if (args === "auto") {
+        args = startArgs;
+      }
     }
-    global.startMinerName = miner;
-    execFile = MINER_JSON[miner]["execFile"];
+
     // FOR SAFE RUNNING MINER NEED TO CREATE START.BASH
     var writeStream = fs.createWriteStream(global.path + "/" + "clients/" + miner + "/start.bash"),
       str = "";
@@ -357,15 +374,26 @@ module.exports = {
     } else {
       str = "export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + " " + args + "; sleep 20";
     }
+    console.log("Starting command: " + str);
     writeStream.write("" + str);
     writeStream.end();
     writeStream.on('finish', function() {
       console.log(chalk.gray.bold(getDateTime() + " DELAYED MINER START (2s): " + miner));
       sleep.sleep(2);
-      var killQuery = require('child_process').exec,
-        killQueryProc = killQuery("sudo /home/minerstat/minerstat-os/core/killport.sh " + MINER_JSON[miner]["apiPort"], function(error, stdout, stderr) {
-          runMiner(miner, execFile, args);
-        });
+
+
+      try {
+        var killQuery = require('child_process').exec,
+          killQueryProc = killQuery("sudo /home/minerstat/minerstat-os/core/killport.sh " + MINER_JSON[miner]["apiPort"], function(error, stdout, stderr) {
+            if (global.PrivateMiner == "False") {
+              runMiner(miner, execFile, args);
+            }
+          });
+      } catch (killError) {}
+
+      if (global.PrivateMiner == "True") {
+        runMiner(miner, execFile, args);
+      }
 
     });
   },
@@ -429,10 +457,12 @@ module.exports = {
                 main.killall();
                 sleep.sleep(2);
                 global.benchmark = false;
-                var killMinerQueryF = require('child_process').exec,
-                  killMinerQueryProcF = killMinerQueryF("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
-                    main.main();
-                  });
+                try {
+                  var killMinerQueryF = require('child_process').exec,
+                    killMinerQueryProcF = killMinerQueryF("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
+                      main.main();
+                    });
+                } catch (killProtectionVI) {}
 
               } else {
                 clearInterval(spec);
@@ -470,10 +500,14 @@ module.exports = {
           console.log(waitingArray);
           waitingArray.splice(0, 1);
           console.log(waitingArray);
-          var killMinerQueryE = require('child_process').exec,
-            killMinerQueryProcE = killMinerQueryE("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
-              main.main();
-            });
+          try {
+            var killMinerQueryE = require('child_process').exec,
+              killMinerQueryProcE = killMinerQueryE("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
+                main.main();
+              });
+          } catch (killProtectionV) {
+            main.main();
+          }
 
           spec = setInterval(B_FINISH, delay);
           var disablesync = setInterval(ds, 5000);
@@ -492,10 +526,14 @@ module.exports = {
         } else {
           global.benchmark = false;
           sleep.sleep(2);
-          var killMinerQueryD = require('child_process').exec,
-            killMinerQueryProcD = killMinerQueryD("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
-              main.main();
-            });
+          try {
+            var killMinerQueryD = require('child_process').exec,
+              killMinerQueryProcD = killMinerQueryD("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
+                main.main();
+              });
+          } catch (killProtectionIV) {
+            main.main();
+          }
 
         }
 
@@ -508,10 +546,14 @@ module.exports = {
         sleep.sleep(3);
         main.killall();
         sleep.sleep(2);
-        var killMinerQueryC = require('child_process').exec,
-          killMinerQueryProcC = killMinerQueryC("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
-            main.main();
-          });
+        try {
+          var killMinerQueryC = require('child_process').exec,
+            killMinerQueryProcC = killMinerQueryC("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
+              main.main();
+            });
+        } catch (killProtectionIII) {
+          main.main();
+        }
 
       }
     });
@@ -544,10 +586,14 @@ module.exports = {
           main.killall();
           sleep.sleep(2);
           global.benchmark = false;
-          var killMinerQuery = require('child_process').exec,
-            killMinerQueryProc = killMinerQuery("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
-              main.main();
-            });
+          try {
+            var killMinerQuery = require('child_process').exec,
+              killMinerQueryProc = killMinerQuery("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
+                main.main();
+              });
+          } catch (killProtection) {
+            main.main();
+          }
           break;
         case 'RESTARTWATTS':
         case 'DOWNLOADWATTS':
@@ -562,10 +608,14 @@ module.exports = {
             console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;32mNew clocks applied\x1b[0m");
             console.log(stdout + " " + stderr);
             sleep.sleep(2);
-            var killMinerQueryA = require('child_process').exec,
-              killMinerQueryProcA = killMinerQueryA("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
-                main.main();
-              });
+            try {
+              var killMinerQueryA = require('child_process').exec,
+                killMinerQueryProcA = killMinerQueryA("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
+                  main.main();
+                });
+            } catch (killProtectionII) {
+              main.main();
+            }
           });
           break;
         case 'SETFANS':
@@ -623,6 +673,9 @@ module.exports = {
       fkill('cast_xmr-vega').then(() => {});
       fkill('zjazz_cuda').then(() => {});
       fkill('GrinProMiner').then(() => {});
+      if (global.PrivateMiner == "True") {
+        fkill(global.privateExe).then(() => {});
+      }
     } catch (err) {}
   },
   /*
@@ -643,85 +696,105 @@ module.exports = {
     global.cpuSync = false;
     const telNet = require('net');
     //
-    // IF TYPE EQUALS HTTP
-    if (MINER_JSON[gpuMiner]["apiType"] === "http") {
-      var options = {
-        host: '127.0.0.1',
-        port: MINER_JSON[gpuMiner]["apiPort"],
-        path: MINER_JSON[gpuMiner]["apiPath"]
-      };
-      var req = http.get(options, function(response) {
-        res_data = '';
-        response.on('data', function(chunk) {
-          global.res_data += chunk;
-          gpuSyncDone = true;
-          global.sync = true;
-        });
-        response.on('end', function() {
-          gpuSyncDone = true;
-          global.sync = true;
-        });
-      });
-      req.on('error', function(err) {
-        gpuSyncDone = false;
-        global.sync = true;
-        restartNode();
-        console.log(chalk.hex('#ff8656')(getDateTime() + " MINERSTAT.COM: Package Error. " + err.message));
-        console.log(chalk.hex('#ff8656')(getDateTime() + " (1) POSSILBE REASON => MINER/API NOT STARTED"));
-        console.log(chalk.hex('#ff8656')(getDateTime() + " (2) POSSILBE REASON => TOO MUCH OVERCLOCK / UNDERVOLT"));
-        console.log(chalk.hex('#ff8656')(getDateTime() + " (3) POSSILBE REASON => BAD CONFIG -> (1) MINER NOT STARTED"));
-      });
-    }
-    //
-    // IF TYPE EQUALS CURL
-    if (MINER_JSON[gpuMiner]["apiType"] === "curl") {
-      var curlQuery = require('child_process').exec;
-      var querylolMiner = curlQuery("curl http://127.0.0.1:" + MINER_JSON[gpuMiner]["apiPort"], function(error, stdout, stderr) {
-        if (stderr.indexOf("Failed") == -1) {
-          res_data = '';
-          global.res_data = "{ " + stdout;
-          gpuSyncDone = true;
+
+    if (global.PrivateMiner == "True") {
+      var fetchMiner = require('child_process').exec;
+      var fetchMinerAPI = fetchMiner("sudo /home/minerstat/minerstat-os/clients/" + global.startMinerName + "/api", function(error, stdout, stderr) {
+        var statusCode = stdout;
+        if (statusCode.includes("error")) {
+          gpuSyncDone = false;
           global.sync = true;
         } else {
+          gpuSyncDone = true;
+          global.sync = true;
+          global.res_data = statusCode;
+        }
+        //console.log(statusCode);
+      });
+    }
+    try {
+      // IF TYPE EQUALS HTTP
+      if (MINER_JSON[gpuMiner]["apiType"] === "http") {
+        var options = {
+          host: '127.0.0.1',
+          port: MINER_JSON[gpuMiner]["apiPort"],
+          path: MINER_JSON[gpuMiner]["apiPath"]
+        };
+        var req = http.get(options, function(response) {
+          res_data = '';
+          response.on('data', function(chunk) {
+            global.res_data += chunk;
+            gpuSyncDone = true;
+            global.sync = true;
+          });
+          response.on('end', function() {
+            gpuSyncDone = true;
+            global.sync = true;
+          });
+        });
+        req.on('error', function(err) {
           gpuSyncDone = false;
           global.sync = true;
           restartNode();
-          console.log(chalk.hex('#ff8656')(getDateTime() + " MINERSTAT.COM: Package Error. " + error));
+          console.log(chalk.hex('#ff8656')(getDateTime() + " MINERSTAT.COM: Package Error. " + err.message));
           console.log(chalk.hex('#ff8656')(getDateTime() + " (1) POSSILBE REASON => MINER/API NOT STARTED"));
           console.log(chalk.hex('#ff8656')(getDateTime() + " (2) POSSILBE REASON => TOO MUCH OVERCLOCK / UNDERVOLT"));
           console.log(chalk.hex('#ff8656')(getDateTime() + " (3) POSSILBE REASON => BAD CONFIG -> (1) MINER NOT STARTED"));
-        }
-      });
-    }
-    // CCMINER with all fork's
-    if (MINER_JSON[gpuMiner]["apiType"] === "tcp") {
-      global.res_data = "";
-      const ccminerClient = telNet.createConnection({
-        port: MINER_JSON[gpuMiner]["apiPort"]
-      }, () => {
-        ccminerClient.write(MINER_JSON[gpuMiner]["apiCArg"]);
-      });
-      ccminerClient.on('data', (data) => {
-        //console.log(data.toString());
-        global.res_data = global.res_data + "" + data.toString();
-        gpuSyncDone = true;
-        global.sync = true;
-        setTimeout(function() {
-          ccminerClient.end();
-        }, 4000);
-      });
-      ccminerClient.on('error', () => {
-        gpuSyncDone = false;
-        global.sync = true;
-        restartNode();
-        console.log(chalk.hex('#ff8656')(getDateTime() + " (1) POSSILBE REASON => MINER/API NOT STARTED"));
-        console.log(chalk.hex('#ff8656')(getDateTime() + " (2) POSSILBE REASON => TOO MUCH OVERCLOCK / UNDERVOLT"));
-        console.log(chalk.hex('#ff8656')(getDateTime() + " (3) POSSILBE REASON => BAD CONFIG -> (1) MINER NOT STARTED"));
-      });
-      ccminerClient.on('end', () => {
-        global.sync = true;
-      });
-    }
+        });
+      }
+      //
+      // IF TYPE EQUALS CURL
+      if (MINER_JSON[gpuMiner]["apiType"] === "curl") {
+        var curlQuery = require('child_process').exec;
+        var querylolMiner = curlQuery("curl http://127.0.0.1:" + MINER_JSON[gpuMiner]["apiPort"], function(error, stdout, stderr) {
+          if (stderr.indexOf("Failed") == -1) {
+            res_data = '';
+            global.res_data = "{ " + stdout;
+            gpuSyncDone = true;
+            global.sync = true;
+          } else {
+            gpuSyncDone = false;
+            global.sync = true;
+            restartNode();
+            console.log(chalk.hex('#ff8656')(getDateTime() + " MINERSTAT.COM: Package Error. " + error));
+            console.log(chalk.hex('#ff8656')(getDateTime() + " (1) POSSILBE REASON => MINER/API NOT STARTED"));
+            console.log(chalk.hex('#ff8656')(getDateTime() + " (2) POSSILBE REASON => TOO MUCH OVERCLOCK / UNDERVOLT"));
+            console.log(chalk.hex('#ff8656')(getDateTime() + " (3) POSSILBE REASON => BAD CONFIG -> (1) MINER NOT STARTED"));
+          }
+        });
+      }
+      // CCMINER with all fork's
+      if (MINER_JSON[gpuMiner]["apiType"] === "tcp") {
+        global.res_data = "";
+        const ccminerClient = telNet.createConnection({
+          port: MINER_JSON[gpuMiner]["apiPort"]
+        }, () => {
+          ccminerClient.write(MINER_JSON[gpuMiner]["apiCArg"]);
+        });
+        ccminerClient.on('data', (data) => {
+          //console.log(data.toString());
+          global.res_data = global.res_data + "" + data.toString();
+          gpuSyncDone = true;
+          global.sync = true;
+          setTimeout(function() {
+            ccminerClient.end();
+          }, 4000);
+        });
+        ccminerClient.on('error', () => {
+          gpuSyncDone = false;
+          global.sync = true;
+          restartNode();
+          console.log(chalk.hex('#ff8656')(getDateTime() + " (1) POSSILBE REASON => MINER/API NOT STARTED"));
+          console.log(chalk.hex('#ff8656')(getDateTime() + " (2) POSSILBE REASON => TOO MUCH OVERCLOCK / UNDERVOLT"));
+          console.log(chalk.hex('#ff8656')(getDateTime() + " (3) POSSILBE REASON => BAD CONFIG -> (1) MINER NOT STARTED"));
+        });
+        ccminerClient.on('end', () => {
+          global.sync = true;
+        });
+      }
+
+    } catch (errorStatus) {}
+
     // CPUMINER
     if (isCpu.toString() == "true" || isCpu.toString() == "True") {
       // CPUMINER-OPT

@@ -22,6 +22,12 @@ global.B_HASH;
 global.B_DURATION;
 global.B_CLIENT;
 global.B_CONFIG;
+global.PrivateMiner;
+global.PrivateMinerURL;
+global.PrivateMinerType;
+global.PrivateMinerConfigFile;
+global.PrivateMinerStartFile;
+global.PrivateMinerStartArgs;
 global.watchnum = 0;
 global.osversion;
 var colors = require('colors'),
@@ -97,7 +103,7 @@ module.exports = {
     var request = require('request');
     //console.log(res_data);
     request.post({
-      url: 'https://api.minerstat.com/v2/set_node_config.php?token=' + global.accesskey + '&worker=' + global.worker + '&miner=' + global.client.toLowerCase() + '&ver=4&cpuu=' + global.minerCpu + '&cpud=HASH' + '&os=linux&hwNew=true&currentcpu=' + global.cpuDefault.toLowerCase() + '&hwType=' + global.minerType,
+      url: 'https://api.minerstat.com/v2/set_node_config.php?token=' + global.accesskey + '&worker=' + global.worker + '&miner=' + global.client.toLowerCase() + '&ver=4&cpuu=' + global.minerCpu + '&cpud=HASH' + '&os=linux&hwNew=true&currentcpu=' + global.cpuDefault.toLowerCase() + '&hwType=' + global.minerType + '&privateMiner=' + global.PrivateMiner,
       form: {
         minerData: res_data,
         cpuData: cpu_data,
@@ -212,6 +218,25 @@ module.exports = {
         global.minerType = response.body.type;
         global.minerOverclock = response.body.overclock;
         global.minerCpu = response.body.cpu;
+        try {
+          global.PrivateMiner = response.body.private;
+          if (global.PrivateMiner == "True") {
+            global.PrivateMinerURL = response.body.privateUrl;
+            global.PrivateMinerType = response.body.privateType;
+            global.PrivateMinerConfigFile = response.body.privateFile;
+            global.PrivateMinerStartFile = response.body.privateExe;
+            global.PrivateMinerStartArgs = response.body.privateArgs;
+          } else {
+            global.PrivateMiner = "False";
+            global.PrivateMinerURL = "";
+            global.PrivateMinerType = "";
+            global.PrivateMinerConfigFile = "";
+            global.PrivateMinerStartFile = "";
+            global.PrivateMinerStartArgs = "";
+          }
+        } catch (PrivateMinerReadError) {
+          global.PrivateMiner = "False";
+        }
         // Download miner if needed
         downloadMiners(global.client, response.body.cpu, response.body.cpuDefault);
         // Poke server
@@ -275,7 +300,11 @@ module.exports = {
         url: 'https://static.minerstat.farm/miners/linux/version.json'
       }, function(error, response, body) {
         var parseData = JSON.parse(body);
-        gpuServerVersion = parseData[gpuMiner.toLowerCase()];
+        if (global.PrivateMiner == "True") {
+          gpuServerVersion = global.PrivateMinerURL;
+        } else {
+          gpuServerVersion = parseData[gpuMiner.toLowerCase()];
+        }
         if (isCpu.toString() == "true" || isCpu.toString() == "True") {
           cpuServerVersion = parseData[cpuMiner.toLowerCase()];
         }
@@ -417,32 +446,89 @@ module.exports = {
     // Download latest package from the static server
     async function downloadCore(miner, clientType, serverVersion) {
       var miner = miner;
+      var dlURL = 'http://static.minerstat.farm/miners/linux/' + miner + '.zip';
+      var dlURL_type = "zip";
+      var fullFileName = "";
+      var lastSlash = dlURL.lastIndexOf("/");
+      fullFileName = dlURL.substring(lastSlash + 1);
+      if (global.PrivateMiner == "True" && miner != "xmrig" && miner != "cpuminer-opt") {
+        dlURL = global.PrivateMinerURL;
+        if (dlURL.includes(".tar.gz")) {
+          dlURL_type = "tar";
+        }
+        if (!dlURL.includes(".zip")) {
+          dlURL_type = "tar"; // for URL rewrite, .tar.gz prefered for private miners
+        }
+        lastSlash = dlURL.lastIndexOf("/");
+        fullFileName = dlURL.substring(lastSlash + 1);
+      }
       const download = require('download');
-      console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;33mDownloading (" + miner + ")\x1b[0m");
-      download('http://static.minerstat.farm/miners/linux/' + miner + '.zip', global.path + '/').then(() => {
+      console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;33mDownloading (" + fullFileName + ")\x1b[0m");
+
+      const execa = require('execa');
+      execa.shell("cd /home/minerstat/minerstat-os/; sudo rm " + fullFileName + "; wget " + dlURL, {
+        cwd: process.cwd(),
+        detached: false,
+        stdio: "inherit"
+      }).then(result => {
+        console.log("Download finished");
+
+        //download(dlURL, global.path + '/').then(() => {
         const decompress = require('decompress');
-        console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;32mDownload complete (" + miner + ")\x1b[0m");
-        console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;33mDecompressing (" + miner + ")\x1b[0m");
-        decompress(miner + '.zip', global.path + '/clients/' + miner.replace("_10", "")).then(files => {
-          console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;32mDecompressing complete (" + miner + ")\x1b[0m");
-          // Remove .zip
-          deleteFile(miner + ".zip");
-          // Store version
-          try {
-            fs.writeFile('clients/' + miner.replace("_10", "") + '/msVersion.txt', '' + serverVersion.trim(), function(err) {});
-          } catch (error) {}
-          if (miner == "xmr-stak" || miner == "xmr-stak_10") {
-            var xmrConfigQueryStak = require('child_process').exec;
-            var copyXmrConfigsStak = xmrConfigQueryStak("cp /tmp/amd.txt /home/minerstat/minerstat-os/clients/xmr-stak/; cp /tmp/cpu.txt /home/minerstat/minerstat-os/clients/xmr-stak/; cp /tmp/nvidia.txt /home/minerstat/minerstat-os/clients/xmr-stak/; cp /tmp/config.txt /home/minerstat/minerstat-os/clients/xmr-stak/;", function(error, stdout, stderr) {
-              console.log("XMR-STAK Config Restored");
+        console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;32mDownload complete (" + fullFileName + ")\x1b[0m");
+        console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;33mDecompressing (" + fullFileName + ")\x1b[0m");
+
+        if (dlURL_type == "zip") {
+          console.log("zip detected extract");
+          decompress(fullFileName, global.path + '/clients/' + miner.replace("_10", "")).then(files => {
+            console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;32mDecompressing complete (" + miner + ")\x1b[0m");
+            // Remove .zip
+            deleteFile(fullFileName);
+            // Store version
+            try {
+              fs.writeFile('clients/' + miner.replace("_10", "") + '/msVersion.txt', '' + serverVersion.trim(), function(err) {});
+            } catch (error) {}
+            if (miner == "xmr-stak" || miner == "xmr-stak_10") {
+              var xmrConfigQueryStak = require('child_process').exec;
+              var copyXmrConfigsStak = xmrConfigQueryStak("cp /tmp/amd.txt /home/minerstat/minerstat-os/clients/xmr-stak/; cp /tmp/cpu.txt /home/minerstat/minerstat-os/clients/xmr-stak/; cp /tmp/nvidia.txt /home/minerstat/minerstat-os/clients/xmr-stak/; cp /tmp/config.txt /home/minerstat/minerstat-os/clients/xmr-stak/;", function(error, stdout, stderr) {
+                console.log("XMR-STAK Config Restored");
+                applyChmod(miner.replace("_10", ""), clientType);
+              });
+            }
+            // Start miner
+            if (miner != "xmr-stak") {
               applyChmod(miner.replace("_10", ""), clientType);
-            });
-          }
-          // Start miner
-          if (miner != "xmr-stak") {
-            applyChmod(miner.replace("_10", ""), clientType);
-          }
-        });
+            }
+          });
+        }
+        if (dlURL_type == "tar") {
+          console.log("tar.gz detected extract");
+
+          execa.shell("cd /home/minerstat/minerstat-os/; mkdir clients; mkdir clients/" + miner.replace("_10", "") + "; tar -C /home/minerstat/minerstat-os/clients/" + miner.replace("_10", "") + " -xvf " + fullFileName, {
+            cwd: process.cwd(),
+            detached: false,
+            stdio: "inherit"
+          }).then(result => {
+            console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;32mDecompressing complete (" + fullFileName + ")\x1b[0m");
+            // Remove .zip
+            deleteFile(fullFileName);
+            // Store version
+            try {
+              fs.writeFile('clients/' + miner.replace("_10", "") + '/msVersion.txt', '' + serverVersion.trim(), function(err) {});
+            } catch (error) {}
+            if (miner == "xmr-stak" || miner == "xmr-stak_10") {
+              var xmrConfigQueryStak = require('child_process').exec;
+              var copyXmrConfigsStak = xmrConfigQueryStak("cp /tmp/amd.txt /home/minerstat/minerstat-os/clients/xmr-stak/; cp /tmp/cpu.txt /home/minerstat/minerstat-os/clients/xmr-stak/; cp /tmp/nvidia.txt /home/minerstat/minerstat-os/clients/xmr-stak/; cp /tmp/config.txt /home/minerstat/minerstat-os/clients/xmr-stak/;", function(error, stdout, stderr) {
+                console.log("XMR-STAK Config Restored");
+                applyChmod(miner.replace("_10", ""), clientType);
+              });
+            }
+            // Start miner
+            if (miner != "xmr-stak") {
+              applyChmod(miner.replace("_10", ""), clientType);
+            }
+          });
+        }
       });
     }
     //// GET CONFIG TO YOUR DEFAULT MINER
@@ -492,7 +578,19 @@ module.exports = {
         "grinprominer": "config.xml",
         "miniz": "start.bash"
       };
-      global.file = "clients/" + miner.replace("_10", "") + "/" + MINER_CONFIG_FILE[miner.replace("_10", "")];
+
+      try {
+        global.file = "clients/" + miner.replace("_10", "") + "/" + MINER_CONFIG_FILE[miner.replace("_10", "")];
+      } catch (globalFile) {}
+
+      if (global.PrivateMiner == "True") {
+        if (global.PrivateMinerConfigFile != "" && clientType != "cpu") {
+          global.file = "clients/" + miner.replace("_10", "") + "/" + global.PrivateMinerConfigFile;
+        } else {
+          global.file = "clients/" + miner.replace("_10", "") + "/start.bash";
+        }
+      }
+
       needle.get('https://api.minerstat.com/v2/conf/gpu/' + global.accesskey + '/' + global.worker + '/' + miner.toLowerCase().replace("_10", ""), function(error, response) {
         if (error === null) {
           var str = response.body;
@@ -513,11 +611,12 @@ module.exports = {
 
             // This ARRAY only need to fill if the miner using JSON config.
             var stringifyArray = ["sgminer", "sgminer-gm", "sgminer-avermore", "trex", "lolminer", "xmrig"];
-            if (stringifyArray.indexOf(miner) > -1) {
+            if (stringifyArray.indexOf(miner) > -1 || global.PrivateMinerConfigFile != "" && clientType != "cpu") {
               str = jsFriendlyJSONStringify(str);
-              str = str.replace(/\\/g, '');
-              str = str.replace('"{', '{');
-              str = str.replace('}"', '}');
+              str = str.replace(/\\/g, '').replace('"{', '{').replace('}"', '}');
+              if (str.charAt(0) == '"') {
+                str = str.substring(1, str.length - 1); // remove first and last char ""
+              }
             }
             writeStream.write("" + str);
             writeStream.end();
