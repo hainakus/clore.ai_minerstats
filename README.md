@@ -57,6 +57,9 @@ You can see mining process by type `miner` to the terminal.
 
 **Ctrl + C** command quit from the process / close minerstat.
 
+## Private, Custom Miner Support
+
+Example API [https://github.com/minerstat/minerstat-os/blob/master/api](file).
 
 ##
 
