@@ -48,8 +48,8 @@ if [ $1 ]; then
     if [ "$CORECLOCK" != "skip" ]
     then
       echo "INFO: SETTING CORECLOCK : $CORECLOCK Mhz @ $VDDC mV"
-      sudo su -c "echo 's 5 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 6 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      #sudo su -c "echo 's 5 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      #sudo su -c "echo 's 6 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 's 7 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       # NITRO has 8 core state ?!
       sudo su -c "echo 's 8 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
@@ -63,12 +63,12 @@ if [ $1 ]; then
   if [ "$MEMCLOCK" != "skip" ]
   then
     echo "INFO: SETTING MEMCLOCK : $MEMCLOCK Mhz"
-    sudo su -c "echo 'm 1 $MEMCLOCK 1000' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
-    sudo su -c "echo 'm 2 $MEMCLOCK 1050' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
-    sudo su -c "echo 'm 3 $MEMCLOCK 1100' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
+    #sudo su -c "echo 'm 1 $MEMCLOCK 1000' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
+    #sudo su -c "echo 'm 2 $MEMCLOCK 1050' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
+    sudo su -c "echo 'm 3 $MEMCLOCK 1070' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
     sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
-    sudo ./rocm-smi --setmclk 2
+    sudo ./rocm-smi --setmclk 3
   fi
 
   # FANS (for safety) from Radeon VII solution
@@ -104,7 +104,7 @@ if [ $1 ]; then
   fi
 
   # Apply
-  sudo ./rocm-smi --setsclk 5
+  sudo ./rocm-smi --setsclk 7
   sudo ./rocm-smi --setmclk 3
   # Check current states
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
