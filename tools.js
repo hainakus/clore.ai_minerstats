@@ -343,9 +343,9 @@ module.exports = {
     if (global.PrivateMiner == "True" && miner != "xmrig" && miner != "cpuminer-opt") {
       if (global.PrivateMinerType == "args") {
         //args = "auto";
-        args = startArgs + "" + global.PrivateMinerStartArgs;
+        args = startArgs + " " + global.PrivateMinerStartArgs;
       } else {
-        args = "" + global.PrivateMinerStartArgs;
+        args = " " + global.PrivateMinerStartArgs;
       }
       global.startMinerName = miner;
       execFile = global.PrivateMinerStartFile;
