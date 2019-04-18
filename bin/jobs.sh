@@ -81,10 +81,10 @@ screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
 # Check Curl is installed
 ISCURL=$(dpkg -l curl | grep curl | wc -l)
 if [ "$ISCURL" -lt "1" ]; then
-  sudo apt-get install curl
+  sudo apt-get --yes --force-yes install curl
 fi
 # Check JQ is installed
 ISJQ=$(dpkg -l jq | grep jq | wc -l)
 if [ "$ISJQ" -lt "1" ]; then
-  sudo apt-get install jq
+  sudo apt-get --yes --force-yes install jq
 fi
