@@ -78,3 +78,13 @@ sudo cp /home/minerstat/minerstat-os/core/profile /etc
 # Restart listener, Maintenance Process, Also from now it can be updated in runtime (mupdate)
 screen -S listener -X quit # kill running process
 screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
+# Check Curl is installed
+ISCURL=$(dpkg -l curl | grep curl | wc -l)
+if [ "$ISCURL" -lt "1" ]; then
+  sudo apt-get install curl
+fi
+# Check JQ is installed
+ISJQ=$(dpkg -l jq | grep jq | wc -l)
+if [ "$ISJQ" -lt "1" ]; then
+  sudo apt-get install jq
+fi

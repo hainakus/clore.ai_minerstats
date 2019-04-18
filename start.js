@@ -85,19 +85,20 @@ function jsFriendlyJSONStringify(s) {
 module.exports = {
   callBackSync: function(gpuSyncDone, cpuSyncDone) {
     // WHEN MINER INFO FETCHED, FETCH HARDWARE INFO
-    if (global.gputype === "nvidia") {
-      monitor.HWnvidia(gpuSyncDone, cpuSyncDone);
-    }
-    if (global.gputype === "amd") {
-      monitor.HWamd(gpuSyncDone, cpuSyncDone);
-    }
+    //if (global.gputype === "nvidia") {
+    //  monitor.HWnvidia(gpuSyncDone, cpuSyncDone);
+    //}
+    //if (global.gputype === "amd") {
+    //  monitor.HWamd(gpuSyncDone, cpuSyncDone);
+    //}
+    var main = require('./start.js');
+    main.callBackHardware(gpuSyncDone, cpuSyncDone);
   },
-  callBackHardware: function(hwdatas, gpuSyncDone, cpuSyncDone, hwPower, hwmemory, hwstrap) {
+  callBackHardware: function(gpuSyncDone, cpuSyncDone) {
     // WHEN HARDWARE INFO FETCHED SEND BOTH RESPONSE TO THE SERVER
     var sync = global.sync,
       res_data = global.res_data,
-      cpu_data = global.cpu_data,
-      power_data = hwPower;
+      cpu_data = global.cpu_data;
     //console.log(res_data);         //SHOW SYNC OUTPUT
     // SEND LOG TO SERVER
     var request = require('request');
@@ -106,11 +107,7 @@ module.exports = {
       url: 'https://api.minerstat.com/v2/set_node_config.php?token=' + global.accesskey + '&worker=' + global.worker + '&miner=' + global.client.toLowerCase() + '&ver=4&cpuu=' + global.minerCpu + '&cpud=HASH' + '&os=linux&hwNew=true&currentcpu=' + global.cpuDefault.toLowerCase() + '&hwType=' + global.minerType + '&privateMiner=' + global.PrivateMiner,
       form: {
         minerData: res_data,
-        cpuData: cpu_data,
-        hwData: hwdatas,
-        hwMemory: hwmemory,
-        hwPower: power_data,
-        hwStrap: hwstrap
+        cpuData: cpu_data
       }
     }, function(error, response, body) {
       console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
@@ -124,12 +121,12 @@ module.exports = {
         if (sync.toString() === "true") {
           global.watchnum = 0;
           console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32mUpdated " + global.worker + " (" + global.client + ")\x1b[0m");
-          console.log("\x1b[1;94m== \x1b[0m[" + global.minerType + "] \x1b " + hwdatas.replace(/(\r\n|\n|\r)/gm, ""));
+          //console.log("\x1b[1;94m== \x1b[0m[" + global.minerType + "] \x1b " + hwdatas.replace(/(\r\n|\n|\r)/gm, ""));
         } else {
           console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (Not hashing)\x1b[0m");
           console.log("\x1b[1;94m== \x1b[0mWorker: " + global.worker);
           console.log("\x1b[1;94m== \x1b[0mClient: " + global.client);
-          console.log("\x1b[1;94m== \x1b[0m[" + global.minerType + "] \x1b " + hwdatas.replace(/(\r\n|\n|\r)/gm, ""));
+          //console.log("\x1b[1;94m== \x1b[0m[" + global.minerType + "] \x1b " + hwdatas.replace(/(\r\n|\n|\r)/gm, ""));
         }
         if (global.minerCpu.toString() === "true") {
           if (cpuSync.toString() === "true") {
@@ -138,13 +135,13 @@ module.exports = {
             console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (Not hashing)\x1b[0m");
             console.log("\x1b[1;94m== \x1b[0mWorker: " + global.worker);
             console.log("\x1b[1;94m== \x1b[0mClient: " + global.cpuDefault.toLowerCase());
-            console.log("\x1b[1;94m== \x1b[0m[" + global.minerType + "] \x1b " + hwdatas.replace(/(\r\n|\n|\r)/gm, ""));
+            //console.log("\x1b[1;94m== \x1b[0m[" + global.minerType + "] \x1b " + hwdatas.replace(/(\r\n|\n|\r)/gm, ""));
           }
         }
       } else {
         console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mConnection lost (" + error + ")\x1b[0m");
         console.log("\x1b[1;94m== \x1b[0mWorker: " + global.worker);
-        console.log("\x1b[1;94m== \x1b[0m[" + global.minerType + "] \x1b " + hwdatas.replace(/(\r\n|\n|\r)/gm, ""));
+        //console.log("\x1b[1;94m== \x1b[0m[" + global.minerType + "] \x1b " + hwdatas.replace(/(\r\n|\n|\r)/gm, ""));
         sleep.sleep(10);
         console.log('\x1Bc');
       }
