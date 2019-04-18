@@ -23,9 +23,7 @@ cat config.js
 echo ""
 echo ""
 echo "Recovery is done!"
-echo "Ctrl + C to abort reboot."
-sleep 3
-echo "Rebooting ..."
-sudo reboot -f
+sudo echo "boot" > /home/minerstat/minerstat-os/bin/random.txt
+echo "You can start mining again with: mstart"
 echo ""
 echo "*-*-*-- MINERSTAT.COM--*-*-*"
