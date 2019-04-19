@@ -85,7 +85,7 @@ if [ "$ISCURL" -lt "1" ]; then
   TRY=$(sudo apt-get --yes --force-yes install curl | grep "Unmet dependencies" | wc -l)
   if [ "$TRY" -gt "0" ]; then 
     RM="YES"
-    sudo apt --fix-broken install
+    sudo apt --yes --force-yes --fix-broken install
     sudo apt-get --yes --force-yes install curl jq
   fi
 fi
@@ -95,7 +95,7 @@ if [ "$ISJQ" -lt "1" ]; then
   TRY=$(sudo apt-get --yes --force-yes install jq | grep "Unmet dependencies" | wc -l)
   if [ "$TRY" -gt "0" ]; then 
     RM="YES"
-    sudo apt --fix-broken install
+    sudo apt --yes --force-yes --fix-broken install
     sudo apt-get --yes --force-yes install curl jq
   fi
 fi
