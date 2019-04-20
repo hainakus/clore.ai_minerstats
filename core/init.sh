@@ -98,12 +98,16 @@ do
     #sudo reboot -f
     sudo su -c "echo 1 > /proc/sys/kernel/sysrq"
     sudo su -c "echo b > /proc/sysrq-trigger"
+    sleep 2
+    sudo reboot -f
   fi
 
   if [ $RESPONSE = "SHUTDOWN" ]; then
     #sudo shutdown -h now
     sudo su -c "echo 1 > /proc/sys/kernel/sysrq"
     sudo su -c "echo o > /proc/sysrq-trigger"
+    sleep 2
+    sudo shutdown -h now
   fi
 
   if [ $RESPONSE = "RESTART" ] || [ $RESPONSE = "START" ]; then
@@ -117,6 +121,10 @@ do
     sudo su -c "sudo screen -X -S minew quit"
     sudo su -c "sudo screen -X -S fakescreen quit"
     sudo su minerstat -c "screen -X -S fakescreen quit"
+  fi
+
+  if [ $RESPONSE = "RECOVERY" ]; then
+    cd /tmp; sudo screen -wipe; wget https://raw.githubusercontent.com/minerstat/minerstat-os/master/core/recovery.sh; sudo chmod 777 recovery.sh; nohup sh recovery.sh &
   fi
 
   if [ $RESPONSE = "null" ]; then
