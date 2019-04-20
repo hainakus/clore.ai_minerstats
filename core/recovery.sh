@@ -24,6 +24,8 @@ echo ""
 echo ""
 echo "Recovery is done!"
 sudo echo "boot" > /home/minerstat/minerstat-os/bin/random.txt
+screen -S listener -X quit # kill running process
+screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
 echo "You can start mining again with: mstart"
 echo ""
 echo "*-*-*-- MINERSTAT.COM--*-*-*"
