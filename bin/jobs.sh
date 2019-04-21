@@ -78,28 +78,10 @@ sudo cp /home/minerstat/minerstat-os/core/profile /etc
 # Restart listener, Maintenance Process, Also from now it can be updated in runtime (mupdate)
 screen -S listener -X quit # kill running process
 screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
-# Check Curl is installed
-RM="NO"
-ISCURL=$(dpkg -l curl | grep curl | wc -l)
-if [ "$ISCURL" -lt "1" ]; then
-  TRY=$(sudo apt-get --yes --force-yes install curl | grep "Unmet dependencies" | wc -l)
-  if [ "$TRY" -gt "0" ]; then 
-    RM="YES"
-    sudo apt --yes --force-yes --fix-broken install
-    sudo apt-get --yes --force-yes install curl jq
-  fi
-fi
 # Check JQ is installed
 ISJQ=$(dpkg -l jq | grep jq | wc -l)
 if [ "$ISJQ" -lt "1" ]; then
-  TRY=$(sudo apt-get --yes --force-yes install jq | grep "Unmet dependencies" | wc -l)
-  if [ "$TRY" -gt "0" ]; then 
-    RM="YES"
     sudo apt --yes --force-yes --fix-broken install
     sudo apt-get --yes --force-yes install curl jq
-  fi
-fi
-# RM
-if [ "$RM" = "YES" ]; then
-  sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
+    sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
 fi
