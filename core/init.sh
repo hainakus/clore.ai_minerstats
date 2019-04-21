@@ -123,9 +123,9 @@ do
     sudo su minerstat -c "screen -X -S fakescreen quit"
   fi
 
-  if [ $RESPONSE = "RECOVERY" ]; then
-    cd /tmp; sudo screen -wipe; wget https://raw.githubusercontent.com/minerstat/minerstat-os/master/core/recovery.sh; sudo chmod 777 recovery.sh; nohup sh recovery.sh &
-  fi
+  #if [ $RESPONSE = "RECOVERY" ]; then
+  #  cd /tmp; sudo screen -wipe; wget https://raw.githubusercontent.com/minerstat/minerstat-os/master/core/recovery.sh; sudo chmod 777 recovery.sh; nohup sh recovery.sh &
+  #fi
 
   if [ $RESPONSE = "null" ]; then
     echo "No remote command pending..";
