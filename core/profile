@@ -26,17 +26,22 @@ if [ -e "$file" ]; then
   if ! screen -list | grep -q "dummy"; then
     echo "Moving MSOS config.js to / (LINUX)"
     sudo cp -rf "/media/storage/config.js" "/home/minerstat/minerstat-os/"
-    sleep 1
     killall node
     killall screen
+    
+    sleep 5
 
     screen -A -m -d -S boot_process /home/minerstat/minerstat-os/bin/work.sh
+    sleep 1
     screen -x boot_process
 
   fi
 else
 
+  sleep 5
   screen -A -m -d -S boot_process /home/minerstat/minerstat-os/bin/boot.sh
+  
+  sleep 1
   screen -x boot_process
 
 fi
