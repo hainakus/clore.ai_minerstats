@@ -83,5 +83,8 @@ ISCURL=$(dpkg -l curl | grep curl | wc -l)
 if [ "$ISCURL" -lt "1" ]; then
     sudo apt --yes --force-yes --fix-broken install
     sudo apt-get --yes --force-yes install curl
-    sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
+    NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
+    if [ "$NVIDIADEVICE" -gt 0 ]; then
+      sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
+    fi
 fi
