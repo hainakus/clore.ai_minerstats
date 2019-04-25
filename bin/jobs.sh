@@ -90,10 +90,13 @@ if [ "$ISCURL" -lt 1 ]; then
 fi
 ISCURLFIX=$(dpkg -l curl | grep curl | grep "no description" | wc -l)
  if [ "$ISCURLFIX" -gt 0 ]; then
+   echo "CURL FIX"
    sudo apt --yes --force-yes --fix-broken install
    sudo apt-get --yes --force-yes install curl
    NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
    if [ "$NVIDIADEVICE" -gt 0 ]; then
      sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
    fi
+  else
+  echo "NO CURL FIX"
  fi
