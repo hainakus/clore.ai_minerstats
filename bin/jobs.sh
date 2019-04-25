@@ -80,7 +80,7 @@ screen -S listener -X quit # kill running process
 screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
 # Check JQ is installed
 ISCURL=$(dpkg -l curl | grep curl | wc -l)
-if [ "$ISCURL" -lt "1" ]; then
+if [ "$ISCURL" -lt 1 ]; then
     sudo apt --yes --force-yes --fix-broken install
     sudo apt-get --yes --force-yes install curl
     NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
@@ -89,7 +89,7 @@ if [ "$ISCURL" -lt "1" ]; then
     fi
 fi
 ISCURLFIX=$(dpkg -l curl | grep curl | grep "no description" | wc -l)
- if [ "$ISCURLFIX" -gt "0" ]; then
+ if [ "$ISCURLFIX" -gt 0 ]; then
    sudo apt --yes --force-yes --fix-broken install
    sudo apt-get --yes --force-yes install curl
    NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
