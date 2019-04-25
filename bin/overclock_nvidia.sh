@@ -43,6 +43,7 @@ if [ $1 ]; then
   elif echo "$QUERY" | grep "P102-100" ;then PLEVEL=1
   elif echo "$QUERY" | grep "P104-100" ;then PLEVEL=1
   elif echo "$QUERY" | grep "P106-090" ;then PLEVEL=1
+  elif echo "$QUERY" | grep "1660" ;then PLEVEL=4
   fi
 
 
