@@ -79,7 +79,7 @@ sudo cp /home/minerstat/minerstat-os/core/profile /etc
 screen -S listener -X quit # kill running process
 screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
 # Check JQ is installed
-ISCURL=$(dpkg -l curl | grep curl | wc -l)
+ISCURL=$(dpkg -l curl | grep curl | wc -l | sed 's/[^0-9]*//g')
 if [ "$ISCURL" -lt 1 ]; then
     sudo apt --yes --force-yes --fix-broken install
     sudo apt-get --yes --force-yes install curl
@@ -88,7 +88,7 @@ if [ "$ISCURL" -lt 1 ]; then
       sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
     fi
 fi
-ISCURLFIX=$(dpkg -l curl | grep curl | grep "no description" | wc -l)
+ISCURLFIX=$(dpkg -l curl | grep curl | grep "no description" | wc -l | sed 's/[^0-9]*//g')
  if [ "$ISCURLFIX" -gt 0 ]; then
    echo "CURL FIX"
    sudo apt --yes --force-yes --fix-broken install
