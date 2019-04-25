@@ -88,8 +88,9 @@ if [ "$ISCURL" -lt 1 ]; then
       sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
     fi
 fi
-ISCURLFIX=$(dpkg -l curl | grep curl | grep "no description" | wc -l | sed 's/[^0-9]*//g')
- if [ "$ISCURLFIX" -gt 0 ]; then
+# install curl if required
+which curl 2>&1 >/dev/null && curlPresent=true
+if [ -z "${curlPresent:-}" ]; then
    echo "CURL FIX"
    sudo apt --yes --force-yes --fix-broken install
    sudo apt-get --yes --force-yes install curl
@@ -97,6 +98,4 @@ ISCURLFIX=$(dpkg -l curl | grep curl | grep "no description" | wc -l | sed 's/[
    if [ "$NVIDIADEVICE" -gt 0 ]; then
      sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
    fi
-  else
-  echo "NO CURL FIX"
- fi
+fi
