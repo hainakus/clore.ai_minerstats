@@ -194,6 +194,9 @@ if ! screen -list | grep -q "dummy"; then
   echo ""
   echo "Minerstat has been started in the background.."
   echo "Waiting for console output.."
+  
+  # Remove pending commands
+  curl --request POST "https://api.minerstat.com/v2/set_node_config.php?token=$TOKEN&worker=$WORKER" &
 
   sleep 5
   sudo chvt 1
