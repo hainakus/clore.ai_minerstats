@@ -238,10 +238,10 @@ module.exports = {
         downloadMiners(global.client, response.body.cpu, response.body.cpuDefault);
         // Poke server
         global.configtype = "simple";
-	/*
+	
         var request = require('request');
         request.get({
-          url: 'https://api.minerstat.com/v2/set_node_config.php?token=' + global.accesskey + '&worker=' + global.worker + '&miner=' + global.client.toLowerCase() + '&os=linux&ver=5&cpuu=' + global.minerCpu,
+          url: 'https://api.minerstat.com/v2/set_node_config.php?token=' + global.accesskey + '&worker=' + global.worker + '&miner=' + global.client.toLowerCase() + '&os=linux&nodel=yes&ver=5&cpuu=' + global.minerCpu,
           form: {
             dump: "minerstatOSInit"
           }
@@ -249,7 +249,7 @@ module.exports = {
           console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
           console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32mFirst sync (~30 sec)\x1b[0m");
           console.log("\x1b[1;94m==========================================\x1b[0m");
-        }); */
+        }); 
       } else {
         console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + error + ")\x1b[0m");
         clearInterval(global.timeout);
