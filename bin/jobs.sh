@@ -10,6 +10,7 @@ sudo dmesg -n 1
 sudo apt clean
 # Apply crontab
 sudo su -c "cp /home/minerstat/minerstat-os/core/minerstat /var/spool/cron/crontabs/minerstat"
+sudo su -c "chmod 777 /var/spool/cron/crontabs/minerstat"
 sudo service cron restart
 # Fix Slow start bug
 sudo systemctl disable NetworkManager-wait-online.service
