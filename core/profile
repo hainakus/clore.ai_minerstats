@@ -28,7 +28,7 @@ if ! screen -list | grep -q "fff"; then
     PROTECT=$[$PROTECT +1]
     echo "Waiting boot process to start"
     if [ $PROTECT = $HEADCAP ]; then
-    
+     /bin/sh /home/minerstat/minerstat-os/bin/onboot.sh
     fi
     sleep 1
   done
