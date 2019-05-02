@@ -66,7 +66,7 @@ function restartNode() {
     clearInterval(global.timeout);
     clearInterval(global.hwmonitor);
     var exec = require('child_process').exec;
-    var queryBoot = exec("sudo su -c 'echo 1 > /proc/sys/kernel/sysrq'; sudo su -c 'echo b > /proc/sysrq-trigger';", function(error, stdout, stderr) {
+    var queryBoot = exec("sudo su -c 'sudo reboot -f';", function(error, stdout, stderr) {
       console.log(stdout + " " + stderr);
     });
   }
