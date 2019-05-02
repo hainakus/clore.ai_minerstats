@@ -21,13 +21,12 @@ cd /home/minerstat/minerstat-os/
 sudo cp -rf "/media/storage/config.js" "/home/minerstat/minerstat-os/"
 
 if ! screen -list | grep -q "fff"; then
-  until sudo screen -x boot_process; do
+  until screen -x boot_process; do
     echo "Waiting boot process to start"
     sleep 0.2
   done
 fi
 
-screen -Amds fff sleep 7d
 source ~/minerstat-os/core/.bashrc
 
 if [ -d /etc/profile.d ]; then
