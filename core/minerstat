@@ -1,0 +1,1 @@
+@reboot /bin/sh /home/minerstat/minerstat-os/bin/onboot.sh
