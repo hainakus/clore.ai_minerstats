@@ -4,7 +4,6 @@ if ! screen -list | grep -q "dummy"; then
   screen -A -m -d -S chvt sudo /home/minerstat/minerstat-os/bin/chvta
 
   screen -A -m -d -S dummy sleep 22176000
-  screen -A -m -d -S fff sleep 7d
   screen -S listener -X quit # kill running process
   screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
 
