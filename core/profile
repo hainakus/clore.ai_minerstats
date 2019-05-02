@@ -17,34 +17,17 @@ if [ "$PS1" ]; then
   fi
 fi
 
-cd /home/minerstat/minerstat-os/;
-source ~/minerstat-os/core/.bashrc
+cd /home/minerstat/minerstat-os/
+sudo cp -rf "/media/storage/config.js" "/home/minerstat/minerstat-os/"
 
-file=/home/minerstat/minerstat-os/bin/random.txt
-if [ -e "$file" ]; then
-  sleep 1;
-  if ! screen -list | grep -q "dummy"; then
-    echo "Moving MSOS config.js to / (LINUX)"
-    sudo cp -rf "/media/storage/config.js" "/home/minerstat/minerstat-os/"
-    #killall node
-    #killall screen
-
-    sleep 1
-
-    screen -A -m -d -S boot_process /home/minerstat/minerstat-os/bin/work.sh
-    sleep 1
-    screen -x boot_process
-
-  fi
-else
-
-  sleep 1
-  screen -A -m -d -S boot_process /home/minerstat/minerstat-os/bin/boot.sh
-  
-  sleep 1
-  screen -x boot_process
-
+if ! screen -list | grep -q "dummy"; then
+  until sudo screen -x boot_process; do
+    echo "Waiting boot process to start"
+    sleep 0.2
+  done
 fi
+
+source ~/minerstat-os/core/.bashrc
 
 if [ -d /etc/profile.d ]; then
   for i in /etc/profile.d/*.sh; do
