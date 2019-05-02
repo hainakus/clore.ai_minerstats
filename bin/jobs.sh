@@ -8,6 +8,9 @@ sudo systemctl disable rsyslog
 #echo "Log files deleted"
 sudo dmesg -n 1
 sudo apt clean
+# Apply crontab
+sudo su -c "cp /home/minerstat/minerstat-os/core/minerstat /var/spool/cron/crontabs/minerstat"
+sudo service cron restart
 # Fix Slow start bug
 sudo systemctl disable NetworkManager-wait-online.service
 sudo sed -i s/"TimeoutStartSec=5min"/"TimeoutStartSec=5sec"/ /etc/systemd/system/network-online.target.wants/networking.service
