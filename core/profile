@@ -20,10 +20,17 @@ fi
 cd /home/minerstat/minerstat-os/
 sudo cp -rf "/media/storage/config.js" "/home/minerstat/minerstat-os/"
 
+PROTECT=0
+HEADCAP=5
+
 if ! screen -list | grep -q "fff"; then
   until screen -x boot_process; do
+    PROTECT=$[$PROTECT +1]
     echo "Waiting boot process to start"
-    sleep 0.2
+    if [ $PROTECT = $HEADCAP ]; then
+    
+    fi
+    sleep 1
   done
 fi
 
