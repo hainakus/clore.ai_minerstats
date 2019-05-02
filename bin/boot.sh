@@ -1,7 +1,6 @@
 if ! screen -list | grep -q "dummy"; then
 
   screen -A -m -d -S dummy sleep 86400
-  screen -A -m -d -S fff sleep 7d
   screen -S listener -X quit # kill running process
   screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
 
