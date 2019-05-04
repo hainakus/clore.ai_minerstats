@@ -53,10 +53,11 @@ do
   STR5="$(free -m | grep 'Mem' | awk '{print $4}')"
 
   # TELEPROXY ID
-  TELEID=$(cat /home/minerstat/minerstat-os/bin/screenlog.0 | grep WebUI | rev | cut -d ' ' -f 1 | rev | xargs)
+  #TELEID=$(cat /home/minerstat/minerstat-os/bin/screenlog.0 | grep WebUI | rev | cut -d ' ' -f 1 | rev | xargs)
 
   echo ""
-  echo "-*- $TOKEN $WORKER -*-"
+  echo "$TOKEN"
+  echo "$WORKER"
   echo "Free Space: $STR1"
   echo "CPU Usage: $STR2"
   echo "Free Memory: $STR5"
@@ -66,7 +67,7 @@ do
 
   IS_ONLINE="YES"
 
-  while ! ping minerstat.com -w 1 | grep "0%"; do
+  while ! ping api.minerstat.com -w 1 | grep "0%"; do
     OFFLINE_COUNT=$(($OFFLINE_COUNT + $OFFLINE_NUM))
     echo "$OFFLINE_COUNT"
     IS_ONLINE="NO"
@@ -78,7 +79,7 @@ do
     OFFLINE_COUNT=0
 
     #SEND INFO
-    wget -qO- "https://api.minerstat.com/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&remoteip=$STR4&freemem=$STR5&teleid=$TELEID" ; echo
+    wget -qO- "https://api.minerstat.com/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&remoteip=$STR4&freemem=$STR5" ; echo
 
     echo "-*- MINERSTAT LISTENER -*-"
     RESPONSE="$(wget -qO- "https://api.minerstat.com/v2/os_listener.php?token=$TOKEN&worker=$WORKER" ; echo)"
@@ -96,9 +97,17 @@ do
 
   if [ $RESPONSE = "REBOOT" ]; then
     #sudo reboot -f
+    #sudo su -c "echo 1 > /proc/sys/kernel/sysrq"
+    #sudo su -c "echo b > /proc/sysrq-trigger"
+    #sleep 2
+    sudo reboot -f
+  fi
+
+  if [ $RESPONSE = "FORCEREBOOT" ]; then
+    #sudo reboot -f
     sudo su -c "echo 1 > /proc/sys/kernel/sysrq"
     sudo su -c "echo b > /proc/sysrq-trigger"
-    sleep 2
+    #sleep 2
     sudo reboot -f
   fi
 
@@ -110,7 +119,7 @@ do
     sudo shutdown -h now
   fi
 
-  if [ $RESPONSE = "RESTART" ] || [ $RESPONSE = "START" ]; then
+  if [ $RESPONSE = "RESTART" ] || [ $RESPONSE = "START" ] || [ $RESPONSE = "NODERESTART" ]; then
     sudo su minerstat -c "screen -X -S minerstat-console quit"
     sleep 2
     screen -A -m -d -S minerstat-console sudo sh start.sh
