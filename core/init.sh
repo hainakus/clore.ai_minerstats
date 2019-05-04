@@ -122,7 +122,7 @@ do
   if [ $RESPONSE = "RESTART" ] || [ $RESPONSE = "START" ] || [ $RESPONSE = "NODERESTART" ]; then
     sudo su minerstat -c "screen -X -S minerstat-console quit"
     sleep 2
-    screen -A -m -d -S minerstat-console sudo sh start.sh
+    screen -A -m -d -S minerstat-console sudo sh /home/minerstat/minerstat-os/start.sh
   fi
 
   if [ $RESPONSE = "STOP" ]; then
