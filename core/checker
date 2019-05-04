@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Check "LISTENER"
+if ! screen -list | grep -q "listener"; then
+  screen -S listener -X quit # kill running process
+  screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
+fi
+
+# Check miner agent is running or not
+if ! screen -list | grep -q "minerstat-console"; then
+  sudo su minerstat -c "screen -X -S minerstat-console quit"
+  sleep 2
+  screen -A -m -d -S minerstat-console sudo sh /home/minerstat/minerstat-os/start.sh
+fi
