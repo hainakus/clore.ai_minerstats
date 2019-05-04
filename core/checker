@@ -8,7 +8,10 @@ fi
 
 # Check miner agent is running or not
 if ! screen -list | grep -q "minerstat-console"; then
-  sudo su minerstat -c "screen -X -S minerstat-console quit"
+  sudo su -c "sudo screen -X -S minew quit"
+  sudo su -c "sudo screen -X -S fakescreen quit"
+  sudo su minerstat -c "screen -X -S fakescreen quit"
+  screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh
   sleep 2
-  screen -A -m -d -S minerstat-console sudo sh /home/minerstat/minerstat-os/start.sh
+  screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh
 fi
