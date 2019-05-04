@@ -1,1 +1,2 @@
 @reboot /bin/sh /home/minerstat/minerstat-os/bin/onboot.sh
+*/5 * * * * /bin/bash /home/minerstat/minerstat-os/core/checker
