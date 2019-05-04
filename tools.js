@@ -633,6 +633,11 @@ module.exports = {
         case 'REBOOT':
           console.log("REBOOT => 3.. 2...");
           console.log("\x1b[1;94m== \x1b[0mAction: Rebooting ...");
+          var queryBoot = exec("sudo su -c 'sudo reboot -f'", function(error, stdout, stderr) {});
+          break;
+        case 'FORCEREBOOT':
+          console.log("FORCE REBOOT => 3.. 2...");
+          console.log("\x1b[1;94m== \x1b[0mAction: Rebooting ...");
           var queryBoot = exec("sudo su -c 'echo 1 > /proc/sys/kernel/sysrq'; sudo su -c 'echo b > /proc/sysrq-trigger';", function(error, stdout, stderr) {});
           break;
         default:
