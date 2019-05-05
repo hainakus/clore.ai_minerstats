@@ -3,6 +3,8 @@ var colors = require('colors'),
   fs = require('fs');
 const https = require('https'),
   chalk = require('chalk');
+var spec = null,
+    syncs = null;
 
 function getDateTime() {
   var date = new Date(),
@@ -425,9 +427,7 @@ module.exports = {
           run = "false",
           istimeset = "false",
           delay = 70000,
-          finished = "false",
-          spec = null;
-          syncs = null;
+          finished = "false";
         // LIST MAKING
         var waitingArray = [];
 
@@ -590,6 +590,8 @@ module.exports = {
         case 'BENCHMARKSTOP':
           clearInterval(global.timeout);
           clearInterval(global.hwmonitor);
+          clearInterval(spec);
+          clearInterval(syncs);
           main.killall();
           sleep.sleep(3);
           main.killall();
