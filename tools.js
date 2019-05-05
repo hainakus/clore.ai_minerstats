@@ -425,6 +425,7 @@ module.exports = {
           delay = 70000,
           finished = "false",
           spec = null;
+          syncs = null;
         // LIST MAKING
         var waitingArray = [];
 
@@ -450,6 +451,7 @@ module.exports = {
               console.log(body);
               if (waitingArray.length == 0) {
                 clearInterval(spec);
+                clearInterval(syncs);
                 finished = "true";
                 istimeset = "false";
                 main.killall();
@@ -466,6 +468,7 @@ module.exports = {
 
               } else {
                 clearInterval(spec);
+                clearInterval(syncs);
                 nextCoin(waitingArray[0]);
               }
             });
@@ -510,6 +513,8 @@ module.exports = {
           }
 
           spec = setInterval(B_FINISH, delay);
+          syncs = setInterval(main.fetch, 30000);
+
           var disablesync = setInterval(ds, 5000);
 
           function ds() {
@@ -521,6 +526,7 @@ module.exports = {
 
         if (waitingArray.length > 0) {
           clearInterval(spec);
+          clearInterval(syncs);
           global.benchmark = true;
           nextCoin(waitingArray[0]);
         } else {
