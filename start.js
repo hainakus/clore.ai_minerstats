@@ -114,7 +114,18 @@ module.exports = {
       if (error == null) {
         // Process Remote Commands
         var tools = require('./tools.js');
-        tools.remotecommand(body.replace(" ", ""));
+
+        //check benchmark
+        var remcmd = body.replace(" ", "");
+
+        if (global.benchmark.toString() == 'false') {
+          tools.remotecommand(remcmd);
+        } else {
+          if (remcmd == "SETFANS" || remcmd == "BENCHMARKSTOP") {
+            tools.remotecommand(remcmd);
+          }
+        }
+
         // Display GPU Sync Status
         var sync = gpuSyncDone,
           cpuSync = cpuSyncDone;
