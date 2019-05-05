@@ -48,28 +48,30 @@ function runMiner(miner, execFile, args, plus) {
 }
 
 function restartNode() {
-  var main = require('./start.js');
-  global.watchnum++;
-  if (global.watchnum == 2 || global.watchnum == 4) {
-    console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;31mError (" + global.watchnum + "/6)\x1b[0m");
-    console.log("\x1b[1;94m== \x1b[0mAction: Restarting client ...");
-    clearInterval(global.timeout);
-    clearInterval(global.hwmonitor);
-    var killMinerQueryB = require('child_process').exec,
-      killMinerQueryProcB = killMinerQueryB("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
-        main.main();
-      });
-  }
-  if (global.watchnum >= 6) {
-    console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;31mError (" + global.watchnum + "/6)\x1b[0m");
-    console.log("\x1b[1;94m== \x1b[0mAction: Rebooting ...");
-    clearInterval(global.timeout);
-    clearInterval(global.hwmonitor);
-    var exec = require('child_process').exec;
-    var queryBoot = exec("sudo su -c 'sudo reboot -f';", function(error, stdout, stderr) {
-      console.log(stdout + " " + stderr);
-    });
-  }
+    if (global.benchmark.toString() == 'false') {
+        var main = require('./start.js');
+        global.watchnum++;
+        if (global.watchnum == 2 || global.watchnum == 4) {
+            console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;31mError (" + global.watchnum + "/6)\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0mAction: Restarting client ...");
+            clearInterval(global.timeout);
+            clearInterval(global.hwmonitor);
+            var killMinerQueryB = require('child_process').exec,
+                killMinerQueryProcB = killMinerQueryB("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
+                    main.main();
+                });
+        }
+        if (global.watchnum >= 6) {
+            console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;31mError (" + global.watchnum + "/6)\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0mAction: Rebooting ...");
+            clearInterval(global.timeout);
+            clearInterval(global.hwmonitor);
+            var exec = require('child_process').exec;
+            var queryBoot = exec("sudo su -c 'sudo reboot -f';", function(error, stdout, stderr) {
+                console.log(stdout + " " + stderr);
+            });
+        }
+    }
 }
 const MINER_JSON = {
   "cast-xmr": {
