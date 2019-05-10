@@ -6,12 +6,15 @@ if ! screen -list | grep -q "listener"; then
   screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
 fi
 
-# Check miner agent is running or not
-if ! screen -list | grep -q "minerstat-console"; then
-  sudo su -c "sudo screen -X -S minew quit"
-  sudo su -c "sudo screen -X -S fakescreen quit"
-  sudo su minerstat -c "screen -X -S fakescreen quit"
-  screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh
-  sleep 2
-  screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh
+# Check manually stopped or not with "mstop"
+if [ ! -f /tmp/stop.pid ]; then
+  # Check miner agent is running or not
+  if ! screen -list | grep -q "minerstat-console"; then
+    sudo su -c "sudo screen -X -S minew quit"
+    sudo su -c "sudo screen -X -S fakescreen quit"
+    sudo su minerstat -c "screen -X -S fakescreen quit"
+    screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh
+    sleep 2
+    screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh
+  fi
 fi
