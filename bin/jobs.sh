@@ -79,7 +79,7 @@ sudo cp /home/minerstat/minerstat-os/core/10-help-text /etc/update-motd.d
 sudo cp /home/minerstat/minerstat-os/core/.tmux.conf /home/minerstat
 # Tmate config
 sudo cp /home/minerstat/minerstat-os/core/.tmate.conf /home/minerstat
-echo "" | ssh-keygen -N ""
+echo "" | ssh-keygen -N "" &> /dev/null
 /home/minerstat/minerstat-os/bin/tmate -S /tmp/tmate.sock new-session -d
 # Update profile
 sudo chmod 777 /etc/profile
