@@ -53,7 +53,7 @@ do
   STR5="$(free -m | grep 'Mem' | awk '{print $4}')"
 
   # TELEPROXY ID
-  #TELEID=$(cat /home/minerstat/minerstat-os/bin/screenlog.0 | grep WebUI | rev | cut -d ' ' -f 1 | rev | xargs)
+  TELEID=$(sudo /home/minerstat/minerstat-os/bin/tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}' | cut -f1 -d"@" | sed 's/.* //')
 
   echo ""
   echo "$TOKEN"
@@ -79,7 +79,7 @@ do
     OFFLINE_COUNT=0
 
     #SEND INFO
-    wget -qO- "https://api.minerstat.com/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&remoteip=$STR4&freemem=$STR5" ; echo
+    wget -qO- "https://api.minerstat.com/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&remoteip=$STR4&freemem=$STR5&teleid=$TELEID" ; echo
 
     echo "-*- MINERSTAT LISTENER -*-"
     RESPONSE="$(wget -qO- "https://api.minerstat.com/v2/os_listener.php?token=$TOKEN&worker=$WORKER" ; echo)"
