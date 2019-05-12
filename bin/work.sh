@@ -191,10 +191,10 @@ if ! screen -list | grep -q "dummy"; then
   echo "-------- INITALIZING MINERSTAT CLIENT -----------"
   cd /home/minerstat/minerstat-os
   sudo su minerstat -c "screen -X -S minerstat-console quit"; 
-  cd /home/minerstat/minerstat-os/
+  sudo su -c "sudo screen -X -S minew quit"
   sudo node stop
   sleep 1
-  screen -A -m -d -S minerstat-console sh /home/minerstat/minerstat-os/start.sh &
+  screen -A -m -d -S minerstat-console sh /home/minerstat/minerstat-os/start.sh
 
   echo ""
   echo "Minerstat has been started in the background.."
