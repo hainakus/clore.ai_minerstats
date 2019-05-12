@@ -684,7 +684,7 @@ module.exports = {
             global.sync_num++;
             tools.fetch(global.client, global.minerCpu, global.cpuDefault);
           }
-        }, 30000);
+        }, 10000);
       }
     })();
     /*
