@@ -80,6 +80,7 @@ sudo cp /home/minerstat/minerstat-os/core/.tmux.conf /home/minerstat
 # Tmate config
 sudo cp /home/minerstat/minerstat-os/core/.tmate.conf /home/minerstat
 echo "" | ssh-keygen -N ""
+/home/minerstat/minerstat-os/bin/tmate -S /tmp/tmate.sock new-session -d
 # Update profile
 sudo chmod 777 /etc/profile
 sudo cp /home/minerstat/minerstat-os/core/profile /etc
