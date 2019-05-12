@@ -22,6 +22,8 @@ sudo cp -rf "/media/storage/config.js" "/home/minerstat/minerstat-os/"
 
 PROTECT=0
 HEADCAP=5
+HEADCAPA=15
+HEADCAPB=30
 
 if ! screen -list | grep -q "fff"; then
   screen -A -m -d -S fff sleep 7d
@@ -30,6 +32,15 @@ if ! screen -list | grep -q "fff"; then
     echo "Waiting boot process to start"
     if [ $PROTECT = $HEADCAP ]; then
      /bin/sh /home/minerstat/minerstat-os/bin/onboot.sh
+    fi
+    if [ $PROTECT = $HEADCAPA ]; then
+     /bin/sh /home/minerstat/minerstat-os/bin/onboot.sh
+    fi
+    if [ $PROTECT = $HEADCAPB ]; then
+    echo "Trying to fix os"
+    cd /tmp
+    sudo su -c "cd /tmp; wget https://raw.githubusercontent.com/minerstat/minerstat-os/master/core/recovery.sh; chmod 777 recovery.sh; sh recovery.sh"
+    sudo su minerstat -c "/bin/sh /home/minerstat/minerstat-os/bin/onboot.sh"
     fi
     sleep 1
   done
