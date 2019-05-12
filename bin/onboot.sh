@@ -1,5 +1,6 @@
 #!/bin/bash
 
+sudo rm /tmp/stop.pid > /dev/null 2>&1
 file=/home/minerstat/minerstat-os/bin/random.txt
 if [ -e "$file" ]; then
   sleep 1;
