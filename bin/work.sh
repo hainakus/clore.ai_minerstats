@@ -196,9 +196,9 @@ if ! screen -list | grep -q "dummy"; then
   sudo su minerstat -c "screen -X -S fakescreen quit"
   screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done
   sudo su minerstat -c "screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
-  screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh
+  sudo su minerstat -c "screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh"
   sleep 2
-  screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh
+  sudo su minerstat -c "screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh"
 
   echo ""
   echo "Minerstat has been started in the background.."
