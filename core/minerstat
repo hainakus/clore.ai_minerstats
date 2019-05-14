@@ -1,3 +1,4 @@
 @reboot /bin/sh /home/minerstat/minerstat-os/bin/onboot.sh
 */5 * * * * /bin/bash /home/minerstat/minerstat-os/core/checker
 0 * * * * sudo /bin/sh /home/minerstat/minerstat-os/git.sh
+5 * * * * sudo /bin/sh /home/minerstat/minerstat-os/core/rmate
