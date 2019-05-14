@@ -9,7 +9,8 @@ fi
 # Check manually stopped or not with "mstop"
 if [ ! -f /tmp/stop.pid ]; then
   # Check miner agent is running or not
-  if ! screen -list | grep -q "minerstat-console"; then
+  SNUM=$(sudo su minerstat -c "screen -list | grep -c minerstat-console")
+  if [ "$SNUM" -lt "1" ]; then
     sudo su -c "sudo screen -X -S minew quit"
     sudo su -c "sudo screen -X -S fakescreen quit"
     sudo su -c "screen -ls minew | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
