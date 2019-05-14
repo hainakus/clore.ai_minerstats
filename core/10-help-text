@@ -34,7 +34,7 @@ printf " * Discord:\thttps://discord.gg/d679vuP\n"
 
 root_usage=`df -h / | awk '/\// {print $(NF-1)}'`
 time=`uptime | grep -ohe 'up .*' | sed 's/,/\ hours/g' | awk '{ printf $2" "$3 }'`
-ip=`sudo ifconfig $(sudo route | grep default | awk '{ print $8 }') | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}'`
+ip=`ifconfig | grep "inet" | grep -v "inet6" | grep -v "127.0.0.1" | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | head -n 1 | grep -o -E '[.0-9]+'`
 version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
 
 if grep -q experimental "/etc/lsb-release"; then
