@@ -210,7 +210,7 @@ if ! screen -list | grep -q "dummy"; then
   sleep 5
   sudo chvt 1
   sleep 9
-  screen -x minerstat-console
+  sudo su minerstat -c "screen -x minerstat-console"
   sleep 1
   exec bash
   source ~/.bashrc
