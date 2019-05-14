@@ -44,10 +44,10 @@ do
   STR2="$(mpstat | awk '$13 ~ /[0-9.]+/ { print 100 - $13 }')"
 
   #REMOTE IP ADDRESS
-  STR4="$(wget -qO- http://ipecho.net/plain ; echo)"
+  #STR4="$(wget -qO- http://ipecho.net/plain ; echo)"
 
   #LOCAL IP ADDRESS
-  STR3="$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1' | grep -v $STR4)"
+  STR3="$(ifconfig | grep "inet" | grep -v "inet6" | grep -v "127.0.0.1" | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | head -n 1 | grep -o -E '[.0-9]+')"
 
   #FREE MEMORY
   STR5="$(free -m | grep 'Mem' | awk '{print $4}')"
@@ -62,7 +62,7 @@ do
   echo "CPU Usage: $STR2"
   echo "Free Memory: $STR5"
   echo "Local IP: $STR3"
-  echo "Remote IP: $STR4"
+  #echo "Remote IP: $STR4"
   echo ""
 
   IS_ONLINE="YES"
@@ -79,7 +79,7 @@ do
     OFFLINE_COUNT=0
 
     #SEND INFO
-    wget -qO- "https://api.minerstat.com/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&remoteip=$STR4&freemem=$STR5&teleid=$TELEID" ; echo
+    wget -qO- "https://api.minerstat.com/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&freemem=$STR5&teleid=$TELEID" ; echo
 
     echo "-*- MINERSTAT LISTENER -*-"
     RESPONSE="$(wget -qO- "https://api.minerstat.com/v2/os_listener.php?token=$TOKEN&worker=$WORKER" ; echo)"
