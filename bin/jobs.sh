@@ -85,8 +85,9 @@ echo "" | ssh-keygen -N "" &> /dev/null
 sudo chmod 777 /etc/profile
 sudo cp /home/minerstat/minerstat-os/core/profile /etc
 # Restart listener, Maintenance Process, Also from now it can be updated in runtime (mupdate)
-screen -S listener -X quit # kill running process
-screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
+sudo su -c "screen -S listener -X quit"
+sudo su minerstat -c "screen -S listener -X quit"
+sudo su minerstat -c "screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh"
 # Check JQ is installed
 ISCURL=$(dpkg -l curl | grep curl | wc -l | sed 's/[^0-9]*//g')
 if [ "$ISCURL" -lt 1 ]; then
