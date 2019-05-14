@@ -26,6 +26,9 @@ HEADCAP=5
 HEADCAPA=15
 HEADCAPB=30
 
+SNUM=$(sudo su minerstat -c "screen -list | grep -c minerstat-console")
+if [ "$SNUM" -lt "1" ]; then
+   
 if ! screen -list | grep -q "fff"; then
   screen -A -m -d -S fff sleep 7d
   until screen -x boot_process; do
@@ -45,6 +48,8 @@ if ! screen -list | grep -q "fff"; then
     fi
     sleep 1
   done
+fi
+
 fi
 
 source ~/minerstat-os/core/.bashrc
