@@ -119,6 +119,10 @@ do
     sudo shutdown -h now
   fi
 
+  if [ $RESPONSE = "CONSOLE" ]; then
+    sudo su minerstat -c "sudo /bin/sh /home/minerstat/minerstat-os/core/rmate"
+  fi
+
   if [ $RESPONSE = "RESTART" ] || [ $RESPONSE = "START" ] || [ $RESPONSE = "NODERESTART" ]; then
       sudo su -c "sudo screen -X -S minew quit"
       sudo su -c "sudo screen -X -S fakescreen quit"
