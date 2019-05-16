@@ -8,6 +8,10 @@ screen -S minerstat-console -X stuff ""
 screen -S minerstat-console -X stuff ""
 screen -S minerstat-console -X stuff ""
 
+if [ "$HOW_MANY_WINDOW" -gt "2" ]; then
+  ps aux | grep "wrapper" | grep "minerstat" | awk '{print $2}' | sudo xargs kill -9
+fi
+
 if [ "$HOW_MANY_WINDOW" = "2" ]; then
   # Miner window is set
   echo ""
