@@ -47,6 +47,10 @@ sudo sed -i s/"#FSCKFIX=no"/"FSCKFIX=yes"/ /etc/default/rcS
 # Change hostname
 WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
 sudo sed -i s/"minerstat"/"$WNAME"/ /etc/hosts
+if ! grep -q $WNAME "/etc/hosts"; then
+  echo "Hostname mistmatch - Fixing.."
+  sudo su -c "echo '127.0.1.1       $WNAME' >> /etc/hosts"
+fi
 sudo su -c "echo '$WNAME' > /etc/hostname"
 sudo hostname -F /etc/hostname
 #WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
