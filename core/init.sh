@@ -10,7 +10,7 @@ DISK="$(df -hm | grep $PART | awk '{print $2}')"
 MONITOR_TYPE="unknown"
 STRAPFILENAME="amdmemorytweak-stable"
 DETECTA=$(nvidia-smi -L | grep "GPU 0:" | wc -l)
-DETECTB=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "Adapter" | wc -l)
+DETECTB=$(sudo lshw -C display | grep AMD | wc -l)
 
 if grep -q experimental "/etc/lsb-release"; then
   STRAPFILENAME="amdmemorytweak"
