@@ -366,17 +366,25 @@ module.exports = {
       }
     }
 
-    // FOR SAFE RUNNING MINER NEED TO CREATE START.BASH
+        // FOR SAFE RUNNING MINER NEED TO CREATE START.BASH
     var writeStream = fs.createWriteStream(global.path + "/" + "clients/" + miner + "/start.bash"),
       str = "";
     if (args == "") {
       if (miner == "xmr-stak") {
-        str = "export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + " --noCPU";
+        str = "export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + " --noCPU; sleep 20";
       } else {
-        str = "export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + " ";
+        str = "export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + "; sleep 20 ";
       }
     } else {
-      str = "export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + " " + args + "; sleep 20";
+      if (miner == "progpowminer") {
+        if (global.gputype === "nvidia") {
+          str = "export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + " ";
+        } else {
+          str = "export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + "-opencl ";
+        }
+      } else {
+        str = "export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + " " + args + "; sleep 20";
+      }
     }
     console.log("Starting command: " + str);
     writeStream.write("" + str);
