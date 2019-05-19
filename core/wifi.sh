@@ -24,7 +24,7 @@ if echo "$DEVICE" | grep "w" ;then
   nmcli d wifi list
 
 
-  CONNECT=$(nmcli device wifi connect $SSID password $PASSWD)
+  CONNECT=$(nmcli device wifi connect "$SSID" password "$PASSWD")
 
   if echo "$CONNECT" | grep "failed" ;then
     echo ""
