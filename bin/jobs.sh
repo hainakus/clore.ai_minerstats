@@ -74,11 +74,6 @@ if [ -z "$1" ]; then
   AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
 fi
 
-if [ "$1" -gt 0 ] || [ "$AMDDEVICE" -gt 0 ]; then
-  sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q > /home/minerstat/minerstat-os/bin/amdmeminfo.txt
-  sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
-fi
-
 # Update motd.d
 sudo chmod 777 /etc/update-motd.d/10-help-text
 sudo cp /home/minerstat/minerstat-os/core/10-help-text /etc/update-motd.d
@@ -116,4 +111,8 @@ if [ -z "${curlPresent:-}" ]; then
    if [ "$NVIDIADEVICE" -gt 0 ]; then
      sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
    fi
+fi
+if [ "$1" -gt 0 ] || [ "$AMDDEVICE" -gt 0 ]; then
+  sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q > /home/minerstat/minerstat-os/bin/amdmeminfo.txt &
+  sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
 fi
