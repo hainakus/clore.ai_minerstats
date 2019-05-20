@@ -106,7 +106,7 @@ which curl 2>&1 >/dev/null && curlPresent=true
 if [ -z "${curlPresent:-}" ]; then
    echo "CURL FIX"
    sudo apt --yes --force-yes --fix-broken install
-   sudo apt-get --yes --force-yes install curl
+   sudo apt-get --yes --force-yes install curl libcurl4
    NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
    if [ "$NVIDIADEVICE" -gt 0 ]; then
      sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
