@@ -16,7 +16,7 @@ sudo su -c "echo iface $INTERFACE inet dhcp  >> /etc/network/interfaces"
 sudo su -c '/etc/init.d/networking restart'
 sudo su -c "systemctl restart systemd-networkd"
 sudo ifdown $INTERFACE
-sudo ifup $INTERFACE
+sudo ifup $INTERFACE &
 
 sudo su -c 'echo "" > /etc/resolv.conf'
 sudo resolvconf -u
