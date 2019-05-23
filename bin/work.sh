@@ -184,7 +184,7 @@ if ! screen -list | grep -q "dummy"; then
   if [ "$AMDDEVICE" -gt 0 ]; then
     echo ""
     echo "--- Apply Strap (AMD TWEAK) from DB ---"
-    sudo sh /home/minerstat/minerstat-os/bin/setmem.sh
+    sudo screen -A -m -d -S delaymem sh /home/minerstat/minerstat-os/bin/setmem_bg.sh
   fi
 
   echo " "
