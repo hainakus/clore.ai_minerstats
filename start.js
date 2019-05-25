@@ -82,6 +82,19 @@ function jsFriendlyJSONStringify(s) {
   replace(/\\n/g, '\n').
   replace(/\\t/g, '\t')
 }
+
+function setSyncInterval() {
+  if (global.benchmark.toString() == "false") {
+    global.timeout = setInterval(function() {
+      // Start sync after compressing has been finished
+      if (global.dlGpuFinished == true) {
+        var tools = require('./tools.js');
+        global.sync_num++;
+        tools.fetch(global.client, global.minerCpu, global.cpuDefault);
+      }
+    }, 10000);
+  }
+}
 module.exports = {
   callBackSync: function(gpuSyncDone, cpuSyncDone) {
     // WHEN MINER INFO FETCHED, FETCH HARDWARE INFO
@@ -168,6 +181,10 @@ module.exports = {
     var tools = require('./tools.js');
     tools.killall();
   },
+  setsync: function() {
+    clearInterval(global.timeout);
+    setSyncInterval();
+  },
   fetch: function() {
     var tools = require('./tools.js');
     tools.fetch(global.client, global.minerCpu, global.cpuDefault);
@@ -219,48 +236,70 @@ module.exports = {
     needle.get('https://api.minerstat.com/v2/node/gpu/' + global.accesskey + '/' + global.worker, function(error, response) {
       if (error === null) {
         console.log(response.body);
-        if (global.benchmark.toString() != "true") {
-          global.client = response.body.default;
-        }
-        global.cpuDefault = response.body.cpuDefault;
-        global.minerType = response.body.type;
-        global.minerOverclock = response.body.overclock;
-        global.minerCpu = response.body.cpu;
-        try {
-          global.PrivateMiner = response.body.private;
-          if (global.PrivateMiner == "True") {
-            global.PrivateMinerURL = response.body.privateUrl;
-            global.PrivateMinerType = response.body.privateType;
-            global.PrivateMinerConfigFile = response.body.privateFile;
-            global.PrivateMinerStartFile = response.body.privateExe;
-            global.PrivateMinerStartArgs = response.body.privateArgs;
-          } else {
+
+        if (typeof response.body.error !== 'undefined' && response.body.error.includes("Invalid")) {
+
+          console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (Server authentication error)\x1b[0m");
+          clearInterval(global.timeout);
+          clearInterval(global.hwmonitor);
+          console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mPlease validate your config.js file\x1b[0m");
+          console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mor add a worker on my.minerstat.com with the name: " + global.worker + "\x1b[0m");
+
+          console.log("")
+          console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;33mTOKEN: " + global.accesskey + " \x1b[0m");
+          console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;33mWORKER: " + global.worker + " \x1b[0m");
+          console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;33mInvalid AccessKey or Worker not exist. \x1b[0m");
+          console.log("")
+          console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;34mRecheck in 30 sec. \x1b[0m");
+
+
+          sleep.sleep(30);
+          tools.restart();
+
+        } else {
+          if (global.benchmark.toString() != "true") {
+            global.client = response.body.default;
+          }
+          global.cpuDefault = response.body.cpuDefault;
+          global.minerType = response.body.type;
+          global.minerOverclock = response.body.overclock;
+          global.minerCpu = response.body.cpu;
+          try {
+            global.PrivateMiner = response.body.private;
+            if (global.PrivateMiner == "True") {
+              global.PrivateMinerURL = response.body.privateUrl;
+              global.PrivateMinerType = response.body.privateType;
+              global.PrivateMinerConfigFile = response.body.privateFile;
+              global.PrivateMinerStartFile = response.body.privateExe;
+              global.PrivateMinerStartArgs = response.body.privateArgs;
+            } else {
+              global.PrivateMiner = "False";
+              global.PrivateMinerURL = "";
+              global.PrivateMinerType = "";
+              global.PrivateMinerConfigFile = "";
+              global.PrivateMinerStartFile = "";
+              global.PrivateMinerStartArgs = "";
+            }
+          } catch (PrivateMinerReadError) {
             global.PrivateMiner = "False";
-            global.PrivateMinerURL = "";
-            global.PrivateMinerType = "";
-            global.PrivateMinerConfigFile = "";
-            global.PrivateMinerStartFile = "";
-            global.PrivateMinerStartArgs = "";
           }
-        } catch (PrivateMinerReadError) {
-          global.PrivateMiner = "False";
+          // Download miner if needed
+          downloadMiners(global.client, response.body.cpu, response.body.cpuDefault);
+          // Poke server
+          global.configtype = "simple";
+
+          var request = require('request');
+          request.get({
+            url: 'https://api.minerstat.com/v2/set_node_config.php?token=' + global.accesskey + '&worker=' + global.worker + '&miner=' + global.client.toLowerCase() + '&os=linux&nodel=yes&ver=5&cpuu=' + global.minerCpu,
+            form: {
+              dump: "minerstatOSInit"
+            }
+          }, function(error, response, body) {
+            console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32mFirst sync (~30 sec)\x1b[0m");
+            console.log("\x1b[1;94m==========================================\x1b[0m");
+          });
         }
-        // Download miner if needed
-        downloadMiners(global.client, response.body.cpu, response.body.cpuDefault);
-        // Poke server
-        global.configtype = "simple";
-	
-        var request = require('request');
-        request.get({
-          url: 'https://api.minerstat.com/v2/set_node_config.php?token=' + global.accesskey + '&worker=' + global.worker + '&miner=' + global.client.toLowerCase() + '&os=linux&nodel=yes&ver=5&cpuu=' + global.minerCpu,
-          form: {
-            dump: "minerstatOSInit"
-          }
-        }, function(error, response, body) {
-          console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
-          console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32mFirst sync (~30 sec)\x1b[0m");
-          console.log("\x1b[1;94m==========================================\x1b[0m");
-        }); 
       } else {
         console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + error + ")\x1b[0m");
         clearInterval(global.timeout);
@@ -308,63 +347,72 @@ module.exports = {
       request.get({
         url: 'https://static.minerstat.farm/miners/linux/version.json'
       }, function(error, response, body) {
-        var parseData = JSON.parse(body);
-        if (global.PrivateMiner == "True") {
-          gpuServerVersion = global.PrivateMinerURL;
+        if (error != null) {
+          console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + error + ")\x1b[0m");
+          clearInterval(global.timeout);
+          clearInterval(global.hwmonitor);
+          console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;33mWaiting for static server\x1b[0m");
+          sleep.sleep(10);
+          tools.restart();
         } else {
-          gpuServerVersion = parseData[gpuMiner.toLowerCase()];
-        }
-        if (isCpu.toString() == "true" || isCpu.toString() == "True") {
-          cpuServerVersion = parseData[cpuMiner.toLowerCase()];
-        }
-        // main Miner Check's
-        var dir = 'clients/' + gpuMiner.toLowerCase() + '/msVersion.txt';
-        if (fs.existsSync(dir)) {
-          fs.readFile(dir, 'utf8', function(err, data) {
-            if (err) {
-              gpuLocalVersion = "0";
-            }
-            gpuLocalVersion = data;
-            if (gpuLocalVersion == undefined) {
-              gpuLocalVersion = "0";
-            }
-            if (gpuServerVersion == gpuLocalVersion) {
-              dlGpu = false;
-            } else {
-              dlGpu = true;
-            }
-            // Callback
-            callbackVersion(dlGpu, false, false, "gpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
-          });
-        } else {
-          dlGpu = true;
-          // Callback
-          callbackVersion(dlGpu, false, false, "gpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
-        }
-        // cpu Miner Check's
-        if (isCpu.toString() == "true" || isCpu.toString() == "True") {
-          var dir = 'clients/' + cpuMiner.toLowerCase() + '/msVersion.txt';
+          var parseData = JSON.parse(body);
+          if (global.PrivateMiner == "True") {
+            gpuServerVersion = global.PrivateMinerURL;
+          } else {
+            gpuServerVersion = parseData[gpuMiner.toLowerCase()];
+          }
+          if (isCpu.toString() == "true" || isCpu.toString() == "True") {
+            cpuServerVersion = parseData[cpuMiner.toLowerCase()];
+          }
+          // main Miner Check's
+          var dir = 'clients/' + gpuMiner.toLowerCase() + '/msVersion.txt';
           if (fs.existsSync(dir)) {
             fs.readFile(dir, 'utf8', function(err, data) {
               if (err) {
-                cpuLocalVersion = "0";
+                gpuLocalVersion = "0";
               }
-              cpuLocalVersion = data;
-              if (cpuLocalVersion == undefined) {
-                cpuLocalVersion = "0";
+              gpuLocalVersion = data;
+              if (gpuLocalVersion == undefined) {
+                gpuLocalVersion = "0";
               }
-              if (cpuServerVersion == cpuLocalVersion) {
-                dlCpu = false;
+              if (gpuServerVersion == gpuLocalVersion) {
+                dlGpu = false;
               } else {
-                dlCpu = true;
+                dlGpu = true;
               }
               // Callback
-              callbackVersion(false, true, dlCpu, "cpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
+              callbackVersion(dlGpu, false, false, "gpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
             });
           } else {
-            dlCpu = true;
+            dlGpu = true;
             // Callback
-            callbackVersion(false, true, dlCpu, "cpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
+            callbackVersion(dlGpu, false, false, "gpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
+          }
+          // cpu Miner Check's
+          if (isCpu.toString() == "true" || isCpu.toString() == "True") {
+            var dir = 'clients/' + cpuMiner.toLowerCase() + '/msVersion.txt';
+            if (fs.existsSync(dir)) {
+              fs.readFile(dir, 'utf8', function(err, data) {
+                if (err) {
+                  cpuLocalVersion = "0";
+                }
+                cpuLocalVersion = data;
+                if (cpuLocalVersion == undefined) {
+                  cpuLocalVersion = "0";
+                }
+                if (cpuServerVersion == cpuLocalVersion) {
+                  dlCpu = false;
+                } else {
+                  dlCpu = true;
+                }
+                // Callback
+                callbackVersion(false, true, dlCpu, "cpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
+              });
+            } else {
+              dlCpu = true;
+              // Callback
+              callbackVersion(false, true, dlCpu, "cpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
+            }
           }
         }
       });
@@ -676,16 +724,6 @@ module.exports = {
         console.log("\x1b[1;94m== \x1b[0mBenchmark Status: Inactive");
       }
 
-      if (global.benchmark.toString() == "false") {
-        global.timeout = setInterval(function() {
-          // Start sync after compressing has been finished
-          if (global.dlGpuFinished == true) {
-            var tools = require('./tools.js');
-            global.sync_num++;
-            tools.fetch(global.client, global.minerCpu, global.cpuDefault);
-          }
-        }, 10000);
-      }
     })();
     /*
     	END LOOP

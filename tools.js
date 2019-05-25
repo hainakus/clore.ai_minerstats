@@ -4,7 +4,7 @@ var colors = require('colors'),
 const https = require('https'),
   chalk = require('chalk');
 var spec = null,
-    syncs = null;
+  syncs = null;
 
 function getDateTime() {
   var date = new Date(),
@@ -50,30 +50,30 @@ function runMiner(miner, execFile, args, plus) {
 }
 
 function restartNode() {
-    if (global.benchmark.toString() == 'false') {
-        var main = require('./start.js');
-        global.watchnum++;
-        if (global.watchnum == 6 || global.watchnum == 12) {
-            console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;31mError (" + global.watchnum + "/6)\x1b[0m");
-            console.log("\x1b[1;94m== \x1b[0mAction: Restarting client ...");
-            clearInterval(global.timeout);
-            clearInterval(global.hwmonitor);
-            var killMinerQueryB = require('child_process').exec,
-                killMinerQueryProcB = killMinerQueryB("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
-                    main.main();
-                });
-        }
-        if (global.watchnum >= 18) {
-            console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;31mError (" + global.watchnum + "/6)\x1b[0m");
-            console.log("\x1b[1;94m== \x1b[0mAction: Rebooting ...");
-            clearInterval(global.timeout);
-            clearInterval(global.hwmonitor);
-            var exec = require('child_process').exec;
-            var queryBoot = exec("sudo su -c 'sudo reboot -f';", function(error, stdout, stderr) {
-                console.log(stdout + " " + stderr);
-            });
-        }
+  if (global.benchmark.toString() == 'false') {
+    var main = require('./start.js');
+    global.watchnum++;
+    if (global.watchnum == 6 || global.watchnum == 12) {
+      console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;31mError (" + global.watchnum + "/6)\x1b[0m");
+      console.log("\x1b[1;94m== \x1b[0mAction: Restarting client ...");
+      clearInterval(global.timeout);
+      clearInterval(global.hwmonitor);
+      var killMinerQueryB = require('child_process').exec,
+        killMinerQueryProcB = killMinerQueryB("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
+          main.main();
+        });
     }
+    if (global.watchnum >= 18) {
+      console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;31mError (" + global.watchnum + "/6)\x1b[0m");
+      console.log("\x1b[1;94m== \x1b[0mAction: Rebooting ...");
+      clearInterval(global.timeout);
+      clearInterval(global.hwmonitor);
+      var exec = require('child_process').exec;
+      var queryBoot = exec("sudo su -c 'sudo reboot -f';", function(error, stdout, stderr) {
+        console.log(stdout + " " + stderr);
+      });
+    }
+  }
 }
 const MINER_JSON = {
   "cast-xmr": {
@@ -339,6 +339,7 @@ module.exports = {
       args,
       parse = require('parse-spawn-args').parse,
       sleep = require('sleep'),
+      mains = require('./start.js'),
       miner = miner.toLowerCase();
     console.log("\x1b[1;94m== \x1b[0mAction: Starting " + miner + " ...");
     console.log(chalk.white(getDateTime() + " " + miner + " => " + startArgs));
@@ -366,7 +367,7 @@ module.exports = {
       }
     }
 
-        // FOR SAFE RUNNING MINER NEED TO CREATE START.BASH
+    // FOR SAFE RUNNING MINER NEED TO CREATE START.BASH
     var writeStream = fs.createWriteStream(global.path + "/" + "clients/" + miner + "/start.bash"),
       str = "";
     if (args == "") {
@@ -398,12 +399,18 @@ module.exports = {
         var killQuery = require('child_process').exec,
           killQueryProc = killQuery("sudo /home/minerstat/minerstat-os/core/killport.sh " + MINER_JSON[miner]["apiPort"], function(error, stdout, stderr) {
             if (global.PrivateMiner == "False") {
+              console.log(stdout);
+              console.log("Starting miner screen...");
+              mains.setsync();
               runMiner(miner, execFile, args);
             }
           });
       } catch (killError) {}
 
       if (global.PrivateMiner == "True") {
+        console.log(stdout);
+        console.log("Starting miner screen...");
+        mains.setsync();
         runMiner(miner, execFile, args);
       }
 
@@ -699,6 +706,12 @@ module.exports = {
       fkill('GrinProMiner').then(() => {});
       if (global.PrivateMiner == "True") {
         fkill(global.privateExe).then(() => {});
+      }
+      try {
+        var killWrapper = require('child_process').exec,
+          killWrapperProc = killWrapper("ps aux | grep wrapper | grep minerstat | awk '{print $2}' | sudo xargs kill -9 && echo 'screen terminated'", function(error, stdout, stderr) {});
+      } catch (killWrapperProcError) {
+        console.log(killWrapperProcError.toString());
       }
     } catch (err) {}
   },
