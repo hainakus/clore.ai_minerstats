@@ -19,10 +19,10 @@ MEM_TOTAL=$((MEM_SIZE+SWAP_TOTAL))
 Help() {
   echo
   echo "-------- SWAP HELP -----------"
-  echo "swap create %SIZE% %MAXSIZE%"
-  echo "swap remove"
+  echo "mswap create %SIZE% %MAXSIZE%"
+  echo "mswap remove"
   echo
-  echo "Default: swap create 8192"
+  echo "Default: mswap create 8192"
   echo "------------------------------"
   echo
 }
@@ -37,13 +37,13 @@ Create() {
     # If yes, ask for removal, exit
     echo "Swap is already activated, Nothing to do!"
     echo "You need to remove first, Enter:"
-    echo "swap remove"
+    echo "mswap remove"
   else
     # Check for recommendation
     if [ $MEM_TOTAL -gt 16384 ]; then
       echo "! You have already enough memory (>16G), no swap files needed."
       echo "! You still can create swap by increase %MAXSIZE%"
-      echo "= Example: swap create 8192 18432"
+      echo "= Example: mswap create 8192 18432"
       if [ -z "$3" ]; then
         exit 2
       fi

@@ -134,6 +134,7 @@ alias atiflash='cd /home/minerstat/minerstat-os/bin/; sudo ./atiflash'
 alias atidumpall='cd /home/minerstat/minerstat-os/bin/ sudo ./atidumpall.bash'
 alias atiflashall='cd /home/minerstat/minerstat-os/bin/; sudo ./atiflashall.bash'
 alias minfo='sh /home/minerstat/minerstat-os/core/10-help-text'
+alias mswap='sudo /home/minerstat/minerstat-os/core/swap'
 
 if grep -q experimental "/etc/lsb-release"; then
   alias amdmemtool='sudo /home/minerstat/minerstat-os/bin/amdmemorytweak'

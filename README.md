@@ -39,6 +39,8 @@ minfo         | Show welcome screen and msOS version
 
 mlang         | Set keyboard layout (e.g. mlang de)
 
+mswap         | Tool for swap file creation
+
 atiflash      | AMD - Bios (.rom) Flasher
 
 atiflashall   | AMD - Flash .rom to all available GPUs on the system
