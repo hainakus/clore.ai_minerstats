@@ -4,12 +4,13 @@
 if [ ! $1 ]; then
   echo ""
   echo "--- EXAMPLE ---"
-  echo "./overclock_vega7.sh 1 2 3 4 5"
+  echo "./overclock_vega7.sh 1 2 3 4 5 6"
   echo "1 = GPUID"
   echo "2 = Memory Clock"
   echo "3 = Core Clock"
   echo "4 = Fan Speed"
   echo "5 = VDDC"
+  echo "6 = MVDD"
   echo ""
   echo "-- Full Example --"
   echo "./overclock_vega7.sh 0 1000 1800 90 980"
@@ -25,7 +26,7 @@ if [ $1 ]; then
   CORECLOCK=$3
   FANSPEED=$4
   VDDC=$5
-  VDDCI=$6
+  MVDD=$6
 
   echo "--**--**-- GPU $1 : VEGA VII --**--**--"
 
@@ -40,10 +41,19 @@ if [ $1 ]; then
   sudo su -c "echo manual > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
   sudo su -c "echo 4 > /sys/class/drm/card$GPUID/device/pp_power_profile_mode"
 
+  # CoreClock
+  if [ "$VDDC" = "0" ] || [ "$VDDC" = "skip" ] || [ -z "$VDDC" ]; then
+    VDDC="1114" # DEFAULT FOR 1801Mhz @1114mV
+  fi
+
+  if [ "$MVDD" = "0" ] || [ "$MVDD" = "skip" ] || [ -z "$MVDD" ]; then
+    MVDD="1070"
+  fi
+
   # MemoryClock
-  if [ "$MEMCLOCK" != "skip" ]
-  then
+  if [ "$MEMCLOCK" != "skip" ]; then
     sudo su -c "echo 'm 1 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+    # sudo su -c "echo 'm 1 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
     echo "GPU$GPUID : MEMCLOCK => $MEMCLOCK Mhz"
 
@@ -53,18 +63,8 @@ if [ $1 ]; then
     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   fi
 
-  # CoreClock
-  if [ "$VDDC" != "0" ]
-  then
-    echo ""
-  else
-    VDDC="1114" # DEFAULT FOR 1801Mhz @1114mV
-  fi
-
-  if [ "$VDDC" != "skip" ]
-  then
-    if [ "$CORECLOCK" != "skip" ]
-    then
+  if [ "$VDDC" != "skip" ]; then
+    if [ "$CORECLOCK" != "skip" ]; then
       sudo su -c "echo 's 1 $CORECLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       #sudo su -c "echo 'vc 1 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 'vc 2 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
@@ -89,8 +89,7 @@ if [ $1 ]; then
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
 
   # FANS
-  if [ "$FANSPEED" != 0 ]
-  then
+  if [ "$FANSPEED" != 0 ]; then
     FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $FANSPEED}")
     FANVALUE=$(printf "%.0f\n" $FANVALUE)
     echo "GPU$GPUID : FANSPEED => $FANSPEED% ($FANVALUE)"
@@ -106,8 +105,7 @@ if [ $1 ]; then
   done
 
   # FANS
-  if [ "$FANSPEED" != 0 ]
-  then
+  if [ "$FANSPEED" != 0 ]; then
     sudo ./rocm-smi --setfan $FANSPEED"%"
   else
     sudo ./rocm-smi --setfan 100%

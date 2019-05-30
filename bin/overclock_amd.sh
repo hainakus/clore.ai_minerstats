@@ -4,16 +4,17 @@
 if [ ! $1 ]; then
   echo ""
   echo "--- EXAMPLE ---"
-  echo "./overclock_amd.sh 1 2 3 4 5 6"
+  echo "./overclock_amd.sh 1 2 3 4 5 6 7"
   echo "1 = GPUID"
   echo "2 = Memory Clock"
   echo "3 = Core Clock"
   echo "4 = Fan Speed"
   echo "5 = VDDC"
   echo "6 = VDDCI"
+  echo "7 = MVDD"
   echo ""
   echo "-- Full Example --"
-  echo "./overclock_amd.sh 0 2100 1140 80 850 900"
+  echo "./overclock_amd.sh 0 2100 1140 80 850 900 1000"
   echo ""
 fi
 
@@ -27,9 +28,7 @@ if [ $1 ]; then
   FANSPEED=$4
   VDDC=$5
   VDDCI=$6
-  # MDDC is not implemented due not effect much Polaris gpu's and..
-  # really stable around 1000mV
-  MDDC=$7
+  MVDD=$7
 
   ## BULIDING QUERIES
   STR1="";
@@ -51,45 +50,32 @@ if [ $1 ]; then
   isThisVegaVII=$(sudo ./amdcovc -a 0 | grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g')
 
   ########## VEGA ##################
-  if [ "$isThisVega" != "Vega" ]
-  then
-    echo ""
-  else
+  if [ "$isThisVega" = "Vega" ]; then
     echo "Loading VEGA OC Script.."
-    sudo ./overclock_vega.sh $1 $2 $3 $4 $5
+    sudo ./overclock_vega.sh $1 $2 $3 $4 $5 $7
     exit 1
   fi
   ################################
 
   ########## VEGA VII ############
-  if [ "$isThisVegaVII" != "VII" ]
-  then
-    echo ""
-  else
+  if [ "$isThisVegaVII" = "VII" ]; then
     echo "Loading VEGA VII OC Script.."
-    sudo ./overclock_vega7.sh $1 $2 $3 $4 $5
+    sudo ./overclock_vega7.sh $1 $2 $3 $4 $5 $7
     exit 1
   fi
   ################################
 
   ########## BACKUP ##################
-  if [ "$isThisVegaII" != "VegaFrontierEdition" ]
-  then
-    echo ""
-  else
+  if [ "$isThisVegaII" = "VegaFrontierEdition" ]; then
     echo "Loading VEGA OC Script.."
-    sudo ./overclock_vega.sh $1 $2 $3 $4 $5
+    sudo ./overclock_vega.sh $1 $2 $3 $4 $5 $7
     exit 1
   fi
   ################################
 
-  if [ "$isThisR9" != "R9" ]
-  then
-
-    if [ "$FANSPEED" != "skip" ]
-    then
-      if [ "$FANSPEED" != 0 ]
-      then
+  if [ "$isThisR9" != "R9" ]; then
+    if [ "$FANSPEED" != "skip" ]; then
+      if [ "$FANSPEED" != 0 ]; then
         STR1="--set-fanspeed $FANSPEED";
         STR2="fanspeed:$GPUID=$FANSPEED";
       fi
@@ -101,8 +87,7 @@ if [ $1 ]; then
     currentCoreState=$(sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk | grep '*' | cut -f1 -d':' | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g'")
     #currentCoreState=5
 
-    if [ "$R9" != "" ]
-    then
+    if [ "$R9" != "" ]; then
       sudo ./amdcovc $R9 | grep "Setting"
     fi
 
@@ -114,10 +99,7 @@ if [ $1 ]; then
       currentCoreState=5
     fi
 
-    if [ "$currentCoreState" != 0 ]
-    then
-      echo ""
-    else
+    if [ "$currentCoreState" = 0 ]; then
       echo "WARN: GPU$GPUID was idle, using default states (5) (Idle)"
       currentCoreState=5
     fi
@@ -125,7 +107,7 @@ if [ $1 ]; then
     ## Memstate just for protection
     if [ -z $maxMemState ]; then
       echo "ERROR: No Current Mem State found for GPU$GPUID"
-      $maxMemState = 1; # 1 is exist on RX400 & RX500 too.
+      maxMemState=1; # 1 is exist on RX400 & RX500 too.
     fi
 
 
@@ -136,54 +118,49 @@ if [ $1 ]; then
     echo "DEBUG: C $currentCoreState / VL $voltStateLine / CVS $currentVoltState"
     echo ""
 
-    if [ "$VDDC" != "skip" ]
-    then
-      if [ "$VDDC" != "0" ]
-      then
-        echo "--- Setting up VDDC Voltage GPU$GPUID (VS: $currentVoltState) ---"
-        # set all voltage states from 1 upwards to xxx mV:
-        #if [ "$maxMemState" != "2" ]
-        #then
-        #	sudo ./ohgodatool -i $GPUID --volt-state $currentVoltState --vddc-table-set $VDDC
-        #else
-        #	for voltstate in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-        #		sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
-        #	done
-        #fi
-        for voltstate in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-          sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
-        done
-      fi
+    if [ "$VDDC" != "skip" ] && [ "$VDDC" != "0" ]; then
+      echo "--- Setting up VDDC Voltage GPU$GPUID (VS: $currentVoltState) ---"
+      # set all voltage states from 1 upwards to xxx mV:
+      #if [ "$maxMemState" != "2" ]
+      #then
+      #	sudo ./ohgodatool -i $GPUID --volt-state $currentVoltState --vddc-table-set $VDDC
+      #else
+      #	for voltstate in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+      #		sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
+      #	done
+      #fi
+      for voltstate in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+        sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
+      done
     fi
 
+    # VDDCI
+    if [ "$VDDCI" != "" ] && [ "$VDDCI" != "0" ] && [ "$VDDCI" != "skip" ]; then
+      # VDDCI Voltages
+      # VDDC Voltage + 50
+      echo
+      echo "--- Setting up VDDCI Voltage GPU$GPUID ---"
+      echo
+      sudo ./ohgodatool -i $GPUID --mem-state $maxMemState --vddci $VDDCI
+    fi
 
-    if [ "$VDDCI" != "" ]
-    then
-      if [ "$VDDCI" != "0" ]
-      then
-        if [ "$VDDCI" != "skip" ]
-        then
-          # VDDCI Voltages
-          # VDDC Voltage + 50
-          echo ""
-          echo "--- Setting up VDDCI Voltage GPU$GPUID ---"
-          sudo ./ohgodatool -i $GPUID --mem-state $maxMemState --vddci $VDDCI
-        fi
-      fi
+    # MVDCC
+    if [ "$MVDD" != "" ] && [ "$MVDD" != "0" ] && [ "$MVDD" != "skip" ]; then
+      echo
+      echo "--- Setting up MVDD Voltage GPU$GPUID ---"
+      echo
+      sudo ./ohgodatool -i $GPUID --mem-state $maxMemState --mvdd $MVDD
     fi
 
     #################################£
     # SET MEMORY @ CORE CLOCKS
 
-    if [ "$CORECLOCK" != "skip" ]
-    then
-      if [ "$CORECLOCK" != "0" ]
-      then
+    if [ "$CORECLOCK" != "skip" ]; then
+      if [ "$CORECLOCK" != "0" ]; then
         # APPLY AT THE END
         STR5="coreclk:$GPUID=$CORECLOCK"
 
-        if [ "$maxMemState" != "2" ]
-        then
+        if [ "$maxMemState" != "2" ]; then
           #OHGOD1=" --core-state $currentCoreState --core-clock $CORECLOCK"
           for corestate in 3 4 5 6 7 8; do
             sudo ./ohgodatool -i $GPUID --core-state $corestate --core-clock $CORECLOCK
@@ -198,10 +175,8 @@ if [ $1 ]; then
     fi
 
 
-    if [ "$MEMCLOCK" != "skip" ]
-    then
-      if [ "$MEMCLOCK" != "0" ]
-      then
+    if [ "$MEMCLOCK" != "skip" ]; then
+      if [ "$MEMCLOCK" != "0" ]; then
         # APPLY AT THE END
         STR4="cmemclk:$GPUID=$MEMCLOCK"
         OHGOD2=" --mem-state $maxMemState --mem-clock $MEMCLOCK"
@@ -210,8 +185,7 @@ if [ $1 ]; then
 
     #################################£
     # PROTECT FANS, JUST IN CASE
-    if [ "$FANSPEED" != 0 ]
-    then
+    if [ "$FANSPEED" != 0 ]; then
       OHGOD3=" --set-fanspeed $FANSPEED"
       STR1="--set-fanspeed $FANSPEED"
       STR2="fanspeed:$GPUID=$FANSPEED"
@@ -221,10 +195,7 @@ if [ $1 ]; then
       STR2="fanspeed:$GPUID=70"
     fi
 
-    if [ "$FANSPEED" != "skip" ]
-    then
-      echo ""
-    else
+    if [ "$FANSPEED" = "skip" ]; then
       OHGOD3=" --set-fanspeed 70"
       STR1="--set-fanspeed 70"
       STR2="fanspeed:$GPUID=70"
@@ -265,8 +236,7 @@ if [ $1 ]; then
     done
 
     # FANS
-    if [ "$FANSPEED" != 0 ]
-    then
+    if [ "$FANSPEED" != 0 ]; then
       FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $FANSPEED}")
       FANVALUE=$(printf "%.0f\n" $FANVALUE)
       echo "GPU$GPUID : FANSPEED => $FANSPEED% ($FANVALUE)"
@@ -285,49 +255,37 @@ if [ $1 ]; then
 
     # R9 starts with 0 (zero)
     # Need new FUNC if GPU ID 1, apply to 0 too
-    if [ "$GPUID" != "1" ]
-    then
-      echo "--------"
-    else
+    if [ "$GPUID" = "1" ]; then
       echo "-------- ID: 1 ---> Apply to ID: 0 also to make sure -----"
-      sudo sh overclock_amd.sh 0 $MEMCLOCK $CORECOCK $FANSPEED $VDDC $VDDCI
+      sudo sh overclock_amd.sh 0 $MEMCLOCK $CORECLOCK $FANSPEED $VDDC $VDDCI $MVDCC
     fi
 
     echo "== SETTING GPU$GPUID ==="
 
-    if [ "$CORECLOCK" != "skip" ]
-    then
-      if [ "$CORECLOCK" != "0" ]
-      then
+    if [ "$CORECLOCK" != "skip" ]; then
+      if [ "$CORECLOCK" != "0" ]; then
         sudo ./amdcovc coreclk:$GPUID=$CORECLOCK | grep "Setting"
       fi
     fi
 
-    if [ "$MEMCLOCK" != "skip" ]
-    then
-      if [ "$MEMCLOCK" != "0" ]
-      then
+    if [ "$MEMCLOCK" != "skip" ]; then
+      if [ "$MEMCLOCK" != "0" ]; then
         sudo ./amdcovc memclk:$GPUID=$MEMCLOCK | grep "Setting"
         sudo ./amdcovc memod:$GPUID=20 | grep "Setting"
       fi
     fi
 
-    if [ "$FANSPEED" != 0 ]
-    then
+    if [ "$FANSPEED" != 0 ]; then
       sudo ./amdcovc fanspeed:$GPUID=$FANSPEED | grep "Setting"
     else
       sudo ./amdcovc fanspeed:$GPUID=70 | grep "Setting"
     fi
 
-    if [ "$VDDC" != "skip" ]
-    then
-      if [ "$VDDC" != "0" ]
-      then
-
+    if [ "$VDDC" != "skip" ]; then
+      if [ "$VDDC" != "0" ]; then
         # Divide by 1000 to get mV in V
         VCORE=$(($VDDC / 1000))
         sudo ./amdcovc vcore:$GPUID=$VCORE | grep "Setting"
-
       fi
     fi
 

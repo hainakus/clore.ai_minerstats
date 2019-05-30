@@ -41,6 +41,10 @@ mlang         | Set keyboard layout (e.g. mlang de)
 
 mswap         | Tool for swap file creation
 
+mworker       | Change ACCESSKEY & WORKERNAME
+
+mled          | Toggle Nvidia LED Lights ON/OFF
+
 atiflash      | AMD - Bios (.rom) Flasher
 
 atiflashall   | AMD - Flash .rom to all available GPUs on the system

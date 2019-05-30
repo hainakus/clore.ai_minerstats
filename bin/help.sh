@@ -20,6 +20,8 @@ echo -e "${BLUE}mfind${NC}\t\tFind GPU (e.g. mfind 0 - will set fans to 0% excep
 echo -e "${BLUE}minfo${NC}\t\tShow welcome screen and msOS version"
 echo -e "${BLUE}mlang${NC}\t\tSet keyboard layout (e.g. mlang de)"
 echo -e "${BLUE}mswap${NC}\t\tTool for swap file creation"
+echo -e "${BLUE}mworker${NC}\t\tChange ACCESSKEY & WORKERNAME"
+echo -e "${BLUE}mled${NC}\t\tToggle Nvidia LED Lights ON/OFF"
 echo -e "${BLUE}amdmemtool${NC}\tAMD Memory Tweak"
 echo -e "${BLUE}nvflash${NC}\t\tNVIDIA VBIOS Flasher"
 echo -e "${END}"

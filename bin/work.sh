@@ -121,6 +121,11 @@ if ! screen -list | grep -q "dummy"; then
 
       ETHPILLARGS=$(cat /media/storage/settings.txt 2>/dev/null | grep 'OHGODARGS="' | sed 's/OHGODARGS="//g' | sed 's/"//g')
       ETHPILLDELAY=$(cat /media/storage/settings.txt 2>/dev/null | grep 'OHGODADELAY=' | sed 's/[^0-9]*//g')
+      NVIDIA_LED=$(cat /media/storage/settings.txt | grep "NVIDIA_LED=" | sed 's/[^=]*\(=.*\)/\1/' | tr --delete = | xargs)
+
+      if [ "$NVIDIA_LED" = "OFF" ]; then
+        sudo nvidia-settings --assign GPULogoBrightness=0 -c :0
+      fi
 
       if grep -q experimental "/etc/lsb-release"; then
         CHECKAPTX=$(dpkg -l | grep cuda-libraries-10-0 | wc -l)
@@ -203,7 +208,7 @@ if ! screen -list | grep -q "dummy"; then
   echo ""
   echo "Minerstat has been started in the background.."
   echo "Waiting for console output.."
-  
+
   # Remove pending commands
   curl --request POST "https://api.minerstat.com/v2/set_node_config.php?token=$TOKEN&worker=$WORKER" &
 
