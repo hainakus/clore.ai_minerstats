@@ -93,26 +93,28 @@ sudo su minerstat -c "screen -S listener -X quit"
 sudo su minerstat -c "screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh"
 # Disable UDEVD
 sudo systemctl stop systemd-udevd systemd-udevd-kernel.socket systemd-udevd-control.socket
-# Check JQ is installed
+# Create Shortcut for JQ
+sudo ln -s /home/minerstat/minerstat-os/bin/jq /sbin &> /dev/null
+# Check CURL is installed
 ISCURL=$(dpkg -l curl | grep curl | wc -l | sed 's/[^0-9]*//g')
 if [ "$ISCURL" -lt 1 ]; then
-    sudo apt --yes --force-yes --fix-broken install
-    sudo apt-get --yes --force-yes install curl
-    NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
-    if [ "$NVIDIADEVICE" -gt 0 ]; then
-      sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
-    fi
+  sudo apt --yes --force-yes --fix-broken install
+  sudo apt-get --yes --force-yes install curl
+  NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
+  if [ "$NVIDIADEVICE" -gt 0 ]; then
+    sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
+  fi
 fi
 # install curl if required
 which curl 2>&1 >/dev/null && curlPresent=true
 if [ -z "${curlPresent:-}" ]; then
-   echo "CURL FIX"
-   sudo apt --yes --force-yes --fix-broken install
-   sudo apt-get --yes --force-yes install curl libcurl4
-   NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
-   if [ "$NVIDIADEVICE" -gt 0 ]; then
-     sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
-   fi
+  echo "CURL FIX"
+  sudo apt --yes --force-yes --fix-broken install
+  sudo apt-get --yes --force-yes install curl libcurl4
+  NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
+  if [ "$NVIDIADEVICE" -gt 0 ]; then
+    sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
+  fi
 fi
 if [ "$1" -gt 0 ] || [ "$AMDDEVICE" -gt 0 ]; then
   sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q > /home/minerstat/minerstat-os/bin/amdmeminfo.txt &

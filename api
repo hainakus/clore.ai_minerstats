@@ -15,8 +15,7 @@
 # hashrate_total=$(tac /home/minerstat/minerstat-os/clients/MINER_NAME/log.txt | grep "Eth speed:" | head -n 1) # ...... Something similar
 
 # B) CURL, WGET, NC to fetch API then parse the data.
-# Hint: You can manually install JSON parser to the OS. e.g: JQ
-# sudo apt install jq
+# Hint: JQ JSON PARSER IS PRE-INSTALLED (/home/minerstat/minerstat-os/bin/jq)
 
 # Hashrate must be in H/s (1MH = 1000000H)
 hashrate_total="100000000"
