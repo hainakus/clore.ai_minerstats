@@ -81,7 +81,7 @@ if [ $1 ]; then
   then
     if [ "$MEMORYOFFSET" != "0" ]
     then
-      STR2="-a GPUMemoryTransferRateOffset["$PLEVEL"]="$MEMORYOFFSET""
+      STR2="-a GPUMemoryTransferRateOffset["$PLEVEL"]="$MEMORYOFFSET" -a GPUMemoryTransferRateOffsetAllPerformanceLevels="$MEMORYOFFSET""
     fi
   fi
 
@@ -89,7 +89,7 @@ if [ $1 ]; then
   then
     if [ "$COREOFFSET" != "0" ]
     then
-      STR3="-a GPUGraphicsClockOffset["$PLEVEL"]="$COREOFFSET""
+      STR3="-a GPUGraphicsClockOffset["$PLEVEL"]="$COREOFFSET" -a GPUGraphicsClockOffsetAllPerformanceLevels="$COREOFFSET""
     fi
   fi
 
