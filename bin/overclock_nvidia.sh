@@ -83,7 +83,7 @@ if [ $1 ]; then
   then
     if [ "$MEMORYOFFSET" != "0" ]
     then
-      STR2="-a [gpu:"$GPUID"]/GPUMemoryTransferRateOffset["$PLEVEL"]="$MEMORYOFFSET""
+      STR2="-a [gpu:"$GPUID"]/GPUMemoryTransferRateOffset["$PLEVEL"]="$MEMORYOFFSET" -a [gpu:"$GPUID"]/GPUMemoryTransferRateOffsetAllPerformanceLevels="$MEMORYOFFSET""
     fi
   fi
 
@@ -91,11 +91,11 @@ if [ $1 ]; then
   then
     if [ "$COREOFFSET" != "0" ]
     then
-      STR3="-a [gpu:"$GPUID"]/GPUGraphicsClockOffset["$PLEVEL"]="$COREOFFSET""
+      STR3="-a [gpu:"$GPUID"]/GPUGraphicsClockOffset["$PLEVEL"]="$COREOFFSET" -a [gpu:"$GPUID"]/GPUGraphicsClockOffsetAllPerformanceLevels="$COREOFFSET""
     fi
   fi
-
-
+  
+  
   #################################£
   # APPLY THIS GPU SETTINGS AT ONCE
   FINISH="$(sudo nvidia-settings $STR1 $STR2 $STR3 $STR4)"
