@@ -32,8 +32,8 @@ loop() {
       x="0"
       PARAM=""
       until [ $TEST_AMD == "$x" ]; do
-        TEMP=$(echo $QUERY | /home/minerstat/minerstat-os/bin/jq -r .[\"$x\"] | awk '{print $2}' | sed 's/[^0-9.]*//g' | cut -d. -f1 | xargs)
-        FAN=$(echo $QUERY | /home/minerstat/minerstat-os/bin/jq -r .[\"$x\"] | awk '{print $1}' | sed 's/[^0-9.]*//g' | cut -d. -f1 | xargs)
+        TEMP=$(echo $QUERY | /home/minerstat/minerstat-os/bin/jq -r .[\"$x\"] | awk '{print $1}' | sed 's/[^0-9.]*//g' | cut -d. -f1 | xargs)
+        FAN=$(echo $QUERY | /home/minerstat/minerstat-os/bin/jq -r .[\"$x\"] | awk '{print $2}' | sed 's/[^0-9.]*//g' | cut -d. -f1 | xargs)
         if [ ! -z "$TEMP" ]; then
           DIFF=$((TARGET-TEMP))
           MSG="COLD >$DIFF C!"
@@ -108,6 +108,9 @@ loop() {
             done
             FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $NEWFAN}")
             FANVALUE=$(printf "%.0f\n" $FANVALUE)
+            if [ $NEWFAN -gt 99 ]; then
+              FANVALUE=$TEST
+            fi
             sudo su -c "echo 1 > /sys/class/drm/card$x/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
             sudo su -c "echo $FANVALUE > /sys/class/drm/card$x/device/hwmon/hwmon?/pwm1" 2>/dev/null # 70%
           fi
