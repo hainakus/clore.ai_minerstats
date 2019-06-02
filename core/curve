@@ -177,12 +177,14 @@ loop() {
           #NEWFAN=$FANMIN
           MSG="ON TARGET"
         fi
-        if [ $NEWFAN -gt 100 ]; then
-          NEWFAN="100"
-        fi
-        if [ ! $FAN -eq $NEWFAN ]; then
-          PARAM="$PARAM -a [gpu:$x]/GPUFanControlState=1 -a [fan:"$x"]/GPUTargetFanSpeed="$NEWFAN""
-          MSG="$MSG,NEWFAN: $NEWFAN%"
+        if [ "$MSG" != "ON TARGET" ]; then
+          if [ $NEWFAN -gt 100 ]; then
+            NEWFAN="100"
+          fi
+          if [ ! $FAN -eq $NEWFAN ]; then
+            PARAM="$PARAM -a [gpu:$x]/GPUFanControlState=1 -a [fan:"$x"]/GPUTargetFanSpeed="$NEWFAN""
+            MSG="$MSG,NEWFAN: $NEWFAN%"
+          fi
         fi
         echo "GPU$x [$TEMP C / $FAN%] [MSG:$MSG]"
         if [ ! -z "$PARAM" ]; then
