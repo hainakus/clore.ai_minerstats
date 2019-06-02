@@ -1,0 +1,201 @@
+#!/bin/bash
+
+# Read settings
+FANMIN=$(cat /media/storage/fans.txt | grep "FANMIN=" | xargs | sed 's/[^0-9]*//g')
+FANMAX=$(cat /media/storage/fans.txt | grep "FANMAX=" | xargs | sed 's/[^0-9]*//g')
+TARGET=$(cat /media/storage/fans.txt | grep "TARGET_TEMP=" | xargs | sed 's/[^0-9]*//g')
+
+# If no settings
+if [ -z "$FANMIN" ]; then
+  FANMIN=70
+  echo "FANMIN has no value [Set to $FANMIN]"
+fi
+
+if [ -z "$FANMAX" ]; then
+  FANMAX=100
+  echo "FANMAX has no value [Set to $FANMAX]"
+fi
+
+if [ -z "$TARGET" ]; then
+  TARGET=60
+  echo "TARGET_TEMP has no value [Set to $TARGET]"
+fi
+
+# Drivers
+TEST_NVIDIA=$(nvidia-smi -L)
+TEST_AMD=$(sudo lshw -C display | grep AMD | wc -l)
+
+loop() {
+  if [ $TEST_AMD -gt 0 ]; then
+    QUERY=$(sudo /home/minerstat/minerstat-os/bin/amdinfo)
+    if [ ! -z "$QUERY" ]; then
+      x="0"
+      PARAM=""
+      until [ $TEST_AMD == "$x" ]; do
+        TEMP=$(echo $QUERY | /home/minerstat/minerstat-os/bin/jq -r .[\"$x\"] | awk '{print $1}' | sed 's/[^0-9.]*//g' | cut -d. -f1 | xargs)
+        FAN=$(echo $QUERY | /home/minerstat/minerstat-os/bin/jq -r .[\"$x\"] | awk '{print $2}' | sed 's/[^0-9.]*//g' | cut -d. -f1 | xargs)
+        if [ ! -z "$TEMP" ]; then
+          DIFF=$((TARGET-TEMP))
+          MSG="COLD >$DIFF C!"
+          # Colder than target temp
+          if [ $DIFF -gt 1 ]; then
+            CHANGE=4
+            if [ $DIFF -gt 2 ]; then
+              CHANGE=5
+            fi
+            if [ $DIFF -gt 5 ]; then
+              CHANGE=6
+            fi
+            if [ $DIFF -gt 10 ]; then
+              CHANGE=10
+            fi
+            if [ $DIFF -gt 20 ]; then
+              CHANGE=20
+            fi
+            if [ $DIFF -gt 30 ]; then
+              CHANGE=30
+            fi
+            NEWFAN=$((FAN-CHANGE))
+            if [ $NEWFAN -lt $FANMIN ]; then
+              NEWFAN=$FANMIN
+            fi
+            # Hotter than target temp
+          elif [ $DIFF -lt -1 ]; then
+            MSG="WARM >$DIFF C!"
+            CHANGE=4
+            if [ $DIFF -lt -2 ]; then
+              CHANGE=5
+            fi
+            if [ $DIFF -lt -5 ]; then
+              CHANGE=6
+            fi
+            if [ $DIFF -lt -10 ]; then
+              CHANGE=10
+            fi
+            if [ $DIFF -lt -20 ]; then
+              CHANGE=20
+            fi
+            if [ $DIFF -lt -30 ]; then
+              CHANGE=30
+            fi
+            NEWFAN=$((FAN+CHANGE))
+            if [ $NEWFAN -gt $FANMAX ]; then
+              NEWFAN=$FANMAX
+            fi
+          else
+            # No fan changes needed
+            #NEWFAN=$FANMIN
+            MSG="ON TARGET"
+          fi
+          if [ "$MSG" != "ON TARGET" ]; then
+            if [ $NEWFAN -gt 100 ]; then
+              NEWFAN="100"
+            fi
+            FANMOD=$((FAN+2))
+            if [ ! $FAN -eq $NEWFAN ] && [ ! $FANMOD -eq $NEWFAN ]; then
+              PARAM="SET"
+              MSG="$MSG,NEWFAN: $NEWFAN%"
+            fi
+          fi
+          echo "GPU$x [$TEMP C / $FAN%] [MSG:$MSG]"
+          if [ ! -z "$PARAM" ]; then
+            #sudo nvidia-settings -c :0 $PARAM &> /dev/null
+            for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+              TEST=$(cat "/sys/class/drm/card$x/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
+              if [ ! -z "$TEST" ]; then
+                MAXFAN=$TEST
+              fi
+            done
+            FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $NEWFAN}")
+            FANVALUE=$(printf "%.0f\n" $FANVALUE)
+            sudo su -c "echo 1 > /sys/class/drm/card$x/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
+            sudo su -c "echo $FANVALUE > /sys/class/drm/card$x/device/hwmon/hwmon?/pwm1" 2>/dev/null # 70%
+          fi
+        fi
+        x=$((x+1))
+      done
+    fi
+  fi
+  if [[ $TEST_NVIDIA == *"GPU 0"* ]]; then
+    NVIDIA_NUM=$(nvidia-smi --query-gpu=count --format=csv,noheader | tail -n1 | xargs | sed 's/[^0-9]*//g')
+    NVIDIA_INUM=$((NVIDIA_NUM-1))
+    PARAM=""
+    x="0"
+    until [ $NVIDIA_NUM == "$x" ]; do
+      TEMP=$(nvidia-smi -i $x --query-gpu=temperature.gpu --format=csv,noheader | tail -n1 | xargs | sed 's/[^0-9]*//g')
+      FAN=$(nvidia-smi -i $x --query-gpu=fan.speed --format=csv,noheader | tail -n1 | xargs | sed 's/[^0-9]*//g')
+      if [ ! -z "$TEMP" ]; then
+        DIFF=$((TARGET-TEMP))
+        MSG="COLD >$DIFF C!"
+        # Colder than target temp
+        if [ $DIFF -gt 1 ]; then
+          CHANGE=1
+          if [ $DIFF -gt 2 ]; then
+            CHANGE=2
+          fi
+          if [ $DIFF -gt 5 ]; then
+            CHANGE=5
+          fi
+          if [ $DIFF -gt 10 ]; then
+            CHANGE=10
+          fi
+          if [ $DIFF -gt 20 ]; then
+            CHANGE=20
+          fi
+          if [ $DIFF -gt 30 ]; then
+            CHANGE=30
+          fi
+          NEWFAN=$((FAN-CHANGE))
+          if [ $NEWFAN -lt $FANMIN ]; then
+            NEWFAN=$FANMIN
+          fi
+          # Hotter than target temp
+        elif [ $DIFF -lt -1 ]; then
+          MSG="WARM >$DIFF C!"
+          CHANGE=1
+          if [ $DIFF -lt -2 ]; then
+            CHANGE=2
+          fi
+          if [ $DIFF -lt -5 ]; then
+            CHANGE=5
+          fi
+          if [ $DIFF -lt -10 ]; then
+            CHANGE=10
+          fi
+          if [ $DIFF -lt -20 ]; then
+            CHANGE=20
+          fi
+          if [ $DIFF -lt -30 ]; then
+            CHANGE=30
+          fi
+          NEWFAN=$((FAN+CHANGE))
+          if [ $NEWFAN -gt $FANMAX ]; then
+            NEWFAN=$FANMAX
+          fi
+        else
+          # No fan changes needed
+          #NEWFAN=$FANMIN
+          MSG="ON TARGET"
+        fi
+        if [ $NEWFAN -gt 100 ]; then
+          NEWFAN="100"
+        fi
+        if [ ! $FAN -eq $NEWFAN ]; then
+          PARAM="$PARAM -a [gpu:$x]/GPUFanControlState=1 -a [fan:"$x"]/GPUTargetFanSpeed="$NEWFAN""
+          MSG="$MSG,NEWFAN: $NEWFAN%"
+        fi
+        echo "GPU$x [$TEMP C / $FAN%] [MSG:$MSG]"
+        if [ ! -z "$PARAM" ]; then
+          sudo nvidia-settings -c :0 $PARAM &> /dev/null
+        fi
+      fi
+      x=$((x+1))
+    done
+  fi
+
+  sleep 20
+  loop
+
+}
+
+loop
