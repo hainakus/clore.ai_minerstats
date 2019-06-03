@@ -23,11 +23,13 @@ fi
 
 # Drivers
 TEST_NVIDIA=$(nvidia-smi -L)
-TEST_AMD=$(sudo lshw -C display | grep AMD | wc -l)
+NUM_AMD=$(sudo lshw -C display | grep AMD | wc -l)
+TEST_AMD=$NUM_AMD
 
 loop() {
-  if [ $TEST_AMD -gt 0 ]; then
+  if [ $NUM_AMD -gt 0 ]; then
     QUERY=$(sudo /home/minerstat/minerstat-os/bin/amdinfo)
+    TEST_AMD=$NUM_AMD
     if [ ! -z "$QUERY" ]; then
       x="0"
       PARAM=""
@@ -113,6 +115,14 @@ loop() {
             fi
             sudo su -c "echo 1 > /sys/class/drm/card$x/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
             sudo su -c "echo $FANVALUE > /sys/class/drm/card$x/device/hwmon/hwmon?/pwm1" 2>/dev/null # 70%
+          fi
+        else
+          if [ ! -f "/sys/class/drm/card$x/device/pp_table" ]; then
+            echo "$x not exist, iGPU ?"
+            if [ $TEST_AMD -gt 16 ];then
+              x=$TEST_AMD
+            fi
+            TEST_AMD=$((TEST_AMD+1))
           fi
         fi
         x=$((x+1))
