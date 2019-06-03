@@ -27,6 +27,7 @@ NUM_AMD=$(sudo lshw -C display | grep AMD | wc -l)
 TEST_AMD=$NUM_AMD
 
 loop() {
+  echo "----------------"
   if [ $NUM_AMD -gt 0 ]; then
     QUERY=$(sudo /home/minerstat/minerstat-os/bin/amdinfo)
     TEST_AMD=$NUM_AMD
@@ -142,12 +143,12 @@ loop() {
         MSG="COLD >$DIFF C!"
         # Colder than target temp
         if [ $DIFF -gt 1 ]; then
-          CHANGE=1
+          CHANGE=4
           if [ $DIFF -gt 2 ]; then
-            CHANGE=2
+            CHANGE=5
           fi
           if [ $DIFF -gt 5 ]; then
-            CHANGE=5
+            CHANGE=6
           fi
           if [ $DIFF -gt 10 ]; then
             CHANGE=10
@@ -165,12 +166,12 @@ loop() {
           # Hotter than target temp
         elif [ $DIFF -lt -1 ]; then
           MSG="WARM >$DIFF C!"
-          CHANGE=1
+          CHANGE=4
           if [ $DIFF -lt -2 ]; then
-            CHANGE=2
+            CHANGE=5
           fi
           if [ $DIFF -lt -5 ]; then
-            CHANGE=5
+            CHANGE=6
           fi
           if [ $DIFF -lt -10 ]; then
             CHANGE=10
