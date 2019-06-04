@@ -33,8 +33,13 @@ loop() {
     TEST_AMD=$NUM_AMD
     if [ ! -z "$QUERY" ]; then
       x="0"
+      y="0"
       PARAM=""
       until [ $TEST_AMD == "$x" ]; do
+        if [ ! -f "/sys/class/drm/card$x/device/pp_table" ]; then
+          echo "$x not exist, iGPU ?"
+          y=$((y+1))
+        fi
         TEMP=$(echo $QUERY | /home/minerstat/minerstat-os/bin/jq -r .[\"$x\"] | awk '{print $1}' | sed 's/[^0-9.]*//g' | cut -d. -f1 | xargs)
         FAN=$(echo $QUERY | /home/minerstat/minerstat-os/bin/jq -r .[\"$x\"] | awk '{print $2}' | sed 's/[^0-9.]*//g' | cut -d. -f1 | xargs)
         if [ ! -z "$TEMP" ]; then
@@ -103,7 +108,7 @@ loop() {
           if [ ! -z "$PARAM" ]; then
             #sudo nvidia-settings -c :0 $PARAM &> /dev/null
             for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-              TEST=$(cat "/sys/class/drm/card$x/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
+              TEST=$(cat "/sys/class/drm/card$y/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
               if [ ! -z "$TEST" ]; then
                 MAXFAN=$TEST
               fi
@@ -113,10 +118,10 @@ loop() {
             if [ $NEWFAN -gt 99 ]; then
               FANVALUE=$TEST
             fi
-            sudo su -c "echo 1 > /sys/class/drm/card$x/device/hwmon/hwmon?/pwm1_enable" 
-            sudo su -c "echo $FANVALUE > /sys/class/drm/card$x/device/hwmon/hwmon?/pwm1"
+            sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1_enable"
+            sudo su -c "echo $FANVALUE > /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1"
             if [ ! -z "$PARAM" ]; then
-            MSG="$MSG,FANVAL: $FANVALUE"
+              MSG="$MSG,FANVAL: $FANVALUE"
             fi
           fi
         else
@@ -130,6 +135,7 @@ loop() {
         fi
         echo "GPU$x [$TEMP C / $FAN% ] [MSG:$MSG]"
         x=$((x+1))
+        y=$((y+1))
       done
     fi
   fi
@@ -209,6 +215,7 @@ loop() {
         fi
       fi
       x=$((x+1))
+      y=$((y+1))
     done
   fi
 
