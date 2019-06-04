@@ -25,7 +25,7 @@ if [ ! $1 ]; then
   echo "FOUND AMD    :  $AMDDEVICE"
   echo "FOUND NVIDIA :  $NVIDIADEVICE"
   echo ""
-
+  
   if [ ! -z "$NVIDIA" ]; then
     if echo "$NVIDIA" | grep -iq "^GPU 0:" ;then
       wget -qO dofans.sh "https://api.minerstat.com/v2/getfans.php?type=nvidia&token=$TOKEN&worker=$WORKER&nums=$NVIDIADEVICE"
@@ -66,6 +66,13 @@ if [ ! $1 ]; then
     sudo chmod 777 dofans.sh
     sleep 0.5
     sudo sh dofans.sh
+  fi
+  
+    FNUM=$(sudo su -c "screen -list | grep -c curve")
+  if [ "$FNUM" -gt "0" ]; then
+    echo "Fan curve detected.. restarting"
+    sudo killall curve
+    sudo su -c "sudo screen -A -m -d -S curve /home/minerstat/minerstat-os/core/curve"
   fi
 
 fi
