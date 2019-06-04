@@ -95,6 +95,14 @@ sudo su minerstat -c "screen -A -m -d -S listener sudo sh /home/minerstat/miners
 sudo systemctl stop systemd-udevd systemd-udevd-kernel.socket systemd-udevd-control.socket
 # Create Shortcut for JQ
 sudo ln -s /home/minerstat/minerstat-os/bin/jq /sbin &> /dev/null
+# Restart fan curve if running
+FNUM=$(sudo su -c "screen -list | grep -c curve")
+if [ "$FNUM" -gt "1" ]; then
+echo "Fan curve detected.. restarting"
+sudo killall curve
+sudo su -c "sudo screen -A -m -d -S curve /home/minerstat/minerstat-os/core/curve"
+fi
+
 # Check CURL is installed
 ISCURL=$(dpkg -l curl | grep curl | wc -l | sed 's/[^0-9]*//g')
 if [ "$ISCURL" -lt 1 ]; then
