@@ -97,7 +97,7 @@ sudo systemctl stop systemd-udevd systemd-udevd-kernel.socket systemd-udevd-cont
 sudo ln -s /home/minerstat/minerstat-os/bin/jq /sbin &> /dev/null
 # Restart fan curve if running
 FNUM=$(sudo su -c "screen -list | grep -c curve")
-if [ "$FNUM" -gt "1" ]; then
+if [ "$FNUM" -gt "0" ]; then
 echo "Fan curve detected.. restarting"
 sudo killall curve
 sudo su -c "sudo screen -A -m -d -S curve /home/minerstat/minerstat-os/core/curve"
