@@ -39,6 +39,12 @@ loop() {
         if [ ! -f "/sys/class/drm/card$x/device/pp_table" ]; then
           echo "$x not exist, iGPU ?"
           y=$((y+1))
+          if [ ! -f "/sys/class/drm/card$y/device/pp_table" ]; then
+            y=$((y+1))
+            if [ ! -f "/sys/class/drm/card$y/device/pp_table" ]; then
+              y=$((y+1))
+            fi
+          fi
         fi
         TEMP=$(echo $QUERY | /home/minerstat/minerstat-os/bin/jq -r .[\"$x\"] | awk '{print $1}' | sed 's/[^0-9.]*//g' | cut -d. -f1 | xargs)
         FAN=$(echo $QUERY | /home/minerstat/minerstat-os/bin/jq -r .[\"$x\"] | awk '{print $2}' | sed 's/[^0-9.]*//g' | cut -d. -f1 | xargs)
