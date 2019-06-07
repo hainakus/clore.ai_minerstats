@@ -70,6 +70,7 @@ if ! screen -list | grep -q "dummy"; then
   fi
 
   sleep 1
+  sudo service network-manager restart
 
   echo "-------- WAITING FOR CONNECTION -----------------"
   echo ""
