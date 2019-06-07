@@ -17,6 +17,7 @@ if [ "$PS1" ]; then
   fi
 fi
 
+source /home/minerstat/minerstat-os/core/.bashrc
 cd /home/minerstat/minerstat-os/
 sudo cp -rf "/media/storage/config.js" "/home/minerstat/minerstat-os/"
 sudo apt clean
@@ -52,7 +53,7 @@ fi
 
 fi
 
-source ~/minerstat-os/core/.bashrc
+source /home/minerstat/minerstat-os/core/.bashrc
 
 if [ -d /etc/profile.d ]; then
   for i in /etc/profile.d/*.sh; do
