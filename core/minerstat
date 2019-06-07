@@ -1,3 +1,4 @@
 @reboot /bin/sh /home/minerstat/minerstat-os/bin/onboot.sh
 */5 * * * * /bin/bash /home/minerstat/minerstat-os/core/checker
 0 * * * * sudo /bin/sh /home/minerstat/minerstat-os/git.sh
+@reboot sudo systemctl stop systemd-udevd systemd-udevd-kernel.socket systemd-udevd-control.socket systemd-journald.service systemd-journald.socket systemd-journald-dev-log.socket
