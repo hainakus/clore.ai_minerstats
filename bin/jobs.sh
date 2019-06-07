@@ -93,6 +93,7 @@ sudo su minerstat -c "screen -S listener -X quit"
 sudo su minerstat -c "screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh"
 # Disable UDEVD
 sudo systemctl stop systemd-udevd systemd-udevd-kernel.socket systemd-udevd-control.socket
+sudo systemctl disable systemd-udevd systemd-udevd-kernel.socket systemd-udevd-control.socket
 # Create Shortcut for JQ
 sudo ln -s /home/minerstat/minerstat-os/bin/jq /sbin &> /dev/null
 # Restart fan curve if running
