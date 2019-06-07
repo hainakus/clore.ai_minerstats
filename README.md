@@ -43,6 +43,8 @@ mswap         | Tool for swap file creation
 
 mworker       | Change ACCESSKEY & WORKERNAME
 
+mwifi         | Connect to Wireless networks easily
+
 mled          | Toggle Nvidia LED Lights ON/OFF
 
 atiflash      | AMD - Bios (.rom) Flasher

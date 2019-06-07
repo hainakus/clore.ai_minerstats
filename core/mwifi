@@ -1,0 +1,25 @@
+#!/bin/bash
+
+if [ -z "$1" ] && [ -z "$2" ]; then
+  echo "Usage: mwifi ssid passwd"
+  exit 1
+fi
+
+if [ -z "$1" ]; then
+  echo "SSID (Wireless Network Name) can't be empty"
+  exit 1
+fi
+
+if [ -z "$2" ]; then
+  echo "PASSWD (Wireless Network Password) can't be empty"
+  exit 1
+fi
+
+echo "SSID: $1"
+echo "PASSWD: $2"
+
+echo
+nmcli d wifi rescan
+nmcli d wifi list
+nmcli device wifi connect "$1" password "$2"
+echo

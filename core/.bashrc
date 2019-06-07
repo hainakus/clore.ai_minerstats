@@ -137,6 +137,7 @@ alias minfo='sh /home/minerstat/minerstat-os/core/10-help-text'
 alias mswap='sudo /home/minerstat/minerstat-os/core/swap'
 alias mworker='sudo /home/minerstat/minerstat-os/core/mworker'
 alias mled='sudo /home/minerstat/minerstat-os/core/mled'
+alias mwifi='sudo /home/minerstat/minerstat-os/core/mwifi'
 
 if grep -q experimental "/etc/lsb-release"; then
   alias amdmemtool='sudo /home/minerstat/minerstat-os/bin/amdmemorytweak'
