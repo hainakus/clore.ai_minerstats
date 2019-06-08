@@ -119,8 +119,8 @@ loop() {
               FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $NEWFAN}")
               FANVALUE=$(printf "%.0f\n" $FANVALUE)
               if [ $NEWFAN -gt 99 ]; then
-                FANVALUE=$TEST
-              fi
+                FANVALUE=$MAXFAN
+              fi     
               sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1_enable"
               sudo su -c "echo $FANVALUE > /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1"
             fi
