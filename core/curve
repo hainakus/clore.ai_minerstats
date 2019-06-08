@@ -139,7 +139,7 @@ loop() {
             TEST_AMD=$((TEST_AMD+1))
           fi
         fi
-        echo "GPU$x [$TEMP C / $FAN% ] [MSG:$MSG]"
+        echo "GPU$x [RID: $y] [$TEMP C / $FAN% ] [MSG:$MSG]"
         x=$((x+1))
         y=$((y+1))
       done
