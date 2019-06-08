@@ -114,7 +114,7 @@ loop() {
           if [ ! -z "$PARAM" ]; then
             #sudo nvidia-settings -c :0 $PARAM &> /dev/null
             if [ "$MSG" != "ON TARGET" ]; then
-              MAXFAN=$(cat "/sys/class/drm/card$y/device/hwmon/hwmon?/pwm1_max")
+              MAXFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1_max)
               echo "MAXFAN FOR $x $y : $MAXFAN"
               FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $NEWFAN}")
               FANVALUE=$(printf "%.0f\n" $FANVALUE)
