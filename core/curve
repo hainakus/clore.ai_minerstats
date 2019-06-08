@@ -113,12 +113,8 @@ loop() {
           fi
           if [ ! -z "$PARAM" ]; then
             #sudo nvidia-settings -c :0 $PARAM &> /dev/null
-            for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-              TEST=$(cat "/sys/class/drm/card$y/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
-              if [ ! -z "$TEST" ]; then
-                MAXFAN=$TEST
-              fi
-            done
+            TEST=$(cat "/sys/class/drm/card$y/device/hwmon/hwmon?/pwm1_max" 2>/dev/null)
+            MAXFAN=$TEST
             FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $NEWFAN}")
             FANVALUE=$(printf "%.0f\n" $FANVALUE)
             if [ $NEWFAN -gt 99 ]; then
