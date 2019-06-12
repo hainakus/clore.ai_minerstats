@@ -23,8 +23,20 @@ if echo "$DEVICE" | grep "w" ;then
   nmcli d wifi rescan
   nmcli d wifi list
 
+  sleep 1
 
-  CONNECT=$(nmcli device wifi connect "$SSID" password "$PASSWD")
+  nmcli device wifi connect "$SSID" password "$PASSWD" > /tmp/wifi.log
+
+  CONNECT=$(cat /tmp/wifi.log)
+  echo
+  echo $CONNECT
+  echo
+
+  echo "If error happens during connection. Press CTRL + A + D"
+  echo "After you will be able to enter commands to the terminal"
+  echo 
+  echo "To connect manually enter: mwifi SSID PASSWORD"
+  echo
 
   if echo "$CONNECT" | grep "failed" ;then
     echo ""
