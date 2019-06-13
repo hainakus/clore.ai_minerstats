@@ -13,7 +13,7 @@ if [[ $1 == "nvidia" ]]; then
     x="0"
     JSON_EOF='{'
     until [ $NVIDIA_NUM == "$x" ]; do
-      QUERY=$(nvidia-smi -i $x --query-gpu=name,temperature.gpu,fan.speed,power.draw,clocks.current.sm,clocks.current.memory,utilization.gpu,pci.bus_id --format=csv,noheader | tail -n1)
+      QUERY=$(nvidia-smi -i $x --query-gpu=name,temperature.gpu,fan.speed,power.draw,clocks.current.sm,clocks.current.memory,utilization.gpu,pci.bus_id,clocks.max.sm,clocks.max.memory,power.min_limit,power.max_limit,power.default_limit --format=csv,noheader | tail -n1)
       JSON_EOF=$JSON_EOF'"'$x'":'
 
       if [[ $NVIDIA_INUM == "$x" ]]; then
