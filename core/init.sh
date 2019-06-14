@@ -58,6 +58,9 @@ do
   # SYSTEM UPTIME
   SYSTIME=$(awk '{print $1}' /proc/uptime | xargs)
 
+  # MINER logs
+  RAMLOG=$(cat /dev/shm/miner.log | tac | head --lines 10 | tac)
+
   echo ""
   echo "$TOKEN"
   echo "$WORKER"
@@ -127,12 +130,12 @@ do
   fi
 
   if [ $RESPONSE = "RESTART" ] || [ $RESPONSE = "START" ] || [ $RESPONSE = "NODERESTART" ]; then
-      sudo su -c "sudo screen -X -S minew quit"
-      sudo su -c "sudo screen -X -S fakescreen quit"
-      sudo su minerstat -c "screen -X -S fakescreen quit"
-      screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh
-      sleep 2
-      screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh
+    sudo su -c "sudo screen -X -S minew quit"
+    sudo su -c "sudo screen -X -S fakescreen quit"
+    sudo su minerstat -c "screen -X -S fakescreen quit"
+    screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh
+    sleep 2
+    screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh
   fi
 
   if [ $RESPONSE = "STOP" ]; then
@@ -155,12 +158,12 @@ do
     QUERYPOWER=$(cd /home/minerstat/minerstat-os/bin/; sudo ./rocm-smi -P | grep 'Average Graphics Package Power:' | sed 's/.*://' | sed 's/W/''/g' | xargs)
     HWMEMORY=$(cd /home/minerstat/minerstat-os/bin/; cat amdmeminfo.txt)
     HWSTRAPS=$(cd /home/minerstat/minerstat-os/bin/; sudo ./"$STRAPFILENAME" --current-minerstat)
-    sudo curl --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=amd" --data "hwData=$AMDINFO" --data "hwPower=$QUERYPOWER" --data "hwMemory=$HWMEMORY" --data "hwStrap=$HWSTRAPS" "https://api.minerstat.com/v2/set_node_config_os.php"
+    sudo curl --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=amd" --data "hwData=$AMDINFO" --data "hwPower=$QUERYPOWER" --data "hwMemory=$HWMEMORY" --data "hwStrap=$HWSTRAPS" --data "mineLog=$RAMLOG" "https://api.minerstat.com/v2/set_node_config_os.php"
   fi
 
   if [ "$MONITOR_TYPE" = "nvidia" ]; then
     QUERYNVIDIA=$(sudo /home/minerstat/minerstat-os/bin/gpuinfo nvidia)
-    sudo curl --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=nvidia" --data "hwData=$QUERYNVIDIA" "https://api.minerstat.com/v2/set_node_config_os.php"
+    sudo curl --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=nvidia" --data "hwData=$QUERYNVIDIA" --data "mineLog=$RAMLOG" "https://api.minerstat.com/v2/set_node_config_os.php"
 
   fi
 

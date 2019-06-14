@@ -30,6 +30,7 @@ global.PrivateMinerStartFile;
 global.PrivateMinerStartArgs;
 global.watchnum = 0;
 global.osversion;
+global.memoryloc;
 var colors = require('colors'),
   exec = require('child_process').exec,
   fs = require('fs'),
@@ -225,6 +226,10 @@ module.exports = {
       }
       console.log("\x1b[1;94m== \x1b[0mOS Version: " + global.osversion);
     });
+
+    // Memory location
+    // df -h | grep tmpfs | grep /dev | awk '{print $6}' | xargs
+    // global.memoryloc = "/dev/shm";
 
 
     //global.watchnum = 0;
