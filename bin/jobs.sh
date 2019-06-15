@@ -103,6 +103,13 @@ echo "Fan curve detected.. restarting"
 sudo killall curve
 sudo su -c "sudo screen -A -m -d -S curve /home/minerstat/minerstat-os/core/curve"
 fi
+# Safety layer
+CURVE_FILE=/media/storage/fans.txt
+if [ -f "$CURVE_FILE" ]; then
+    echo "Fan curve detected.. restarting"
+    sudo killall curve
+    sudo su -c "sudo screen -A -m -d -S curve /home/minerstat/minerstat-os/core/curve"
+fi
 
 # Check CURL is installed
 ISCURL=$(dpkg -l curl | grep curl | wc -l | sed 's/[^0-9]*//g')
