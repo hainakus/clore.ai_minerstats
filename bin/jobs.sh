@@ -95,6 +95,7 @@ sudo su minerstat -c "screen -A -m -d -S listener sudo sh /home/minerstat/miners
 sudo systemctl stop systemd-udevd systemd-udevd-kernel.socket systemd-udevd-control.socket
 sudo systemctl disable systemd-udevd systemd-udevd-kernel.socket systemd-udevd-control.socket
 sudo su -c "sudo rm -rf /var/log/journal; sudo ln -s /dev/shm /var/log/journal"
+sudo systemctl start systemd-journald.service systemd-journald.socket systemd-journald-dev-log.socket
 # Create Shortcut for JQ
 sudo ln -s /home/minerstat/minerstat-os/bin/jq /sbin &> /dev/null
 # Restart fan curve if running
