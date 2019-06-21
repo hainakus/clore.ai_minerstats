@@ -3,7 +3,7 @@ echo ""
 echo "*** Auto DHCP Configuration ***"
 echo ""
 
-INTERFACE="$(sudo cat /proc/net/dev | tail -n1 | awk -F '\\:' '{print $1}')"
+INTERFACE="$(sudo cat /proc/net/dev | grep -vE lo | tail -n1 | awk -F '\\:' '{print $1}' | xargs)"
 
 echo "Configuring LAN DHCP for: "$INTERFACE
 echo ""
