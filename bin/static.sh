@@ -3,7 +3,7 @@ echo ""
 echo "*** STATIC LAN Configuration ***"
 echo ""
 
-INTERFACE="$(sudo cat /proc/net/dev | tail -n1 | awk -F '\\:' '{print $1}')"
+INTERFACE="$(sudo cat /proc/net/dev | grep -vE lo | tail -n1 | awk -F '\\:' '{print $1}' | xargs)"
 
 # READ FROM network.txt
 ADDRESS=$(cat /media/storage/network.txt | grep 'IPADDRESS="' | sed 's/IPADDRESS="//g' | sed 's/"//g')
