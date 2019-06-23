@@ -167,6 +167,6 @@ do
 
   fi
 
-  sleep 10
+  sleep 15
 
 done
