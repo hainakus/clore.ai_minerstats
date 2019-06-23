@@ -93,7 +93,7 @@ function setSyncInterval() {
         global.sync_num++;
         tools.fetch(global.client, global.minerCpu, global.cpuDefault);
       }
-    }, 10000);
+    }, 5000);
   }
 }
 module.exports = {

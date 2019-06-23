@@ -53,7 +53,7 @@ function restartNode() {
   if (global.benchmark.toString() == 'false') {
     var main = require('./start.js');
     global.watchnum++;
-    if (global.watchnum == 6 || global.watchnum == 12) {
+    if (global.watchnum == 12 || global.watchnum == 24) {
       console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;31mError (" + global.watchnum + "/6)\x1b[0m");
       console.log("\x1b[1;94m== \x1b[0mAction: Restarting client ...");
       clearInterval(global.timeout);
@@ -63,7 +63,7 @@ function restartNode() {
           main.main();
         });
     }
-    if (global.watchnum >= 18) {
+    if (global.watchnum >= 36) {
       console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;31mError (" + global.watchnum + "/6)\x1b[0m");
       console.log("\x1b[1;94m== \x1b[0mAction: Rebooting ...");
       clearInterval(global.timeout);
@@ -780,10 +780,10 @@ module.exports = {
           gpuSyncDone = false;
           global.sync = true;
           restartNode();
-          console.log(chalk.hex('#ff8656')(getDateTime() + " MINERSTAT.COM: Package Error. " + err.message));
-          console.log(chalk.hex('#ff8656')(getDateTime() + " (1) POSSILBE REASON => MINER/API NOT STARTED"));
+          console.log(chalk.hex('#ff8656')(getDateTime() + " MINERSTAT.COM: MINER API NOT RUNNING " + err.message));
+          console.log(chalk.hex('#ff8656')(getDateTime() + " (1) POSSILBE REASON => MINER NOT STARTED"));
           console.log(chalk.hex('#ff8656')(getDateTime() + " (2) POSSILBE REASON => TOO MUCH OVERCLOCK / UNDERVOLT"));
-          console.log(chalk.hex('#ff8656')(getDateTime() + " (3) POSSILBE REASON => BAD CONFIG -> (1) MINER NOT STARTED"));
+          console.log(chalk.hex('#ff8656')(getDateTime() + " (3) POSSILBE REASON => BAD MINER CONFIG"));
         });
       }
       //
@@ -800,10 +800,10 @@ module.exports = {
             gpuSyncDone = false;
             global.sync = true;
             restartNode();
-            console.log(chalk.hex('#ff8656')(getDateTime() + " MINERSTAT.COM: Package Error. " + error));
-            console.log(chalk.hex('#ff8656')(getDateTime() + " (1) POSSILBE REASON => MINER/API NOT STARTED"));
+            console.log(chalk.hex('#ff8656')(getDateTime() + " MINERSTAT.COM: MINER API NOT RUNNING " + error));
+            console.log(chalk.hex('#ff8656')(getDateTime() + " (1) POSSILBE REASON => MINER NOT STARTED"));
             console.log(chalk.hex('#ff8656')(getDateTime() + " (2) POSSILBE REASON => TOO MUCH OVERCLOCK / UNDERVOLT"));
-            console.log(chalk.hex('#ff8656')(getDateTime() + " (3) POSSILBE REASON => BAD CONFIG -> (1) MINER NOT STARTED"));
+            console.log(chalk.hex('#ff8656')(getDateTime() + " (3) POSSILBE REASON => BAD MINER CONFIG"));
           }
         });
       }
@@ -828,9 +828,9 @@ module.exports = {
           gpuSyncDone = false;
           global.sync = true;
           restartNode();
-          console.log(chalk.hex('#ff8656')(getDateTime() + " (1) POSSILBE REASON => MINER/API NOT STARTED"));
+          console.log(chalk.hex('#ff8656')(getDateTime() + " (1) POSSILBE REASON => MINER NOT STARTED"));
           console.log(chalk.hex('#ff8656')(getDateTime() + " (2) POSSILBE REASON => TOO MUCH OVERCLOCK / UNDERVOLT"));
-          console.log(chalk.hex('#ff8656')(getDateTime() + " (3) POSSILBE REASON => BAD CONFIG -> (1) MINER NOT STARTED"));
+          console.log(chalk.hex('#ff8656')(getDateTime() + " (3) POSSILBE REASON => BAD CONFIG"));
         });
         ccminerClient.on('end', () => {
           global.sync = true;
