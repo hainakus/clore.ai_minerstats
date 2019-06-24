@@ -91,6 +91,9 @@ if [ ! -z "$DOAMD" ]; then
     echo "Integrated Graphics ID: "$SKIP
   fi
 
+  sudo rm /media/storage/fans.txt
+  sudo killall curve
+  
   wget -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=amd&token=$TOKEN&worker=$WORKER&nums=$AMDDEVICE&bios=$FORCE&starts=$STARTS&skip=$SKIP"
   sleep 1.5
   sudo sh doclock.sh
