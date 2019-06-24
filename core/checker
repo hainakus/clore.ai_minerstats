@@ -3,7 +3,8 @@
 # Check "LISTENER"
 SNUM=$(sudo su minerstat -c "screen -list | grep -c listener")
 if [ "$SNUM" -gt "1" ]; then
-  sudo su -c "screen -ls listener | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
+  echo $SNUM
+  sudo su minerstat -c "screen -ls listener | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
   sudo killall init.sh
 fi
 if ! screen -list | grep -q "listener"; then
