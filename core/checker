@@ -1,6 +1,11 @@
 #!/bin/bash
 
 # Check "LISTENER"
+SNUM=$(sudo su minerstat -c "screen -list | grep -c listener")
+if [ "$SNUM" -gt "1" ]; then
+  sudo su -c "screen -ls listener | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
+  sudo killall init.sh
+fi
 if ! screen -list | grep -q "listener"; then
   screen -S listener -X quit # kill running process
   screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
@@ -35,10 +40,6 @@ if [ ! -f /tmp/stop.pid ]; then
     sudo su minerstat -c "screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh"
     sleep 2
     sudo su minerstat -c "screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh"
-    fi
-    SNUM=$(sudo su minerstat -c "screen -list | grep -c listener")
-    if [ "$SNUM" -gt "1" ]; then
-      sudo su -c "screen -ls listener | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
     fi
 fi
 
