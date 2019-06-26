@@ -52,10 +52,8 @@ if [ $1 ]; then
   #################################£
   # POWER LIMIT
 
-  if [ "$POWERLIMITINWATT" -ne 0 ]
-  then
-    if [ "$POWERLIMITINWATT" != "skip" ]
-    then
+  if [ "$POWERLIMITINWATT" != "skip" ]; then
+    if [ "$POWERLIMITINWATT" -ne 0 ]; then
       sudo nvidia-smi -i $GPUID -pl $POWERLIMITINWATT
     fi
   fi
