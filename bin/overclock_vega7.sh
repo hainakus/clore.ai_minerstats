@@ -104,13 +104,6 @@ if [ $1 ]; then
     sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1" 2>/dev/null # 70%
   done
 
-  # FANS
-  if [ "$FANSPEED" != 0 ]; then
-    sudo ./rocm-smi --setfan $FANSPEED"%"
-  else
-    sudo ./rocm-smi --setfan 100%
-  fi
-
   exit 1
 
 fi
