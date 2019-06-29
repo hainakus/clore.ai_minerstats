@@ -60,7 +60,7 @@ do
 
   # MINER logs
   RAMLOG=$(cat /dev/shm/miner.log | tac | head --lines 10 | tac)
-
+  
   echo ""
   echo "$TOKEN"
   echo "$WORKER"
@@ -163,6 +163,9 @@ do
 
   if [ "$MONITOR_TYPE" = "nvidia" ]; then
     QUERYNVIDIA=$(sudo /home/minerstat/minerstat-os/bin/gpuinfo nvidia)
+    # NVIDIA DRIVER CRASH WATCHDOG
+    TESTVIDIA=$(sudo nvidia-smi --query-gpu=count --format=csv,noheader | grep "lost")
+    RAMLOG="$RAMLOG $TESTVIDIA"
     sudo curl --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=nvidia" --data "hwData=$QUERYNVIDIA" --data "mineLog=$RAMLOG" "https://api.minerstat.com/v2/set_node_config_os.php"
 
   fi
