@@ -27,8 +27,8 @@ sudo su -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf'
 # For msos versions what have local DNS cache
 sudo su -c 'echo "nameserver 127.0.0.1" >> /etc/resolv.conf'
 # IPV6
-sudo su -c 'nameserver 2606:4700:4700::1111'
-sudo su -c 'nameserver 2606:4700:4700::1001'
+sudo su -c 'echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf'
+sudo su -c 'echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf'
 
 echo ""
 TEST="$(ping google.com -w 1 | grep '1 packets transmitted')"
