@@ -350,7 +350,7 @@ module.exports = {
       // Fetch Server Version
       var request = require('request');
       request.get({
-        url: 'https://static.minerstat.farm/miners/linux/version.json'
+        url: 'https://static-ssl.minerstat.farm/miners/linux/version.json'
       }, function(error, response, body) {
         if (error != null) {
           console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + error + ")\x1b[0m");
@@ -443,7 +443,7 @@ module.exports = {
       if (callbackType == "gpu") {
         var request = require('request');
         request.get({
-          url: 'https://static.minerstat.farm/miners/linux/cuda.json'
+          url: 'https://static-ssl.minerstat.farm/miners/linux/cuda.json'
         }, function(cudaerror, cudaresponse, cudabody) {
 
           var minerNameWithCuda = gpuMiner.toLowerCase().replace("_10", "");
@@ -508,7 +508,7 @@ module.exports = {
     // Download latest package from the static server
     async function downloadCore(miner, clientType, serverVersion) {
       var miner = miner;
-      var dlURL = 'http://static.minerstat.farm/miners/linux/' + miner + '.zip';
+      var dlURL = 'http://static-ssl.minerstat.farm/miners/linux/' + miner + '.zip';
       var dlURL_type = "zip";
       var fullFileName = "";
       var lastSlash = dlURL.lastIndexOf("/");
