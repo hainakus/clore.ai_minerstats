@@ -30,6 +30,9 @@ sudo su -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf'
 sudo su -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf'
 # For msos versions what have local DNS cache
 sudo su -c 'echo "nameserver 127.0.0.1" >> /etc/resolv.conf'
+# IPV6
+sudo su -c 'echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf'
+sudo su -c 'echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf'
 
 sudo su -c '/etc/init.d/networking restart'
 sudo su -c "systemctl restart systemd-networkd"
