@@ -148,6 +148,11 @@ loop() {
     NVIDIA_INUM=$((NVIDIA_NUM-1))
     PARAM=""
     x="0"
+    if [ -z "$NVIDIA_NUM" ]; then
+     #sudo nvidia-smi --query-gpu=count --format=csv,noheader | grep "lost"
+     echo "SEEMS NVIDIA DRIVER CRASHED - REBOOT REQUIRED !!"
+     NVIDIA_NUM=0
+    fi
     until [ $NVIDIA_NUM == "$x" ]; do
       TEMP=$(nvidia-smi -i $x --query-gpu=temperature.gpu --format=csv,noheader | tail -n1 | xargs | sed 's/[^0-9]*//g')
       FAN=$(nvidia-smi -i $x --query-gpu=fan.speed --format=csv,noheader | tail -n1 | xargs | sed 's/[^0-9]*//g')
