@@ -67,6 +67,10 @@ sudo su -c 'echo "nameserver 1.1.1.1" >> /etc/resolv.conf'
 sudo su -c 'echo "nameserver 1.0.0.1" >> /etc/resolv.conf'
 sudo su -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf'
 sudo su -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf'
+# IPV6
+sudo su -c 'echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf'
+sudo su -c 'echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf'
+# Memory Info
 sudo chmod -R 777 * /home/minerstat/minerstat-os
 sudo rm /home/minerstat/minerstat-os/bin/amdmeminfo.txt
 
