@@ -116,7 +116,8 @@ if [ -f "$CURVE_FILE" ]; then
     sudo killall curve
     sudo screen -A -m -d -S curve /home/minerstat/minerstat-os/core/curve
 fi
-
+# Time Date SYNC
+sudo timedatectl set-ntp on &
 # Check CURL is installed
 ISCURL=$(dpkg -l curl | grep curl | wc -l | sed 's/[^0-9]*//g')
 if [ "$ISCURL" -lt 1 ]; then
