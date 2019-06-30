@@ -29,6 +29,12 @@ if [ $1 ]; then
   VDDC=$5
   VDDCI=$6
   MVDD=$7
+  # GPU BUS ID TO INT
+  GPUBUS=$8
+  if [ ! -z $GPUBUS ]; then
+    GPUBUSINT=$(echo $GPUBUS | cut -f 1 -d '.')
+    GPUBUS=$(python -c 'print(int("'$GPUBUSINT'", 16))')
+  fi
 
   ## BULIDING QUERIES
   STR1="";
@@ -44,31 +50,53 @@ if [ $1 ]; then
   R9="";
 
   # Check this is older R, or RX Series
-  isThisR9=$(sudo ./amdcovc -a $1 | grep "R9"| sed 's/^.*R9/R9/' | cut -f1 -d' ' | sed 's/[^A-Z0-9]*//g')
-  isThisVega=$(sudo ./amdcovc -a 0 | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
-  isThisVegaII=$(sudo ./amdcovc -a 0 | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
-  isThisVegaVII=$(sudo ./amdcovc -a 0 | grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g')
+
+  if [ ! -z $GPUBUS ]; then
+    GID=$GPUBUS
+    recheckID=$(ls /sys/bus/pci/devices/*$GPUBUSINT":00.0"/drm | grep "card" | sed 's/[^0-9]*//g')
+    GPUID=$recheckID
+  else
+    GID=""
+  fi
+
+  isThisR9=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "R9"| sed 's/^.*R9/R9/' | cut -f1 -d' ' | sed 's/[^A-Z0-9]*//g')
+  isThisVega=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
+  isThisVegaII=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
+  isThisVegaVII=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g')
+
+
+  ##  echo "----"
+  ##  echo $GPUBUS
+  ##  echo $GPUBUSINT
+  ##  echo $GID
+  ##  echo $GPUID
+  ##  sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g'
+  ##  echo "----"
+
 
   ########## VEGA ##################
   if [ "$isThisVega" = "Vega" ]; then
+    echo "--**--**-- VEGA --**--**--"
     echo "Loading VEGA OC Script.."
-    sudo ./overclock_vega.sh $1 $2 $3 $4 $5 $7
+    sudo ./overclock_vega.sh $GPUID $2 $3 $4 $5 $7
     exit 1
   fi
   ################################
 
   ########## VEGA VII ############
   if [ "$isThisVegaVII" = "VII" ]; then
+    echo "--**--**-- VII --**--**--"
     echo "Loading VEGA VII OC Script.."
-    sudo ./overclock_vega7.sh $1 $2 $3 $4 $5 $7
+    sudo ./overclock_vega7.sh $GPUID $2 $3 $4 $5 $7
     exit 1
   fi
   ################################
 
   ########## BACKUP ##################
   if [ "$isThisVegaII" = "VegaFrontierEdition" ]; then
+    echo "--**--**-- VEGA FRONTIER --**--**--"
     echo "Loading VEGA OC Script.."
-    sudo ./overclock_vega.sh $1 $2 $3 $4 $5 $7
+    sudo ./overclock_vega.sh $GPUID $2 $3 $4 $5 $7
     exit 1
   fi
   ################################
