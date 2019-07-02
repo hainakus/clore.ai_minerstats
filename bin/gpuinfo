@@ -10,7 +10,7 @@ if [[ $1 == "nvidia" ]]; then
   if [[ $TEST_NVIDIA == *"GPU 0"* ]]; then
     NVIDIA_NUM=$(nvidia-smi --query-gpu=count --format=csv,noheader | tail -n1)
     NVIDIA_INUM=$((NVIDIA_NUM-1))
-    NVIDIA_BRAND=$(lspci -vnn | grep VGA -A 12 | grep Subsystem | grep -vE "HD Graphics|USB")
+    NVIDIA_BRAND=$(lspci -vnn | grep VGA -A 12 | grep Subsystem | grep -vE "HD Graphics|USB" > /dev/shm/nvidia_list.txt)
     x="0"
     z="1"
     JSON_EOF='{'
@@ -25,7 +25,7 @@ if [[ $1 == "nvidia" ]]; then
       fi
 
       BRAND=""
-      TEST_BRAND=$(echo $NVIDIA_BRAND | sed -n $z"p")
+      TEST_BRAND=$(cat /dev/shm/nvidia_list.txt | sed -n $z"p")
       if [[ $TEST_BRAND == *"Gigabyte"* ]]; then
         BRAND="Gigabyte "
       elif [[ $TEST_BRAND == *"ASUS"* ]]; then
