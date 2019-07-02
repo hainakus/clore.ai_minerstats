@@ -10,7 +10,9 @@ if [[ $1 == "nvidia" ]]; then
   if [[ $TEST_NVIDIA == *"GPU 0"* ]]; then
     NVIDIA_NUM=$(nvidia-smi --query-gpu=count --format=csv,noheader | tail -n1)
     NVIDIA_INUM=$((NVIDIA_NUM-1))
+    NVIDIA_BRAND=$(lspci -vnn | grep VGA -A 12 | grep Subsystem | grep -vE "HD Graphics|USB")
     x="0"
+    z="1"
     JSON_EOF='{'
     until [ $NVIDIA_NUM == "$x" ]; do
       QUERY=$(nvidia-smi -i $x --query-gpu=name,temperature.gpu,fan.speed,power.draw,clocks.current.sm,clocks.current.memory,utilization.gpu,pci.bus_id --format=csv,noheader | tail -n1)
@@ -22,8 +24,47 @@ if [[ $1 == "nvidia" ]]; then
         COMMA=","
       fi
 
-      JSON_EOF=$JSON_EOF'"'$QUERY'"'$COMMA''
+      BRAND=""
+      TEST_BRAND=$(echo $NVIDIA_BRAND | sed -n $z"p")
+      if [[ $TEST_BRAND == *"Gigabyte"* ]]; then
+        BRAND="Gigabyte "
+      elif [[ $TEST_BRAND == *"ASUS"* ]]; then
+        BRAND="ASUS "
+      elif [[ $TEST_BRAND == *"MSI"* ]]; then
+        BRAND="MSI "
+      elif [[ $TEST_BRAND == *"eVga"* ]]; then
+        BRAND="eVga "
+      elif [[ $TEST_BRAND == *"ZOTAC"* ]]; then
+        BRAND="ZOTAC "
+      elif [[ $TEST_BRAND == *"AMD"* ]]; then
+        BRAND="AMD "
+      elif [[ $TEST_BRAND == *"CardExpert"* ]]; then
+        BRAND="Gainward "
+      elif [[ $TEST_BRAND == *"Club 3D"* ]]; then
+        BRAND="Club 3D "
+      elif [[ $TEST_BRAND == *"HIS"* ]]; then
+        BRAND="HIS "
+      elif [[ $TEST_BRAND == *"Jetway"* ]]; then
+        BRAND="Jetway "
+      elif [[ $TEST_BRAND == *"XFX"* ]]; then
+        BRAND="XFX "
+      elif [[ $TEST_BRAND == *"PowerColor"* ]]; then
+        BRAND="PowerColor "
+      elif [[ $TEST_BRAND == *"VisionTek"* ]]; then
+        BRAND="VisionTek "
+      elif [[ $TEST_BRAND == *"INNO"* ]]; then
+        BRAND="INNO3D "
+      elif [[ $TEST_BRAND == *"PALIT"* ]]; then
+        BRAND="PALIT "
+      elif [[ $TEST_BRAND == *"COLORFUL"* ]]; then
+        BRAND="COLORFUL "
+      elif [[ $TEST_BRAND == *"GAINWARD"* ]]; then
+        BRAND="GAINWARD "
+      fi
+
+      JSON_EOF=$JSON_EOF'"'$BRAND$QUERY'"'$COMMA''
       x=$((x+1))
+      z=$((z+1))
     done
     JSON_EOF=$JSON_EOF'}'
     echo $JSON_EOF
