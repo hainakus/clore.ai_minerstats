@@ -129,7 +129,7 @@ loop() {
               fi
             fi
             if [ ! -z "$PARAM" ]; then
-              MSG="$MSG,WANTVAL: $NEWFAN,FANVAL: $FANVALUE"
+              MSG="$MSG,CURRVAL: $CURRFAN, WANTVAL: $NEWFAN,FANVAL: $FANVALUE"
             fi
           fi
         else
