@@ -115,15 +115,18 @@ loop() {
             #sudo nvidia-settings -c :0 $PARAM &> /dev/null
             if [ "$MSG" != "ON TARGET" ]; then
               MAXFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1_max)
+              CURRFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1)
               echo "MAXFAN FOR $x $y : $MAXFAN"
               FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $NEWFAN}")
               FANVALUE=$(printf "%.0f\n" $FANVALUE)
               if [ $NEWFAN -gt 99 ]; then
                 FANVALUE=$MAXFAN
-              fi     
-              sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1_enable"
-              sudo su -c "echo $FANVALUE > /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1"
-              sudo /home/minerstat/minerstat-os/bin/rocm-smi -d $y --setfan $FANVALUE
+              fi
+              if [ "$CURRFAN" != "$FANVALUE" ]; then
+                sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1_enable"
+                sudo su -c "echo $FANVALUE > /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1"
+                sudo /home/minerstat/minerstat-os/bin/rocm-smi -d $y --setfan $FANVALUE
+              fi
             fi
             if [ ! -z "$PARAM" ]; then
               MSG="$MSG,WANTVAL: $NEWFAN,FANVAL: $FANVALUE"
