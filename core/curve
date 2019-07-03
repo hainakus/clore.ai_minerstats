@@ -123,6 +123,7 @@ loop() {
               fi     
               sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1_enable"
               sudo su -c "echo $FANVALUE > /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1"
+              sudo /home/minerstat/minerstat-os/bin/rocm-smi -d $y --setfan $FANVALUE
             fi
             if [ ! -z "$PARAM" ]; then
               MSG="$MSG,WANTVAL: $NEWFAN,FANVAL: $FANVALUE"
