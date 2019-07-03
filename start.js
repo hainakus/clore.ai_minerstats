@@ -638,7 +638,8 @@ module.exports = {
         "zm-zec": "start.bash",
         "gminer": "start.bash",
         "grinprominer": "config.xml",
-        "miniz": "start.bash"
+        "miniz": "start.bash",
+        "serominer": "start.bash"
       };
 
       try {

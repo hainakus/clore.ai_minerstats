@@ -181,6 +181,13 @@ const MINER_JSON = {
     "apiType": "tcp",
     "apiCArg": "{\"id\":0, \"jsonrpc\":\"2.0\", \"method\":\"miner_getstat1\"}\n"
   },
+  "serominer": {
+    "args": "auto",
+    "execFile": "serominer",
+    "apiPort": 3333,
+    "apiType": "tcp",
+    "apiCArg": "{\"id\":0, \"jsonrpc\":\"2.0\", \"method\":\"miner_getstat1\"}\n"
+  },
   "progpowminer": {
     "args": "auto",
     "execFile": "progpowminer",
@@ -711,6 +718,7 @@ module.exports = {
       fkill('cast_xmr-vega').then(() => {});
       fkill('zjazz_cuda').then(() => {});
       fkill('GrinProMiner').then(() => {});
+      fkill('serominer').then(() => {});
       if (global.PrivateMiner == "True") {
         fkill(global.privateExe).then(() => {});
       }
