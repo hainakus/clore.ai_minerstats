@@ -48,6 +48,7 @@ else
         echo "-----------------------------------"
         echo "2] Removing Current version"
         echo "-----------------------------------"
+        sudo apt --fix-broken install -y
         sudo apt-get purge nvidia-$CUR_VERSION nvidia-opencl-icd-$CUR_VERSION nvidia-settings -y
         echo "-----------------------------------"
         echo "3] Installing new version"
