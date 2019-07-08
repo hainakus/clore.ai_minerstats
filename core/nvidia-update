@@ -1,0 +1,75 @@
+#!/bin/bash
+
+sudo apt-get update
+
+ALL_VERSION=$(apt-cache search nvidia | grep -P '^nvidia-[0-9]+\s' | grep "nvidia-" | grep "version" | sed 's/\ .*/ /' | sed 's/[^0-9]*//g')
+LAT_VERSION=$(echo $ALL_VERSION | sed 's/.* //' | sed 's/[^0-9]*//g')
+CUR_VERSION=$(dpkg -l | grep "NVIDIA binary driver" | awk '{ print $2 }' | xargs | sed 's/[^0-9]*//g')
+
+echo "-------- NVIDIA-UPDATER -----------"
+echo
+
+echo "- AVAILABLE NVIDIA VERSIONS:" $ALL_VERSION
+echo "- INSTALLED NVIDIA VERSION : $CUR_VERSION"
+echo "- LATEST    NVIDIA VERSION : $LAT_VERSION"
+echo
+
+rebt () {
+  sync
+  sleep 10
+  sudo reboot -f
+}
+
+if [ -z "$1" ]; then
+  echo "Please, provide a version to install."
+  echo "e.g: nvidia-update $LAT_VERSION"
+  echo
+else
+  re='^[0-9]+$'
+  if ! [[ $1 =~ $re ]] ; then
+    echo "ERROR: You only can ENTER numbers" >&2; exit 1
+  else
+    if [[ $ALL_VERSION == *"$1"* ]]; then
+      echo "SELECTED VERSION: $1"
+      if [ "$1" = "$CUR_VERSION" ]; then
+        echo "WARN: This version is already installed.."
+        echo "Checking for updates..."
+        sleep 1
+        sudo apt --fix-broken install -y
+        sudo apt-get install nvidia-$1 -y
+        echo
+        echo "Rebooting in 10 seconds ..."
+        rebt
+      else
+        echo "-----------------------------------"
+        echo "1] Disabling Active kernels"
+        echo "-----------------------------------"
+        sudo su -c "rmmod -f nvidia_uvm; rmmod -f nvidia_drm; rmmod -f nvidia_modeset; rmmod -f nvidia"
+        echo "-----------------------------------"
+        echo "2] Removing Current version"
+        echo "-----------------------------------"
+        sudo apt-get purge nvidia-$CUR_VERSION nvidia-opencl-icd-$CUR_VERSION nvidia-settings -y
+        echo "-----------------------------------"
+        echo "3] Installing new version"
+        echo "-----------------------------------"
+        sudo apt-get install nvidia-$1 -y
+        echo "-----------------------------------"
+        echo "4] Activating new kernel modules"
+        echo "-----------------------------------"
+        sudo dkms install -m nvidia -v $(ls /usr/src | grep nvidia | sed 's/[nvidia][nvidia}]*//' | sed 's/[-][-}]*//')
+        echo "-----------------------------------"
+        echo "5] Update initram-fs"
+        echo "-----------------------------------"
+        sudo update-initramfs -u
+        echo "-----------------------------------"
+        echo "6] Reboot"
+        echo "-----------------------------------"
+        rebt
+      fi
+    else
+      echo "ERROR: Invalid version"
+    fi
+  fi
+fi
+
+echo "-----------------------------------"
