@@ -1,6 +1,9 @@
 #!/bin/bash
 
+echo "- Updating database.. Please, wait"
 sudo apt-get update
+echo
+echo "- Version DB Updated"
 
 ALL_VERSION=$(apt-cache search nvidia | grep -P '^nvidia-[0-9]+\s' | grep "nvidia-" | grep "version" | sed 's/\ .*/ /' | sed 's/[^0-9]*//g')
 LAT_VERSION=$(echo $ALL_VERSION | sed 's/.* //' | sed 's/[^0-9]*//g')
@@ -31,6 +34,18 @@ else
   else
     if [[ $ALL_VERSION == *"$1"* ]]; then
       echo "SELECTED VERSION: $1"
+      # Stop mining
+      echo
+      echo "- Mining Stopped!"
+      sudo node /home/minerstat/minerstat-os/stop.js
+      sudo su minerstat -c "screen -X -S minerstat-console quit"
+      echo "stop" > /tmp/stop.pid
+      sudo su -c "sudo screen -X -S minew quit"
+      echo 
+      echo "Waiting (5 SECONDS...)"
+      sleep 5
+      echo
+      echo
       if [ "$1" = "$CUR_VERSION" ]; then
         echo "WARN: This version is already installed.."
         echo "Checking for updates..."
