@@ -116,6 +116,12 @@ loop() {
             if [ "$MSG" != "ON TARGET" ]; then
               MAXFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1_max)
               CURRFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1)
+              if [ -z "$MAXFAN" ]; then
+                MAXFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon??/pwm1_max)
+              fi
+              if [ -z "$CURRFAN" ]; then
+                CURRFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon??/pwm1)
+              fi
               CURRFANFIVE=$((CURRFAN-5))
               echo "MAXFAN FOR $x $y : $MAXFAN"
               FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $NEWFAN}")
@@ -127,6 +133,10 @@ loop() {
               if [ "$CURRFAN" != "$FANVALUE" ] && [ "$CURRFANFIVE" != "$FANVALUE" ]; then
                 sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1_enable"
                 sudo su -c "echo $FANVALUE > /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1"
+                if [ "$y" -gt "9" ]; then
+                  sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon??/pwm1_enable"
+                  sudo su -c "echo $FANVALUE > /sys/class/drm/card$y/device/hwmon/hwmon??/pwm1"
+                fi
                 #sudo /home/minerstat/minerstat-os/bin/rocm-smi -d $y --setfan $FANVALUE
               fi
             fi
