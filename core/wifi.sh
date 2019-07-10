@@ -67,7 +67,7 @@ if echo "$DEVICE" | grep "w" ;then
   sudo su -c 'echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf'
 
   echo ""
-  TEST="$(ping google.com -w 1 | grep '1 packets transmitted')"
+  TEST="$(ping google.com. -w 1 | grep '1 packets transmitted')"
 
   if echo "$TEST" | grep "0%" ;then
     echo ""
