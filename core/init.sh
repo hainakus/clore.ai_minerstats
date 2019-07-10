@@ -73,7 +73,7 @@ do
 
   IS_ONLINE="YES"
 
-  while ! ping api.minerstat.com -w 1 | grep "0%"; do
+  while ! ping api.minerstat.com. -w 1 | grep "0%"; do
     OFFLINE_COUNT=$(($OFFLINE_COUNT + $OFFLINE_NUM))
     echo "$OFFLINE_COUNT"
     IS_ONLINE="NO"
