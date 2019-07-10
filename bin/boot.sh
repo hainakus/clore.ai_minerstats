@@ -31,7 +31,7 @@ if ! screen -list | grep -q "dummy"; then
 
   HAVECONNECTION="true"
 
-  while ! sudo ping minerstat.com -w 1 | grep "0%"; do
+  while ! sudo ping minerstat.com. -w 1 | grep "0%"; do
     HAVECONNECTION="false"
     break
   done
@@ -75,7 +75,7 @@ if ! screen -list | grep -q "dummy"; then
   echo "-------- WAITING FOR CONNECTION -----------------"
   echo ""
 
-  while ! sudo ping minerstat.com -w 1 | grep "0%"; do
+  while ! sudo ping minerstat.com. -w 1 | grep "0%"; do
     sleep 1
   done
 
