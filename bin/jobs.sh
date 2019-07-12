@@ -103,7 +103,7 @@ sudo systemctl start systemd-journald.service systemd-journald.socket systemd-jo
 # Create Shortcut for JQ
 sudo ln -s /home/minerstat/minerstat-os/bin/jq /sbin &> /dev/null
 # Remove ppfeaturemask to avoid kernel panics with old cards
-sudo chmod 777 /boot/grub/grub.cfg && sudo su -c "sed -Ei 's/amdgpu.ppfeaturemask=0xffffffff//g' /boot/grub/grub.cfg" && sudo chmod 444 /boot/grub/grub.cfg
+#sudo chmod 777 /boot/grub/grub.cfg && sudo su -c "sed -Ei 's/amdgpu.ppfeaturemask=0xffffffff//g' /boot/grub/grub.cfg" && sudo chmod 444 /boot/grub/grub.cfg
 # Restart fan curve if running
 FNUM=$(sudo su -c "screen -list | grep -c curve")
 if [ "$FNUM" -gt "0" ]; then
