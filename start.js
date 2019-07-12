@@ -639,7 +639,8 @@ module.exports = {
         "gminer": "start.bash",
         "grinprominer": "config.xml",
         "miniz": "start.bash",
-        "serominer": "start.bash"
+        "serominer": "start.bash",
+        "nbminer": "start.bash"
       };
 
       try {

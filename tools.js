@@ -322,6 +322,13 @@ const MINER_JSON = {
     "apiPath": "/api/v1/status",
     "apiType": "http"
   },
+  "nbminer": {
+    "args": "auto",
+    "execFile": "nbminer",
+    "apiPort": 4433,
+    "apiPath": "/api/v1/status",
+    "apiType": "http"
+  },
   "grinprominer": {
     "args": "",
     "execFile": "GrinProMiner",
@@ -719,6 +726,7 @@ module.exports = {
       fkill('zjazz_cuda').then(() => {});
       fkill('GrinProMiner').then(() => {});
       fkill('serominer').then(() => {});
+      fkill('nbminer').then(() => {});
       if (global.PrivateMiner == "True") {
         fkill(global.privateExe).then(() => {});
       }
