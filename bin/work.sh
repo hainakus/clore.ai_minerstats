@@ -181,6 +181,11 @@ if ! screen -list | grep -q "dummy"; then
 
   echo " "
   echo "-------- OVERCLOCKING ---------------------------"
+  cd /home/minerstat/minerstat-os/
+  sudo node stop
+  sudo su minerstat -c "screen -X -S minerstat-console quit"
+  echo "stop" > /tmp/stop.pid
+  sudo su -c "sudo screen -X -S minew quit"
   cd /home/minerstat/minerstat-os/bin
   # PCI_BUS_ID
   if [ "$AMDDEVICE" -gt 0 ]; then
@@ -211,6 +216,7 @@ if ! screen -list | grep -q "dummy"; then
   screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done
   sudo su minerstat -c "screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
   sudo su minerstat -c "screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh"
+  sudo rm /tmp/stop.pid
   sleep 2
   sudo su minerstat -c "screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh"
 
