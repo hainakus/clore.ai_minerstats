@@ -197,7 +197,7 @@ if ! screen -list | grep -q "dummy"; then
   # MCLOCK
   echo "To run Overclock script manually type: mclock"
   echo "Adjusting clocks in the background.."
-  sudo chvt 1
+  #sudo chvt 1
   sudo sh /home/minerstat/minerstat-os/bin/overclock.sh
 
   if [ "$AMDDEVICE" -gt 0 ]; then
