@@ -104,15 +104,6 @@ sudo systemctl start systemd-journald.service systemd-journald.socket systemd-jo
 sudo ln -s /home/minerstat/minerstat-os/bin/jq /sbin &> /dev/null
 # Remove ppfeaturemask to avoid kernel panics with old cards
 #sudo chmod 777 /boot/grub/grub.cfg && sudo su -c "sed -Ei 's/amdgpu.ppfeaturemask=0xffffffff//g' /boot/grub/grub.cfg" && sudo chmod 444 /boot/grub/grub.cfg
-# grub fix
-GRB=/home/minerstat/minerstat-os/bin/amdmeminfo.txt
-if [ -f "$GRB" ]; then
-  if grep -q amdgpu.ppfeaturemask "/boot/grub/grub.cfg"; then
-    echo ""
-  else
-    sudo chmod 777 /boot/grub/grub.cfg && sudo su -c "sed -Ei 's/amdgpu.cik_support=1/amdgpu.cik_support=1 amdgpu.ppfeaturemask=0xffffffff/g' /boot/grub/grub.cfg" && sudo chmod 444 /boot/grub/grub.cfg
-  fi
-fi
 # Restart fan curve if running
 FNUM=$(sudo su -c "screen -list | grep -c curve")
 if [ "$FNUM" -gt "0" ]; then
@@ -154,4 +145,13 @@ if [ "$1" -gt 0 ] || [ "$AMDDEVICE" -gt 0 ]; then
   #sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q > /home/minerstat/minerstat-os/bin/amdmeminfo.txt &
   sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q | tac > /home/minerstat/minerstat-os/bin/amdmeminfo.txt &
   sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
+fi
+# grub fix
+GRB=/home/minerstat/minerstat-os/bin/amdmeminfo.txt
+if [ -f "$GRB" ]; then
+  if grep -q amdgpu.ppfeaturemask "/boot/grub/grub.cfg"; then
+    echo ""
+  else
+    sudo chmod 777 /boot/grub/grub.cfg && sudo su -c "sed -Ei 's/amdgpu.cik_support=1/amdgpu.cik_support=1 amdgpu.ppfeaturemask=0xffffffff/g' /boot/grub/grub.cfg" && sudo chmod 444 /boot/grub/grub.cfg
+  fi
 fi
