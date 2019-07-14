@@ -36,6 +36,7 @@ root_usage=`df -h / | awk '/\// {print $(NF-1)}'`
 time=`uptime | grep -ohe 'up .*' | sed 's/,/\ hours/g' | awk '{ printf $2" "$3 }'`
 ip=`ifconfig | grep "inet" | grep -v "inet6" | grep -v "127.0.0.1" | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | head -n 1 | grep -o -E '[.0-9]+'`
 version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
+[ -d /sys/firmware/efi ] && BOOTED="UEFI" || BOOTED="LEGACY"
 
 if grep -q experimental "/etc/lsb-release"; then
   version_type="experimental"
@@ -48,6 +49,7 @@ printf " OS Version:\t%s\n" "$version ($version_type)"
 printf " IP Address:\t%s\n" $ip
 printf " System Uptime:\t%s\n" "$time"
 printf " Usage On /:\t%s" $root_usage
+printf " Bootloader /:\t%s" $BOOTED
 printf "\n\n"
 printf " Type $(tput -T xterm smul)mhelp$(tput -T xterm sgr0) for all available commands"
 echo ""
