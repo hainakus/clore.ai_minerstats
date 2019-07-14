@@ -37,41 +37,49 @@ do
   TOKEN="$(cat /media/storage/config.js | grep 'global.accesskey' | sed 's/global.accesskey =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g' | sed 's/[^a-zA-Z0-9]*//g')"
   WORKER="$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g')"
 
+  echo ""
+  echo "$TOKEN"
+  echo "$WORKER"
+  
   #FREE SPACE in Megabyte - SDA1
   STR1="$(df -hm | grep $DISK | awk '{print $4}')"
+  
+  echo "Free Space: $STR1"
 
   #CPU USAGE
   STR2="$(mpstat | awk '$13 ~ /[0-9.]+/ { print 100 - $13 }')"
+  
+  echo "CPU Usage: $STR2"
 
   #REMOTE IP ADDRESS
   #STR4="$(wget -qO- http://ipecho.net/plain ; echo)"
 
   #LOCAL IP ADDRESS
   STR3="$(ifconfig | grep "inet" | grep -v "inet6" | grep -v "127.0.0.1" | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | head -n 1 | grep -o -E '[.0-9]+')"
+  echo "Local IP: $STR3"
 
   #FREE MEMORY
   STR5="$(free -m | grep 'Mem' | awk '{print $4}')"
+  echo "Free Memory: $STR5"
 
   # TELEPROXY ID
   TELEID=$(sudo /home/minerstat/minerstat-os/bin/tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}' | cut -f1 -d"@" | sed 's/.* //')
+  echo "TeleID: $TELEID"
 
   # SYSTEM UPTIME
   SYSTIME=$(awk '{print $1}' /proc/uptime | xargs)
+  echo "SYS UPTIM: $SYSTIME"
 
   # MINER logs
   RAMLOG=$(cat /dev/shm/miner.log | tac | head --lines 10 | tac)
+  echo "RAMLOG"
   
-  echo ""
-  echo "$TOKEN"
-  echo "$WORKER"
-  echo "Free Space: $STR1"
-  echo "CPU Usage: $STR2"
-  echo "Free Memory: $STR5"
-  echo "Local IP: $STR3"
+
   #echo "Remote IP: $STR4"
   echo ""
 
   IS_ONLINE="YES"
+  echo "NETCHECK"
 
   while ! ping api.minerstat.com. -w 1 | grep "0%"; do
     OFFLINE_COUNT=$(($OFFLINE_COUNT + $OFFLINE_NUM))
