@@ -91,9 +91,13 @@ do
   if [ "$IS_ONLINE" = "YES" ]; then
 
     OFFLINE_COUNT=0
+    
+    echo "online"
 
     #SEND INFO
     wget -qO- "https://api.minerstat.com/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&freemem=$STR5&teleid=$TELEID&systime=$SYSTIME" ; echo
+
+    echo "wget done"
 
     echo "-*- MINERSTAT LISTENER -*-"
     RESPONSE="$(wget -qO- "https://api.minerstat.com/v2/os_listener.php?token=$TOKEN&worker=$WORKER" ; echo)"
@@ -103,11 +107,15 @@ do
   fi
 
   if [ "$IS_ONLINE" = "NO" ]; then
+    echo "offline"
     if [ "$OFFLINE_COUNT" = "400" ]; then
       # Reboot after 10 min of connection lost
       RESPONSE="REBOOT"
     fi
   fi
+  
+  
+  echo "response check"
 
   if [ $RESPONSE = "REBOOT" ]; then
     #sudo reboot -f
@@ -160,6 +168,8 @@ do
   if [ $RESPONSE = "null" ]; then
     echo "No remote command pending..";
   fi
+  
+  echo "monitor logs"
 
   if [ "$MONITOR_TYPE" = "amd" ]; then
     AMDINFO=$(sudo /home/minerstat/minerstat-os/bin/amdinfo)
