@@ -48,7 +48,7 @@ printf "\n"
 printf " OS Version:\t%s\n" "$version ($version_type)"
 printf " IP Address:\t%s\n" $ip
 printf " System Uptime:\t%s\n" "$time"
-printf " Usage On /:\t%s" $root_usage
+printf " Usage On /:\t%s\n" $root_usage
 printf " Bootloader /:\t%s" $BOOTED
 printf "\n\n"
 printf " Type $(tput -T xterm smul)mhelp$(tput -T xterm sgr0) for all available commands"
