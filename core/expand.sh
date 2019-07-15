@@ -31,6 +31,12 @@ fi
 
 if [ "$RESIZED" = "RESIZED" ]; then
   echo "=== ALREADY RESIZED ==="
+  # Safety Check
+  CURRENT_FREE_SPACE_IN_MB="$(df -hm | grep $DRIVE_PARTITION | awk '{print $4}')"
+  if [ "$CURRENT_FREE_SPACE_IN_MB" -lt "200" ]; then
+    # 200 Mb less free space try resize anyway
+    sudo resize2fs /dev/$DRIVE_PARTITION
+  fi
 else
   echo "=== RESIZING ==="
   (
