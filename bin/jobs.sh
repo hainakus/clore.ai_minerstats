@@ -154,9 +154,9 @@ if [ -f "$GRB" ]; then
   else
     sudo chmod 777 /boot/grub/grub.cfg && sudo su -c "sed -Ei 's/spectre_v2=off/spectre_v2=off amdgpu.ppfeaturemask=0xffffffff/g' /boot/grub/grub.cfg" && sudo chmod 444 /boot/grub/grub.cfg
   fi
-  if grep -q iommu "/boot/grub/grub.cfg"; then
+fi
+if grep -q iommu "/boot/grub/grub.cfg"; then
     echo ""
   else
     sudo chmod 777 /boot/grub/grub.cfg && sudo su -c "sed -Ei 's/spectre_v2=off/spectre_v2=off consoleblank=0 intel_pstate=disable net.ifnames=0 ipv6.disable=1 pci=noaer iommu=soft/g' /boot/grub/grub.cfg" && sudo chmod 444 /boot/grub/grub.cfg
-  fi
 fi
