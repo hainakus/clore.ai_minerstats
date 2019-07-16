@@ -429,7 +429,7 @@ module.exports = {
       } catch (killError) {}
 
       if (global.PrivateMiner == "True") {
-        console.log(stdout);
+        //console.log(stdout);
         console.log("Starting miner screen...");
         mains.setsync();
         runMiner(miner, execFile, args);
