@@ -233,13 +233,13 @@ loop() {
           fi
         fi
         echo "GPU$x [$TEMP C / $FAN%] [MSG:$MSG]"
-        if [ ! -z "$PARAM" ]; then
-          sudo nvidia-settings -c :0 $PARAM
-        fi
       fi
       x=$((x+1))
       y=$((y+1))
     done
+     if [ ! -z "$PARAM" ]; then
+      sudo nvidia-settings -c :0 $PARAM
+     fi
   fi
 
   sleep 20
