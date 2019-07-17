@@ -35,6 +35,8 @@ loop() {
       x="0"
       y="0"
       PARAM=""
+      PARAMS=""
+      PARAMSAFETY=""
       until [ $TEST_AMD == "$x" ]; do
         if [ ! -f "/sys/class/drm/card$x/device/pp_table" ]; then
           echo "$x not exist, iGPU ?"
@@ -161,6 +163,8 @@ loop() {
     NVIDIA_NUM=$(nvidia-smi --query-gpu=count --format=csv,noheader | tail -n1 | xargs | sed 's/[^0-9]*//g')
     NVIDIA_INUM=$((NVIDIA_NUM-1))
     PARAM=""
+    PARAMS=""
+    PARAMSAFETY=""
     x="0"
     if [ -z "$NVIDIA_NUM" ]; then
      #sudo nvidia-smi --query-gpu=count --format=csv,noheader | grep "lost"
@@ -228,7 +232,10 @@ loop() {
             NEWFAN="100"
           fi
           if [ ! $FAN -eq $NEWFAN ]; then
-            PARAM="$PARAM -a [gpu:$x]/GPUFanControlState=1 -a [fan:"$x"]/GPUTargetFanSpeed="$NEWFAN""
+            PARAM="$PARAM -a [gpu:$x]/GPUFanControlState=1"
+            edit=$((NVIDIA_INUM+x+1))
+            PARAMS="$PARAM -a [fan:"$x"]/GPUTargetFanSpeed="$NEWFAN""
+            PARAMSAFETY="$PARAMSAFETY -a [fan:"$edit"]/GPUTargetFanSpeed="$NEWFAN""
             MSG="$MSG,NEWFAN: $NEWFAN%"
           fi
         fi
@@ -239,6 +246,8 @@ loop() {
     done
      if [ ! -z "$PARAM" ]; then
       sudo su -c "nvidia-settings -c :0 $PARAM"
+      sudo su -c "nvidia-settings -c :0 $PARAMS"
+      sudo su -c "nvidia-settings -c :0 $PARAMSAFETY"
      fi
   fi
 
