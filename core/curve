@@ -198,15 +198,15 @@ loop() {
           # Hotter than target temp
         elif [ $DIFF -lt -1 ]; then
           MSG="WARM >$DIFF C!"
-          CHANGE=4
+          CHANGE=5
           if [ $DIFF -lt -2 ]; then
-            CHANGE=5
+            CHANGE=8
           fi
           if [ $DIFF -lt -5 ]; then
-            CHANGE=6
+            CHANGE=11
           fi
           if [ $DIFF -lt -10 ]; then
-            CHANGE=10
+            CHANGE=15
           fi
           if [ $DIFF -lt -20 ]; then
             CHANGE=20
@@ -238,7 +238,7 @@ loop() {
       y=$((y+1))
     done
      if [ ! -z "$PARAM" ]; then
-      sudo nvidia-settings -c :0 $PARAM &> /dev/null
+      sudo nvidia-settings -c :0 $PARAM
      fi
   fi
 
