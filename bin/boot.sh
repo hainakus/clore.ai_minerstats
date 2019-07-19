@@ -41,7 +41,6 @@ if ! screen -list | grep -q "dummy"; then
   then
 
     sudo su -c 'echo "" > /etc/resolv.conf'
-    sudo resolvconf -u
     sudo su -c 'echo "nameserver 1.1.1.1" >> /etc/resolv.conf'
     sudo su -c 'echo "nameserver 1.0.0.1" >> /etc/resolv.conf'
     sudo su -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf'
