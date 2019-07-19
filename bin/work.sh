@@ -54,6 +54,7 @@ if ! screen -list | grep -q "dummy"; then
     sudo su -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf'
     # For msos versions what have local DNS cache
     sudo su -c 'echo "nameserver 127.0.0.1" >> /etc/resolv.conf'
+    sudo systemd-resolve --flush-caches
     
     if [ "$SSID" -gt 0 ]; then
       cd /home/minerstat/minerstat-os/core
@@ -79,8 +80,10 @@ if ! screen -list | grep -q "dummy"; then
   echo ""
 
   # Cache management
-  sudo systemd-resolve --flush-caches
-  sudo service network-manager restart
+  while ! sudo ping minerstat.com. -w 1 | grep "0%"; do
+    sudo service network-manager restart
+    break
+  done
   #sudo su -c "ifdown lo"
   #sudo su -c "ifup lo"
 
