@@ -9,6 +9,8 @@ echo ""
 echo "*** Connecting to Wireless Network ***"
 echo ""
 
+sudo su -c "rm /etc/netplan/minerstat.yaml"
+
 for dev in $INTERFACE; do
   if [ -d "/sys/class/net/$dev/wireless" ]; then DEVICE=$dev; fi;
 done
@@ -65,9 +67,15 @@ if echo "$DEVICE" | grep "w" ;then
   # IPV6
   sudo su -c 'echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf'
   sudo su -c 'echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf'
+  # systemd resolve casusing problems with 127.0.0.53
+  sudo su -c 'echo "nameserver 1.1.1.1" > /run/resolvconf/interface/systemd-resolved'
+  sudo su -c 'echo "nameserver 1.0.0.1" >> /run/resolvconf/interface/systemd-resolved'
+  sudo su -c 'echo "nameserver 1.1.1.1" > /run/systemd/resolve/stub-resolv.conf'
+  sudo su -c 'echo "nameserver 1.0.0.1" >> /run/systemd/resolve/stub-resolv.conf'
+  sudo su -c 'echo options edns0 >> /run/systemd/resolve/stub-resolv.conf'
 
   echo ""
-  TEST="$(ping google.com. -w 1 | grep '1 packets transmitted')"
+  TEST="$(ping api.minerstat.com. -w 1 | grep '1 packets transmitted')"
 
   if echo "$TEST" | grep "0%" ;then
     echo ""
