@@ -330,7 +330,7 @@ const MINER_JSON = {
     "apiType": "http"
   },
   "nanominer": {
-    "args": "",
+    "args": "auto",
     "execFile": "nanominer",
     "apiPort": 9090,
     "apiPath": "/stats",

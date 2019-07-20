@@ -641,7 +641,7 @@ module.exports = {
         "miniz": "start.bash",
         "serominer": "start.bash",
         "nbminer": "start.bash",
-        "nanominer": "config.ini",
+        "nanominer": "start.bash",
         "kbminer": "start.bash"
       };
 
