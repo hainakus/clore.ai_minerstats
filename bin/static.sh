@@ -3,6 +3,8 @@ echo ""
 echo "*** STATIC LAN Configuration ***"
 echo ""
 
+sudo su -c "rm /etc/netplan/minerstat.yaml"
+
 INTERFACE="$(sudo cat /proc/net/dev | grep -vE lo | tail -n1 | awk -F '\\:' '{print $1}' | xargs)"
 
 # READ FROM network.txt
@@ -33,12 +35,18 @@ sudo su -c 'echo "nameserver 127.0.0.1" >> /etc/resolv.conf'
 # IPV6
 sudo su -c 'echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf'
 sudo su -c 'echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf'
+# systemd resolve casusing problems with 127.0.0.53
+sudo su -c 'echo "nameserver 1.1.1.1" > /run/resolvconf/interface/systemd-resolved'
+sudo su -c 'echo "nameserver 1.0.0.1" >> /run/resolvconf/interface/systemd-resolved'
+sudo su -c 'echo "nameserver 1.1.1.1" > /run/systemd/resolve/stub-resolv.conf'
+sudo su -c 'echo "nameserver 1.0.0.1" >> /run/systemd/resolve/stub-resolv.conf'
+sudo su -c 'echo options edns0 >> /run/systemd/resolve/stub-resolv.conf'
 
 sudo su -c '/etc/init.d/networking restart'
 sudo su -c "systemctl restart systemd-networkd"
 
 echo ""
-TEST="$(ping google.com -w 1 | grep '1 packets transmitted')"
+TEST="$(ping api.minerstat.com. -w 1 | grep '1 packets transmitted')"
 
 if echo "$TEST" | grep "0%" ;then
   echo ""
