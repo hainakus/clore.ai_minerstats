@@ -4,3 +4,4 @@
 0 * * * * sudo update-pciids
 @reboot sudo systemctl stop systemd-udevd systemd-udevd-kernel.socket systemd-udevd-control.socket
 @reboot find '/home/minerstat/minerstat-os/clients' -name "*log.txt" -type f -delete
+@reboot /usr/sbin/netplan apply
