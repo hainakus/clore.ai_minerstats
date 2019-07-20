@@ -640,7 +640,8 @@ module.exports = {
         "grinprominer": "config.xml",
         "miniz": "start.bash",
         "serominer": "start.bash",
-        "nbminer": "start.bash"
+        "nbminer": "start.bash",
+        "nanominer": "config.ini"
       };
 
       try {

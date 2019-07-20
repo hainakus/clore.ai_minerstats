@@ -329,6 +329,13 @@ const MINER_JSON = {
     "apiPath": "/api/v1/status",
     "apiType": "http"
   },
+  "nanominer": {
+    "args": "",
+    "execFile": "nanominer",
+    "apiPort": 9090,
+    "apiPath": "/stats",
+    "apiType": "http"
+  },
   "grinprominer": {
     "args": "",
     "execFile": "GrinProMiner",
