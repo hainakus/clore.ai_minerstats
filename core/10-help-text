@@ -30,7 +30,7 @@ printf " |_| |_| |_|_|_| |_|\___|_|  |___/\__\__,_|\__|\n"
 printf "\n\n"
 printf " * Website:\thttps://minerstat.com\n"
 printf " * Dashboard:\thttps://my.minerstat.com\n"
-printf " * Discord:\thttps://discord.gg/d679vuP\n"
+printf " * Discord:\thttps://minerstat.com/discord\n"
 
 root_usage=`df -h / | awk '/\// {print $(NF-1)}'`
 time=`uptime | grep -ohe 'up .*' | sed 's/,/\ hours/g' | awk '{ printf $2" "$3 }'`
