@@ -336,6 +336,13 @@ const MINER_JSON = {
     "apiPath": "/stats",
     "apiType": "http"
   },
+  "kbminer": {
+    "args": "auto",
+    "execFile": "kbminer",
+    "apiPort": 9091,
+    "apiPath": "/",
+    "apiType": "http"
+  },
   "grinprominer": {
     "args": "",
     "execFile": "GrinProMiner",
