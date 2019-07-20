@@ -79,6 +79,14 @@ if ! screen -list | grep -q "dummy"; then
 
   echo "-------- WAITING FOR CONNECTION -----------------"
   echo ""
+  
+  echo "Waiting for DNS resolve.."
+  echo "It can take a few moments! You may see ping messages for a while"
+  echo ""
+  
+  nslookup api.minerstat.com
+  
+  echo ""
 
   while ! sudo ping minerstat.com. -w 1 | grep "0%"; do
     sleep 1
