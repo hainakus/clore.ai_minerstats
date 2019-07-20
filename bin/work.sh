@@ -88,10 +88,15 @@ if ! screen -list | grep -q "dummy"; then
   # Cache management
   while ! sudo ping minerstat.com. -w 1 | grep "0%"; do
     sudo service network-manager restart
+    sudo /usr/sbin/netplan apply
     break
   done
   #sudo su -c "ifdown lo"
   #sudo su -c "ifup lo"
+
+  echo "Waiting for DNS resolve.."
+  echo "It can take a few moments! You may see ping messages for a while"
+  echo ""
 
   while ! sudo ping minerstat.com. -w 1 | grep "0%"; do
     sleep 1
