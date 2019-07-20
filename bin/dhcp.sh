@@ -39,6 +39,7 @@ sudo su -c 'echo "nameserver 1.0.0.1" >> /run/systemd/resolve/stub-resolv.conf'
 sudo su -c 'echo options edns0 >> /run/systemd/resolve/stub-resolv.conf'
 
 echo ""
+sleep 3
 TEST="$(ping api.minerstat.com. -w 1 | grep '1 packets transmitted')"
 
 if echo "$TEST" | grep "0%" ;then
