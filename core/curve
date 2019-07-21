@@ -241,7 +241,6 @@ loop() {
             PARAM="$PARAM -a [gpu:$x]/GPUFanControlState=1"
             PARAMS="$PARAMS -a [fan:"$z"]/GPUTargetFanSpeed="$NEWFAN""
             if [ "$NVIDIA_FAN_NUM" -gt "$NVIDIA_NUM" ]; then
-              z=$((z+1))
               PARAMSAFETY="$PARAMSAFETY -a [fan:"$z"]/GPUTargetFanSpeed="$NEWFAN""
             fi
             MSG="$MSG,NEWFAN: $NEWFAN%"
@@ -251,6 +250,9 @@ loop() {
       fi
       x=$((x+1))
       y=$((y+1))
+      if [ "$NVIDIA_FAN_NUM" -gt "$NVIDIA_NUM" ]; then
+        z=$((z+1))
+      fi
       z=$((z+1))
     done
      if [ ! -z "$PARAM" ]; then
