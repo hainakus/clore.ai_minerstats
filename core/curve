@@ -25,6 +25,9 @@ fi
 TEST_NVIDIA=$(nvidia-smi -L)
 NUM_AMD=$(sudo lshw -C display | grep AMD | wc -l)
 TEST_AMD=$NUM_AMD
+if [[ $TEST_NVIDIA == *"GPU 0"* ]]; then
+  NVIDIA_FAN_NUM=$(sudo nvidia-settings -c :0 -q fans | grep "fan:" | wc -l)
+fi
 
 loop() {
   echo "----------------"
@@ -166,6 +169,7 @@ loop() {
     PARAMS=""
     PARAMSAFETY=""
     x="0"
+    z="0"
     if [ -z "$NVIDIA_NUM" ]; then
      #sudo nvidia-smi --query-gpu=count --format=csv,noheader | grep "lost"
      echo "SEEMS NVIDIA DRIVER CRASHED - REBOOT REQUIRED !!"
@@ -233,9 +237,11 @@ loop() {
           fi
           if [ ! $FAN -eq $NEWFAN ]; then
             PARAM="$PARAM -a [gpu:$x]/GPUFanControlState=1"
-            edit=$((NVIDIA_INUM+x+1))
-            PARAMS="$PARAMS -a [fan:"$x"]/GPUTargetFanSpeed="$NEWFAN""
-            PARAMSAFETY="$PARAMSAFETY -a [fan:"$edit"]/GPUTargetFanSpeed="$NEWFAN""
+            PARAMS="$PARAMS -a [fan:"$z"]/GPUTargetFanSpeed="$NEWFAN""
+            if [ "$NVIDIA_FAN_NUMBER" -gt "$NVIDIA_NUM" ]; then
+              z=$((z+1))
+              PARAMSAFETY="$PARAMSAFETY -a [fan:"$z"]/GPUTargetFanSpeed="$NEWFAN""
+            fi
             MSG="$MSG,NEWFAN: $NEWFAN%"
           fi
         fi
@@ -243,9 +249,12 @@ loop() {
       fi
       x=$((x+1))
       y=$((y+1))
+      z=$((z+1))
     done
      if [ ! -z "$PARAM" ]; then
       sudo su -c "nvidia-settings -c :0 $PARAM $PARAMS"
+     fi
+      if [ ! -z "$PARAMSAFETY" ]; then
       sudo su -c "nvidia-settings -c :0 $PARAMSAFETY"
      fi
   fi
