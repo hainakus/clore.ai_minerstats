@@ -257,10 +257,7 @@ loop() {
       z=$((z+1))
     done
      if [ ! -z "$PARAM" ]; then
-      sudo su -c "nvidia-settings -c :0 $PARAM $PARAMS"
-     fi
-      if [ ! -z "$PARAMSAFETY" ]; then
-      sudo su -c "nvidia-settings -c :0 $PARAMSAFETY"
+      sudo su -c "nvidia-settings -c :0 $PARAM $PARAMS $PARAMSAFETY"
      fi
   fi
 
