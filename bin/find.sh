@@ -11,6 +11,7 @@ RESULT=`pgrep node`
 if [ ! $1 ]; then
   echo "Type your GPU ID what you want to find."
   echo "Example: mfind 0"
+  echo "AMD Example with BUS Search: mfind 03.00.0"
 else
   if [ "${RESULT:-null}" = null ]; then
     #################################£
@@ -18,7 +19,9 @@ else
     AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
     NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
     NVIDIA="$(nvidia-smi -L)"
+    GID=$1
     echo ""
+    sudo killall curve
 
     if [ ! -z "$NVIDIA" ]; then
       if echo "$NVIDIA" | grep -iq "^GPU 0:" ;then
@@ -32,8 +35,8 @@ else
         sleep 5
         echo ""
         echo "-- NVIDIA --"
-        echo "GPU $1 >> 100%"
-        STR2="-c :0 -a [gpu:$1]/GPUFanControlState=1 -a [gpu:$1]/GPUTargetFanSpeed=100"
+        echo "GPU $GID >> 100%"
+        STR2="-c :0 -a [gpu:$GID]/GPUFanControlState=1 -a [gpu:$GID]/GPUTargetFanSpeed=100"
         APPLY="$(sudo nvidia-settings $STR2)"
         echo $APPLY
         echo ""
@@ -51,19 +54,25 @@ else
       echo ""
       echo "-- STATUS --"
       echo "AMD: SET ALL FANS TO 0%"
-      for gpuid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-        sudo ./ohgodatool -i $gpuid --set-fanspeed 0 | grep "Fanspeed"
-        sudo ./amdcovc fanspeed:$gpuid=0 | grep "Setting"
-      done
+      sudo /home/minerstat/minerstat-os/bin/gpuinfo amd
+      echo ""
+      if [ ${#GID} -ge 3 ]; then
+        echo "-- VALIDATE ON BUS --"
+        GPUBUSINT=$(echo $GPUBUS | cut -f 1 -d '.')
+        GPUBUS=$(python -c 'print(int("'$GPUBUSINT'", 16))')
+        echo "Bus ID: $GID"
+        GID=$(ls /sys/bus/pci/devices/*$GPUBUSINT":00.0"/drm | grep "card" | sed 's/[^0-9]*//g')
+        echo "Rechecked ID: $GID"
+      fi
+      sudo /home/minerstat/minerstat-os/bin/rocm-smi --setfan 0
       echo ""
       echo "-- AMD --"
       echo "DONE, WAIT 5 SEC."
       sleep 5
       echo ""
       echo "-- AMD --"
-      echo "GPU $1 >> 100%"
-      sudo ./ohgodatool -i $1 --set-fanspeed 100 | grep "Fanspeed"
-      sudo ./amdcovc fanspeed:$1=100 | grep "Setting"
+      echo "GPU $GID >> 200 RPM"
+      sudo /home/minerstat/minerstat-os/bin/rocm-smi --setfan 200 -d $GID
       echo ""
       echo "-- AMD --"
       echo "DONE, WAIT 3 SEC."
@@ -79,7 +88,7 @@ else
     echo "-----"
     echo "You need to stop running miner before you can use this script."
     echo "Type: mstop"
-    echo "Then you are able to run again: mfind $1"
+    echo "Then you are able to run again: mfind $GID"
     echo "-----"
   fi
 
