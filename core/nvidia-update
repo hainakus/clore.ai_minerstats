@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if ! grep -q experimental "/etc/lsb-release"; then
+  echo "Driver update not supported on your msos version. Please, reflash to be able to use recent nvidia drivers."
+  exit 1
+fi
+
 echo "- Updating database.. Please, wait"
 sudo apt-get update
 echo
