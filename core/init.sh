@@ -3,7 +3,7 @@
 OFFLINE_COUNT=0
 OFFLINE_NUM=40
 IS_ONLINE="YES"
-DETECT="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g')"
+DETECT="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | grep -v "sda3" | head -n1)"
 PART=$DETECT"1"
 DISK="$(df -hm | grep $PART | awk '{print $2}')"
 
