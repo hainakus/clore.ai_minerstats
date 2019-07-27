@@ -57,7 +57,8 @@ do
   echo "Free Space: $STR1"
 
   #CPU USAGE
-  STR2="$(mpstat | awk '$13 ~ /[0-9.]+/ { print 100 - $13 }')"
+  #STR2="$(mpstat | awk '$13 ~ /[0-9.]+/ { print 100 - $13 }')"
+  STR2=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage ""}')
   
   echo "CPU Usage: $STR2"
 
@@ -86,7 +87,7 @@ do
   
   # Extended Query with loop
   CPU_TEMP=$((cat /sys/class/thermal/thermal_zone*/temp) | column -s $'\t' -t | sed 's/\(.\)..$/.\1/' | head -n 1)
-  CPU_USAGE=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage ""}')
+  #CPU_USAGE=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage ""}')
 
   #echo "Remote IP: $STR4"
   echo ""
