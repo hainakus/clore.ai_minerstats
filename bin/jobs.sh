@@ -125,6 +125,9 @@ CURVE_FILE=/media/storage/fans.txt
 if [ -f "$CURVE_FILE" ]; then
     echo "Fan curve detected.. restarting"
     sudo killall curve
+    sleep 2
+    sudo killall curve
+    sleep 1
     sudo screen -A -m -d -S curve /home/minerstat/minerstat-os/core/curve
 fi
 # Time Date SYNC
