@@ -26,6 +26,16 @@ if [ "$DETECTB" -gt "0" ]; then
   MONITOR_TYPE="amd"
 fi
 
+# Extended Query without loop
+MOBO_TYPE=$(sudo dmidecode --string baseboard-product-name)
+BIOS_VERSION=$(sudo dmidecode --string bios-version)
+MSOS_VERSION=$(cat /etc/lsb-release | grep DISTRIB_RELEASE= | head -n1 | sed 's/DISTRIB_RELEASE=//g')
+MAC_ADDRESS=$(cat /sys/class/net/$(ip route show default | awk '/default/ {print $5}')/address)
+if [ -z "$MAC_ADDRESS" ]; then
+  MAC_ADDRESS=$(ifconfig -a | grep : | grep -vE "eth0|lo|wlan0" | grep ether | awk '{print $2}')
+fi
+CPU_TYPE=$(sudo dmidecode --string processor-version)
+
 while true
 do
 
@@ -74,6 +84,9 @@ do
   RAMLOG=$(cat /dev/shm/miner.log | tac | head --lines 10 | tac)
   echo "RAMLOG"
   
+  # Extended Query with loop
+  CPU_TEMP=$((cat /sys/class/thermal/thermal_zone*/temp) | column -s $'\t' -t | sed 's/\(.\)..$/.\1/' | head -n 1)
+  CPU_USAGE=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage ""}')
 
   #echo "Remote IP: $STR4"
   echo ""
@@ -95,7 +108,7 @@ do
     echo "online"
 
     #SEND INFO
-    wget -qO- "https://api.minerstat.com/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&freemem=$STR5&teleid=$TELEID&systime=$SYSTIME" ; echo
+    wget -qO- "https://api.minerstat.com/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&freemem=$STR5&teleid=$TELEID&systime=$SYSTIME&mobo=$MOBO_TYPE&bios=$BIOS_VERSION&msos=$MSOS_VERSION&mac=$MAC_ADDRESS&cputype=$CPU_TYPE&cpu_usage=$CPU_USAGE&cpu_temp=$CPU_TEMP" ; echo
 
     echo "wget done"
 
