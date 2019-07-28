@@ -35,6 +35,7 @@ if [ -z "$MAC_ADDRESS" ]; then
   MAC_ADDRESS=$(ifconfig -a | grep : | grep -vE "eth0|lo|wlan0" | grep ether | awk '{print $2}')
 fi
 CPU_TYPE=$(sudo dmidecode --string processor-version)
+DISK_TYPE=$(lsblk -io KNAME,SIZE,MODEL | grep $DETECT | head -n1)
 
 while true
 do
@@ -109,7 +110,7 @@ do
     echo "online"
 
     #SEND INFO
-    wget -qO- "https://api.minerstat.com/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&freemem=$STR5&teleid=$TELEID&systime=$SYSTIME&mobo=$MOBO_TYPE&bios=$BIOS_VERSION&msos=$MSOS_VERSION&mac=$MAC_ADDRESS&cputype=$CPU_TYPE&cpu_usage=$CPU_USAGE&cpu_temp=$CPU_TEMP" ; echo
+    wget -qO- "https://api.minerstat.com/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&freemem=$STR5&teleid=$TELEID&systime=$SYSTIME&mobo=$MOBO_TYPE&bios=$BIOS_VERSION&msos=$MSOS_VERSION&mac=$MAC_ADDRESS&cputype=$CPU_TYPE&cpu_usage=$CPU_USAGE&cpu_temp=$CPU_TEMP&disk_type=$DISK_TYPE" ; echo
 
     echo "wget done"
 
