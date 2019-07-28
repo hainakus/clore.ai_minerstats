@@ -35,7 +35,7 @@ if [ -z "$MAC_ADDRESS" ]; then
   MAC_ADDRESS=$(ifconfig -a | grep : | grep -vE "eth0|lo|wlan0" | grep ether | awk '{print $2}')
 fi
 CPU_TYPE=$(sudo dmidecode --string processor-version)
-DISK_TYPE=$(lsblk -io KNAME,SIZE,MODEL | grep $DETECT | head -n1)
+DISK_TYPE=$(lsblk -io KNAME,MODEL,SIZE | grep $DETECT | head -n1)
 
 while true
 do
