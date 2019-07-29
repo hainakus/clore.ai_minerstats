@@ -12,6 +12,9 @@ if [[ $1 == "nvidia" ]]; then
     NVIDIA_INUM=$((NVIDIA_NUM-1))
     #NVIDIA_BRAND=$(lspci -vnn | grep VGA -A 12 | grep Subsystem | grep -vE "HD Graphics|USB" > /dev/shm/nvidia_list.txt)
     NVIDIA_BRAND=$(lspci -vnn | grep GeForce -A 1 | grep -vE "HD Graphics|USB|Processor" | grep Subsystem > /dev/shm/nvidia_list.txt)
+    if [ -z "$NVIDIA_BRAND" ]; then
+         NVIDIA_BRAND=$(lspci -vnn | grep VGA -A 1 | grep -vE "HD Graphics|USB|Processor" | grep Subsystem > /dev/shm/nvidia_list.txt)
+    fi
     x="0"
     z="1"
     JSON_EOF='{'
