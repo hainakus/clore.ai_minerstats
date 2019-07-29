@@ -72,6 +72,13 @@ if [ $1 ]; then
   if [ "$FANSPEED" != "skip" ]
   then
     STR1="-a [gpu:$GPUID]/GPUFanControlState=1 -a [fan:"$GPUID"]/GPUTargetFanSpeed="$FANSPEED""
+    edit=$((GPUID+1))
+    if echo "$QUERY" | grep "1660" ; then
+      STR1="$STR1 -a [fan:"$edit"]/GPUTargetFanSpeed="$FANSPEED""
+    fi
+    if echo "$QUERY" | grep "RTX" ; then
+      STR1="$STR1 -a [fan:"$edit"]/GPUTargetFanSpeed="$FANSPEED""
+    fi
   fi
 
   #################################£
