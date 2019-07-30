@@ -898,7 +898,7 @@ module.exports = {
         var options = {
           host: '127.0.0.1',
           port: 7887,
-          path: '/2/backends'
+          path: '/2/summary'
         };
         var req = http.get(options, function(response) {
           response.on('data', function(chunk) {
