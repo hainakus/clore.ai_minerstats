@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DRIVE_NUMBER=$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | sed 's/[0-9]*//g' | head -n1)
+DRIVE_NUMBER=$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | sed 's/[0-9]*//g' | head -n1 | xargs)
 DRIVE_PARTITION=$DRIVE_NUMBER"1"
 DRIVE_EFI=$DRIVE_NUMBER"3"
 #echo $DRIVE_NUMBER
