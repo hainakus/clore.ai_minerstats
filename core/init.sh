@@ -36,6 +36,11 @@ if [ -z "$MAC_ADDRESS" ]; then
 fi
 CPU_TYPE=$(sudo dmidecode --string processor-version)
 DISK_TYPE=$(lsblk -io KNAME,MODEL,SIZE | grep $DETECT | head -n1)
+# System & Graphics
+NVIDIA_DRIVER=$(nvidia-smi | grep "Driver Version" | xargs | sed 's/[^0-9. ]*//g' | xargs | cut -d ' ' -f 1 | xargs)
+AMD_DRIVER=$(dpkg -l | grep vulkan-amdgpu-pro | head -n1 | awk '{print $3}' | xargs)
+KERNEL_VERSION=$(uname -r)
+UBUNTU_VERSION=$(cat /etc/os-release | grep "PRETTY_NAME" | sed 's/PRETTY_NAME="//g' | sed 's/"//g' | xargs)
 
 while true
 do
@@ -110,7 +115,7 @@ do
     echo "online"
 
     #SEND INFO
-    wget -qO- "https://api.minerstat.com/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&freemem=$STR5&teleid=$TELEID&systime=$SYSTIME&mobo=$MOBO_TYPE&bios=$BIOS_VERSION&msos=$MSOS_VERSION&mac=$MAC_ADDRESS&cputype=$CPU_TYPE&cpu_usage=$CPU_USAGE&cpu_temp=$CPU_TEMP&disk_type=$DISK_TYPE" ; echo
+    wget -qO- "https://api.minerstat.com/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&freemem=$STR5&teleid=$TELEID&systime=$SYSTIME&mobo=$MOBO_TYPE&bios=$BIOS_VERSION&msos=$MSOS_VERSION&mac=$MAC_ADDRESS&cputype=$CPU_TYPE&cpu_usage=$CPU_USAGE&cpu_temp=$CPU_TEMP&disk_type=$DISK_TYPE&nvidiad=$NVIDIA_DRIVER&amdd=$AMD_DRIVER&kernel=$KERNEL_VERSION&ubuntu=$UBUNTU_VERSION" ; echo
 
     echo "wget done"
 
