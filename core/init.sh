@@ -37,7 +37,10 @@ fi
 CPU_TYPE=$(sudo dmidecode --string processor-version)
 DISK_TYPE=$(lsblk -io KNAME,MODEL,SIZE | grep $DETECT | head -n1)
 # System & Graphics
-NVIDIA_DRIVER=$(nvidia-smi | grep "Driver Version" | xargs | sed 's/[^0-9. ]*//g' | xargs | cut -d ' ' -f 1 | xargs)
+NVIDIA_DRIVER=$(dpkg -l | grep nvidia-opencl-icd | grep ii | awk '{print $3}' | xargs | cut -d '-' -f 1)
+if [ -z "$NVIDIA_DRIVER" ]; then
+  NVIDIA_DRIVER=$(nvidia-smi | grep "Driver Version" | xargs | sed 's/[^0-9. ]*//g' | xargs | cut -d ' ' -f 1 | xargs)
+fi
 AMD_DRIVER=$(dpkg -l | grep vulkan-amdgpu-pro | head -n1 | awk '{print $3}' | xargs)
 KERNEL_VERSION=$(uname -r)
 UBUNTU_VERSION=$(cat /etc/os-release | grep "PRETTY_NAME" | sed 's/PRETTY_NAME="//g' | sed 's/"//g' | xargs)
