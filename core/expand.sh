@@ -14,7 +14,7 @@ fi
 #sudo cat /proc/partitions | grep $DRIVE_NUMBER | head -n1 | awk '{print $3}'
 PARTITION_MAX_SIZE_IN_BYTE=$(sudo cat /proc/partitions | grep $DRIVE_NUMBER | head -n1 | awk '{print $3}')
 PARTITION_MAX_SIZE_IN_MB=$(python -c "print $PARTITION_MAX_SIZE_IN_BYTE / 1024")
-CURRENT_PARTITION_SIZE_IN_BYTE=$(sudo cat /proc/partitions | grep $DRIVE_NUMBER"1" | head -n1 | awk '{print $3}')
+CURRENT_PARTITION_SIZE_IN_BYTE=$(sudo cat /proc/partitions | grep $DRIVE_PARTITION | head -n1 | awk '{print $3}')
 CURRENT_PARTITION_SIZE_IN_MB=$(python -c "print $CURRENT_PARTITION_SIZE_IN_BYTE / 1024")
 #CURRENT_PARTITION_SIZE_IN_GB=$(df -h | grep $DRIVE_PARTITION | awk '{print $2}' | sed 's/[^.0-9]*//g')
 #CURRENT_PARTITION_SIZE_IN_MB=$(python -c "print $CURRENT_PARTITION_SIZE_IN_GB * 1024")
