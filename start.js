@@ -117,7 +117,7 @@ module.exports = {
       cpu_data = global.cpu_data;
     //console.log(res_data);         //SHOW SYNC OUTPUT
     // SEND LOG TO SERVER
-    console.log("MINER:" + global.minerVersion + ", CPU:" + global.cpuVersion);
+    //console.log("MINER:" + global.minerVersion + ", CPU:" + global.cpuVersion);
     var request = require('request');
     //console.log(res_data);
     request.post({
