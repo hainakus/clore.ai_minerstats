@@ -31,6 +31,9 @@ fi
 
 # Extended Query without loop
 MOBO_TYPE=$(sudo dmidecode --string baseboard-product-name)
+if [ "$MOBO_TYPE" = "Default string" ]; then
+  MOBO_TYPE="Unbranded"
+fi
 BIOS_VERSION=$(sudo dmidecode --string bios-version)
 MSOS_VERSION=$(cat /etc/lsb-release | grep DISTRIB_RELEASE= | head -n1 | sed 's/DISTRIB_RELEASE=//g')
 MAC_ADDRESS=$(cat /sys/class/net/$(ip route show default | awk '/default/ {print $5}')/address)
