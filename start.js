@@ -31,6 +31,8 @@ global.PrivateMinerStartArgs;
 global.watchnum = 0;
 global.osversion;
 global.memoryloc;
+global.minerVersion;
+global.cpuVersion;
 var colors = require('colors'),
   exec = require('child_process').exec,
   fs = require('fs'),
@@ -115,10 +117,11 @@ module.exports = {
       cpu_data = global.cpu_data;
     //console.log(res_data);         //SHOW SYNC OUTPUT
     // SEND LOG TO SERVER
+    console.log("MINER:" + global.minerVersion + ", CPU:" + global.cpuVersion);
     var request = require('request');
     //console.log(res_data);
     request.post({
-      url: 'https://api.minerstat.com/v2/set_node_config.php?token=' + global.accesskey + '&worker=' + global.worker + '&miner=' + global.client.toLowerCase() + '&ver=4&cpuu=' + global.minerCpu + '&cpud=HASH' + '&os=linux&hwNew=true&currentcpu=' + global.cpuDefault.toLowerCase() + '&hwType=' + global.minerType + '&privateMiner=' + global.PrivateMiner,
+      url: 'https://api.minerstat.com/v2/set_node_config.php?token=' + global.accesskey + '&worker=' + global.worker + '&miner=' + global.client.toLowerCase() + '&ver=4&cpuu=' + global.minerCpu + '&cpud=HASH' + '&os=linux&hwNew=true&currentcpu=' + global.cpuDefault.toLowerCase() + '&hwType=' + global.minerType + '&privateMiner=' + global.PrivateMiner + '&currentMinerVersion=' + global.minerVersion + '&currentCPUVersion=' + global.cpuVersion,
       form: {
         minerData: res_data,
         cpuData: cpu_data
@@ -295,7 +298,7 @@ module.exports = {
 
           var request = require('request');
           request.get({
-            url: 'https://api.minerstat.com/v2/set_node_config.php?token=' + global.accesskey + '&worker=' + global.worker + '&miner=' + global.client.toLowerCase() + '&os=linux&nodel=yes&ver=5&cpuu=' + global.minerCpu,
+            url: 'https://api.minerstat.com/v2/set_node_config.php?token=' + global.accesskey + '&worker=' + global.worker + '&miner=' + global.client.toLowerCase() + '&os=linux&nodel=yes&ver=5&cpuu=' + global.minerCpu + '&currentMinerVersion=undefined&currentCPUVersion=undefined',
             form: {
               dump: "minerstatOSInit"
             }
@@ -441,6 +444,7 @@ module.exports = {
     // Callback downloadMiners(<#gpuMiner#>, <#isCpu#>, <#cpuMiner#>)
     function callbackVersion(dlGpu, isCpu, dlCpu, callbackType, gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion) {
       if (callbackType == "gpu") {
+        global.minerVersion = gpuServerVersion;
         var request = require('request');
         request.get({
           url: 'https://static-ssl.minerstat.farm/miners/linux/cuda.json'
@@ -484,6 +488,7 @@ module.exports = {
         })
       }
       if (callbackType == "cpu") {
+        global.cpuVersion = cpuServerVersion;
         if (isCpu.toString() == "true" || isCpu.toString() == "True") {
           if (dlCpu == true) {
             deleteFolder('clients/' + cpuMiner.toLowerCase() + '/');
