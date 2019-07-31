@@ -445,6 +445,9 @@ module.exports = {
     function callbackVersion(dlGpu, isCpu, dlCpu, callbackType, gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion) {
       if (callbackType == "gpu") {
         global.minerVersion = gpuServerVersion;
+	if (global.PrivateMiner == "True") {
+          global.minerVersion = "undefined";
+        }
         var request = require('request');
         request.get({
           url: 'https://static-ssl.minerstat.farm/miners/linux/cuda.json'
@@ -489,6 +492,9 @@ module.exports = {
       }
       if (callbackType == "cpu") {
         global.cpuVersion = cpuServerVersion;
+	if (global.PrivateMiner == "True") {
+          global.cpuVersion = "undefined";
+        }
         if (isCpu.toString() == "true" || isCpu.toString() == "True") {
           if (dlCpu == true) {
             deleteFolder('clients/' + cpuMiner.toLowerCase() + '/');
