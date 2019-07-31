@@ -1,12 +1,14 @@
 #!/bin/sh
 
 DRIVE_NUMBER=$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | sed 's/[0-9]*//g' | head -n1 | xargs)
-if [ "$DRIVE_NUMBER" = "nvmenp" ]; then
-    echo "Changeing header, NVM drive detected.."
-    DRIVE_NUMBER="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | xargs)"
-fi
 DRIVE_PARTITION=$DRIVE_NUMBER"1"
 DRIVE_EFI=$DRIVE_NUMBER"3"
+if [ "$DRIVE_NUMBER" = "nvmenp" ]; then
+    echo "Changeing header, NVM drive detected.."
+    DRIVE_NUMBER="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | xargs | sed 's/.$//')"
+    DRIVE_PARTITION=$DRIVE_NUMBER"p1"
+    DRIVE_EFI=$DRIVE_NUMBER"p3"
+fi
 #echo $DRIVE_NUMBER
 #PARTITION_MAX_SIZE_IN_GB=$(lsblk | grep $DRIVE_PARTITION | grep part | head -n 1 | awk '{print $4}' | sed 's/[^.0-9]*//g')
 #sudo cat /proc/partitions | grep $DRIVE_NUMBER | head -n1 | awk '{print $3}'
