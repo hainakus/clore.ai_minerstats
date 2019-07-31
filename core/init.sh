@@ -4,6 +4,9 @@ OFFLINE_COUNT=0
 OFFLINE_NUM=40
 IS_ONLINE="YES"
 DETECT="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | sed 's/[0-9]*//g' | head -n1 | xargs)"
+if [ "$DETECT" = "nvmenp" ]; then
+  DETECT="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | xargs)"
+fi
 PART=$DETECT"1"
 DISK="$(df -hm | grep $PART | awk '{print $2}')"
 
