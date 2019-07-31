@@ -1,9 +1,7 @@
 #!/bin/sh
 
 DRIVE_NUMBER=$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | sed 's/[0-9]*//g' | head -n1 | xargs)
-if [ "$DRIVE_NUMER" != "nvmenp" ]; then
-    echo ""
-  else
+if [ "$DRIVE_NUMBER" = "nvmenp" ]; then
     echo "Changeing header, NVM drive detected.."
     DRIVE_NUMER="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | xargs)"
 fi
