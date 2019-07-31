@@ -56,7 +56,7 @@ if [ ! $1 ]; then
     sleep 1.5
     sudo chmod 777 domem.sh
     sleep 0.5
-    sudo sh domem.sh
+    ./domem.sh
   fi
 
 fi
