@@ -35,7 +35,7 @@ if [ -z "$MAC_ADDRESS" ]; then
   MAC_ADDRESS=$(ifconfig -a | grep : | grep -vE "eth0|lo|wlan0" | grep ether | awk '{print $2}')
 fi
 CPU_TYPE=$(sudo dmidecode --string processor-version)
-DISK_TYPE=$(lsblk -io KNAME,MODEL,SIZE | grep $DETECT | head -n1)
+DISK_TYPE=$(lsblk -io KNAME,MODEL,SIZE | grep sda | head -n1 | xargs | awk '{print $2,$3}')
 # System & Graphics
 NVIDIA_DRIVER=$(dpkg -l | grep nvidia-opencl-icd | grep ii | awk '{print $3}' | xargs | cut -d '-' -f 1)
 if [ -z "$NVIDIA_DRIVER" ]; then
