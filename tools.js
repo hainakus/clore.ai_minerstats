@@ -322,6 +322,13 @@ const MINER_JSON = {
     "apiPath": "/api/v1/status",
     "apiType": "http"
   },
+  "gminer-amd": {
+    "args": "auto",
+    "execFile": "miner",
+    "apiPort": 3333,
+    "apiPath": "/api/v1/status",
+    "apiType": "http"
+  },
   "nbminer": {
     "args": "auto",
     "execFile": "nbminer",
