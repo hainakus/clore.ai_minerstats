@@ -648,6 +648,7 @@ module.exports = {
         "zjazz-x22i": "start.bash",
         "zm-zec": "start.bash",
         "gminer": "start.bash",
+	"gminer-amd": "start.bash",
         "grinprominer": "config.xml",
         "miniz": "start.bash",
         "serominer": "start.bash",
