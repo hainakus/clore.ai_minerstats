@@ -58,6 +58,7 @@ sudo echo " renderer: networkd" >> /etc/netplan/minerstat.yaml
 sudo echo " ethernets:" >> /etc/netplan/minerstat.yaml
 sudo echo "   eth0:" >> /etc/netplan/minerstat.yaml
 sudo echo "     dhcp4: yes" >> /etc/netplan/minerstat.yaml
+sudo echo "     dhcp-identifier: mac" >> /etc/netplan/minerstat.yaml
 sudo echo "     dhcp6: no" >> /etc/netplan/minerstat.yaml
 sudo echo "     nameservers:" >> /etc/netplan/minerstat.yaml
 sudo echo "         addresses: [1.1.1.1, 1.0.0.1]" >> /etc/netplan/minerstat.yaml
