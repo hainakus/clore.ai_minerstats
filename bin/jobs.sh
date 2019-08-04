@@ -172,3 +172,24 @@ if grep -q iommu "/boot/grub/grub.cfg"; then
   else
     sudo chmod 777 /boot/grub/grub.cfg && sudo su -c "sed -Ei 's/spectre_v2=off/spectre_v2=off consoleblank=0 intel_pstate=disable net.ifnames=0 ipv6.disable=1 pci=noaer iommu=soft/g' /boot/grub/grub.cfg" && sudo chmod 444 /boot/grub/grub.cfg
 fi
+if [ -f "/etc/netplan/minerstat.yaml" ]; then
+  if grep -q dhcp-identifier "/etc/netplan/minerstat.yaml"; then
+      echo ""
+    else
+      echo ""
+      INTERFACE="$(sudo cat /proc/net/dev | grep -vE lo | tail -n1 | awk -F '\\:' '{print $1}' | xargs)"
+      if [ "$INTERFACE" = "eth0" ]; then
+        sudo echo "network:" > /etc/netplan/minerstat.yaml
+        sudo echo " version: 2" >> /etc/netplan/minerstat.yaml
+        sudo echo " renderer: networkd" >> /etc/netplan/minerstat.yaml
+        sudo echo " ethernets:" >> /etc/netplan/minerstat.yaml
+        sudo echo "   eth0:" >> /etc/netplan/minerstat.yaml
+        sudo echo "     dhcp4: yes" >> /etc/netplan/minerstat.yaml
+        sudo echo "     dhcp-identifier: mac" >> /etc/netplan/minerstat.yaml
+        sudo echo "     dhcp6: no" >> /etc/netplan/minerstat.yaml
+        sudo echo "     nameservers:" >> /etc/netplan/minerstat.yaml
+        sudo echo "         addresses: [1.1.1.1, 1.0.0.1]" >> /etc/netplan/minerstat.yaml
+        sudo /usr/sbin/netplan apply
+    fi
+  fi
+fi
