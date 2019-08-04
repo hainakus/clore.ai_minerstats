@@ -6,8 +6,14 @@
 # Define
 SWAP_SIZE=8192 # first 8GB
 # Drive
-DRIVE_NUMBER=$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g')
+DRIVE_NUMBER=$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | sed 's/[0-9]*//g' | head -n1 | xargs)
 DRIVE_PARTITION=$DRIVE_NUMBER"1"
+if [ "$DRIVE_NUMBER" = "nvmenp" ]; then
+    echo "Changeing header, NVM drive detected.."
+    DRIVE_NUMBER="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | xargs | sed 's/.$//')"
+    DRIVE_PARTITION=$DRIVE_NUMBER"p1"
+    DRIVE_EFI=$DRIVE_NUMBER"p3"
+fi
 CURRENT_PARTITION_SIZE_IN_BYTE=$(sudo cat /proc/partitions | grep $DRIVE_NUMBER"1" | head -n1 | awk '{print $3}')
 CURRENT_PARTITION_SIZE_IN_MB=$(python -c "print $CURRENT_PARTITION_SIZE_IN_BYTE / 1024")
 CURRENT_FREE_SPACE_IN_MB="$(df -hm | grep $DRIVE_PARTITION | awk '{print $4}')"
