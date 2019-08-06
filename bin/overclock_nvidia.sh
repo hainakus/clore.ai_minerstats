@@ -71,10 +71,10 @@ if [ $1 ]; then
 
   if [ "$FANSPEED" != "skip" ]
   then
-    #STR1="-a GPUFanControlState=1 -a GPUTargetFanSpeed="$FANSPEED""
-    STR1="-a [gpu:$GPUID]/GPUFanControlState=1 -a [fan:"$GPUID"]/GPUTargetFanSpeed="$FANSPEED""
-    edit=$((GPUID+1))
-    STR1="$STR1 -a [fan:"$edit"]/GPUTargetFanSpeed="$FANSPEED""
+    STR1="-a GPUFanControlState=1 -a GPUTargetFanSpeed="$FANSPEED""
+    #STR1="-a [gpu:$GPUID]/GPUFanControlState=1 -a [fan:"$GPUID"]/GPUTargetFanSpeed="$FANSPEED""
+    #edit=$((GPUID+1))
+    #STR1="$STR1 -a [fan:"$edit"]/GPUTargetFanSpeed="$FANSPEED""
   fi
 
   #################################£
