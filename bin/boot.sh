@@ -40,18 +40,22 @@ if ! screen -list | grep -q "dummy"; then
   if [ "$HAVECONNECTION" != "true" ]
   then
 
-    sudo su -c 'echo "" > /etc/resolv.conf'
-    sudo su -c 'echo "nameserver 1.1.1.1" >> /etc/resolv.conf'
-    sudo su -c 'echo "nameserver 1.0.0.1" >> /etc/resolv.conf'
-    sudo su -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf'
-    sudo su -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf'
-    # For msos versions what have local DNS cache
-    #sudo su -c 'echo "nameserver 127.0.0.1" >> /etc/resolv.conf'
+    GET_GATEWAY=$(route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
     # systemd resolve casusing problems with 127.0.0.53
-    sudo su -c 'echo "nameserver 1.1.1.1" > /run/resolvconf/interface/systemd-resolved'
+    if [ ! -z "$GET_GATEWAY" ]; then
+      sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/resolvconf/interface/systemd-resolved"
+    fi
+    sudo su -c 'echo "nameserver 1.1.1.1" >> /run/resolvconf/interface/systemd-resolved'
     sudo su -c 'echo "nameserver 1.0.0.1" >> /run/resolvconf/interface/systemd-resolved'
-    sudo su -c 'echo "nameserver 1.1.1.1" > /run/systemd/resolve/stub-resolv.conf'
+    sudo su -c 'echo "nameserver 8.8.8.8" >> /run/resolvconf/interface/systemd-resolved'
+    sudo su -c 'echo "nameserver 8.8.4.4" >> /run/resolvconf/interface/systemd-resolved'
+    if [ ! -z "$GET_GATEWAY" ]; then
+      sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/systemd/resolve/stub-resolv.conf"
+    fi
+    sudo su -c 'echo "nameserver 1.1.1.1" >> /run/systemd/resolve/stub-resolv.conf'
     sudo su -c 'echo "nameserver 1.0.0.1" >> /run/systemd/resolve/stub-resolv.conf'
+    sudo su -c 'echo "nameserver 8.8.8.8" >> /run/systemd/resolve/stub-resolv.conf'
+    sudo su -c 'echo "nameserver 8.8.4.4" >> /run/systemd/resolve/stub-resolv.conf'
     sudo su -c 'echo options edns0 >> /run/systemd/resolve/stub-resolv.conf'
 
     if [ "$SSID" -gt 0 ]; then
@@ -74,8 +78,29 @@ if ! screen -list | grep -q "dummy"; then
 
   fi
 
+  # Rewrite
+  sudo systemctl stop systemd-resolved
+  GET_GATEWAY=$(route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
+  sudo su -c 'echo "" > /etc/resolv.conf'
+  if [ ! -z "$GET_GATEWAY" ]; then
+    sudo su -c "echo 'nameserver $GET_GATEWAY' >> /etc/resolv.conf"
+  fi
+  sudo su -c 'echo "nameserver 1.1.1.1" >> /etc/resolv.conf'
+  sudo su -c 'echo "nameserver 1.0.0.1" >> /etc/resolv.conf'
+  sudo su -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf'
+  sudo su -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf'
+  # IPV6
+  sudo su -c 'echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf'
+  sudo su -c 'echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf'
+  sudo systemd-resolve --flush-caches
+
   sleep 1
-  sudo service network-manager restart
+
+  while ! sudo ping minerstat.com. -w 1 | grep "0%"; do
+    sudo service network-manager restart
+    sudo /usr/sbin/netplan apply
+    break
+  done
 
   echo "-------- WAITING FOR CONNECTION -----------------"
   echo ""
@@ -106,25 +131,6 @@ if ! screen -list | grep -q "dummy"; then
 
   cd /home/minerstat/minerstat-os/core
   sudo sh expand.sh
-
-
-  if [ "$SSID" -gt 0 ]; then
-    cd /home/minerstat/minerstat-os/core
-    sudo sh wifi.sh
-
-  else
-
-    if [ "$DHCP" != "NO" ]
-    then
-      cd /home/minerstat/minerstat-os/bin
-      sudo sh dhcp.sh
-    else
-      cd /home/minerstat/minerstat-os/bin
-      sudo sh static.sh
-    fi
-
-  fi
-
 
   CHECKAPT=$(dpkg -l | grep libnetpacket-perl | wc -l)
 
