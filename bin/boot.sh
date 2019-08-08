@@ -114,7 +114,8 @@ if ! screen -list | grep -q "dummy"; then
   echo ""
 
   while ! sudo ping minerstat.com. -w 1 | grep "0%"; do
-    sleep 1
+    sudo /home/minerstat/minerstat-os/core/dnser
+    sleep 3
   done
 
   echo ""
