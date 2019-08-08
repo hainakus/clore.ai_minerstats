@@ -100,6 +100,9 @@ sudo rm /home/minerstat/minerstat-os/bin/amdmeminfo.txt
 
 if [ -z "$1" ]; then
   AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
+  if [ "$AMDDEVICE" = "0" ]; then
+    AMDDEVICE=$(sudo lshw -C display | grep driver=amdgpu | wc -l)
+  fi
 fi
 
 # Update motd.d
