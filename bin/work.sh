@@ -85,6 +85,7 @@ if ! screen -list | grep -q "dummy"; then
 
   # Rewrite
   sudo systemctl stop systemd-resolved
+  GET_GATEWAY=$(route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
   sudo su -c 'echo "" > /etc/resolv.conf'
   if [ ! -z "$GET_GATEWAY" ]; then
     sudo su -c "echo 'nameserver $GET_GATEWAY' >> /etc/resolv.conf"
