@@ -184,10 +184,9 @@ do
   fi
 
   if [ $RESPONSE = "STOP" ]; then
-    sudo su minerstat -c "screen -X -S minerstat-console quit"
+    sudo su minerstat -c "screen -X -S minerstat-console quit"; 
+    echo "stop" > /tmp/stop.pid; 
     sudo su -c "sudo screen -X -S minew quit"
-    sudo su -c "sudo screen -X -S fakescreen quit"
-    sudo su minerstat -c "screen -X -S fakescreen quit"
   fi
 
   #if [ $RESPONSE = "RECOVERY" ]; then
