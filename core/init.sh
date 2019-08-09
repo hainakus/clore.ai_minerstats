@@ -174,7 +174,7 @@ do
     sudo su minerstat -c "sudo /bin/sh /home/minerstat/minerstat-os/core/rmate"
   fi
 
-  if [ $RESPONSE = "RESTART" ] || [ $RESPONSE = "START" ] || [ $RESPONSE = "NODERESTART" ]; then
+  if [ $RESPONSE = "RESTART" ] || [ $RESPONSE = "START" ] || [ $RESPONSE = "NODERESTART" ] || [ $RESPONSE = "RESTARTNODE" ]; then
     sudo su -c "sudo screen -X -S minew quit"
     sudo su -c "sudo screen -X -S fakescreen quit"
     sudo su minerstat -c "screen -X -S fakescreen quit"
