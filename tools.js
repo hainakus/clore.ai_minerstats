@@ -547,6 +547,7 @@ module.exports = {
           global.B_DURATION = objectj[jsn].duration;
           global.B_CLIENT = objectj[jsn].client.toLowerCase();
           global.B_CONFIG = objectj[jsn].config;
+          delay = 70000;
           if (global.B_DURATION == "slow") {
             delay = 120000;
           }
@@ -555,6 +556,13 @@ module.exports = {
           }
           if (global.B_DURATION == "fast") {
             delay = 45000;
+          }
+          var isnum = /^\d+$/.test(global.B_DURATION);
+          if (isnum == true) {
+            delay = global.B_DURATION;
+            if (delay < 30000) {
+              delay = 30000;
+            }
           }
           // Start mining
           global.client = objectj[jsn].client.toLowerCase();
