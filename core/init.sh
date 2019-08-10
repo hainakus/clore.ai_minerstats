@@ -189,6 +189,7 @@ do
 
   if [ $RESPONSE = "STOP" ]; then
     echo "stop" > /tmp/stop.pid; 
+    sudo su -c "echo "" > /dev/shm/miner.log"
     sudo su -c "echo 'stop' > /tmp/stop.pid"
     sudo su minerstat -c "screen -X -S minerstat-console quit"; 
     sudo su -c "sudo screen -X -S minew quit"
