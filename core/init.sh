@@ -175,12 +175,16 @@ do
   fi
 
   if [ $RESPONSE = "RESTART" ] || [ $RESPONSE = "START" ] || [ $RESPONSE = "NODERESTART" ] || [ $RESPONSE = "RESTARTNODE" ]; then
+    sudo su -c "sudo rm /tmp/stop.pid"
     sudo su -c "sudo screen -X -S minew quit"
     sudo su -c "sudo screen -X -S fakescreen quit"
+    sudo su -c "screen -ls minew | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
     sudo su minerstat -c "screen -X -S fakescreen quit"
-    screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh
+    sudo su minerstat -c "screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
+    sudo killall node
+    sudo su minerstat -c "screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh"
     sleep 2
-    screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh
+    sudo su minerstat -c "screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh"
   fi
 
   if [ $RESPONSE = "STOP" ]; then
