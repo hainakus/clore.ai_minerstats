@@ -825,10 +825,12 @@ module.exports = {
           gpuSyncDone = false;
           global.sync = true;
           restartNode();
-          console.log(chalk.hex('#ff8656')(getDateTime() + " MINERSTAT.COM: Package Error. " + err.message));
-          console.log(chalk.hex('#ff8656')(getDateTime() + " (1) POSSILBE REASON => MINER/API NOT STARTED"));
-          console.log(chalk.hex('#ff8656')(getDateTime() + " (2) POSSILBE REASON => TOO MUCH OVERCLOCK / UNDERVOLT"));
-          console.log(chalk.hex('#ff8656')(getDateTime() + " (3) POSSILBE REASON => BAD CONFIG -> (1) MINER NOT STARTED"));
+		      console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
+		      console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + err.message + ")\x1b[0m");
+		      console.log("\x1b[1;94m== \x1b[0mPossible reasons:\x1b[0m");
+		      console.log("\x1b[1;94m== \x1b[0m- Mining client or API not started\x1b[0m");
+		      console.log("\x1b[1;94m== \x1b[0m- Too much Overclock / Undervolt\x1b[0m");
+		      console.log("\x1b[1;94m== \x1b[0m- Invalid mining client config\x1b[0m");
         });
       }
       //
@@ -845,10 +847,12 @@ module.exports = {
             gpuSyncDone = false;
             global.sync = true;
             restartNode();
-            console.log(chalk.hex('#ff8656')(getDateTime() + " MINERSTAT.COM: Package Error. " + error));
-            console.log(chalk.hex('#ff8656')(getDateTime() + " (1) POSSILBE REASON => MINER/API NOT STARTED"));
-            console.log(chalk.hex('#ff8656')(getDateTime() + " (2) POSSILBE REASON => TOO MUCH OVERCLOCK / UNDERVOLT"));
-            console.log(chalk.hex('#ff8656')(getDateTime() + " (3) POSSILBE REASON => BAD CONFIG -> (1) MINER NOT STARTED"));
+		        console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
+		        console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + error + ")\x1b[0m");
+		        console.log("\x1b[1;94m== \x1b[0mPossible reasons:\x1b[0m");
+		        console.log("\x1b[1;94m== \x1b[0m- Mining client or API not started\x1b[0m");
+		        console.log("\x1b[1;94m== \x1b[0m- Too much Overclock / Undervolt\x1b[0m");
+		        console.log("\x1b[1;94m== \x1b[0m- Invalid mining client config\x1b[0m");
           }
         });
       }
@@ -873,9 +877,10 @@ module.exports = {
           gpuSyncDone = false;
           global.sync = true;
           restartNode();
-          console.log(chalk.hex('#ff8656')(getDateTime() + " (1) POSSILBE REASON => MINER/API NOT STARTED"));
-          console.log(chalk.hex('#ff8656')(getDateTime() + " (2) POSSILBE REASON => TOO MUCH OVERCLOCK / UNDERVOLT"));
-          console.log(chalk.hex('#ff8656')(getDateTime() + " (3) POSSILBE REASON => BAD CONFIG -> (1) MINER NOT STARTED"));
+		      console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
+		      console.log("\x1b[1;94m== \x1b[0m- Mining client or API not started\x1b[0m");
+		      console.log("\x1b[1;94m== \x1b[0m- Too much Overclock / Undervolt\x1b[0m");
+		      console.log("\x1b[1;94m== \x1b[0m- Invalid mining client config\x1b[0m");
         });
         ccminerClient.on('end', () => {
           global.sync = true;
