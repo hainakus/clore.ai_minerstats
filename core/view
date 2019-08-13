@@ -2,13 +2,13 @@
 
 SNUM=$(sudo su minerstat -c "screen -list | grep -c minerstat-console")
 if [ "$SNUM" -lt "1" ]; then
-  echo "---------------------------"
-  echo
-  echo "minerstat Agent is not running"
-  echo "1) Not fully booted yet - Please, wait"
-  echo "2) Mining process stopped - Start with mstart"
-  echo
-  echo "---------------------------"
+  echo ""
+  echo "\e[1;38;5;69m============= MINERSTAT AGENT ============\e[39m"
+  echo "\e[1;38;5;69m==\e[39m \e[38;5;221m[IDLE]\e[39m minerstat agent is not running"
+  echo "\e[1;38;5;69m==\e[39m If rig was just (re)booted, give it some time to initialize"
+  echo "\e[1;38;5;69m==\e[39m If mining process has stopped, you can start it with \e[4mmstart\e[0m"
+  echo "\e[1;38;5;69m==========================================\e[39m"
+  echo ""
   exit 1
 fi
 
