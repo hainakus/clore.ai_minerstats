@@ -136,8 +136,8 @@ const MINER_JSON = {
     "args": "",
     "execFile": "ethdcrminer64",
     "apiPort": 3333,
-    "apiPath": "/",
-    "apiType": "http"
+    "apiType": "tcp",
+    "apiCArg": "{\"id\":0, \"jsonrpc\":\"2.0\", \"method\":\"miner_getstat1\"}\n"
   },
   "claymore-zec": {
     "args": "",
