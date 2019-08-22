@@ -65,16 +65,16 @@ do
   echo ""
   echo "$TOKEN"
   echo "$WORKER"
-  
+
   #FREE SPACE in Megabyte - SDA1
   STR1="$(df -hm | grep $DISK | awk '{print $4}')"
-  
+
   echo "Free Space: $STR1"
 
   #CPU USAGE
   #STR2="$(mpstat | awk '$13 ~ /[0-9.]+/ { print 100 - $13 }')"
   STR2=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage ""}')
-  
+
   echo "CPU Usage: $STR2"
 
   #REMOTE IP ADDRESS
@@ -99,7 +99,7 @@ do
   # MINER logs
   RAMLOG=$(cat /dev/shm/miner.log | tac | head --lines 10 | tac)
   echo "RAMLOG"
-  
+
   # Extended Query with loop
   CPU_TEMP=$(cat /sys/class/thermal/thermal_zone*/temp | column -s $'\t' -t | sed 's/\(.\)..$/.\1/' | head -n 1)
   #CPU_USAGE=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage ""}')
@@ -120,16 +120,16 @@ do
   if [ "$IS_ONLINE" = "YES" ]; then
 
     OFFLINE_COUNT=0
-    
+
     echo "online"
 
     #SEND INFO
-    wget -qO- "https://api.minerstat.com/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&freemem=$STR5&teleid=$TELEID&systime=$SYSTIME&mobo=$MOBO_TYPE&bios=$BIOS_VERSION&msos=$MSOS_VERSION&mac=$MAC_ADDRESS&cputype=$CPU_TYPE&cpu_usage=$CPU_USAGE&cpu_temp=$CPU_TEMP&disk_type=$DISK_TYPE&nvidiad=$NVIDIA_DRIVER&amdd=$AMD_DRIVER&kernel=$KERNEL_VERSION&ubuntu=$UBUNTU_VERSION" ; echo
+    wget -qO- "https://api.minerstat.com:2053/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&freemem=$STR5&teleid=$TELEID&systime=$SYSTIME&mobo=$MOBO_TYPE&bios=$BIOS_VERSION&msos=$MSOS_VERSION&mac=$MAC_ADDRESS&cputype=$CPU_TYPE&cpu_usage=$CPU_USAGE&cpu_temp=$CPU_TEMP&disk_type=$DISK_TYPE&nvidiad=$NVIDIA_DRIVER&amdd=$AMD_DRIVER&kernel=$KERNEL_VERSION&ubuntu=$UBUNTU_VERSION" ; echo
 
     echo "wget done"
 
     echo "-*- MINERSTAT LISTENER -*-"
-    RESPONSE="$(wget -qO- "https://api.minerstat.com/v2/os_listener.php?token=$TOKEN&worker=$WORKER" ; echo)"
+    RESPONSE="$(wget -qO- "https://api.minerstat.com:2053/v2/os_listener.php?token=$TOKEN&worker=$WORKER" ; echo)"
 
     echo "RESPONSE: $RESPONSE"
 
@@ -142,8 +142,8 @@ do
       RESPONSE="REBOOT"
     fi
   fi
-  
-  
+
+
   echo "response check"
 
   if [ $RESPONSE = "REBOOT" ]; then
@@ -188,15 +188,15 @@ do
   fi
 
   if [ $RESPONSE = "STOP" ]; then
-    echo "stop" > /tmp/stop.pid; 
+    echo "stop" > /tmp/stop.pid;
     sudo su -c "echo "" > /dev/shm/miner.log"
     sudo su -c "echo 'stop' > /tmp/stop.pid"
-    sudo su minerstat -c "screen -X -S minerstat-console quit"; 
+    sudo su minerstat -c "screen -X -S minerstat-console quit";
     sudo su -c "sudo screen -X -S minew quit"
     sudo node /home/minerstat/minerstat-os/stop.js
     sleep 2
     sudo su -c "sudo screen -X -S minew quit"
-    sudo su minerstat -c "screen -X -S minerstat-console quit"; 
+    sudo su minerstat -c "screen -X -S minerstat-console quit";
   fi
 
   #if [ $RESPONSE = "RECOVERY" ]; then
@@ -206,7 +206,7 @@ do
   if [ $RESPONSE = "null" ]; then
     echo "No remote command pending..";
   fi
-  
+
   echo "monitor logs"
 
   if [ "$MONITOR_TYPE" = "amd" ]; then
@@ -214,7 +214,7 @@ do
     QUERYPOWER=$(cd /home/minerstat/minerstat-os/bin/; sudo ./rocm-smi -P | grep 'Average Graphics Package Power:' | sed 's/.*://' | sed 's/W/''/g' | xargs)
     HWMEMORY=$(cd /home/minerstat/minerstat-os/bin/; cat amdmeminfo.txt)
     HWSTRAPS=$(cd /home/minerstat/minerstat-os/bin/; sudo ./"$STRAPFILENAME" --current-minerstat)
-    sudo curl --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=amd" --data "hwData=$AMDINFO" --data "hwPower=$QUERYPOWER" --data "hwMemory=$HWMEMORY" --data "hwStrap=$HWSTRAPS" --data "mineLog=$RAMLOG" "https://api.minerstat.com/v2/set_node_config_os.php"
+    sudo curl --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=amd" --data "hwData=$AMDINFO" --data "hwPower=$QUERYPOWER" --data "hwMemory=$HWMEMORY" --data "hwStrap=$HWSTRAPS" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os.php"
   fi
 
   if [ "$MONITOR_TYPE" = "nvidia" ]; then
@@ -222,7 +222,7 @@ do
     # NVIDIA DRIVER CRASH WATCHDOG
     TESTVIDIA=$(sudo nvidia-smi --query-gpu=count --format=csv,noheader | grep "lost")
     RAMLOG="$RAMLOG $TESTVIDIA"
-    sudo curl --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=nvidia" --data "hwData=$QUERYNVIDIA" --data "mineLog=$RAMLOG" "https://api.minerstat.com/v2/set_node_config_os.php"
+    sudo curl --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=nvidia" --data "hwData=$QUERYNVIDIA" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os.php"
 
   fi
 
