@@ -36,7 +36,7 @@ if echo "$DEVICE" | grep "w" ;then
 
   echo "If error happens during connection. Press CTRL + A + D"
   echo "After you will be able to enter commands to the terminal"
-  echo 
+  echo
   echo "To connect manually enter: mwifi SSID PASSWORD"
   echo
 
@@ -58,21 +58,24 @@ if echo "$DEVICE" | grep "w" ;then
   # CloudFlare DNS
   sudo su -c 'echo "" > /etc/resolv.conf'
   #sudo resolvconf -u
-  sudo su -c 'echo "nameserver 1.1.1.1" >> /etc/resolv.conf'
-  sudo su -c 'echo "nameserver 1.0.0.1" >> /etc/resolv.conf'
-  sudo su -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf'
-  sudo su -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf'
+  sudo su -c 'echo "nameserver 1.1.1.1" >> /etc/resolv.conf' 2>&1 >/dev/null
+  sudo su -c 'echo "nameserver 1.0.0.1" >> /etc/resolv.conf' 2>&1 >/dev/null
+  sudo su -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf' 2>&1 >/dev/null
+  sudo su -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf' 2>&1 >/dev/null
   # For msos versions what have local DNS cache
-  sudo su -c 'echo "nameserver 127.0.0.1" >> /etc/resolv.conf'
+  # China
+  sudo su -c 'echo "nameserver 114.114.114.114" >> /etc/resolv.conf' 2>&1 >/dev/null
+  sudo su -c 'echo "nameserver 114.114.115.115" >> /etc/resolv.conf' 2>&1 >/dev/null
+  #sudo su -c 'echo "nameserver 127.0.0.1" >> /etc/resolv.conf' 2>&1 >/dev/null
   # IPV6
-  sudo su -c 'echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf'
-  sudo su -c 'echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf'
+  sudo su -c 'echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf' 2>&1 >/dev/null
+  sudo su -c 'echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf' 2>&1 >/dev/null
   # systemd resolve casusing problems with 127.0.0.53
-  sudo su -c 'echo "nameserver 1.1.1.1" > /run/resolvconf/interface/systemd-resolved'
-  sudo su -c 'echo "nameserver 1.0.0.1" >> /run/resolvconf/interface/systemd-resolved'
-  sudo su -c 'echo "nameserver 1.1.1.1" > /run/systemd/resolve/stub-resolv.conf'
-  sudo su -c 'echo "nameserver 1.0.0.1" >> /run/systemd/resolve/stub-resolv.conf'
-  sudo su -c 'echo options edns0 >> /run/systemd/resolve/stub-resolv.conf'
+  sudo su -c 'echo "nameserver 1.1.1.1" > /run/resolvconf/interface/systemd-resolved' 2>&1 >/dev/null
+  sudo su -c 'echo "nameserver 1.0.0.1" >> /run/resolvconf/interface/systemd-resolved' 2>&1 >/dev/null
+  sudo su -c 'echo "nameserver 1.1.1.1" > /run/systemd/resolve/stub-resolv.conf' 2>&1 >/dev/null
+  sudo su -c 'echo "nameserver 1.0.0.1" >> /run/systemd/resolve/stub-resolv.conf' 2>&1 >/dev/null
+  sudo su -c 'echo options edns0 >> /run/systemd/resolve/stub-resolv.conf' 2>&1 >/dev/null
 
   echo ""
   TEST="$(ping api.minerstat.com. -w 1 | grep '1 packets transmitted')"

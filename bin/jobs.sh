@@ -68,32 +68,35 @@ sudo hostname -F /etc/hostname
 GET_GATEWAY=$(route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
 # systemd resolve casusing problems with 127.0.0.53
 if [ ! -z "$GET_GATEWAY" ]; then
-  sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/resolvconf/interface/systemd-resolved"
+  sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/resolvconf/interface/systemd-resolved" 2>&1 >/dev/null
 fi
-sudo su -c 'echo "nameserver 1.1.1.1" >> /run/resolvconf/interface/systemd-resolved'
-sudo su -c 'echo "nameserver 1.0.0.1" >> /run/resolvconf/interface/systemd-resolved'
-sudo su -c 'echo "nameserver 8.8.8.8" >> /run/resolvconf/interface/systemd-resolved'
-sudo su -c 'echo "nameserver 8.8.4.4" >> /run/resolvconf/interface/systemd-resolved'
+sudo su -c 'echo "nameserver 1.1.1.1" >> /run/resolvconf/interface/systemd-resolved' 2>&1 >/dev/null
+sudo su -c 'echo "nameserver 1.0.0.1" >> /run/resolvconf/interface/systemd-resolved' 2>&1 >/dev/null
+sudo su -c 'echo "nameserver 8.8.8.8" >> /run/resolvconf/interface/systemd-resolved' 2>&1 >/dev/null
+sudo su -c 'echo "nameserver 8.8.4.4" >> /run/resolvconf/interface/systemd-resolved' 2>&1 >/dev/null
 if [ ! -z "$GET_GATEWAY" ]; then
-  sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/systemd/resolve/stub-resolv.conf"
+  sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/systemd/resolve/stub-resolv.conf" 2>&1 >/dev/null
 fi
-sudo su -c 'echo "nameserver 1.1.1.1" >> /run/systemd/resolve/stub-resolv.conf'
-sudo su -c 'echo "nameserver 1.0.0.1" >> /run/systemd/resolve/stub-resolv.conf'
-sudo su -c 'echo "nameserver 8.8.8.8" >> /run/systemd/resolve/stub-resolv.conf'
-sudo su -c 'echo "nameserver 8.8.4.4" >> /run/systemd/resolve/stub-resolv.conf'
-sudo su -c 'echo options edns0 >> /run/systemd/resolve/stub-resolv.conf'
+sudo su -c 'echo "nameserver 1.1.1.1" >> /run/systemd/resolve/stub-resolv.conf' 2>&1 >/dev/null
+sudo su -c 'echo "nameserver 1.0.0.1" >> /run/systemd/resolve/stub-resolv.conf' 2>&1 >/dev/null
+sudo su -c 'echo "nameserver 8.8.8.8" >> /run/systemd/resolve/stub-resolv.conf' 2>&1 >/dev/null
+sudo su -c 'echo "nameserver 8.8.4.4" >> /run/systemd/resolve/stub-resolv.conf' 2>&1 >/dev/null
+sudo su -c 'echo options edns0 >> /run/systemd/resolve/stub-resolv.conf' 2>&1 >/dev/null
 # Rewrite
 sudo su -c 'echo "" > /etc/resolv.conf'
 if [ ! -z "$GET_GATEWAY" ]; then
-  sudo su -c "echo 'nameserver $GET_GATEWAY' >> /etc/resolv.conf"
+  sudo su -c "echo 'nameserver $GET_GATEWAY' >> /etc/resolv.conf" 2>&1 >/dev/null
 fi
-sudo su -c 'echo "nameserver 1.1.1.1" >> /etc/resolv.conf'
-sudo su -c 'echo "nameserver 1.0.0.1" >> /etc/resolv.conf'
-sudo su -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf'
-sudo su -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf'
+sudo su -c 'echo "nameserver 1.1.1.1" >> /etc/resolv.conf' 2>&1 >/dev/null
+sudo su -c 'echo "nameserver 1.0.0.1" >> /etc/resolv.conf' 2>&1 >/dev/null
+sudo su -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf' 2>&1 >/dev/null
+sudo su -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf' 2>&1 >/dev/null
+# China
+sudo su -c 'echo "nameserver 114.114.114.114" >> /etc/resolv.conf' 2>&1 >/dev/null
+sudo su -c 'echo "nameserver 114.114.115.115" >> /etc/resolv.conf' 2>&1 >/dev/null
 # IPV6
-sudo su -c 'echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf'
-sudo su -c 'echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf'
+sudo su -c 'echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf' 2>&1 >/dev/null
+sudo su -c 'echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf' 2>&1 >/dev/null
 # Memory Info
 sudo chmod -R 777 * /home/minerstat/minerstat-os
 sudo rm /home/minerstat/minerstat-os/bin/amdmeminfo.txt
@@ -134,19 +137,19 @@ sudo ln -s /home/minerstat/minerstat-os/bin/jq /sbin &> /dev/null
 # Restart fan curve if running
 FNUM=$(sudo su -c "screen -list | grep -c curve")
 if [ "$FNUM" -gt "0" ]; then
-echo "Fan curve detected.. restarting"
-sudo killall curve
-sudo screen -A -m -d -S curve /home/minerstat/minerstat-os/core/curve
+  echo "Fan curve detected.. restarting"
+  sudo killall curve
+  sudo screen -A -m -d -S curve /home/minerstat/minerstat-os/core/curve
 fi
 # Safety layer
 CURVE_FILE=/media/storage/fans.txt
 if [ -f "$CURVE_FILE" ]; then
-    echo "Fan curve detected.. restarting"
-    sudo killall curve
-    sleep 2
-    sudo killall curve
-    sleep 1
-    sudo screen -A -m -d -S curve /home/minerstat/minerstat-os/core/curve
+  echo "Fan curve detected.. restarting"
+  sudo killall curve
+  sleep 2
+  sudo killall curve
+  sleep 1
+  sudo screen -A -m -d -S curve /home/minerstat/minerstat-os/core/curve
 fi
 # Time Date SYNC
 sudo timedatectl set-ntp on &
@@ -155,10 +158,6 @@ ISCURL=$(dpkg -l curl | grep curl | wc -l | sed 's/[^0-9]*//g')
 if [ "$ISCURL" -lt 1 ]; then
   sudo apt --yes --force-yes --fix-broken install
   sudo apt-get --yes --force-yes install curl
-  NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
-  if [ "$NVIDIADEVICE" -gt 0 ]; then
-    sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
-  fi
 fi
 # install curl if required
 which curl 2>&1 >/dev/null && curlPresent=true
@@ -166,6 +165,14 @@ if [ -z "${curlPresent:-}" ]; then
   echo "CURL FIX"
   sudo apt --yes --force-yes --fix-broken install
   sudo apt-get --yes --force-yes install curl libcurl4
+  NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
+  if [ "$NVIDIADEVICE" -gt 0 ]; then
+    sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
+  fi
+fi
+# nvidia-settings fix for Segmentation fault
+CHECKAPTXN=$(dpkg -l | grep "libegl1-amdgpu-pro" | wc -l)
+if [ "$CHECKAPTXN" -gt "0" ]; then
   NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
   if [ "$NVIDIADEVICE" -gt 0 ]; then
     sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
@@ -186,28 +193,28 @@ if [ -f "$GRB" ]; then
   fi
 fi
 if grep -q iommu "/boot/grub/grub.cfg"; then
-    echo ""
-  else
-    sudo chmod 777 /boot/grub/grub.cfg && sudo su -c "sed -Ei 's/spectre_v2=off/spectre_v2=off consoleblank=0 intel_pstate=disable net.ifnames=0 ipv6.disable=1 pci=noaer iommu=soft/g' /boot/grub/grub.cfg" && sudo chmod 444 /boot/grub/grub.cfg
+  echo ""
+else
+  sudo chmod 777 /boot/grub/grub.cfg && sudo su -c "sed -Ei 's/spectre_v2=off/spectre_v2=off consoleblank=0 intel_pstate=disable net.ifnames=0 ipv6.disable=1 pci=noaer iommu=soft/g' /boot/grub/grub.cfg" && sudo chmod 444 /boot/grub/grub.cfg
 fi
 if [ -f "/etc/netplan/minerstat.yaml" ]; then
   if grep -q dhcp-identifier "/etc/netplan/minerstat.yaml"; then
-      echo ""
-    else
-      echo ""
-      INTERFACE="$(sudo cat /proc/net/dev | grep -vE lo | tail -n1 | awk -F '\\:' '{print $1}' | xargs)"
-      if [ "$INTERFACE" = "eth0" ]; then
-        sudo echo "network:" > /etc/netplan/minerstat.yaml
-        sudo echo " version: 2" >> /etc/netplan/minerstat.yaml
-        sudo echo " renderer: networkd" >> /etc/netplan/minerstat.yaml
-        sudo echo " ethernets:" >> /etc/netplan/minerstat.yaml
-        sudo echo "   eth0:" >> /etc/netplan/minerstat.yaml
-        sudo echo "     dhcp4: yes" >> /etc/netplan/minerstat.yaml
-        sudo echo "     dhcp-identifier: mac" >> /etc/netplan/minerstat.yaml
-        sudo echo "     dhcp6: no" >> /etc/netplan/minerstat.yaml
-        sudo echo "     nameservers:" >> /etc/netplan/minerstat.yaml
-        sudo echo "         addresses: [1.1.1.1, 1.0.0.1]" >> /etc/netplan/minerstat.yaml
-        sudo /usr/sbin/netplan apply
+    echo ""
+  else
+    echo ""
+    INTERFACE="$(sudo cat /proc/net/dev | grep -vE lo | tail -n1 | awk -F '\\:' '{print $1}' | xargs)"
+    if [ "$INTERFACE" = "eth0" ]; then
+      sudo echo "network:" > /etc/netplan/minerstat.yaml
+      sudo echo " version: 2" >> /etc/netplan/minerstat.yaml
+      sudo echo " renderer: networkd" >> /etc/netplan/minerstat.yaml
+      sudo echo " ethernets:" >> /etc/netplan/minerstat.yaml
+      sudo echo "   eth0:" >> /etc/netplan/minerstat.yaml
+      sudo echo "     dhcp4: yes" >> /etc/netplan/minerstat.yaml
+      sudo echo "     dhcp-identifier: mac" >> /etc/netplan/minerstat.yaml
+      sudo echo "     dhcp6: no" >> /etc/netplan/minerstat.yaml
+      sudo echo "     nameservers:" >> /etc/netplan/minerstat.yaml
+      sudo echo "         addresses: [1.1.1.1, 1.0.0.1]" >> /etc/netplan/minerstat.yaml
+      sudo /usr/sbin/netplan apply
     fi
   fi
 fi

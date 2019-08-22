@@ -43,20 +43,23 @@ if ! screen -list | grep -q "dummy"; then
     GET_GATEWAY=$(route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
     # systemd resolve casusing problems with 127.0.0.53
     if [ ! -z "$GET_GATEWAY" ]; then
-      sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/resolvconf/interface/systemd-resolved"
+      sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/resolvconf/interface/systemd-resolved" 2>&1 >/dev/null
     fi
-    sudo su -c 'echo "nameserver 1.1.1.1" >> /run/resolvconf/interface/systemd-resolved'
-    sudo su -c 'echo "nameserver 1.0.0.1" >> /run/resolvconf/interface/systemd-resolved'
-    sudo su -c 'echo "nameserver 8.8.8.8" >> /run/resolvconf/interface/systemd-resolved'
-    sudo su -c 'echo "nameserver 8.8.4.4" >> /run/resolvconf/interface/systemd-resolved'
+    sudo su -c 'echo "nameserver 1.1.1.1" >> /run/resolvconf/interface/systemd-resolved' 2>&1 >/dev/null
+    sudo su -c 'echo "nameserver 1.0.0.1" >> /run/resolvconf/interface/systemd-resolved' 2>&1 >/dev/null
+    sudo su -c 'echo "nameserver 8.8.8.8" >> /run/resolvconf/interface/systemd-resolved' 2>&1 >/dev/null
+    sudo su -c 'echo "nameserver 8.8.4.4" >> /run/resolvconf/interface/systemd-resolved' 2>&1 >/dev/null
     if [ ! -z "$GET_GATEWAY" ]; then
-      sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/systemd/resolve/stub-resolv.conf"
+      sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/systemd/resolve/stub-resolv.conf" 2>&1 >/dev/null
     fi
-    sudo su -c 'echo "nameserver 1.1.1.1" >> /run/systemd/resolve/stub-resolv.conf'
-    sudo su -c 'echo "nameserver 1.0.0.1" >> /run/systemd/resolve/stub-resolv.conf'
-    sudo su -c 'echo "nameserver 8.8.8.8" >> /run/systemd/resolve/stub-resolv.conf'
-    sudo su -c 'echo "nameserver 8.8.4.4" >> /run/systemd/resolve/stub-resolv.conf'
-    sudo su -c 'echo options edns0 >> /run/systemd/resolve/stub-resolv.conf'
+    sudo su -c 'echo "nameserver 1.1.1.1" >> /run/systemd/resolve/stub-resolv.conf' 2>&1 >/dev/null
+    sudo su -c 'echo "nameserver 1.0.0.1" >> /run/systemd/resolve/stub-resolv.conf' 2>&1 >/dev/null
+    sudo su -c 'echo "nameserver 8.8.8.8" >> /run/systemd/resolve/stub-resolv.conf' 2>&1 >/dev/null
+    sudo su -c 'echo "nameserver 8.8.4.4" >> /run/systemd/resolve/stub-resolv.conf' 2>&1 >/dev/null
+    sudo su -c 'echo options edns0 >> /run/systemd/resolve/stub-resolv.conf' 2>&1 >/dev/null
+    # China
+    sudo su -c 'echo "nameserver 114.114.114.114" >> /etc/resolv.conf' 2>&1 >/dev/null
+    sudo su -c 'echo "nameserver 114.114.115.115" >> /etc/resolv.conf' 2>&1 >/dev/null
 
     if [ "$SSID" -gt 0 ]; then
       cd /home/minerstat/minerstat-os/core
@@ -81,17 +84,20 @@ if ! screen -list | grep -q "dummy"; then
   # Rewrite
   sudo systemctl stop systemd-resolved
   GET_GATEWAY=$(route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
-  sudo su -c 'echo "" > /etc/resolv.conf'
+  sudo su -c 'echo "" > /etc/resolv.conf' 2>&1 >/dev/null
   if [ ! -z "$GET_GATEWAY" ]; then
-    sudo su -c "echo 'nameserver $GET_GATEWAY' >> /etc/resolv.conf"
+    sudo su -c "echo 'nameserver $GET_GATEWAY' >> /etc/resolv.conf" 2>&1 >/dev/null
   fi
-  sudo su -c 'echo "nameserver 1.1.1.1" >> /etc/resolv.conf'
-  sudo su -c 'echo "nameserver 1.0.0.1" >> /etc/resolv.conf'
-  sudo su -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf'
-  sudo su -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf'
+  sudo su -c 'echo "nameserver 1.1.1.1" >> /etc/resolv.conf' 2>&1 >/dev/null
+  sudo su -c 'echo "nameserver 1.0.0.1" >> /etc/resolv.conf' 2>&1 >/dev/null
+  sudo su -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf' 2>&1 >/dev/null
+  sudo su -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf' 2>&1 >/dev/null
+  # China
+  sudo su -c 'echo "nameserver 114.114.114.114" >> /etc/resolv.conf' 2>&1 >/dev/null
+  sudo su -c 'echo "nameserver 114.114.115.115" >> /etc/resolv.conf' 2>&1 >/dev/null
   # IPV6
-  sudo su -c 'echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf'
-  sudo su -c 'echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf'
+  sudo su -c 'echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf' 2>&1 >/dev/null
+  sudo su -c 'echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf' 2>&1 >/dev/null
   sudo systemd-resolve --flush-caches
 
   sleep 1
@@ -104,13 +110,13 @@ if ! screen -list | grep -q "dummy"; then
 
   echo "-------- WAITING FOR CONNECTION -----------------"
   echo ""
-  
+
   echo "Waiting for DNS resolve.."
   echo "It can take a few moments! You may see ping messages for a while"
   echo ""
-  
+
   nslookup api.minerstat.com
-  
+
   echo ""
 
   while ! sudo ping minerstat.com. -w 1 | grep "0%"; do

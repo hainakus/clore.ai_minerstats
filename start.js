@@ -121,7 +121,7 @@ module.exports = {
     var request = require('request');
     //console.log(res_data);
     request.post({
-      url: 'https://api.minerstat.com/v2/set_node_config.php?token=' + global.accesskey + '&worker=' + global.worker + '&miner=' + global.client.toLowerCase() + '&ver=4&cpuu=' + global.minerCpu + '&cpud=HASH' + '&os=linux&hwNew=true&currentcpu=' + global.cpuDefault.toLowerCase() + '&hwType=' + global.minerType + '&privateMiner=' + global.PrivateMiner + '&currentMinerVersion=' + global.minerVersion + '&currentCPUVersion=' + global.cpuVersion,
+      url: 'https://api.minerstat.com:2053/v2/set_node_config.php?token=' + global.accesskey + '&worker=' + global.worker + '&miner=' + global.client.toLowerCase() + '&ver=4&cpuu=' + global.minerCpu + '&cpud=HASH' + '&os=linux&hwNew=true&currentcpu=' + global.cpuDefault.toLowerCase() + '&hwType=' + global.minerType + '&privateMiner=' + global.PrivateMiner + '&currentMinerVersion=' + global.minerVersion + '&currentCPUVersion=' + global.cpuVersion,
       form: {
         minerData: res_data,
         cpuData: cpu_data
@@ -298,7 +298,7 @@ module.exports = {
 
           var request = require('request');
           request.get({
-            url: 'https://api.minerstat.com/v2/set_node_config.php?token=' + global.accesskey + '&worker=' + global.worker + '&miner=' + global.client.toLowerCase() + '&os=linux&nodel=yes&ver=5&cpuu=' + global.minerCpu + '&currentMinerVersion=undefined&currentCPUVersion=undefined',
+            url: 'https://api.minerstat.com:2053/v2/set_node_config.php?token=' + global.accesskey + '&worker=' + global.worker + '&miner=' + global.client.toLowerCase() + '&os=linux&nodel=yes&ver=5&cpuu=' + global.minerCpu + '&currentMinerVersion=undefined&currentCPUVersion=undefined',
             form: {
               dump: "minerstatOSInit"
             }
@@ -445,7 +445,7 @@ module.exports = {
     function callbackVersion(dlGpu, isCpu, dlCpu, callbackType, gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion) {
       if (callbackType == "gpu") {
         global.minerVersion = gpuServerVersion;
-	if (global.PrivateMiner == "True") {
+        if (global.PrivateMiner == "True") {
           global.minerVersion = "undefined";
         }
         var request = require('request');
@@ -492,7 +492,7 @@ module.exports = {
       }
       if (callbackType == "cpu") {
         global.cpuVersion = cpuServerVersion;
-	if (global.PrivateMiner == "True") {
+        if (global.PrivateMiner == "True") {
           global.cpuVersion = "undefined";
         }
         if (isCpu.toString() == "true" || isCpu.toString() == "True") {
@@ -648,7 +648,7 @@ module.exports = {
         "zjazz-x22i": "start.bash",
         "zm-zec": "start.bash",
         "gminer": "start.bash",
-	"gminer-amd": "start.bash",
+        "gminer-amd": "start.bash",
         "grinprominer": "config.xml",
         "miniz": "start.bash",
         "serominer": "start.bash",

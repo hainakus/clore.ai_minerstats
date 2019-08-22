@@ -44,6 +44,7 @@ if [ $1 ]; then
   elif echo "$QUERY" | grep "P104-100" ;then PLEVEL=1
   elif echo "$QUERY" | grep "P106-090" ;then PLEVEL=1
   elif echo "$QUERY" | grep "1660" ;then PLEVEL=4
+  elif echo "$QUERY" | grep "RTX" ;then PLEVEL=4
   fi
 
 
@@ -95,8 +96,8 @@ if [ $1 ]; then
       STR3="-a [gpu:"$GPUID"]/GPUGraphicsClockOffset["$PLEVEL"]="$COREOFFSET" -a [gpu:"$GPUID"]/GPUGraphicsClockOffsetAllPerformanceLevels="$COREOFFSET""
     fi
   fi
-  
-  
+
+
   #################################£
   # APPLY THIS GPU SETTINGS AT ONCE
   FINISH="$(sudo nvidia-settings $STR1 $STR2 $STR3 $STR4)"

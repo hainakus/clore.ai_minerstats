@@ -2,6 +2,8 @@
 	USER => mstop
 */
 "use strict";
+global.path = __dirname;
+var settings = require("./config.js");
 /*
 	CATCH ERROR's
 */
@@ -41,5 +43,17 @@ try {
   fkill('nanominer').then(() => {});
   fkill('kbminer').then(() => {});
 } catch (e) {}
-var killScreen = exec("SID=$(screen -list | grep minerstat-console | cut -f1 -d'.' | sed 's/[^0-9]*//g'); screen -X -S $SID'.minerstat-console'", function(error, stdout, stderr) {}),
-  killNode = exec("killall node", function(error, stdout, stderr) {});
+var request = require('request');
+//console.log(res_data);
+//console.log(global.accesskey);
+//console.log(global.worker);
+request.post({
+  url: 'https://api.minerstat.com/v2/set_node_config.php?token=' + global.accesskey + '&worker=' + global.worker + '&miner=&ver=4&cpuve=idle&cpud=HASH' + '&os=linux&hwNew=true&',
+  form: {
+    minerData: "",
+    cpuData: ""
+  }
+}, function(error, response, body) {
+  var killScreen = exec("SID=$(screen -list | grep minerstat-console | cut -f1 -d'.' | sed 's/[^0-9]*//g'); screen -X -S $SID'.minerstat-console'", function(error, stdout, stderr) {}),
+    killNode = exec("killall node", function(error, stdout, stderr) {});
+});

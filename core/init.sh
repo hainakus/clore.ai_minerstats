@@ -65,16 +65,16 @@ do
   echo ""
   echo "$TOKEN"
   echo "$WORKER"
-  
+
   #FREE SPACE in Megabyte - SDA1
   STR1="$(df -hm | grep $DISK | awk '{print $4}')"
-  
+
   echo "Free Space: $STR1"
 
   #CPU USAGE
   #STR2="$(mpstat | awk '$13 ~ /[0-9.]+/ { print 100 - $13 }')"
   STR2=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage ""}')
-  
+
   echo "CPU Usage: $STR2"
 
   #REMOTE IP ADDRESS
@@ -99,7 +99,7 @@ do
   # MINER logs
   RAMLOG=$(cat /dev/shm/miner.log | tac | head --lines 10 | tac)
   echo "RAMLOG"
-  
+
   # Extended Query with loop
   CPU_TEMP=$(cat /sys/class/thermal/thermal_zone*/temp | column -s $'\t' -t | sed 's/\(.\)..$/.\1/' | head -n 1)
   #CPU_USAGE=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage ""}')
@@ -120,7 +120,7 @@ do
   if [ "$IS_ONLINE" = "YES" ]; then
 
     OFFLINE_COUNT=0
-    
+
     echo "online"
 
     #SEND INFO
@@ -142,8 +142,8 @@ do
       RESPONSE="REBOOT"
     fi
   fi
-  
-  
+
+
   echo "response check"
 
   if [ $RESPONSE = "REBOOT" ]; then
@@ -188,15 +188,15 @@ do
   fi
 
   if [ $RESPONSE = "STOP" ]; then
-    echo "stop" > /tmp/stop.pid; 
+    echo "stop" > /tmp/stop.pid;
     sudo su -c "echo "" > /dev/shm/miner.log"
     sudo su -c "echo 'stop' > /tmp/stop.pid"
-    sudo su minerstat -c "screen -X -S minerstat-console quit"; 
+    sudo su minerstat -c "screen -X -S minerstat-console quit";
     sudo su -c "sudo screen -X -S minew quit"
     sudo node /home/minerstat/minerstat-os/stop.js
     sleep 2
     sudo su -c "sudo screen -X -S minew quit"
-    sudo su minerstat -c "screen -X -S minerstat-console quit"; 
+    sudo su minerstat -c "screen -X -S minerstat-console quit";
   fi
 
   #if [ $RESPONSE = "RECOVERY" ]; then
@@ -206,7 +206,7 @@ do
   if [ $RESPONSE = "null" ]; then
     echo "No remote command pending..";
   fi
-  
+
   echo "monitor logs"
 
   if [ "$MONITOR_TYPE" = "amd" ]; then
