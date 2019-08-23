@@ -68,35 +68,35 @@ sudo hostname -F /etc/hostname
 GET_GATEWAY=$(route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
 # systemd resolve casusing problems with 127.0.0.53
 if [ ! -z "$GET_GATEWAY" ]; then
-  sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/resolvconf/interface/systemd-resolved" 2>&1 >/dev/null
+  sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/resolvconf/interface/systemd-resolved" 2>/dev/null
 fi
-sudo su -c 'echo "nameserver 1.1.1.1" >> /run/resolvconf/interface/systemd-resolved' 2>&1 >/dev/null
-sudo su -c 'echo "nameserver 1.0.0.1" >> /run/resolvconf/interface/systemd-resolved' 2>&1 >/dev/null
-sudo su -c 'echo "nameserver 8.8.8.8" >> /run/resolvconf/interface/systemd-resolved' 2>&1 >/dev/null
-sudo su -c 'echo "nameserver 8.8.4.4" >> /run/resolvconf/interface/systemd-resolved' 2>&1 >/dev/null
+sudo su -c 'echo "nameserver 1.1.1.1" >> /run/resolvconf/interface/systemd-resolved' 2>/dev/null
+sudo su -c 'echo "nameserver 1.0.0.1" >> /run/resolvconf/interface/systemd-resolved' 2>/dev/null
+sudo su -c 'echo "nameserver 8.8.8.8" >> /run/resolvconf/interface/systemd-resolved' 2>/dev/null
+sudo su -c 'echo "nameserver 8.8.4.4" >> /run/resolvconf/interface/systemd-resolved' 2>/dev/null
 if [ ! -z "$GET_GATEWAY" ]; then
-  sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/systemd/resolve/stub-resolv.conf" 2>&1 >/dev/null
+  sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/systemd/resolve/stub-resolv.conf" 2>/dev/null
 fi
-sudo su -c 'echo "nameserver 1.1.1.1" >> /run/systemd/resolve/stub-resolv.conf' 2>&1 >/dev/null
-sudo su -c 'echo "nameserver 1.0.0.1" >> /run/systemd/resolve/stub-resolv.conf' 2>&1 >/dev/null
-sudo su -c 'echo "nameserver 8.8.8.8" >> /run/systemd/resolve/stub-resolv.conf' 2>&1 >/dev/null
-sudo su -c 'echo "nameserver 8.8.4.4" >> /run/systemd/resolve/stub-resolv.conf' 2>&1 >/dev/null
-sudo su -c 'echo options edns0 >> /run/systemd/resolve/stub-resolv.conf' 2>&1 >/dev/null
+sudo su -c 'echo "nameserver 1.1.1.1" >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
+sudo su -c 'echo "nameserver 1.0.0.1" >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
+sudo su -c 'echo "nameserver 8.8.8.8" >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
+sudo su -c 'echo "nameserver 8.8.4.4" >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
+sudo su -c 'echo options edns0 >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
 # Rewrite
 sudo su -c 'echo "" > /etc/resolv.conf'
 if [ ! -z "$GET_GATEWAY" ]; then
-  sudo su -c "echo 'nameserver $GET_GATEWAY' >> /etc/resolv.conf" 2>&1 >/dev/null
+  sudo su -c "echo 'nameserver $GET_GATEWAY' >> /etc/resolv.conf" 2>/dev/null
 fi
-sudo su -c 'echo "nameserver 1.1.1.1" >> /etc/resolv.conf' 2>&1 >/dev/null
-sudo su -c 'echo "nameserver 1.0.0.1" >> /etc/resolv.conf' 2>&1 >/dev/null
-sudo su -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf' 2>&1 >/dev/null
-sudo su -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf' 2>&1 >/dev/null
+sudo su -c 'echo "nameserver 1.1.1.1" >> /etc/resolv.conf' 2>/dev/null
+sudo su -c 'echo "nameserver 1.0.0.1" >> /etc/resolv.conf' 2>/dev/null
+sudo su -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf' 2>/dev/null
+sudo su -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf' 2>/dev/null
 # China
-sudo su -c 'echo "nameserver 114.114.114.114" >> /etc/resolv.conf' 2>&1 >/dev/null
-sudo su -c 'echo "nameserver 114.114.115.115" >> /etc/resolv.conf' 2>&1 >/dev/null
+sudo su -c 'echo "nameserver 114.114.114.114" >> /etc/resolv.conf' 2>/dev/null
+sudo su -c 'echo "nameserver 114.114.115.115" >> /etc/resolv.conf' 2>/dev/null
 # IPV6
-sudo su -c 'echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf' 2>&1 >/dev/null
-sudo su -c 'echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf' 2>&1 >/dev/null
+sudo su -c 'echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf' 2>/dev/null
+sudo su -c 'echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf' 2>/dev/null
 # Memory Info
 sudo chmod -R 777 * /home/minerstat/minerstat-os
 sudo rm /home/minerstat/minerstat-os/bin/amdmeminfo.txt
@@ -161,7 +161,7 @@ if [ "$ISCURL" -lt 1 ]; then
   sudo apt-get --yes --force-yes install curl
 fi
 # install curl if required
-which curl 2>&1 >/dev/null && curlPresent=true
+which curl 2>/dev/null && curlPresent=true
 if [ -z "${curlPresent:-}" ]; then
   echo "CURL FIX"
   sudo apt --yes --force-yes --fix-broken install
