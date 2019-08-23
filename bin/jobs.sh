@@ -100,6 +100,7 @@ sudo su -c 'echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf' 2>&1 >/dev
 # Memory Info
 sudo chmod -R 777 * /home/minerstat/minerstat-os
 sudo rm /home/minerstat/minerstat-os/bin/amdmeminfo.txt
+sudo rm /dev/shm/amdmeminfo.txt
 
 if [ -z "$1" ]; then
   AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
@@ -180,7 +181,8 @@ if [ "$CHECKAPTXN" -gt "0" ]; then
 fi
 if [ "$1" -gt 0 ] || [ "$AMDDEVICE" -gt 0 ]; then
   #sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q > /home/minerstat/minerstat-os/bin/amdmeminfo.txt &
-  sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q | tac > /home/minerstat/minerstat-os/bin/amdmeminfo.txt &
+  sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q | tac > /dev/shm/amdmeminfo.txt &
+  sudo cp /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
   sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
 fi
 # grub fix
