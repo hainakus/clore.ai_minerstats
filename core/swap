@@ -10,7 +10,7 @@ DRIVE_NUMBER=$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g
 DRIVE_PARTITION=$DRIVE_NUMBER"1"
 if [ "$DRIVE_NUMBER" = "nvmenp" ]; then
     echo "Changeing header, NVM drive detected.."
-    DRIVE_NUMBER="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | xargs | sed 's/.$//')"
+    DRIVE_NUMBER="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | xargs | sed 's/.$//' | sed 's/\s.*$//' | xargs | sed 's/\p//g')"
     DRIVE_PARTITION=$DRIVE_NUMBER"p1"
     DRIVE_EFI=$DRIVE_NUMBER"p3"
 fi
