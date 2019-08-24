@@ -8,8 +8,8 @@ PART=$DETECT"1"
 
 if [ "$DETECT" = "nvmenp" ]; then
     echo "Changeing header, NVM drive detected.."
-    DRIVE_NUMBER="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | xargs | sed 's/.$//' | sed 's/\s.*$//' | xargs | sed 's/\p//g')"
-    PART=$DRIVE_NUMBER"p1"
+    DETECT="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | xargs | sed 's/.$//' | sed 's/\s.*$//' | xargs | sed 's/\p//g')"
+    PART=$DETECT"p1"
 fi
 
 DISK="$(df -hm | grep $PART | awk '{print $2}')"
