@@ -4,10 +4,14 @@ OFFLINE_COUNT=0
 OFFLINE_NUM=40
 IS_ONLINE="YES"
 DETECT="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | sed 's/[0-9]*//g' | head -n1 | xargs)"
-if [ "$DETECT" = "nvmenp" ]; then
-  DETECT="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | xargs)"
-fi
 PART=$DETECT"1"
+
+if [ "$DETECT" = "nvmenp" ]; then
+    echo "Changeing header, NVM drive detected.."
+    DRIVE_NUMBER="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | xargs | sed 's/.$//' | sed 's/\s.*$//' | xargs | sed 's/\p//g')"
+    PART=$DRIVE_NUMBER"p1"
+fi
+
 DISK="$(df -hm | grep $PART | awk '{print $2}')"
 
 MONITOR_TYPE="unknown"
