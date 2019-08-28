@@ -140,6 +140,7 @@ alias mled='sudo /home/minerstat/minerstat-os/core/mled'
 alias mwifi='sudo /home/minerstat/minerstat-os/core/mwifi'
 alias nvidia-update='sudo /home/minerstat/minerstat-os/core/nvidia-update'
 alias autotune='sudo /home/minerstat/minerstat-os/core/autotune'
+alias rocm-smi='sudo /home/minerstat/minerstat-os/bin/rocm-smi'
 
 if grep -q experimental "/etc/lsb-release"; then
   alias amdmemtool='sudo /home/minerstat/minerstat-os/bin/amdmemorytweak'
