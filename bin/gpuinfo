@@ -67,6 +67,8 @@ if [[ $1 == "nvidia" ]]; then
         BRAND="COLORFUL "
       elif [[ $TEST_BRAND == *"GAINWARD"* ]]; then
         BRAND="GAINWARD "
+      elif [[ $TEST_BRAND == *"PNY"* ]]; then
+        BRAND="PNY "
       fi
 
       JSON_EOF=$JSON_EOF'"'$BRAND$QUERY'"'$COMMA''
