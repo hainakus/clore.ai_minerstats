@@ -364,6 +364,13 @@ const MINER_JSON = {
     "apiType": "tcp",
     "apiCArg": "{\"id\":0, \"method\":\"getstat\"}\n"
   },
+  "ttminer": {
+    "args": "auto",
+    "execFile": "TT-Miner",
+    "apiPort": 3333,
+    "apiType": "tcp",
+    "apiCArg": "{\"id\":0, \"jsonrpc\":\"2.0\", \"method\":\"miner_getstat1\"}\n"
+  },
 };
 module.exports = {
   /*
@@ -825,12 +832,12 @@ module.exports = {
           gpuSyncDone = false;
           global.sync = true;
           restartNode();
-		      console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
-		      console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + err.message + ")\x1b[0m");
-		      console.log("\x1b[1;94m== \x1b[0mPossible reasons:\x1b[0m");
-		      console.log("\x1b[1;94m== \x1b[0m- Mining client or API not started\x1b[0m");
-		      console.log("\x1b[1;94m== \x1b[0m- Too much Overclock / Undervolt\x1b[0m");
-		      console.log("\x1b[1;94m== \x1b[0m- Invalid mining client config\x1b[0m");
+          console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
+          console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + err.message + ")\x1b[0m");
+          console.log("\x1b[1;94m== \x1b[0mPossible reasons:\x1b[0m");
+          console.log("\x1b[1;94m== \x1b[0m- Mining client or API not started\x1b[0m");
+          console.log("\x1b[1;94m== \x1b[0m- Too much Overclock / Undervolt\x1b[0m");
+          console.log("\x1b[1;94m== \x1b[0m- Invalid mining client config\x1b[0m");
         });
       }
       //
@@ -847,12 +854,12 @@ module.exports = {
             gpuSyncDone = false;
             global.sync = true;
             restartNode();
-		        console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
-		        console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + error + ")\x1b[0m");
-		        console.log("\x1b[1;94m== \x1b[0mPossible reasons:\x1b[0m");
-		        console.log("\x1b[1;94m== \x1b[0m- Mining client or API not started\x1b[0m");
-		        console.log("\x1b[1;94m== \x1b[0m- Too much Overclock / Undervolt\x1b[0m");
-		        console.log("\x1b[1;94m== \x1b[0m- Invalid mining client config\x1b[0m");
+            console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + error + ")\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0mPossible reasons:\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m- Mining client or API not started\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m- Too much Overclock / Undervolt\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m- Invalid mining client config\x1b[0m");
           }
         });
       }
@@ -877,10 +884,10 @@ module.exports = {
           gpuSyncDone = false;
           global.sync = true;
           restartNode();
-		      console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
-		      console.log("\x1b[1;94m== \x1b[0m- Mining client or API not started\x1b[0m");
-		      console.log("\x1b[1;94m== \x1b[0m- Too much Overclock / Undervolt\x1b[0m");
-		      console.log("\x1b[1;94m== \x1b[0m- Invalid mining client config\x1b[0m");
+          console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
+          console.log("\x1b[1;94m== \x1b[0m- Mining client or API not started\x1b[0m");
+          console.log("\x1b[1;94m== \x1b[0m- Too much Overclock / Undervolt\x1b[0m");
+          console.log("\x1b[1;94m== \x1b[0m- Invalid mining client config\x1b[0m");
         });
         ccminerClient.on('end', () => {
           global.sync = true;
