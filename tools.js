@@ -878,7 +878,7 @@ module.exports = {
           global.sync = true;
           setTimeout(function() {
             ccminerClient.end();
-          }, 4000);
+          }, 6000);
         });
         ccminerClient.on('error', () => {
           gpuSyncDone = false;
