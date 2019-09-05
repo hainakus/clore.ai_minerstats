@@ -118,6 +118,10 @@ module.exports = {
     //console.log(res_data);         //SHOW SYNC OUTPUT
     // SEND LOG TO SERVER
     //console.log("MINER:" + global.minerVersion + ", CPU:" + global.cpuVersion);
+    if (global.benchmark.toString() != 'false' && res_data == "") {
+      console.log("NOTE: Blank send request during benchmark, ignoring..");
+      return "blank";
+    }
     var request = require('request');
     //console.log(res_data);
     request.post({
