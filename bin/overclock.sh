@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "*-*-* Overclocking in progress *-*-*"
 
-BIOS=$1
+INSTANT=$1
 
 AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
 if [ "$AMDDEVICE" = "0" ]; then
@@ -38,15 +38,9 @@ echo "--------------------------"
 sudo rm doclock.sh
 sleep 1
 
-if [ "$BIOS" != "" ]
-then
-  echo "Overwritting BIOS, Notice this requires a reboot (mreboot)"
-  FORCE="yes"
-fi
-
 if [ ! -z "$DONVIDIA" ]; then
   sudo nvidia-smi -pm 1
-  wget -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=nvidia&token=$TOKEN&worker=$WORKER&nums=$NVIDIADEVICE&bios=$FORCE"
+  wget -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=nvidia&token=$TOKEN&worker=$WORKER&nums=$NVIDIADEVICE&instant=$FORCE"
   sleep 1.5
   sudo sh doclock.sh
   sync
