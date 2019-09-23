@@ -173,6 +173,12 @@ do
     sleep 2
     sudo shutdown -h now
   fi
+  
+  if [ $RESPONSE = "INSTANTOC" ]; then
+    echo "-------------------------------------------"
+    sudo /home/minerstat/minerstat-os/bin/overclock.sh instant
+    echo "-------------------------------------------"
+  fi
 
   if [ $RESPONSE = "CONSOLE" ]; then
     sudo su minerstat -c "sudo /bin/sh /home/minerstat/minerstat-os/core/rmate"
