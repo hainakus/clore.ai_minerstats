@@ -35,6 +35,77 @@ if [ $1 ]; then
     GPUBUSINT=$(echo $GPUBUS | cut -f 1 -d '.')
     GPUBUS=$(python -c 'print(int("'$GPUBUSINT'", 16))')
   fi
+  # instant
+  INSTANT=$9
+
+  if [ "$INSTANT" = "instant" ]; then
+    echo "INSTANT OVERRIDE"
+    echo "BUS => $8"
+    if [ -f "/dev/shm/oc_old_$8.txt" ]; then
+      echo
+      echo "=== COMPARE VALUE FOUND ==="
+      sudo cat /dev/shm/oc_old_$8.txt
+      MEMCLOCK_OLD=$(cat /dev/shm/oc_old_$8.txt | grep "MEMCLOCK=" | xargs | sed 's/.*=//' | xargs)
+      CORECLOCK_OLD=$(cat /dev/shm/oc_old_$8.txt | grep "CORECLOCK=" | xargs | sed 's/.*=//' | xargs)
+      FANSPEED_OLD=$(cat /dev/shm/oc_old_$8.txt | grep "FAN=" | xargs | sed 's/.*=//' | xargs)
+      VDDC_OLD=$(cat /dev/shm/oc_old_$8.txt | grep "VDDC=" | xargs | sed 's/.*=//' | xargs)
+      VDDCI_OLD=$(cat /dev/shm/oc_old_$8.txt | grep "VDDCI=" | xargs | sed 's/.*=//' | xargs)
+      MVDD_OLD=$(cat /dev/shm/oc_old_$8.txt | grep "MVDD=" | xargs | sed 's/.*=//' | xargs)
+      GPUBUS_OLD=$(cat /dev/shm/oc_old_$8.txt | grep "BUS=" | xargs | sed 's/.*=//' | xargs)
+      echo "==========="
+      echo
+    else
+      MEMCLOCK_OLD=$(cat /dev/shm/oc_$8.txt | grep "MEMCLOCK=" | xargs | sed 's/.*=//' | xargs)
+      CORECLOCK_OLD=$(cat /dev/shm/oc_$8.txt | grep "CORECLOCK=" | xargs | sed 's/.*=//' | xargs)
+      FANSPEED_OLD=$(cat /dev/shm/oc_$8.txt | grep "FAN=" | xargs | sed 's/.*=//' | xargs)
+      VDDC_OLD=$(cat /dev/shm/oc_$8.txt | grep "VDDC=" | xargs | sed 's/.*=//' | xargs)
+      VDDCI_OLD=$(cat /dev/shm/oc_$8.txt | grep "VDDCI=" | xargs | sed 's/.*=//' | xargs)
+      MVDD_OLD=$(cat /dev/shm/oc_$8.txt | grep "MVDD=" | xargs | sed 's/.*=//' | xargs)
+      GPUBUS_OLD=$(cat /dev/shm/oc_$8.txt | grep "BUS=" | xargs | sed 's/.*=//' | xargs)
+    fi
+    echo "=== NEW VALUES FOUND ==="
+    sudo cat /dev/shm/oc_$8.txt
+    MEMCLOCK_NEW=$(cat /dev/shm/oc_$8.txt | grep "MEMCLOCK=" | xargs | sed 's/.*=//' | xargs)
+    CORECLOCK_NEW=$(cat /dev/shm/oc_$8.txt | grep "CORECLOCK=" | xargs | sed 's/.*=//' | xargs)
+    FANSPEED_NEW=$(cat /dev/shm/oc_$8.txt | grep "FAN=" | xargs | sed 's/.*=//' | xargs)
+    VDDC_NEW=$(cat /dev/shm/oc_$8.txt | grep "VDDC=" | xargs | sed 's/.*=//' | xargs)
+    VDDCI_NEW=$(cat /dev/shm/oc_$8.txt | grep "VDDCI=" | xargs | sed 's/.*=//' | xargs)
+    MVDD_NEW=$(cat /dev/shm/oc_$8.txt | grep "MVDD=" | xargs | sed 's/.*=//' | xargs)
+    GPUBUS_NEW=$(cat /dev/shm/oc_$8.txt | grep "BUS=" | xargs | sed 's/.*=//' | xargs)
+    echo "==========="
+    echo
+    echo "=== COMPARE ==="
+    ##################
+    MEMCLOCK="skip"
+    CORECLOCK="skip"
+    FANSPEED="skip"
+    VDDC="skip"
+    VDDCI="skip"
+    MVDD="skip"
+    BUS=""
+    ##################
+    if [ "$MEMCLOCK_OLD" != "$MEMCLOCK_NEW" ]; then
+      MEMCLOCK=$MEMCLOCK_NEW
+    fi
+    if [ "$CORECLOCK_OLD" != "$CORECLOCK_NEW" ]; then
+      CORECLOCK=$CORECLOCK_NEW
+    fi
+    if [ "$FANSPEED_OLD" != "$FANSPEED_NEW" ]; then
+      FANSPEED=$FANSPEED_NEW
+    fi
+    if [ "$VDDC_OLD" != "$VDDC_NEW" ]; then
+      VDDC=$VDDC_NEW
+    fi
+    if [ "$VDDCI_OLD" != "$VDDCI_NEW" ]; then
+      VDDCI=$VDDCI_NEW
+    fi
+    if [ "$MVDD_OLD" != "$MVDD_NEW" ]; then
+      MVDD=$MVDD_NEW
+    fi
+    if [ "$GPUBUS_OLD" != "$GPUBUS_NEW" ]; then
+      BUS=$GPUBUS_NEW
+    fi
+  fi
 
   ## BULIDING QUERIES
   STR1="";
