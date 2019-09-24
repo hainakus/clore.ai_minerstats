@@ -40,7 +40,7 @@ sleep 1
 
 if [ ! -z "$DONVIDIA" ]; then
   sudo nvidia-smi -pm 1
-  wget -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=nvidia&token=$TOKEN&worker=$WORKER&nums=$NVIDIADEVICE&instant=$FORCE"
+  wget -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=nvidia&token=$TOKEN&worker=$WORKER&nums=$NVIDIADEVICE&instant=$INSTANT"
   sleep 1.5
   sudo sh doclock.sh
   sync
@@ -91,7 +91,7 @@ if [ ! -z "$DOAMD" ]; then
   sudo rm /media/storage/fans.txt
   sudo killall curve
 
-  wget -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=amd&token=$TOKEN&worker=$WORKER&nums=$AMDDEVICE&bios=$FORCE&starts=$STARTS"
+  wget -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=amd&token=$TOKEN&worker=$WORKER&nums=$AMDDEVICE&instant=$INSTANT&starts=$STARTS"
 
   sleep 1.5
   sudo sh doclock.sh
