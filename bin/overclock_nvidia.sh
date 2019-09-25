@@ -46,10 +46,13 @@ if [ $1 ]; then
       echo "==========="
       echo
     else
-      MEMORYOFFSET_OLD=$(cat /dev/shm/oc_$1.txt | grep "MEMCLOCK=" | xargs | sed 's/.*=//' | xargs)
-      COREOFFSET_OLD=$(cat /dev/shm/oc_$1.txt | grep "CORECLOCK=" | xargs | sed 's/.*=//' | xargs)
-      FANSPEED_OLD=$(cat /dev/shm/oc_$1.txt | grep "FAN=" | xargs | sed 's/.*=//' | xargs)
-      POWERLIMITINWATT_OLD=$(cat /dev/shm/oc_$1.txt | grep "POWERLIMIT=" | xargs | sed 's/.*=//' | xargs)
+      echo "=== COMPARE VALUE NOT FOUND ==="
+      echo "USING SKIP EVERYWHERE"
+      MEMORYOFFSET_OLD="skip"
+      COREOFFSET_OLD="skip"
+      FANSPEED_OLD="skip"
+      POWERLIMITINWATT_OLD="skip"
+      echo "==========="
     fi
     echo "=== NEW VALUES FOUND ==="
     sudo cat /dev/shm/oc_$1.txt
