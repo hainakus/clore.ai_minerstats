@@ -29,6 +29,61 @@ if [ $1 ]; then
   STR3=""
   STR4="-c :0"
 
+  # INSTANT
+  INSTANT=$6
+
+  if [ "$INSTANT" = "instant" ]; then
+    echo "INSTANT OVERRIDE"
+    echo "GPU ID => $1"
+    if [ -f "/dev/shm/oc_old_$1.txt" ]; then
+      echo
+      echo "=== COMPARE VALUE FOUND ==="
+      sudo cat /dev/shm/oc_old_$1.txt
+      MEMORYOFFSET_OLD=$(cat /dev/shm/oc_old_$1.txt | grep "MEMCLOCK=" | xargs | sed 's/.*=//' | xargs)
+      COREOFFSET_OLD=$(cat /dev/shm/oc_old_$1.txt | grep "CORECLOCK=" | xargs | sed 's/.*=//' | xargs)
+      FANSPEED_OLD=$(cat /dev/shm/oc_old_$1.txt | grep "FAN=" | xargs | sed 's/.*=//' | xargs)
+      POWERLIMITINWATT_OLD=$(cat /dev/shm/oc_old_$1.txt | grep "POWERLIMIT=" | xargs | sed 's/.*=//' | xargs)
+      GPUBUS_OLD=$(cat /dev/shm/oc_old_$1.txt | grep "BUS=" | xargs | sed 's/.*=//' | xargs)
+      echo "==========="
+      echo
+    else
+      MEMORYOFFSET_OLD=$(cat /dev/shm/oc_$1.txt | grep "MEMCLOCK=" | xargs | sed 's/.*=//' | xargs)
+      COREOFFSET_OLD=$(cat /dev/shm/oc_$1.txt | grep "CORECLOCK=" | xargs | sed 's/.*=//' | xargs)
+      FANSPEED_OLD=$(cat /dev/shm/oc_$1.txt | grep "FAN=" | xargs | sed 's/.*=//' | xargs)
+      POWERLIMITINWATT_OLD=$(cat /dev/shm/oc_$1.txt | grep "POWERLIMIT=" | xargs | sed 's/.*=//' | xargs)
+      GPUBUS_OLD=$(cat /dev/shm/oc_$1.txt | grep "BUS=" | xargs | sed 's/.*=//' | xargs)
+    fi
+    echo "=== NEW VALUES FOUND ==="
+    sudo cat /dev/shm/oc_$1.txt
+    MEMORYOFFSET_NEW=$(cat /dev/shm/oc_$1.txt | grep "MEMCLOCK=" | xargs | sed 's/.*=//' | xargs)
+    COREOFFSET_NEW=$(cat /dev/shm/oc_$1.txt | grep "CORECLOCK=" | xargs | sed 's/.*=//' | xargs)
+    FANSPEED_NEW=$(cat /dev/shm/oc_$1.txt | grep "FAN=" | xargs | sed 's/.*=//' | xargs)
+    POWERLIMITINWATT_NEW=$(cat /dev/shm/oc_$1.txt | grep "POWERLIMIT=" | xargs | sed 's/.*=//' | xargs)
+    GPUBUS_NEW=$(cat /dev/shm/oc_$1.txt | grep "BUS=" | xargs | sed 's/.*=//' | xargs)
+    echo "==========="
+    echo
+    echo "=== COMPARE ==="
+    ##################
+    MEMORYOFFSET="skip"
+    COREOFFSET="skip"
+    FANSPEED="skip"
+    POWERLIMITINWATT="skip"
+    BUS=""
+    ##################
+    if [ "$MEMORYOFFSET_OLD" != "$MEMORYOFFSET_NEW" ]; then
+      MEMORYOFFSET=$MEMORYOFFSET_NEW
+    fi
+    if [ "$COREOFFSET_OLD" != "$COREOFFSET_NEW" ]; then
+      COREOFFSET=$COREOFFSET_NEW
+    fi
+    if [ "$FANSPEED_OLD" != "$FANSPEED_NEW" ]; then
+      FANSPEED=$FANSPEED_NEW
+    fi
+    if [ "$GPUBUS_OLD" != "$GPUBUS_NEW" ]; then
+      BUS=$GPUBUS_NEW
+    fi
+  fi
+
   # DETECTING VIDEO CARD FOR PERFORMACE LEVEL
 
   QUERY="$(sudo nvidia-smi -i "$GPUID" --query-gpu=name --format=csv,noheader | tail -n1)"
