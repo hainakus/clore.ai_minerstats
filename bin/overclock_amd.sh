@@ -55,12 +55,12 @@ if [ $1 ]; then
       echo "==========="
       echo
     else
-      MEMCLOCK_OLD=$(cat /dev/shm/oc_$8.txt | grep "MEMCLOCK=" | xargs | sed 's/.*=//' | xargs)
-      CORECLOCK_OLD=$(cat /dev/shm/oc_$8.txt | grep "CORECLOCK=" | xargs | sed 's/.*=//' | xargs)
-      FANSPEED_OLD=$(cat /dev/shm/oc_$8.txt | grep "FAN=" | xargs | sed 's/.*=//' | xargs)
-      VDDC_OLD=$(cat /dev/shm/oc_$8.txt | grep "VDDC=" | xargs | sed 's/.*=//' | xargs)
-      VDDCI_OLD=$(cat /dev/shm/oc_$8.txt | grep "VDDCI=" | xargs | sed 's/.*=//' | xargs)
-      MVDD_OLD=$(cat /dev/shm/oc_$8.txt | grep "MVDD=" | xargs | sed 's/.*=//' | xargs)
+      MEMCLOCK_OLD="skip"
+      CORECLOCK_OLD="skip"
+      FANSPEED_OLD="skip"
+      VDDC_OLD="skip"
+      VDDCI_OLD="skip"
+      MVDD_OLD="skip"
       GPUBUS_OLD=$(cat /dev/shm/oc_$8.txt | grep "BUS=" | xargs | sed 's/.*=//' | xargs)
     fi
     echo "=== NEW VALUES FOUND ==="
