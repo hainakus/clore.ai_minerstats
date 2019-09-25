@@ -176,7 +176,7 @@ do
   
   if [ $RESPONSE = "INSTANTOC" ]; then
     echo "-------------------------------------------"
-    sudo /home/minerstat/minerstat-os/bin/overclock.sh instant
+    screen -A -m -d -S instantoc sudo /home/minerstat/minerstat-os/bin/overclock.sh instant &
     echo "-------------------------------------------"
   fi
 
