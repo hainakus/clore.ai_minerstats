@@ -28,7 +28,7 @@ if [ $1 ]; then
   STR4="-c :0"
 
   # INSTANT
-  INSTANT=$6
+  INSTANT=$5
 
   if [ "$INSTANT" = "instant" ]; then
     echo "INSTANT OVERRIDE"
