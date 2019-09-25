@@ -32,7 +32,7 @@ if [ $1 ]; then
 
   if [ "$INSTANT" = "instant" ]; then
     echo "INSTANT OVERRIDE"
-    echo "GPU ID => $1"
+    echo "GPU ID => ALL"
     if [ -f "/dev/shm/oc_old_all.txt" ]; then
       echo
       echo "=== COMPARE VALUE FOUND ==="
@@ -43,11 +43,15 @@ if [ $1 ]; then
       POWERLIMITINWATT_OLD=$(cat /dev/shm/oc_old_all.txt | grep "POWERLIMIT=" | xargs | sed 's/.*=//' | xargs)
       echo "==========="
       echo
-    else
-      MEMORYOFFSET_OLD=$(cat /dev/shm/oc_all.txt | grep "MEMCLOCK=" | xargs | sed 's/.*=//' | xargs)
-      COREOFFSET_OLD=$(cat /dev/shm/oc_all.txt | grep "CORECLOCK=" | xargs | sed 's/.*=//' | xargs)
-      FANSPEED_OLD=$(cat /dev/shm/oc_all.txt | grep "FAN=" | xargs | sed 's/.*=//' | xargs)
-      POWERLIMITINWATT_OLD=$(cat /dev/shm/oc_all.txt | grep "POWERLIMIT=" | xargs | sed 's/.*=//' | xargs)
+    fi
+    if [ ! -f "/dev/shm/oc_old_all.txt" ]; then
+      echo "=== COMPARE VALUE NOT FOUND ==="
+      echo "USING SKIP EVERYWHERE"
+      MEMORYOFFSET_OLD="skip"
+      COREOFFSET_OLD="skip"
+      FANSPEED_OLD="skip"
+      POWERLIMITINWATT_OLD="skip"
+      echo "==========="
     fi
     echo "=== NEW VALUES FOUND ==="
     sudo cat /dev/shm/oc_all.txt
