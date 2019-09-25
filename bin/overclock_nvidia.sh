@@ -43,7 +43,6 @@ if [ $1 ]; then
       COREOFFSET_OLD=$(cat /dev/shm/oc_old_$1.txt | grep "CORECLOCK=" | xargs | sed 's/.*=//' | xargs)
       FANSPEED_OLD=$(cat /dev/shm/oc_old_$1.txt | grep "FAN=" | xargs | sed 's/.*=//' | xargs)
       POWERLIMITINWATT_OLD=$(cat /dev/shm/oc_old_$1.txt | grep "POWERLIMIT=" | xargs | sed 's/.*=//' | xargs)
-      GPUBUS_OLD=$(cat /dev/shm/oc_old_$1.txt | grep "BUS=" | xargs | sed 's/.*=//' | xargs)
       echo "==========="
       echo
     else
@@ -51,7 +50,6 @@ if [ $1 ]; then
       COREOFFSET_OLD=$(cat /dev/shm/oc_$1.txt | grep "CORECLOCK=" | xargs | sed 's/.*=//' | xargs)
       FANSPEED_OLD=$(cat /dev/shm/oc_$1.txt | grep "FAN=" | xargs | sed 's/.*=//' | xargs)
       POWERLIMITINWATT_OLD=$(cat /dev/shm/oc_$1.txt | grep "POWERLIMIT=" | xargs | sed 's/.*=//' | xargs)
-      GPUBUS_OLD=$(cat /dev/shm/oc_$1.txt | grep "BUS=" | xargs | sed 's/.*=//' | xargs)
     fi
     echo "=== NEW VALUES FOUND ==="
     sudo cat /dev/shm/oc_$1.txt
@@ -59,7 +57,6 @@ if [ $1 ]; then
     COREOFFSET_NEW=$(cat /dev/shm/oc_$1.txt | grep "CORECLOCK=" | xargs | sed 's/.*=//' | xargs)
     FANSPEED_NEW=$(cat /dev/shm/oc_$1.txt | grep "FAN=" | xargs | sed 's/.*=//' | xargs)
     POWERLIMITINWATT_NEW=$(cat /dev/shm/oc_$1.txt | grep "POWERLIMIT=" | xargs | sed 's/.*=//' | xargs)
-    GPUBUS_NEW=$(cat /dev/shm/oc_$1.txt | grep "BUS=" | xargs | sed 's/.*=//' | xargs)
     echo "==========="
     echo
     echo "=== COMPARE ==="
@@ -79,8 +76,8 @@ if [ $1 ]; then
     if [ "$FANSPEED_OLD" != "$FANSPEED_NEW" ]; then
       FANSPEED=$FANSPEED_NEW
     fi
-    if [ "$GPUBUS_OLD" != "$GPUBUS_NEW" ]; then
-      BUS=$GPUBUS_NEW
+    if [ "$POWERLIMITINWATT_OLD" != "$POWERLIMITINWATT_NEW" ]; then
+      POWERLIMITINWATT=$POWERLIMITINWATT_NEW
     fi
   fi
 
@@ -155,6 +152,7 @@ if [ $1 ]; then
 
   #################################£
   # APPLY THIS GPU SETTINGS AT ONCE
+  echo "$STR1 $STR2 $STR3 $STR4"
   FINISH="$(sudo nvidia-settings $STR1 $STR2 $STR3 $STR4)"
   echo $FINISH
 
