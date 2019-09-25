@@ -141,6 +141,7 @@ alias mwifi='sudo /home/minerstat/minerstat-os/core/mwifi'
 alias nvidia-update='sudo /home/minerstat/minerstat-os/core/nvidia-update'
 alias autotune='sudo /home/minerstat/minerstat-os/core/autotune'
 alias rocm-smi='sudo /home/minerstat/minerstat-os/bin/rocm-smi'
+alias netrecovery='sudo su -c "cd /tmp; wget https://raw.githubusercontent.com/minerstat/minerstat-os/master/core/recovery.sh; chmod 777 recovery.sh; sh recovery.sh"'
 
 if grep -q experimental "/etc/lsb-release"; then
   alias amdmemtool='sudo /home/minerstat/minerstat-os/bin/amdmemorytweak'
