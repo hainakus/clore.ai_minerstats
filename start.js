@@ -659,7 +659,8 @@ module.exports = {
         "nbminer": "start.bash",
         "nanominer": "start.bash",
         "kbminer": "start.bash",
-        "ttminer": "start.bash"
+        "ttminer": "start.bash",
+	"vkminer": "start.bash"
       };
 
       try {
