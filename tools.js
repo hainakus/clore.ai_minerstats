@@ -99,7 +99,7 @@ const MINER_JSON = {
   },
   "vkminer": {
     "args": "auto",
-    "execFile": "ccminer",
+    "execFile": "vkminer",
     "apiPort": 3333,
     "apiType": "tcp",
     "apiCArg": "summary"
