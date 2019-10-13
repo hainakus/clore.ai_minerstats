@@ -97,6 +97,13 @@ const MINER_JSON = {
     "apiType": "tcp",
     "apiCArg": "summary"
   },
+  "vkminer": {
+    "args": "auto",
+    "execFile": "ccminer",
+    "apiPort": 3333,
+    "apiType": "tcp",
+    "apiCArg": "summary"
+  },
   "ccminer-tpruvot": {
     "args": "auto",
     "execFile": "ccminer",
@@ -736,6 +743,7 @@ module.exports = {
     try {
       fkill('bminer').then(() => {});
       fkill('ccminer').then(() => {});
+      fkill('vkminer').then(() => {});
       fkill('cpuminer').then(() => {});
       fkill('zecminer64').then(() => {});
       fkill('ethminer').then(() => {});
