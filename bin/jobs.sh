@@ -33,6 +33,8 @@ export GPU_USE_SYNC_OBJECTS=1
 export GPU_MAX_ALLOC_PERCENT=100
 export GPU_SINGLE_ALLOC_PERCENT=100
 export GPU_MAX_HEAP_SIZE=100
+# Check SSH Keys
+sudo /home/minerstat/minerstat-os/core/ressh
 # .bashrc
 sudo cp -fR /home/minerstat/minerstat-os/core/.bashrc /home/minerstat
 # rocm for VEGA
