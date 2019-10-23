@@ -32,3 +32,34 @@ if [[ "$check" == *"$keyc"* ]]; then
 else
   echo "SSH Keys Already Regenerated.."
 fi
+
+if ping -q -c 1 -W 1 1.1.1.1 >/dev/null; then
+  # DETECT LOCAL NETWORK
+  ip=`ifconfig | grep "inet" | grep -v "inet6" | grep -vE "127.0.0.1|169." | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | head -n 1 | grep -o -E '[.0-9]+'`
+  subnet=$(echo $ip | cut -f1,2 -d'.')
+  netw="$subnet.0.0"
+
+  echo "IPv4 is up, setting iptables"
+  echo "Network: $ip | $netw/16"
+
+  # Clear RULES
+  sudo iptables -F
+  sudo iptables -X
+  sudo iptables -t nat -F
+  sudo iptables -t nat -X
+  sudo iptables -t mangle -F
+  sudo iptables -t mangle -X
+  sudo iptables -P INPUT ACCEPT
+  sudo iptables -P FORWARD ACCEPT
+  sudo iptables -P OUTPUT ACCEPT
+
+  # SET NEW RULES FOR 22 PORT
+  sudo iptables -A INPUT -p tcp --dport 22 -s $netw/16 -j ACCEPT
+  sudo iptables -A INPUT -p tcp --dport 22 -s 68.183.74.40 -j ACCEPT
+  sudo iptables -A INPUT -p tcp --dport 22 -s 10.0.0.0/8 -j ACCEPT
+  sudo iptables -A INPUT -p tcp --dport 22 -s 192.168.0.0/16 -j ACCEPT
+  sudo iptables -A INPUT -p tcp --dport 22 -s 127.0.0.0/8 -j ACCEPT
+  sudo iptables -A INPUT -p tcp --dport 22 -j DROP
+else
+  echo "IPv4 is down, setting up next time"
+fi
