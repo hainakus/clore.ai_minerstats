@@ -2,9 +2,24 @@
 
 echo "Validating SSH Keys.."
 
+keyc="MIIBuwIBAAKBgQDTanoMk4GUJ4ySRfYnBkH9NDMSjBDd72PvdVuZ5OlBth19OSaO"
+keyp="AAAAB3NzaC1yc2EAAAADAQABAAABAQDh9gWYEOua"
+
+file="/etc/ssh/ssh_host_rsa_key.pub"
+check=$(cat $file)
+
+if [[ "$check" == *"$keyp"* ]]; then
+  echo "Generating new SSH Keys..."
+  sudo /bin/rm -v /etc/ssh/ssh_host_*
+  sudo dpkg-reconfigure openssh-server
+  sudo systemctl restart sshd
+  sudo systemctl status sshd
+else
+  echo "SSH Keys Already Regenerated.."
+fi
+
 file="/etc/ssh/ssh_host_dsa_key"
 check=$(cat $file)
-keyc="MIIBuwIBAAKBgQDTanoMk4GUJ4ySRfYnBkH9NDMSjBDd72PvdVuZ5OlBth19OSaO"
 
 if [[ "$check" == *"$keyc"* ]]; then
   echo "Generating new SSH Keys..."
