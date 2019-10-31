@@ -145,6 +145,7 @@ alias netrecovery='sudo su -c "cd /tmp; wget https://raw.githubusercontent.com/m
 alias mpill='sudo /home/minerstat/minerstat-os/core/mpill'
 alias static='sudo bash /home/minerstat/minerstat-os/core/mstatic'
 alias dhcp='sudo /home/minerstat/minerstat-os/core/dhcp'
+alias wifi='sudo /home/minerstat/minerstat-os/core/mwifi'
 
 if grep -q experimental "/etc/lsb-release"; then
   alias amdmemtool='sudo /home/minerstat/minerstat-os/bin/amdmemorytweak'
