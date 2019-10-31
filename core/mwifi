@@ -23,3 +23,9 @@ nmcli d wifi rescan
 nmcli d wifi list
 nmcli device wifi connect "$1" password "$2"
 echo
+
+sudo sed -i '/WIFISSID/d' /media/storage/network.txt
+sudo sed -i '/WIFIPASS/d' /media/storage/network.txt
+
+sudo echo 'WIFISSID="'$1'"' >> /media/storage/network.txt
+sudo echo 'WIFIPASS="'$2'"' >> /media/storage/network.txt
