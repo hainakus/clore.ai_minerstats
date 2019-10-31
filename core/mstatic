@@ -1,8 +1,8 @@
 #!/bin/bash
 
-echo "$1"
-echo "$2"
-echo "$3"
+echo "Local IP : $1"
+echo "Netmask  : $2"
+echo "Gateway  : $3"
 
 if [ -z "$1" ] && [ -z "$2" ] && [ -z "$3" ]; then
   echo
@@ -11,8 +11,7 @@ if [ -z "$1" ] && [ -z "$2" ] && [ -z "$3" ]; then
   echo
   exit 0
 else
-  echo "Please, confirm. Press: [ A ] to accept, [ C ] to reject"
-  echo; read -rsn1 -p "Press any key to continue . . ." keypress; echo
+  echo; read -rsn1 -p "Please, confirm. Press: [ A ] to accept, [ C ] to reject . . ." keypress; echo
 
   if [ "$keypress" = "a" ] || [ "$keypress" = "A" ]; then
     echo
@@ -39,6 +38,8 @@ else
       echo
     fi
     # CHECK DNS
+    sleep 3
+    
     TEST="$(ping api.minerstat.com. -w 1 | grep '1 packets transmitted')"
     if echo "$TEST" | grep "0%" ;then
       echo ""
