@@ -8,3 +8,4 @@
 @reboot find '/home/minerstat/minerstat-os/clients' -name "*log.txt" -type f -delete
 @reboot /usr/sbin/netplan apply
 @reboot sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=28 --use-display-device="DFP-0" --connected-monitor="DFP-0" --enable-all-gpus
+@reboot /bin/bash /home/minerstat/minerstat-os/core/dnser
