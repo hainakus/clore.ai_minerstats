@@ -18,6 +18,7 @@ sudo su -c "chown minerstat /var/spool/cron/crontabs/minerstat"
 sudo service cron restart
 # Fix Slow start bug
 sudo systemctl disable NetworkManager-wait-online.service
+sudo systemctl disable systemd-networkd-wait-online.service
 sudo sed -i s/"TimeoutStartSec=5min"/"TimeoutStartSec=5sec"/ /etc/systemd/system/network-online.target.wants/networking.service
 sudo sed -i s/"timeout 300"/"timeout 5"/ /etc/dhcp/dhclient.conf
 # Nvidia PCI_BUS_ID
