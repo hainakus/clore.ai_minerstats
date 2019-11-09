@@ -94,9 +94,9 @@ if [ ! -z "$DOAMD" ]; then
   #isThisVega=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
   #isThisVegaII=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
   
-  sudo su minerstat -c "screen -X -S minerstat-console quit"; 
-  sudo su -c "sudo screen -X -S minew quit"; 
-  sudo su -c "echo "" > /dev/shm/miner.log";
+  #sudo su minerstat -c "screen -X -S minerstat-console quit"; 
+  #sudo su -c "sudo screen -X -S minew quit"; 
+  #sudo su -c "echo "" > /dev/shm/miner.log";
 
   #if [ "$isThisVega" = "Vega" ] || [ "$isThisVegaII" = "VegaFrontierEdition" ]; then
     sudo /home/minerstat/minerstat-os/core/autotune
