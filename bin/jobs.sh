@@ -161,6 +161,9 @@ if [ -f "$CURVE_FILE" ]; then
 fi
 # Time Date SYNC
 sudo timedatectl set-ntp on &
+# NVIDIA
+sudo getent group nvidia-persistenced &>/dev/null || sudo groupadd -g 143 nvidia-persistenced
+sudo getent passwd nvidia-persistenced &>/dev/null || sudo useradd -c 'NVIDIA Persistence Daemon' -u 143 -g nvidia-persistenced -d '/' -s /sbin/nologin nvidia-persistenced
 # Check CURL is installed
 ISCURL=$(dpkg -l curl | grep curl | wc -l | sed 's/[^0-9]*//g')
 if [ "$ISCURL" -lt 1 ]; then
