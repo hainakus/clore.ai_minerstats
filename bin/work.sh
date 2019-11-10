@@ -1,7 +1,7 @@
 if ! screen -list | grep -q "dummy"; then
 
   # FIX CTRL + ALT + F1
-  sudo systemctl enable nvidia-persistenced
+  sudo systemctl start nvidia-persistenced
   screen -A -m -d -S chvt sudo /home/minerstat/minerstat-os/bin/chvta
 
   screen -A -m -d -S dummy sleep 22176000
