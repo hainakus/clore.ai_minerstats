@@ -42,7 +42,11 @@ sudo cp -fR /home/minerstat/minerstat-os/core/.bashrc /home/minerstat
 export HSA_ENABLE_SDMA=0
 # Hugepages (XMR) [Need more test, this required or not]
 sudo su -c "echo 128 > /proc/sys/vm/nr_hugepages"
-sudo su -c "sysctl -w vm.nr_hugepages=128"
+sudo su -c "sysctl vm.nr_hugepages=128"
+sudo su -c "sysctl vm.dirty_background_ratio=20"
+sudo su -c "sysctl vm.dirty_expire_centisecs=0"
+sudo su -c "sysctl vm.dirty_ratio=80"
+sudo su -c "sysctl vm.dirty_writeback_centisecs=0"
 # Fix ERROR Messages
 export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
