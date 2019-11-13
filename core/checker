@@ -6,6 +6,12 @@ if [ "$SNUM" -gt "1" ]; then
   sudo killall screen
 fi
 
+# Check XSERVER
+SNUMD=$(sudo su minerstat -c "screen -list | grep -c display")
+if [ "$SNUMD" -lt "1" ]; then
+  screen -A -m -d -S display sudo X
+fi
+
 # Check "LISTENER"
 if ! screen -list | grep -q "listener"; then
   screen -S listener -X quit # kill running process
