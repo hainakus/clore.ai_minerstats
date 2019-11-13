@@ -41,7 +41,7 @@ sleep 1
 if [ ! -z "$DONVIDIA" ]; then
   # Check XSERVER
   SNUMD=$(sudo su minerstat -c "screen -list | grep -c display")
-  if [ "$SNUMD" -lt "1" ]; then
+  if [ "$SNUMD" = "0" ]; then
     sudo su minerstat -c "screen -A -m -d -S display sudo X"
   fi
 
