@@ -9,7 +9,7 @@ fi
 # Check XSERVER
 SNUMD=$(sudo su minerstat -c "screen -list | grep -c display")
 if [ "$SNUMD" -lt "1" ]; then
-  screen -A -m -d -S display sudo X
+  sudo su minerstat -c "screen -A -m -d -S display sudo X"
 fi
 
 # Check "LISTENER"
