@@ -39,6 +39,12 @@ sudo rm doclock.sh
 sleep 1
 
 if [ ! -z "$DONVIDIA" ]; then
+  # Check XSERVER
+  SNUMD=$(sudo su minerstat -c "screen -list | grep -c display")
+  if [ "$SNUMD" -lt "1" ]; then
+    sudo su minerstat -c "screen -A -m -d -S display sudo X"
+  fi
+
   sudo nvidia-smi -pm 1
   wget -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=nvidia&token=$TOKEN&worker=$WORKER&nums=$NVIDIADEVICE&instant=$INSTANT"
   sleep 1.5
