@@ -180,6 +180,12 @@ do
     echo "-------------------------------------------"
   fi
 
+  if [ $RESPONSE = "DIAG" ]; then
+    echo "-------------------------------------------"
+    screen -A -m -d -S diag sudo /home/minerstat/minerstat-os/core/diag
+    echo "-------------------------------------------"
+  fi
+
   if [ $RESPONSE = "CONSOLE" ]; then
     sudo su minerstat -c "sudo /bin/sh /home/minerstat/minerstat-os/core/rmate"
   fi
