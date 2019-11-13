@@ -163,6 +163,11 @@ loop() {
     fi
   fi
   if [[ $TEST_NVIDIA == *"GPU 0"* ]]; then
+    # Check XSERVER
+    SNUMD=$(sudo su minerstat -c "screen -list | grep -c display")
+    if [ "$SNUMD" -lt "1" ]; then
+      sudo su minerstat -c "screen -A -m -d -S display sudo X"
+    fi
     NVIDIA_NUM=$(nvidia-smi --query-gpu=count --format=csv,noheader | tail -n1 | xargs | sed 's/[^0-9]*//g')
     NVIDIA_INUM=$((NVIDIA_NUM-1))
     NVIDIA2X=$((NVIDIA_NUM*2))
