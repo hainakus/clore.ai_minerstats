@@ -19,6 +19,10 @@ STRAPFILENAME="amdmemorytweak-stable"
 DETECTA=$(nvidia-smi -L | grep "GPU 0:" | wc -l)
 DETECTB=$(sudo lshw -C display | grep AMD | wc -l)
 
+if [ "$DETECTB" = "0" ]; then
+    DETECTB=$(sudo lshw -C display | grep amd | wc -l)
+fi
+
 if grep -q experimental "/etc/lsb-release"; then
   STRAPFILENAME="amdmemorytweak"
 fi
