@@ -72,6 +72,9 @@ do
 
   #FREE SPACE in Megabyte - SDA1
   STR1="$(df -hm | grep $DISK | awk '{print $4}')"
+  if [ -z "$STR1" ]; then
+    STR1="$(df -hm | grep sdb1 | awk '{print $4}')"
+  fi
 
   echo "Free Space: $STR1"
 
