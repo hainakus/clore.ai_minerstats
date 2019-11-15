@@ -657,6 +657,7 @@ module.exports = {
         "miniz": "start.bash",
         "serominer": "start.bash",
         "nbminer": "start.bash",
+	"nbminer-amd": "start.bash",
         "nanominer": "start.bash",
         "kbminer": "start.bash",
         "ttminer": "start.bash",
