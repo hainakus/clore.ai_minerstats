@@ -343,6 +343,13 @@ const MINER_JSON = {
     "apiPath": "/api/v1/status",
     "apiType": "http"
   },
+  "nbminer-amd": {
+    "args": "auto",
+    "execFile": "nbminer",
+    "apiPort": 4433,
+    "apiPath": "/api/v1/status",
+    "apiType": "http"
+  },
   "nanominer": {
     "args": "auto",
     "execFile": "nanominer_starter",
