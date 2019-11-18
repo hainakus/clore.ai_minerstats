@@ -194,6 +194,8 @@ do
   fi
 
   if [ $RESPONSE = "CONSOLE" ]; then
+    sudo killall tmate
+    sudo killall tmate
     sudo su minerstat -c "sudo /bin/sh /home/minerstat/minerstat-os/core/rmate"
     TELEID=$(sudo /home/minerstat/minerstat-os/bin/tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}' | cut -f1 -d"@" | sed 's/.* //')
     echo "TeleID: $TELEID"
