@@ -239,6 +239,9 @@ do
     if [ -z "$HWMEMORY" ] || [ -f "/dev/shm/amdmeminfo.txt" ]; then
       HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
     fi
+    if [ -z "$AMDINFO" ]; then
+        AMDINFO=$(sudo /home/minerstat/minerstat-os/bin/amdcovc)
+    fi
     HWSTRAPS=$(cd /home/minerstat/minerstat-os/bin/; sudo ./"$STRAPFILENAME" --current-minerstat)
     sudo curl --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=amd" --data "hwData=$AMDINFO" --data "hwPower=$QUERYPOWER" --data "hwMemory=$HWMEMORY" --data "hwStrap=$HWSTRAPS" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os.php"
   fi
