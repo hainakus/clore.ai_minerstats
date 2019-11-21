@@ -181,7 +181,9 @@ if ! screen -list | grep -q "dummy"; then
   echo "Please wait.."
   sleep 1
   #sudo update-grub
-  sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=28 --use-display-device="DFP-0" --connected-monitor="DFP-0" --enable-all-gpus
+  #sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=28 --use-display-device="DFP-0" --connected-monitor="DFP-0" --enable-all-gpus
+  sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" &
+  sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf
   sudo service gdm stop >/dev/null
   #screen -A -m -d -S display sudo X
   sleep 5
