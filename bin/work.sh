@@ -210,7 +210,7 @@ if ! screen -list | grep -q "dummy"; then
   echo ""
   echo "-------- INITIALIZING FAKE DUMMY PLUG -------------"
   echo "Please wait.."
-  sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=28 --use-display-device="DFP-0" --connected-monitor="DFP-0" --enable-all-gpus &
+  sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" &
   sleep 1
   sudo service dgm stop
   sleep 3
