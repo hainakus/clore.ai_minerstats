@@ -1,7 +1,7 @@
 if ! screen -list | grep -q "dummy"; then
 
   # FIX CTRL + ALT + F1
-  sudo systemctl start nvidia-persistenced
+  sudo systemctl start nvidia-persistenced &
   screen -A -m -d -S chvt sudo /home/minerstat/minerstat-os/bin/chvta
 
   screen -A -m -d -S dummy sleep 22176000
@@ -136,11 +136,70 @@ if ! screen -list | grep -q "dummy"; then
   echo ""
   #sudo update-pciids
   cd /home/minerstat/minerstat-os
-  sudo sh git.sh
+  #sudo sh git.sh
   echo ""
   sudo chmod -R 777 /home/minerstat/minerstat-os/*
   echo "Moving MSOS config.js to / (LINUX)"
   sudo cp -rf "/media/storage/config.js" "/home/minerstat/minerstat-os/"
+
+    echo ""
+  echo "-------- INITIALIZING FAKE DUMMY PLUG -------------"
+  echo "Please wait.."
+  sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" &
+  sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf
+  sleep 1
+  sudo service dgm stop
+  sleep 3
+  if [ "$NVIDIADEVICE" -gt 0 ]; then
+    screen -A -m -d -S display sudo X
+    screen -A -m -d -S fixer sudo chvt 1
+  fi
+  sudo chvt 1
+  echo ""
+
+  echo " "
+  echo "-------- OVERCLOCKING ---------------------------"
+  cd /home/minerstat/minerstat-os/
+  sudo node stop
+  sudo su minerstat -c "screen -X -S minerstat-console quit"
+  echo "stop" > /tmp/stop.pid
+  sudo su -c "sudo screen -X -S minew quit"
+  cd /home/minerstat/minerstat-os/bin
+  # PCI_BUS_ID
+  if [ "$AMDDEVICE" -gt 0 ]; then
+    TOKEN="$(cat /media/storage/config.js | grep 'global.accesskey' | sed 's/global.accesskey =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g' | sed 's/[^a-zA-Z0-9]*//g')"
+    WORKER="$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g')"
+    HWMEMORY=$(cd /home/minerstat/minerstat-os/bin/; cat amdmeminfo.txt)
+    sudo curl --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwMemory=$HWMEMORY" "https://api.minerstat.com/v2/set_node_config_os.php"
+  fi
+  # MCLOCK
+  echo "To run Overclock script manually type: mclock"
+  echo "Adjusting clocks in the background.."
+  #sudo chvt 1
+  sudo sh /home/minerstat/minerstat-os/bin/overclock.sh
+
+  if [ "$AMDDEVICE" -gt 0 ]; then
+    echo ""
+    echo "--- Apply Strap (AMD TWEAK) from DB ---"
+    sudo screen -A -m -d -S delaymem sh /home/minerstat/minerstat-os/bin/setmem_bg.sh
+  fi
+
+  echo " "
+  echo "-------- INITALIZING MINERSTAT CLIENT -----------"
+  cd /home/minerstat/minerstat-os
+  sudo su -c "sudo screen -X -S minew quit"
+  sudo su -c "sudo screen -X -S fakescreen quit"
+  sudo su -c "screen -ls minew | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
+  sudo su minerstat -c "screen -X -S fakescreen quit"
+  screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done
+  sudo su minerstat -c "screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
+  sudo su minerstat -c "screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh"
+  sudo rm /tmp/stop.pid
+  sleep 2
+  sudo su minerstat -c "screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh"
+
+  echo ""
+  echo "Minerstat has been started in the background.."
 
   CHECKAPT=$(dpkg -l | grep libnetpacket-perl | wc -l)
 
@@ -198,72 +257,15 @@ if ! screen -list | grep -q "dummy"; then
   echo " "
   echo "-------- RUNNING JOBS ---------------------------"
   cd /home/minerstat/minerstat-os/bin
-  sudo sh jobs.sh $AMDDEVICE
+  sudo sh jobs.sh $AMDDEVICE &
   echo ""
 
   sleep 1
   sudo chvt 1
 
   cd /home/minerstat/minerstat-os/core
-  sudo sh expand.sh
+  sudo sh expand.sh &
 
-  echo ""
-  echo "-------- INITIALIZING FAKE DUMMY PLUG -------------"
-  echo "Please wait.."
-  sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" &
-  sleep 1
-  sudo service dgm stop
-  sleep 3
-  if [ "$NVIDIADEVICE" -gt 0 ]; then
-    screen -A -m -d -S display sudo X
-    screen -A -m -d -S fixer sudo chvt 1
-  fi
-  sudo chvt 1
-  echo ""
-
-  echo " "
-  echo "-------- OVERCLOCKING ---------------------------"
-  cd /home/minerstat/minerstat-os/
-  sudo node stop
-  sudo su minerstat -c "screen -X -S minerstat-console quit"
-  echo "stop" > /tmp/stop.pid
-  sudo su -c "sudo screen -X -S minew quit"
-  cd /home/minerstat/minerstat-os/bin
-  # PCI_BUS_ID
-  if [ "$AMDDEVICE" -gt 0 ]; then
-    TOKEN="$(cat /media/storage/config.js | grep 'global.accesskey' | sed 's/global.accesskey =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g' | sed 's/[^a-zA-Z0-9]*//g')"
-    WORKER="$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g')"
-    HWMEMORY=$(cd /home/minerstat/minerstat-os/bin/; cat amdmeminfo.txt)
-    sudo curl --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwMemory=$HWMEMORY" "https://api.minerstat.com/v2/set_node_config_os.php"
-  fi
-  # MCLOCK
-  echo "To run Overclock script manually type: mclock"
-  echo "Adjusting clocks in the background.."
-  #sudo chvt 1
-  sudo sh /home/minerstat/minerstat-os/bin/overclock.sh
-
-  if [ "$AMDDEVICE" -gt 0 ]; then
-    echo ""
-    echo "--- Apply Strap (AMD TWEAK) from DB ---"
-    sudo screen -A -m -d -S delaymem sh /home/minerstat/minerstat-os/bin/setmem_bg.sh
-  fi
-
-  echo " "
-  echo "-------- INITALIZING MINERSTAT CLIENT -----------"
-  cd /home/minerstat/minerstat-os
-  sudo su -c "sudo screen -X -S minew quit"
-  sudo su -c "sudo screen -X -S fakescreen quit"
-  sudo su -c "screen -ls minew | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
-  sudo su minerstat -c "screen -X -S fakescreen quit"
-  screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done
-  sudo su minerstat -c "screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
-  sudo su minerstat -c "screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh"
-  sudo rm /tmp/stop.pid
-  sleep 2
-  sudo su minerstat -c "screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh"
-
-  echo ""
-  echo "Minerstat has been started in the background.."
   echo "Waiting for console output.."
 
   # Remove pending commands
