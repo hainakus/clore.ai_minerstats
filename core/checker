@@ -31,6 +31,9 @@ fi
 # Check XSERVER
 SNUMD=$(sudo su minerstat -c "screen -list | grep -c display")
 if [ "$SNUMD" = "0" ]; then
+  sudo killall X
+  sudo killall Xorg
+  sudo rm /tmp/.X0-lock     
   sudo su minerstat -c "screen -A -m -d -S display sudo X"
 fi
 
