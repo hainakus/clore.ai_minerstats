@@ -523,7 +523,7 @@ module.exports = {
     // Download latest package from the static server
     async function downloadCore(miner, clientType, serverVersion) {
       var miner = miner;
-      var dlURL = 'http://static-ssl.minerstat.farm/miners/linux/' + miner + '.zip';
+      var dlURL = 'https://static-ssl.minerstat.farm/miners/linux/' + miner + '.zip';
       var dlURL_type = "zip";
       var fullFileName = "";
       var lastSlash = dlURL.lastIndexOf("/");
