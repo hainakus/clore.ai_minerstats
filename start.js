@@ -691,11 +691,12 @@ module.exports = {
           //if (miner != "ewbf-zec" && miner != "cast-xmr" && miner != "gminer" && miner != "wildrig-multi" && miner != "zjazz-x22i" && miner != "mkxminer" && miner != "teamredminer" && miner != "progpowminer" && miner != "bminer" && miner != "xmrig-amd" && miner != "ewbf-zhash" && miner != "ethminer" && miner != "zm-zec" && miner != "z-enemy" && miner != "cryptodredge" && miner.indexOf("ccminer") === -1 && miner.indexOf("cpu") === 1) {
           if (MINER_CONFIG_FILE[miner.toLowerCase()] != "start.bash") {
 
+	    var saveFileLocation = MINER_CONFIG_FILE[miner.toLowerCase()];
             console.log("\x1b[1;94m== \x1b[0mClient Status (" + miner + "): \x1b[1;32mSaving config\x1b[0m");
-	    if (miner == "xmrig") {
-	    	global.file = "clients/xmrig/config.json";
+	    if (global.PrivateMinerConfigFile != "" && clientType != "cpu") {
+              saveFileLocation = "clients/" + miner.replace("_10", "") + "/" + global.PrivateMinerConfigFile;
             }
-            var writeStream = fs.createWriteStream(global.path + "/" + global.file);
+            var writeStream = fs.createWriteStream(global.path + "/" + saveFileLocation);
 
             // This ARRAY only need to fill if the miner using JSON config.
             var stringifyArray = ["sgminer", "sgminer-gm", "sgminer-avermore", "trex", "lolminer", "xmrig"];
