@@ -43,6 +43,7 @@ export HSA_ENABLE_SDMA=0
 # Hugepages (XMR) [Need more test, this required or not]
 sudo su -c "echo 128 > /proc/sys/vm/nr_hugepages"
 sudo su -c "sysctl vm.nr_hugepages=128"
+sudo su -c "echo always > /sys/kernel/mm/transparent_hugepage/enabled"
 sudo su -c "sysctl vm.dirty_background_ratio=20"
 sudo su -c "sysctl vm.dirty_expire_centisecs=0"
 sudo su -c "sysctl vm.dirty_ratio=80"
