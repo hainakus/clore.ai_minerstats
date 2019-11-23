@@ -714,7 +714,7 @@ module.exports = {
 	    });
             writeStream.on('finish', function() {
               //tools.killall();
-	      console.log("\x1b[1;94m== \x1b[0mClient Status (" + miner + "): \x1b[1;32mSaved config to "+ global.file +"\x1b[0m");
+	      console.log("\x1b[1;94m== \x1b[0mClient Status (" + miner + "): \x1b[1;32mSaved config to "+ saveFileLocation +"\x1b[0m");
               tools.autoupdate(miner, str);
             });
           } else {
