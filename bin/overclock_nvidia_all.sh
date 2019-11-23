@@ -93,6 +93,7 @@ if [ $1 ]; then
 
   if echo "$QUERY" | grep "1050" ;then PLEVEL=2
   elif echo "$QUERY" | grep "P106-100" ;then PLEVEL=2
+  elif echo "$QUERY" | grep "GTX 9" ;then PLEVEL=2
   elif echo "$QUERY" | grep "P102-100" ;then PLEVEL=1
   elif echo "$QUERY" | grep "P104-100" ;then PLEVEL=1
   elif echo "$QUERY" | grep "P106-090" ;then PLEVEL=1
