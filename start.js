@@ -481,8 +481,18 @@ module.exports = {
                   downloadCore(minerNameWithCuda, "gpu", gpuServerVersion);
                 });
               }
+              if (gpuMiner == "xmr-stak-randomx") {
+                var xmrConfigQuery = require('child_process').exec;
+                var copyXmrConfigs = xmrConfigQuery("cp /home/minerstat/minerstat-os/clients/xmr-stak-randomx/amd.txt /tmp; cp /home/minerstat/minerstat-os/clients/xmr-stak-randomx/nvidia.txt /tmp; cp /home/minerstat/minerstat-os/clients/xmr-stak-randomx/cpu.txt /tmp; cp /home/minerstat/minerstat-os/clients/xmr-stak-randomx/config.txt /tmp;", function(error, stdout, stderr) {
+                  console.log("XMR-STAK-RANDOMX Config Protected");
+                  sleep.sleep(1);
+                  deleteFolder('clients/' + gpuMiner.toLowerCase().replace("_10", "") + '/');
+                  sleep.sleep(2);
+                  downloadCore(minerNameWithCuda, "gpu", gpuServerVersion);
+                });
+              }
             } catch (copyError) {}
-            if (gpuMiner != "xmr-stak") {
+            if (gpuMiner != "xmr-stak" && gpuMiner != "xmr-stak-randomx") {
               sleep.sleep(1);
               deleteFolder('clients/' + gpuMiner.toLowerCase().replace("_10", "") + '/');
               sleep.sleep(2);
@@ -572,8 +582,15 @@ module.exports = {
                 applyChmod(miner.replace("_10", ""), clientType);
               });
             }
+            if (miner == "xmr-stak-randomx") {
+              var xmrConfigQueryStak = require('child_process').exec;
+              var copyXmrConfigsStak = xmrConfigQueryStak("cp /tmp/amd.txt /home/minerstat/minerstat-os/clients/xmr-stak-randomx/; cp /tmp/cpu.txt /home/minerstat/minerstat-os/clients/xmr-stak-randomx/; cp /tmp/nvidia.txt /home/minerstat/minerstat-os/clients/xmr-stak-randomx/; cp /tmp/config.txt /home/minerstat/minerstat-os/clients/xmr-stak-randomx/;", function(error, stdout, stderr) {
+                console.log("XMR-STAK-RANDOMX Config Restored");
+                applyChmod(miner.replace("_10", ""), clientType);
+              });
+            }
             // Start miner
-            if (miner != "xmr-stak") {
+            if (miner != "xmr-stak" && miner != "xmr-stak-randomx") {
               applyChmod(miner.replace("_10", ""), clientType);
             }
           });
@@ -600,8 +617,15 @@ module.exports = {
                 applyChmod(miner.replace("_10", ""), clientType);
               });
             }
+            if (miner == "xmr-stak-randomx") {
+              var xmrConfigQueryStak = require('child_process').exec;
+              var copyXmrConfigsStak = xmrConfigQueryStak("cp /tmp/amd.txt /home/minerstat/minerstat-os/clients/xmr-stak-randomx/; cp /tmp/cpu.txt /home/minerstat/minerstat-os/clients/xmr-stak-randomx/; cp /tmp/nvidia.txt /home/minerstat/minerstat-os/clients/xmr-stak-randomx/; cp /tmp/config.txt /home/minerstat/minerstat-os/clients/xmr-stak-randomx/;", function(error, stdout, stderr) {
+                console.log("XMR-STAK-RANDOMX Config Restored");
+                applyChmod(miner.replace("_10", ""), clientType);
+              });
+            }
             // Start miner
-            if (miner != "xmr-stak") {
+            if (miner != "xmr-stak" && miner != "xmr-stak-randomx") {
               applyChmod(miner.replace("_10", ""), clientType);
             }
           });
@@ -645,7 +669,9 @@ module.exports = {
         "trex": "config.json",
         "wildrig-multi": "start.bash",
         "xmr-stak": "pools.txt",
+        "xmr-stak-randomx": "pools.txt",
         "xmrig": "config.json",
+        "xmrig-randomx": "config.json",
         "xmrig-amd": "start.bash",
         "xmrig-nvidia": "start.bash",
         "z-enemy": "start.bash",
@@ -657,11 +683,11 @@ module.exports = {
         "miniz": "start.bash",
         "serominer": "start.bash",
         "nbminer": "start.bash",
-	"nbminer-amd": "start.bash",
+        "nbminer-amd": "start.bash",
         "nanominer": "start.bash",
         "kbminer": "start.bash",
         "ttminer": "start.bash",
-	"vkminer": "start.bash"
+        "vkminer": "start.bash"
       };
 
       try {
@@ -691,15 +717,15 @@ module.exports = {
           //if (miner != "ewbf-zec" && miner != "cast-xmr" && miner != "gminer" && miner != "wildrig-multi" && miner != "zjazz-x22i" && miner != "mkxminer" && miner != "teamredminer" && miner != "progpowminer" && miner != "bminer" && miner != "xmrig-amd" && miner != "ewbf-zhash" && miner != "ethminer" && miner != "zm-zec" && miner != "z-enemy" && miner != "cryptodredge" && miner.indexOf("ccminer") === -1 && miner.indexOf("cpu") === 1) {
           if (MINER_CONFIG_FILE[miner.toLowerCase()] != "start.bash") {
 
-	    var saveFileLocation = "clients/" + miner.replace("_10", "") + "/" + MINER_CONFIG_FILE[miner.toLowerCase()];
+            var saveFileLocation = "clients/" + miner.replace("_10", "") + "/" + MINER_CONFIG_FILE[miner.toLowerCase()];
             console.log("\x1b[1;94m== \x1b[0mClient Status (" + miner + "): \x1b[1;32mSaving config\x1b[0m");
-	    if (global.PrivateMinerConfigFile != "" && clientType != "cpu") {
+            if (global.PrivateMinerConfigFile != "" && clientType != "cpu") {
               saveFileLocation = "clients/" + miner.replace("_10", "") + "/" + global.PrivateMinerConfigFile;
             }
             var writeStream = fs.createWriteStream(global.path + "/" + saveFileLocation);
 
             // This ARRAY only need to fill if the miner using JSON config.
-            var stringifyArray = ["sgminer", "sgminer-gm", "sgminer-avermore", "trex", "lolminer", "xmrig"];
+            var stringifyArray = ["sgminer", "sgminer-gm", "sgminer-avermore", "trex", "lolminer", "xmrig", "xmrig-randomx"];
             if (stringifyArray.indexOf(miner) > -1 || global.PrivateMinerConfigFile != "" && clientType != "cpu") {
               str = jsFriendlyJSONStringify(str);
               str = str.replace(/\\/g, '').replace('"{', '{').replace('}"', '}');
@@ -709,12 +735,12 @@ module.exports = {
             }
             writeStream.write("" + str);
             writeStream.end();
-	    writeStream.on('error', function(wsError) {
-	      console.log("CONFIG ERROR:" + wsError);
-	    });
+            writeStream.on('error', function(wsError) {
+              console.log("CONFIG ERROR:" + wsError);
+            });
             writeStream.on('finish', function() {
               //tools.killall();
-	      console.log("\x1b[1;94m== \x1b[0mClient Status (" + miner + "): \x1b[1;32mSaved config to "+ saveFileLocation +"\x1b[0m");
+              console.log("\x1b[1;94m== \x1b[0mClient Status (" + miner + "): \x1b[1;32mSaved config to " + saveFileLocation + "\x1b[0m");
               tools.autoupdate(miner, str);
             });
           } else {
