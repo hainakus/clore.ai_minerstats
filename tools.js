@@ -301,7 +301,7 @@ const MINER_JSON = {
     "apiType": "http"
   },
   "xmrig-randomx": {
-    "args": "auto",
+    "args": "--opencl --no-cpu",
     "execFile": "xmrig",
     "apiPort": 7888,
     "apiPath": "/2/summary",
