@@ -43,8 +43,8 @@ export HSA_ENABLE_SDMA=0
 # Hugepages (XMR) [Need more test, this required or not]
 HPAGE=$(cat /proc/cpuinfo | grep -c "aes")
 if [ "$HPAGE" -gt "0" ]; then
-  sudo su -c "echo 1168 > /proc/sys/vm/nr_hugepages"
-  sudo su -c "sysctl vm.nr_hugepages=1168"
+  sudo su -c "echo 128 > /proc/sys/vm/nr_hugepages"
+  sudo su -c "sysctl vm.nr_hugepages=128"
 else
   sudo su -c "echo 128 > /proc/sys/vm/nr_hugepages"
   sudo su -c "sysctl vm.nr_hugepages=128"
