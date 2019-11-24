@@ -251,6 +251,13 @@ const MINER_JSON = {
     "apiPath": "/api.json",
     "apiType": "http"
   },
+  "xmr-stak-randomx": {
+    "args": "",
+    "execFile": "xmr-stak",
+    "apiPort": 2222,
+    "apiPath": "/api.json",
+    "apiType": "http"
+  },
   "trex": {
     "args": "-c config.json",
     "execFile": "t-rex",
@@ -291,6 +298,13 @@ const MINER_JSON = {
     "execFile": "xmrig-nvidia",
     "apiPort": 4028,
     "apiPath": "/",
+    "apiType": "http"
+  },
+  "xmrig-randomx": {
+    "args": "auto",
+    "execFile": "xmrig",
+    "apiPort": 7888,
+    "apiPath": "/2/summary",
     "apiType": "http"
   },
   "wildrig-multi": {
@@ -434,7 +448,7 @@ module.exports = {
     var writeStream = fs.createWriteStream(global.path + "/" + "clients/" + miner + "/start.bash"),
       str = "";
     if (args == "") {
-      if (miner == "xmr-stak") {
+      if (miner == "xmr-stak" || miner == "xmr-stak-randomx") {
         str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + " --noCPU " + logInFile + "; sleep 20";
       } else {
         str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + "" + logInFile + "; sleep 20 ";
