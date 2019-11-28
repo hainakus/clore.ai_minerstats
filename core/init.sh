@@ -55,6 +55,9 @@ NVIDIA_DRIVER=$(dpkg -l | grep nvidia-opencl-icd | grep ii | awk '{print $3}' | 
 if [ -z "$NVIDIA_DRIVER" ]; then
   NVIDIA_DRIVER=$(nvidia-smi | grep "Driver Version" | xargs | sed 's/[^0-9. ]*//g' | xargs | cut -d ' ' -f 1 | xargs)
 fi
+if [ -z "$NVIDIA_DRIVER" ]; then
+    NVIDIA_DRIVER=$(dpkg -l | grep nvidia-driver | grep ii | awk '{print $3}' | xargs | cut -d '-' -f 1)
+fi
 AMD_DRIVER=$(dpkg -l | grep vulkan-amdgpu-pro | head -n1 | awk '{print $3}' | xargs)
 KERNEL_VERSION=$(uname -r)
 UBUNTU_VERSION=$(cat /etc/os-release | grep "PRETTY_NAME" | sed 's/PRETTY_NAME="//g' | sed 's/"//g' | xargs)
