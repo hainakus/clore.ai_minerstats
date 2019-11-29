@@ -7,7 +7,7 @@ sudo su -c "echo 20 >/proc/sys/kernel/panic"
 find '/home/minerstat/minerstat-os/clients/claymore-eth' -name "*log.txt" -type f -delete
 sudo find /var/log -type f -name "*.journal" -delete
 sudo su -c "sudo service rsyslog stop"
-sudo su -c "systemctl disable rsyslog"
+#sudo su -c "systemctl disable rsyslog"
 sudo su -c "systemctl disable wpa_supplicant"
 #echo "Log files deleted"
 sudo dmesg -n 1
