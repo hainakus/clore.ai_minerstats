@@ -244,3 +244,17 @@ if [ -f "/etc/netplan/minerstat.yaml" ]; then
     fi
   fi
 fi
+# Firmware for v1.2
+version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
+if [ "$version" = "1.2" ]; then
+  echo "Checking Firmware.."
+  FILE=/media/storage/fw.txt
+  if test -f "$FILE"; then
+    echo "FW Updated"
+  else
+    echo "FW needs update"
+    echo "Updating firmware.."
+    cd /tmp; mkdir firmware; cd firmware; wget https://static-ssl.minerstat.farm/miners/linux-firmware.tar.gz; tar -xvf linux-firmware.tar.gz; rm linux-firmware.tar.gz; sudo cp -va * /lib/firmware/amdgpu; sudo update-initramfs -u; sync;
+    sudo su -c "echo '1' > /media/storage/fw.txt"
+  fi
+fi
