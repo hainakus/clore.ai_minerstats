@@ -105,7 +105,7 @@ if [ ! -z "$DOAMD" ]; then
   #sudo su -c "echo "" > /dev/shm/miner.log";
 
   #if [ "$isThisVega" = "Vega" ] || [ "$isThisVegaII" = "VegaFrontierEdition" ]; then
-    sudo /home/minerstat/minerstat-os/core/autotune
+    #sudo /home/minerstat/minerstat-os/core/autotune
   #fi
 
   wget -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=amd&token=$TOKEN&worker=$WORKER&nums=$AMDDEVICE&instant=$INSTANT&starts=$STARTS"
