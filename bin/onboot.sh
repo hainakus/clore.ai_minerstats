@@ -13,6 +13,8 @@ if [ ! -f "$FILE" ]; then
       screen -A -m -d -S boot_process /home/minerstat/minerstat-os/bin/work.sh
     fi
   else
-    screen -A -m -d -S boot_process /home/minerstat/minerstat-os/bin/boot.sh
+    echo "Moving MSOS config.js to / (LINUX)"
+    sudo cp -rf "/media/storage/config.js" "/home/minerstat/minerstat-os/"
+    screen -A -m -d -S boot_process /home/minerstat/minerstat-os/bin/work.sh
   fi
 fi
