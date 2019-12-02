@@ -31,7 +31,7 @@ SNUM=$(sudo su minerstat -c "screen -list | grep -c fff")
 if [ "$SNUM" -lt "1" ]; then
    
 if ! screen -list | grep -q "fff"; then
-  sudo su minerstat -c "screen -A -m -d -S fff sleep 7d"
+  sudo su minerstat -c "screen -A -m -d -S fff sleep 365d"
   until screen -x boot_process; do
     PROTECT=$[$PROTECT +1]
     echo "Waiting boot process to start"
