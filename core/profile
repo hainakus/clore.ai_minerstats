@@ -29,10 +29,34 @@ HEADCAPB=30
 
 SNUM=$(sudo su minerstat -c "screen -list | grep -c fff")
 if [ "$SNUM" -lt "1" ]; then
-   
-if ! screen -list | grep -q "fff"; then
-  sudo su minerstat -c "screen -A -m -d -S fff sleep 365d"
-fi
+
+  if ! screen -list | grep -q "fff"; then
+    sudo su minerstat -c "screen -A -m -d -S fff sleep 365d"
+  fi
+
+  if [ "$(whoami)" = "minerstat" ]; then
+    until screen -x boot_process; do
+      PROTECT=$[$PROTECT +1]
+      echo "Waiting boot process to start"
+      if [ $PROTECT = $HEADCAP ]; then
+        /bin/sh /home/minerstat/minerstat-os/bin/onboot.sh
+      fi
+      if [ $PROTECT = $HEADCAPA ]; then
+        /bin/sh /home/minerstat/minerstat-os/bin/onboot.sh
+      fi
+      if [ $PROTECT = $HEADCAPB ]; then
+        echo "Trying to fix os"
+        cd /tmp
+        sudo su -c "cd /tmp; wget https://raw.githubusercontent.com/minerstat/minerstat-os/master/core/recovery.sh; chmod 777 recovery.sh; sh recovery.sh"
+        sudo su minerstat -c "/bin/sh /home/minerstat/minerstat-os/bin/onboot.sh"
+      fi
+      sleep 1
+    done
+  else
+    echo "You are probably logged in as root."
+    echo "Enter: sudo su minerstat"
+    echo "After usual commands like mstart, agent will work."
+  fi
 
 fi
 
