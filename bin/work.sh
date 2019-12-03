@@ -1,25 +1,20 @@
 if ! screen -list | grep -q "dummy"; then
-
   screen -A -m -d -S dummy sleep 22176000
-
+  screen -S listener -X quit # kill running process
+  screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
+  
+  cd /home/minerstat/minerstat-os/bin
+  ./shellinaboxd --port 4200 -b --css "/home/minerstat/minerstat-os/core/white-on-black.css" --disable-ssl
+  
   # FIX CTRL + ALT + F1
   sudo systemctl start nvidia-persistenced &
   screen -A -m -d -S chvt sudo /home/minerstat/minerstat-os/bin/chvta
-
-  screen -S listener -X quit # kill running process
-  screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
 
   # TELEPROXY
   #cd /home/minerstat/minerstat-os/bin
   #sudo su minerstat -c "screen -A -m -d -S telp sh teleconsole.sh"
 
   sudo find /var/log -type f -delete
-
-  cd /home/minerstat/minerstat-os/bin
-  ./shellinaboxd --port 4200 -b --css "/home/minerstat/minerstat-os/core/white-on-black.css" --disable-ssl
-
-  # Fix Slow start bug
-  sudo systemctl disable NetworkManager-wait-online.service
 
   NVIDIA="$(nvidia-smi -L)"
   AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
@@ -43,11 +38,10 @@ if ! screen -list | grep -q "dummy"; then
 
   HAVECONNECTION="true"
 
-  while ! sudo ping minerstat.com. -w 1 | grep "0%"; do
+  while ! sudo ping 1.1.1.1 -w 1 | grep "0%"; do
     HAVECONNECTION="false"
     break
   done
-
 
   if [ "$HAVECONNECTION" != "true" ]
   then
@@ -127,7 +121,7 @@ if ! screen -list | grep -q "dummy"; then
 
   nslookup api.minerstat.com
 
-  while ! sudo ping minerstat.com. -w 1 | grep "0%"; do
+  while ! sudo ping api.minerstat.com. -w 1 | grep "0%"; do
     sudo /home/minerstat/minerstat-os/core/dnser
     sleep 3
   done
@@ -143,7 +137,7 @@ if ! screen -list | grep -q "dummy"; then
   echo "Moving MSOS config.js to / (LINUX)"
   sudo cp -rf "/media/storage/config.js" "/home/minerstat/minerstat-os/"
 
-    echo ""
+  echo ""
   echo "-------- INITIALIZING FAKE DUMMY PLUG -------------"
   echo "Please wait.."
   sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" &
@@ -202,19 +196,12 @@ if ! screen -list | grep -q "dummy"; then
   echo ""
   echo "Minerstat has been started in the background.."
 
-  CHECKAPT=$(dpkg -l | grep libnetpacket-perl | wc -l)
-
-  if [ ! "$CHECKAPT" -gt "0" ]; then
-    sudo apt --yes --force-yes --fix-broken install
-    sudo apt-get --yes --force-yes install libnetpacket-perl  libnet-pcap-perl libnet-rawip-perl
-  fi
-
+  
   if grep -q experimental "/etc/lsb-release"; then
     if [ "$AMDDEVICE" -gt 0 ]; then
       echo "INFO: Seems you have AMD Device enabled, activating OpenCL Support."
       echo "INFO: Nvidia / AMD Mixing not supported. If you want to use OS on another rig, do mrecovery."
       sudo apt-get --yes --force-yes install libegl1-amdgpu-pro:amd64 libegl1-amdgpu-pro:i386
-      sudo apt-get --yes --force-yes install libcurl4
     fi
   fi
 
@@ -231,14 +218,6 @@ if ! screen -list | grep -q "dummy"; then
       fi
 
       if grep -q experimental "/etc/lsb-release"; then
-        CHECKAPTX=$(dpkg -l | grep cuda-libraries-10-0 | wc -l)
-        if [ ! "$CHECKAPTX" -gt "0" ]; then
-          # Remove OpenCl support because of NVIDIA
-          sudo apt --yes --force-yes --fix-broken install
-          sudo apt-get --yes --force-yes install cuda-libraries-10-0 cuda-cudart-10-0
-          sudo apt-get --yes --force-yes install libcurl4
-          sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
-        fi
         CHECKAPTXN=$(dpkg -l | grep "libegl1-amdgpu-pro" | wc -l)
         if [ "$CHECKAPTXN" -gt "0" ]; then
           sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
@@ -272,9 +251,9 @@ if ! screen -list | grep -q "dummy"; then
   # Remove pending commands
   curl --request POST "https://api.minerstat.com/v2/set_node_config.php?token=$TOKEN&worker=$WORKER" &
 
-  sleep 5
+  sleep 3
   sudo chvt 1
-  sleep 9
+  sleep 3
   sudo su minerstat -c "sh /home/minerstat/minerstat-os/core/view"
   sleep 1
   exec bash
