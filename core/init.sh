@@ -1,7 +1,7 @@
 #!/bin/bash
 
 OFFLINE_COUNT=0
-OFFLINE_NUM=10
+OFFLINE_NUM=15
 IS_ONLINE="YES"
 DETECT="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | sed 's/[0-9]*//g' | head -n1 | xargs)"
 PART=$DETECT"1"
@@ -151,7 +151,7 @@ do
 
   if [ "$IS_ONLINE" = "NO" ]; then
     echo "offline"
-    if [ "$OFFLINE_COUNT" = "600" ]; then
+    if [ "$OFFLINE_COUNT" = "400" ]; then
       # Reboot after 10 min of connection lost
       RESPONSE="REBOOT"
     fi
@@ -264,6 +264,6 @@ do
 
   fi
 
-  sleep 10
+  sleep 15
 
 done
