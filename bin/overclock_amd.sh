@@ -134,7 +134,7 @@ if [ $1 ]; then
   isThisVega=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
   isThisVegaII=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
   isThisVegaVII=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g')
-
+  isThisNavi=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep -E "5500|5550|5600|5650|5700|5750|5800|5850|5900" | wc -l)
 
   ##  echo "----"
   ##  echo $GPUBUS
@@ -144,6 +144,15 @@ if [ $1 ]; then
   ##  sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g'
   ##  echo "----"
 
+
+  ########## NAVI ##################
+  if [ "$isThisNavi" -gt "0" ]; then
+    echo "--**--**-- NAVI --**--**--"
+    echo "Loading NAVI OC Script.."
+    sudo ./overclock_navi.sh $GPUID $2 $3 $4 $5 $7
+    exit 1
+  fi
+  ################################
 
   ########## VEGA ##################
   if [ "$isThisVega" = "Vega" ]; then
