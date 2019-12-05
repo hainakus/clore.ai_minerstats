@@ -54,7 +54,7 @@ function restartNode() {
     var main = require('./start.js');
     global.watchnum++;
     if (global.watchnum == 6 || global.watchnum == 12) {
-      console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;31mError (" + global.watchnum + "/6)\x1b[0m");
+      console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;31mError (" + global.watchnum + "×)\x1b[0m");
       console.log("\x1b[1;94m== \x1b[0mAction: Restarting client ...");
       clearInterval(global.timeout);
       clearInterval(global.hwmonitor);
@@ -64,7 +64,7 @@ function restartNode() {
         });
     }
     if (global.watchnum >= 18) {
-      console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;31mError (" + global.watchnum + "/6)\x1b[0m");
+      console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;31mError (" + global.watchnum + "×)\x1b[0m");
       console.log("\x1b[1;94m== \x1b[0mAction: Rebooting ...");
       clearInterval(global.timeout);
       clearInterval(global.hwmonitor);
@@ -672,7 +672,6 @@ module.exports = {
   remotecommand: function(command) {
     if (command !== "") {
       console.log("\x1b[1;94m== \x1b[0mRemote command: " + command);
-      console.log("\x1b[1;94m==========================================\x1b[0m");
       var exec = require('child_process').exec,
         main = require('./start.js'),
         sleep = require('sleep');
@@ -708,7 +707,7 @@ module.exports = {
           break;
         case 'RESTARTWATTS':
         case 'DOWNLOADWATTS':
-          console.log("\x1b[1;94m== \x1b[0mAction: Overclocking/Undervolting ...");
+          console.log("\x1b[1;94m== \x1b[0mOverclocking/Undervolting ...");
           clearInterval(global.timeout);
           clearInterval(global.hwmonitor);
           main.killall();
@@ -730,25 +729,25 @@ module.exports = {
           });
           break;
         case 'SETFANS':
-          console.log("\x1b[1;94m== \x1b[0mAction: Applying new fans ...");
+          console.log("\x1b[1;94m== \x1b[0mApplying new fans ...");
           var queryFans = exec("cd " + global.path + "/bin; sudo sh " + global.path + "/bin/setfans.sh", function(error, stdout, stderr) {
             console.log(stdout + " " + stderr);
           });
           break;
         case 'MEMORYTWEAK':
-          console.log("\x1b[1;94m== \x1b[0mAction: Applying new memory straps ...");
+          console.log("\x1b[1;94m== \x1b[0mApplying new memory straps ...");
           var queryMemTool = exec("cd " + global.path + "/bin; sudo sh " + global.path + "/bin/setmem.sh", function(error, stdout, stderr) {
             console.log(stdout + " " + stderr);
           });
           break;
         case 'REBOOT':
           console.log("REBOOT => 3.. 2...");
-          console.log("\x1b[1;94m== \x1b[0mAction: Rebooting ...");
+          console.log("\x1b[1;94m== \x1b[0mRebooting ...");
           var queryBoot = exec("sudo su -c 'sudo reboot -f'", function(error, stdout, stderr) {});
           break;
         case 'FORCEREBOOT':
           console.log("FORCE REBOOT => 3.. 2...");
-          console.log("\x1b[1;94m== \x1b[0mAction: Rebooting ...");
+          console.log("\x1b[1;94m== \x1b[0mRebooting ...");
           var queryBoot = exec("sudo su -c 'echo 1 > /proc/sys/kernel/sysrq'; sudo su -c 'echo b > /proc/sysrq-trigger';", function(error, stdout, stderr) {});
           break;
         default:
@@ -861,12 +860,14 @@ module.exports = {
           gpuSyncDone = false;
           global.sync = true;
           restartNode();
-          console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
-          console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + err.message + ")\x1b[0m");
-          console.log("\x1b[1;94m== \x1b[0mPossible reasons:\x1b[0m");
-          console.log("\x1b[1;94m== \x1b[0m- Mining client or API not started\x1b[0m");
-          console.log("\x1b[1;94m== \x1b[0m- Too much Overclock / Undervolt\x1b[0m");
-          console.log("\x1b[1;94m== \x1b[0m- Invalid mining client config\x1b[0m");
+          if(global.watchnum>1){
+            console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + err.message + ")\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0mPossible reasons:\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m- Mining client or API not started\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m- Too much Overclock / Undervolt\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m- Invalid mining client config\x1b[0m");
+          }
         });
       }
       //
@@ -883,12 +884,14 @@ module.exports = {
             gpuSyncDone = false;
             global.sync = true;
             restartNode();
-            console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
-            console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + error + ")\x1b[0m");
-            console.log("\x1b[1;94m== \x1b[0mPossible reasons:\x1b[0m");
-            console.log("\x1b[1;94m== \x1b[0m- Mining client or API not started\x1b[0m");
-            console.log("\x1b[1;94m== \x1b[0m- Too much Overclock / Undervolt\x1b[0m");
-            console.log("\x1b[1;94m== \x1b[0m- Invalid mining client config\x1b[0m");
+            if(global.watchnum>1){
+              console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
+              console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + error + ")\x1b[0m");
+              console.log("\x1b[1;94m== \x1b[0mPossible reasons:\x1b[0m");
+              console.log("\x1b[1;94m== \x1b[0m- Mining client or API not started\x1b[0m");
+              console.log("\x1b[1;94m== \x1b[0m- Too much Overclock / Undervolt\x1b[0m");
+              console.log("\x1b[1;94m== \x1b[0m- Invalid mining client config\x1b[0m");
+            }
           }
         });
       }
@@ -913,10 +916,12 @@ module.exports = {
           gpuSyncDone = false;
           global.sync = true;
           restartNode();
-          console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
-          console.log("\x1b[1;94m== \x1b[0m- Mining client or API not started\x1b[0m");
-          console.log("\x1b[1;94m== \x1b[0m- Too much Overclock / Undervolt\x1b[0m");
-          console.log("\x1b[1;94m== \x1b[0m- Invalid mining client config\x1b[0m");
+          if(global.watchnum>1){
+            console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m- Mining client or API not started\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m- Too much Overclock / Undervolt\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m- Invalid mining client config\x1b[0m");
+          }
         });
         ccminerClient.on('end', () => {
           global.sync = true;
