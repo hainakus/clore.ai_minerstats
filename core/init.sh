@@ -1,7 +1,7 @@
 #!/bin/bash
 
 OFFLINE_COUNT=0
-OFFLINE_NUM=40
+OFFLINE_NUM=10
 IS_ONLINE="YES"
 DETECT="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | sed 's/[0-9]*//g' | head -n1 | xargs)"
 PART=$DETECT"1"
@@ -151,7 +151,7 @@ do
 
   if [ "$IS_ONLINE" = "NO" ]; then
     echo "offline"
-    if [ "$OFFLINE_COUNT" = "400" ]; then
+    if [ "$OFFLINE_COUNT" = "600" ]; then
       # Reboot after 10 min of connection lost
       RESPONSE="REBOOT"
     fi
@@ -200,6 +200,7 @@ do
     sudo killall tmate
     sudo killall tmate
     sudo su minerstat -c "sudo /bin/sh /home/minerstat/minerstat-os/core/rmate"
+    sleep 1
     TELEID=$(sudo /home/minerstat/minerstat-os/bin/tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}' | cut -f1 -d"@" | sed 's/.* //')
     echo "TeleID: $TELEID"
     wget -qO- "https://api.minerstat.com:2053/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&freemem=$STR5&teleid=$TELEID&systime=$SYSTIME&mobo=$MOBO_TYPE&bios=$BIOS_VERSION&msos=$MSOS_VERSION&mac=$MAC_ADDRESS&cputype=$CPU_TYPE&cpu_usage=$CPU_USAGE&cpu_temp=$CPU_TEMP&disk_type=$DISK_TYPE&nvidiad=$NVIDIA_DRIVER&amdd=$AMD_DRIVER&kernel=$KERNEL_VERSION&ubuntu=$UBUNTU_VERSION" ; echo
@@ -263,6 +264,6 @@ do
 
   fi
 
-  sleep 20
+  sleep 10
 
 done
