@@ -13,7 +13,7 @@ if [ ! $1 ]; then
   echo "6 = MVDD"
   echo ""
   echo "-- Full Example --"
-  echo "./overclock_vega.sh 0 945 1100 80 950 1070"
+  echo "./overclock_navi.sh 0 875 1900 80 900 skip"
   echo ""
 fi
 
@@ -31,14 +31,17 @@ if [ $1 ]; then
   echo "--**--**-- GPU $1 : VEGA 56/64 --**--**--"
 
   # Requirements
-  sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon0/pwm1_enable"
+  sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable"
   sudo su -c "echo manual > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
   sudo su -c "echo 4 > /sys/class/drm/card$GPUID/device/pp_power_profile_mode" # Compute Mode
 
 
   # VDDC, MEMCLOCK, CORECLOCK
+  echo
   echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
   echo "Navi is not supported by Clocktune yet"
+  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+  echo
 
    if [ "$FANSPEED" != 0 ]; then
     FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $FANSPEED}")
@@ -63,8 +66,8 @@ if [ $1 ]; then
   fi
 
   # Apply
-  sudo ./rocm-smi --setsclk 7
-  sudo ./rocm-smi --setmclk 3
+  #sudo ./rocm-smi --setsclk 7
+  #sudo ./rocm-smi --setmclk 3
   sudo su -c "echo '7' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
   sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   # Check current states
