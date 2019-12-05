@@ -43,32 +43,10 @@ if [ $1 ]; then
   echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
   echo
 
-   if [ "$FANSPEED" != 0 ]; then
-    FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $FANSPEED}")
-    FANVALUE=$(printf "%.0f\n" $FANVALUE)
-    echo "GPU$GPUID : FANSPEED => $FANSPEED% ($FANVALUE)"
-  else
-    FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * 70}")
-    FANVALUE=$(printf "%.0f\n" $FANVALUE)
-    echo "GPU$GPUID : FANSPEED => 70% ($FANVALUE)"
-  fi
-
-  for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_enable" 2>/dev/null
-    sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1" 2>/dev/null # 70%
-  done
-
-  # FANS
-  if [ "$FANSPEED" != 0 ]; then
-    sudo ./rocm-smi --setfan $FANSPEED"%"
-  else
-    sudo ./rocm-smi --setfan 70%
-  fi
-
   # Apply
   #sudo ./rocm-smi --setsclk 7
   #sudo ./rocm-smi --setmclk 3
-  sudo su -c "echo '7' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+  sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
   sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   # Check current states
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
@@ -79,7 +57,7 @@ if [ $1 ]; then
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
   echo "-÷-*-****** MEM  CLOCKS *****-*-*÷-"
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-  sudo su -c "echo '7' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+  sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
   sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
 
   exit 1
