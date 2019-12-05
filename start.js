@@ -131,7 +131,6 @@ module.exports = {
         cpuData: cpu_data
       }
     }, function(error, response, body) {
-      console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
       if (error == null) {
         // Process Remote Commands
         var tools = require('./tools.js');
@@ -155,10 +154,13 @@ module.exports = {
           console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32mUpdated " + global.worker + " (" + global.client + ")\x1b[0m");
           //console.log("\x1b[1;94m== \x1b[0m[" + global.minerType + "] \x1b " + hwdatas.replace(/(\r\n|\n|\r)/gm, ""));
         } else {
-          console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (Not hashing)\x1b[0m");
-          console.log("\x1b[1;94m== \x1b[0mWorker: " + global.worker);
-          console.log("\x1b[1;94m== \x1b[0mClient: " + global.client);
-          //console.log("\x1b[1;94m== \x1b[0m[" + global.minerType + "] \x1b " + hwdatas.replace(/(\r\n|\n|\r)/gm, ""));
+		if(global.watchnum>1){	
+          		console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (Not hashing)\x1b[0m");
+          		console.log("\x1b[1;94m== \x1b[0mWorker: " + global.worker);
+          		console.log("\x1b[1;94m== \x1b[0mClient: " + global.client);
+          		//console.log("\x1b[1;94m== \x1b[0m[" + global.minerType + "] \x1b " + hwdatas.replace(/(\r\n|\n|\r)/gm, ""));
+		}
+		global.watchnum++;
         }
         if (global.minerCpu.toString() === "true") {
           if (cpuSync.toString() === "true") {
@@ -177,8 +179,7 @@ module.exports = {
         sleep.sleep(10);
         console.log('\x1Bc');
       }
-      console.log("\x1b[1;94m==========================================\x1b[0m");
-      console.log("\n");
+      //console.log("\n");
     });
   },
   boot: function(miner, startArgs) {
@@ -309,7 +310,6 @@ module.exports = {
           }, function(error, response, body) {
             console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
             console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32mFirst sync (~30 sec)\x1b[0m");
-            console.log("\x1b[1;94m==========================================\x1b[0m");
           });
         }
       } else {
@@ -751,9 +751,9 @@ module.exports = {
           if (clientType == "gpu") {
 
             if (global.minerType != global.gputype) {
-              console.log("\x1b[1;94m== \x1b[0mHardware Status: \x1b[1;31mError (GPU type mismatch)\x1b[0m");
-              console.log("\x1b[1;94m== \x1b[0m[Online] GPU Type: " + global.minerType);
-              console.log("\x1b[1;94m== \x1b[0m[Local] GPU Type: " + global.gputype);
+              //console.log("\x1b[1;94m== \x1b[0mHardware Status: \x1b[1;31mError (GPU type mismatch)\x1b[0m");
+              //console.log("\x1b[1;94m== \x1b[0m[Online] GPU Type: " + global.minerType);
+              //console.log("\x1b[1;94m== \x1b[0m[Local] GPU Type: " + global.gputype);
             }
 
             console.log("\x1b[1;94m== \x1b[0mMonitor Status: \x1b[1;32mRunning\x1b[0m");
