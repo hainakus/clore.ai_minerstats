@@ -65,7 +65,7 @@ $W  Processes...:$W $G$PROCESS_ROOT$W (root), $G$PROCESS_USER$W (user), $G$PROCE
 $W  Memory......: $G$USED$W used, $G$FREE$W free, $G$TOTAL$W total$W
 $W  CPU.........: $W$PROCESSOR_NAME ($G$PROCESSOR_COUNT$W vCPU)
 $W
-$W  Disk Usage..: $W`df -h / | awk '{if (NR!=1) {print}}' | xargs | awk '{ printf("%+3s used out of %+4s\n", $3, $4, $5); }' | sed -e 's/^/  /' | xargs | xargs`"
+$W  Disk Usage..: $W`df -h / | awk '{if (NR!=1) {print}}' | xargs | awk '{ printf("%+3s used out of %+4s\n", $3, $2, $5); }' | sed -e 's/^/  /' | xargs | xargs`"
 
 usage=`df -h / | awk '/\// {print $(NF-1)}' | sed 's/%//'`
 used_width=$((($usage*50)/100))
