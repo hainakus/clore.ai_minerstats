@@ -140,8 +140,14 @@ if ! screen -list | grep -q "dummy"; then
   echo ""
   echo "-------- INITIALIZING FAKE DUMMY PLUG -------------"
   echo "Please wait.."
-  sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" &
+
+  sudo killall X
+  sudo killall Xorg
+  sudo rm /tmp/.X0-lock
+  sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0"
+  sudo su minerstat -c "screen -A -m -d -S display2 sudo X"
   sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf
+  
   sleep 1
   sudo service dgm stop
   sleep 3
