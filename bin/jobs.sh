@@ -178,6 +178,16 @@ sudo timedatectl set-ntp on &
 # NVIDIA
 sudo getent group nvidia-persistenced &>/dev/null || sudo groupadd -g 143 nvidia-persistenced
 sudo getent passwd nvidia-persistenced &>/dev/null || sudo useradd -c 'NVIDIA Persistence Daemon' -u 143 -g nvidia-persistenced -d '/' -s /sbin/nologin nvidia-persistenced
+# Check XSERVER
+SNUMD=$(sudo su minerstat -c "screen -list | grep -c display2")
+if [ "$SNUMD" = "0" ]; then
+  sudo su -c "sudo screen -X -S display quit" &
+  sudo killall X
+  sudo killall Xorg
+  sudo rm /tmp/.X0-lock
+  sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0"
+  sudo su minerstat -c "screen -A -m -d -S display2 sudo X"
+fi
 # Check CURL is installed
 ISCURL=$(dpkg -l curl | grep curl | wc -l | sed 's/[^0-9]*//g')
 if [ "$ISCURL" -lt 1 ]; then
@@ -208,20 +218,6 @@ if [ "$1" -gt 0 ] || [ "$AMDDEVICE" -gt 0 ]; then
   sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q | tac > /dev/shm/amdmeminfo.txt &
   sudo cp /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
   sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
-fi
-# grub fix
-GRB=/home/minerstat/minerstat-os/bin/amdmeminfo.txt
-if [ -f "$GRB" ]; then
-  if grep -q amdgpu.ppfeaturemask "/boot/grub/grub.cfg"; then
-    echo ""
-  else
-    sudo chmod 777 /boot/grub/grub.cfg && sudo su -c "sed -Ei 's/spectre_v2=off/spectre_v2=off amdgpu.ppfeaturemask=0xffffffff/g' /boot/grub/grub.cfg" && sudo chmod 444 /boot/grub/grub.cfg
-  fi
-fi
-if grep -q iommu "/boot/grub/grub.cfg"; then
-  echo ""
-else
-  sudo chmod 777 /boot/grub/grub.cfg && sudo su -c "sed -Ei 's/spectre_v2=off/spectre_v2=off consoleblank=0 intel_pstate=disable net.ifnames=0 ipv6.disable=1 pci=noaer iommu=soft/g' /boot/grub/grub.cfg" && sudo chmod 444 /boot/grub/grub.cfg
 fi
 if [ -f "/etc/netplan/minerstat.yaml" ]; then
   if grep -q dhcp-identifier "/etc/netplan/minerstat.yaml"; then
