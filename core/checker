@@ -29,8 +29,9 @@ if [ "$STARTJS" = "0" ] || [ "$WORKSH" = "0" ]; then
 fi
 
 # Check XSERVER
-SNUMD=$(sudo su minerstat -c "screen -list | grep -c display")
+SNUMD=$(sudo su minerstat -c "screen -list | grep -c display2")
 if [ "$SNUMD" = "0" ]; then
+  sudo su -c "sudo screen -X -S display quit" &
   sudo killall X
   sudo killall Xorg
   sudo rm /tmp/.X0-lock
