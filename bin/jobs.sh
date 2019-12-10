@@ -83,6 +83,8 @@ ff02::2 ip6-allrouters
 104.24.98.231 static-ssl.minerstat.farm
 68.183.74.40 eu.pool.ms
 167.71.240.6 us.pool.ms
+68.183.74.40 eu.sandbox.pool.ms
+167.71.240.6 us.sandbox.pool.ms
 " > /etc/hosts
 # Change hostname
 #sudo sed -i s/"minerstat"/"$WNAME"/ /etc/hosts
