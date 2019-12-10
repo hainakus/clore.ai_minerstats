@@ -85,7 +85,7 @@ ff02::2 ip6-allrouters
 167.71.240.6 us.pool.ms
 " > /etc/hosts
 # Change hostname
-sudo sed -i s/"minerstat"/"$WNAME"/ /etc/hosts
+#sudo sed -i s/"minerstat"/"$WNAME"/ /etc/hosts
 if grep -q $WNAME "/etc/hosts"; then
   echo ""
 else
