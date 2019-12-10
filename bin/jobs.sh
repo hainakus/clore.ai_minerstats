@@ -68,8 +68,23 @@ export LC_ALL=en_US.UTF-8
 export OpenCL_ROOT=/opt/amdgpu-pro/lib/x86_64-linux-gnu
 # FSCK
 sudo sed -i s/"#FSCKFIX=no"/"FSCKFIX=yes"/ /etc/default/rcS
-# Change hostname
+# /etc/hosts
 WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
+sudo echo "
+127.0.0.1 localhost
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+127.0.1.1 $WNAME
+104.20.3.95 minerstat.com
+104.20.2.95 api.minerstat.com
+104.24.98.231 static-ssl.minerstat.farm
+68.183.74.40 eu.pool.ms
+167.71.240.6 us.pool.ms
+" > /etc/hosts
+# Change hostname
 sudo sed -i s/"minerstat"/"$WNAME"/ /etc/hosts
 if grep -q $WNAME "/etc/hosts"; then
   echo ""
