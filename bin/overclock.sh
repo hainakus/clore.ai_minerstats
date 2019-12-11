@@ -66,6 +66,12 @@ if [ ! -z "$DOAMD" ]; then
   if [ -z "$HWMEMORY" ] || [ -f "/dev/shm/amdmeminfo.txt" ]; then
     HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
   fi
+  if [ ! -f "/dev/shm/amdmeminfo.txt" ]; then
+    sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q | tac > /dev/shm/amdmeminfo.txt &
+    sudo cp /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
+    sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
+    HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
+  fi
   sudo curl --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwMemory=$HWMEMORY" "https://api.minerstat.com/v2/set_node_config_os.php"
 
   START_ID="$(sudo ./amdcovc | grep "Adapter" | cut -f1 -d':' | sed '1q' | sed 's/[^0-9]//g')"
