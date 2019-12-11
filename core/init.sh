@@ -245,8 +245,14 @@ do
     AMDINFO=$(sudo /home/minerstat/minerstat-os/bin/amdinfo)
     QUERYPOWER=$(cd /home/minerstat/minerstat-os/bin/; sudo ./rocm-smi -P | grep 'Average Graphics Package Power:' | sed 's/.*://' | sed 's/W/''/g' | xargs)
     HWMEMORY=$(cd /home/minerstat/minerstat-os/bin/; cat amdmeminfo.txt)
+    if [ ! -f "/dev/shm/amdmeminfo.txt" ]; then
+        sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q | tac > /dev/shm/amdmeminfo.txt &
+        sudo cp /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
+        sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
+        HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
+    fi
     if [ -z "$HWMEMORY" ] || [ -f "/dev/shm/amdmeminfo.txt" ]; then
-      HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
+        HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
     fi
     if [ -z "$AMDINFO" ]; then
         AMDINFO=$(sudo /home/minerstat/minerstat-os/bin/amdcovc)
