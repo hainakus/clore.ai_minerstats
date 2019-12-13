@@ -233,8 +233,9 @@ if [ "$CHECKAPTXN" -gt "0" ]; then
 fi
 if [ "$1" -gt 0 ] || [ "$AMDDEVICE" -gt 0 ]; then
   #sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q > /home/minerstat/minerstat-os/bin/amdmeminfo.txt &
+  sudo chmod 777 /dev/shm/amdmeminfo.txt
   sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q | tac > /dev/shm/amdmeminfo.txt &
-  sudo cp /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
+  sudo cp -rf /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
   sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
 fi
 if [ -f "/etc/netplan/minerstat.yaml" ]; then
