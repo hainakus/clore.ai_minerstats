@@ -66,6 +66,7 @@ if [ ! -z "$DOAMD" ]; then
   if [ -z "$HWMEMORY" ] || [ -f "/dev/shm/amdmeminfo.txt" ]; then
     HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
   fi
+  sudo chmod 777 /dev/shm/amdmeminfo.txt
   if [ ! -f "/dev/shm/amdmeminfo.txt" ]; then
     sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q | tac > /dev/shm/amdmeminfo.txt &
     sudo cp -rf /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
