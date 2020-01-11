@@ -158,7 +158,7 @@ if [ $1 ]; then
   # APPLY THIS GPU SETTINGS AT ONCE
   echo "$STR1 $STR2 $STR3 $STR4"
   STR5="-a GPUPowerMizerMode=1"
-  FINISH="$(sudo nvidia-settings $STR1 $STR2 $STR3 $STR4 $STR5)"
+  FINISH="$(sudo nvidia-settings $STR1 $STR2 $STR3 $STR5 $STR4)"
   echo $FINISH
 
 
