@@ -151,7 +151,7 @@ module.exports = {
           cpuSync = cpuSyncDone;
         if (sync.toString() === "true") {
           global.watchnum = 0;
-          console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32mUpdated " + global.worker + " (" + global.client + ")\x1b[0m");
+          console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32m" + global.worker + " (" + global.client + ") synced\x1b[0m");
           //console.log("\x1b[1;94m== \x1b[0m[" + global.minerType + "] \x1b " + hwdatas.replace(/(\r\n|\n|\r)/gm, ""));
         } else {
 		if(global.watchnum>1){	
@@ -164,7 +164,7 @@ module.exports = {
         }
         if (global.minerCpu.toString() === "true") {
           if (cpuSync.toString() === "true") {
-            console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32mUpdated " + global.worker + " (" + global.cpuDefault.toLowerCase() + ")\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32m" + global.worker + " (" + global.cpuDefault.toLowerCase() + ") synced\x1b[0m");
           } else {
             console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (Not hashing)\x1b[0m");
             console.log("\x1b[1;94m== \x1b[0mWorker: " + global.worker);
