@@ -7,6 +7,7 @@ if [ ! -z "$1" ]; then
 fi
 
 interface=$(ip addr | awk '/state UP/ {print $2}' | sed 's/.$//')
+sudo su -c "kill $(sudo lsof -t -i:$PORT)"
 
 echo "Freeing up API Port at: $PORT [$interface]";
 
