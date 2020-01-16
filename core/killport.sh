@@ -1,6 +1,6 @@
 #!/bin/sh
 
-sudo su -c "echo 5 > /proc/sys/net/ipv4/tcp_fin_timeout"
+sudo su -c "echo 1 > /proc/sys/net/ipv4/tcp_fin_timeout"
 
 PORT=42000
 
@@ -15,10 +15,10 @@ sudo fuser -k $PORT/tcp
 echo "Freeing up API Port at: $PORT [$interface]";
 
 for con in `sudo netstat -anp | grep $PORT | grep TIME_WAIT | awk '{print $5}'`; do
-  nohup sudo /home/minerstat/minerstat-os/core/killcx.pl $con lo &
-  sudo /home/minerstat/minerstat-os/core/killcx.pl $con $interface
+  sudo /home/minerstat/minerstat-os/core/killcx.pl $con lo
+  #sudo /home/minerstat/minerstat-os/core/killcx.pl $con $interface
 done
 
 echo "Done."
 
-sleep 5
+sleep 10
