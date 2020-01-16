@@ -30,3 +30,5 @@ do
 done 
 
 echo "Done."
+
+sudo su -c "echo 10 > /proc/sys/net/ipv4/tcp_fin_timeout"
