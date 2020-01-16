@@ -1,5 +1,7 @@
 #!/bin/sh
 
+sudo su -c "echo 5 > /proc/sys/net/ipv4/tcp_fin_timeout"
+
 PORT=42000
 
 if [ ! -z "$1" ]; then
