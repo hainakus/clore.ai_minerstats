@@ -468,7 +468,8 @@ module.exports = {
     writeStream.write("" + str);
     writeStream.end();
     writeStream.on('finish', function() {
-      console.log(chalk.gray.bold(getDateTime() + " DELAYED MINER START (2s): " + miner));
+      console.log(chalk.gray.bold(getDateTime() + " DELAYED MINER START (1-40s): " + miner));
+      console.log(chalk.gray.bold(getDateTime() + " Please, wait.. Killing ports for: " + miner));
       sleep.sleep(2);
 
 
