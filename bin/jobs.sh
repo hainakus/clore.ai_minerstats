@@ -78,8 +78,8 @@ ff00::0 ip6-mcastprefix
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 127.0.1.1 $WNAME
-104.20.3.95 minerstat.com
-104.20.2.95 api.minerstat.com
+104.20.2.95 minerstat.com
+104.20.3.95 api.minerstat.com
 104.24.98.231 static-ssl.minerstat.farm
 68.183.74.40 eu.pool.ms
 167.71.240.6 us.pool.ms
