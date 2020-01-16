@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo "Currently nvidia-update disabled. Reflash the os to switch between nvidia versions."
+exit 1
+
 if ! grep -q experimental "/etc/lsb-release"; then
   echo "Driver update not supported on your msos version. Please, reflash to be able to use recent nvidia drivers."
   exit 1
