@@ -18,3 +18,7 @@ for con in `sudo netstat -anp | grep $PORT | grep TIME_WAIT | awk '{print $5}'`;
   nohup sudo /home/minerstat/minerstat-os/core/killcx.pl $con lo &
   sudo /home/minerstat/minerstat-os/core/killcx.pl $con $interface
 done
+
+echo "Done."
+
+sleep 5
