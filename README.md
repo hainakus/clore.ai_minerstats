@@ -53,8 +53,6 @@ atiflashall   | AMD - Flash .rom to all available GPUs on the system
 
 atidumpall    | AMD - Dump all bios from all available GPUs on the system.
 
-nvidia-update | Update Nvidia Driver
-
 mhelp         | List all available commands
 
 ```
