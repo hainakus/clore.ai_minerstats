@@ -1,34 +1,6 @@
 #!/bin/bash
 exec 2>/dev/null
 
-sudo killall bminer
-sudo killall zm
-sudo killall zecminer64
-sudo killall ethminer
-sudo killall ethdcrminer64
-sudo killall miner
-sudo killall sgminer
-sudo killall nsgpucnminer
-sudo killall xmr-stak
-sudo killall t-rex
-sudo killall CryptoDredge
-sudo killall lolMiner
-sudo killall mkxminer
-sudo killall xmrig-amd
-sudo killall z-enemy
-sudo killall PhoenixMiner
-sudo killall wildrig-multi
-sudo killall progpowminer
-sudo killall teamredminer
-sudo killall cast_xmr-vega
-sudo killall zjazz_cuda
-sudo killall GrinProMiner
-sudo killall serominer
-sudo killall nbminer
-sudo killall nanominer
-sudo killall kbminer
-sudo killall vkminer
-
 miner=$1
 query=$(pidof $miner)
 
