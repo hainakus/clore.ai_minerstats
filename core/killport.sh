@@ -10,7 +10,7 @@ fi
 
 interface=$(ip addr | awk '/state UP/ {print $2}' | sed 's/.$//')
 sudo su -c "kill $(sudo lsof -t -i:$PORT)"
-sudo fuser -k $PORT/tcp
+#sudo fuser -k $PORT/tcp
 
 echo "Freeing up API Port at: $PORT [$interface]";
 
@@ -19,15 +19,19 @@ for con in `sudo netstat -anp | grep $PORT | grep TIME_WAIT | awk '{print $5}'`;
   #sudo /home/minerstat/minerstat-os/core/killcx.pl $con $interface
 done
 
-RETEST=$(sudo netstat -anp | grep $PORT 2> /dev/null | grep TIME_WAIT 2> /dev/null | awk '{print $5}' | wc -l)
+if [ "$PORT" != "7888" ] && [ "$PORT" != "7887"]
 
-until [ $RETEST -eq 0 ]
-do
-  sudo su -c "kill $(sudo lsof -t -i:$PORT)"
-  sudo fuser -k $PORT/tcp
-  sleep 1
   RETEST=$(sudo netstat -anp | grep $PORT 2> /dev/null | grep TIME_WAIT 2> /dev/null | awk '{print $5}' | wc -l)
-done 
+
+  until [ $RETEST -eq 0 ]
+  do
+    sudo su -c "kill $(sudo lsof -t -i:$PORT)"
+    #sudo fuser -k $PORT/tcp
+    sleep 1
+    RETEST=$(sudo netstat -anp | grep $PORT 2> /dev/null | grep TIME_WAIT 2> /dev/null | awk '{print $5}' | wc -l)
+  done 
+
+fi
 
 echo "Done."
 
