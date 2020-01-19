@@ -291,3 +291,9 @@ if [ "$version" = "1.2" ]; then
     sudo su -c "echo '1' > /media/storage/fw.txt"
   fi
 fi
+sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic
+if [ "$version" = "1.4" ]; then
+  sudo rm -rf /boot/*5.3.0*
+  sudo update-grub2
+  sync
+fi
