@@ -183,6 +183,13 @@ do
     sleep 2
     sudo shutdown -h now
   fi
+
+  if [ $RESPONSE = "SAFESHUTDOWN" ]; then
+    sudo su -c "sudo screen -X -S minew quit"
+    sudo su minerstat -c "screen -X -S minerstat-console quit";
+    sync
+    sudo shutdown -h now
+  fi
   
   if [ $RESPONSE = "INSTANTOC" ]; then
     echo "-------------------------------------------"
