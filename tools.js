@@ -833,6 +833,7 @@ module.exports = {
         } else {
           if (statusCode.includes("restart")) {
             var main = require('./start.js');
+            var sleep = require('sleep');
             clearInterval(global.timeout);
             clearInterval(global.hwmonitor);
             clearInterval(spec);
