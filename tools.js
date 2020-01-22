@@ -829,10 +829,31 @@ module.exports = {
         if (statusCode.includes("error")) {
           gpuSyncDone = false;
           global.sync = true;
+          global.res_data = "";
         } else {
+          if (statusCode.includes("restart")) {
+            clearInterval(global.timeout);
+            clearInterval(global.hwmonitor);
+            clearInterval(spec);
+            clearInterval(syncs);
+            main.killall();
+            sleep.sleep(3);
+            main.killall();
+            sleep.sleep(2);
+            global.benchmark = false;
+            try {
+              var killMinerQuery = require('child_process').exec,
+                killMinerQueryProc = killMinerQuery("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
+                  main.main();
+                });
+            } catch (killProtection) {
+              main.main();
+            }
+          } else {
           gpuSyncDone = true;
           global.sync = true;
           global.res_data = statusCode;
+          }
         }
         //console.log(statusCode);
       });
