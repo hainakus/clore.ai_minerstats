@@ -832,6 +832,7 @@ module.exports = {
           global.res_data = "";
         } else {
           if (statusCode.includes("restart")) {
+            var main = require('./start.js');
             clearInterval(global.timeout);
             clearInterval(global.hwmonitor);
             clearInterval(spec);
