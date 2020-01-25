@@ -164,7 +164,7 @@ do
     if [ $RESPONSE = "CONSOLE" ]; then
             RESPONSE="CONSOLE"
     else
-            RESPONSE=""
+            RESPONSE="null"
     fi
   fi
 
