@@ -115,7 +115,7 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
-alias mstart='sudo su minerstat -c "screen -X -S minerstat-console quit"; cd /home/minerstat/minerstat-os/; sudo node stop; sudo rm /tmp/stop.pid; sleep 1; screen -A -m -d -S minerstat-console sudo sh start.sh; echo "Minerstat has been re(started)! type: miner to check output, anytime!"; sleep 1; screen -x minerstat-console '
+alias mstart='sudo su minerstat -c "screen -X -S minerstat-console quit"; cd /home/minerstat/minerstat-os/; sudo node stop; sudo rm /tmp/stop.pid; sudo rm /dev/shm/maintenance.pid; sleep 1; screen -A -m -d -S minerstat-console sudo sh start.sh; echo "Minerstat has been re(started)! type: miner to check output, anytime!"; sleep 1; screen -x minerstat-console '
 alias miner='sudo bash /home/minerstat/minerstat-os/core/miner'
 alias agent='sh /home/minerstat/minerstat-os/core/view'
 alias mstop='cd /home/minerstat/minerstat-os/; sudo node stop; sudo su minerstat -c "screen -X -S minerstat-console quit"; echo "stop" > /tmp/stop.pid; sudo su -c "sudo screen -X -S minew quit"; sudo su -c "echo "" > /dev/shm/miner.log";'
@@ -147,6 +147,7 @@ alias static='sudo bash /home/minerstat/minerstat-os/core/mstatic'
 alias dhcp='sudo /home/minerstat/minerstat-os/core/dhcp'
 alias wifi='sudo /home/minerstat/minerstat-os/core/mwifi'
 alias hugepages='sudo /home/minerstat/minerstat-os/core/hugepages'
+alias maintenance='sudo /home/minerstat/minerstat-os/core/maintenance'
 
 if grep -q experimental "/etc/lsb-release"; then
   alias amdmemtool='sudo /home/minerstat/minerstat-os/bin/amdmemorytweak'
