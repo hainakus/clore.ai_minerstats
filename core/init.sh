@@ -157,8 +157,16 @@ do
     fi
   fi
 
-
   echo "response check"
+
+  if [ -f "/dev/shm/maintenance.pid" ]; then
+    echo "Maintenance mode, all remote commands disabled."
+    if [ $RESPONSE = "CONSOLE" ]; then
+            RESPONSE="CONSOLE"
+    else
+            RESPONSE=""
+    fi
+  fi
 
   if [ $RESPONSE = "REBOOT" ]; then
     #sudo reboot -f
