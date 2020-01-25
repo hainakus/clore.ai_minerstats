@@ -1,0 +1,11 @@
+#!/bin/bash
+
+sleep 90
+
+FILE=/dev/shm/bootclock.pid
+if [ -f "$FILE" ]; then
+    echo "pid found"
+else 
+    echo "pid not found"
+    sudo sh /home/minerstat/minerstat-os/bin/overclock.sh
+fi
