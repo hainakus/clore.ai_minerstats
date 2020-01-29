@@ -43,6 +43,7 @@ try {
   fkill('nanominer').then(() => {});
   fkill('kbminer').then(() => {});
   fkill('vkminer').then(() => {});
+  fkill('SRBMiner-MULTI').then(() => {});
 } catch (e) {}
 var request = require('request');
 //console.log(res_data);
