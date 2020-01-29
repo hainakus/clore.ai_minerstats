@@ -104,6 +104,13 @@ const MINER_JSON = {
     "apiType": "tcp",
     "apiCArg": "summary"
   },
+  "srbminer-multi": {
+    "args": "auto",
+    "execFile": "SRBMiner-MULTI",
+    "apiPort": 17644,
+    "apiPath": "/",
+    "apiType": "http"
+  },
   "ccminer-tpruvot": {
     "args": "auto",
     "execFile": "ccminer",
