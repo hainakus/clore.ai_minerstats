@@ -33,6 +33,22 @@ else
   echo "SSH Keys Already Regenerated.."
 fi
 
+
+file="/etc/ssh/ssh_host_rsa_key.pub"
+check=$(cat $file)
+
+if [[ "$check" == *"AAAAB3NzaC1yc2EAAAADAQABAAABAQDSbJCOiMhPH"* ]]; then
+  echo "Generating new SSH Keys..."
+  sudo rm /etc/ssh/ssh_host_dsa_key
+  sudo rm /etc/ssh/ssh_host_rsa_key
+  sudo cat /dev/zero | ssh-keygen -t ecdsa -b 384 -q -N "" -f /etc/ssh/ssh_host_dsa_key
+  sudo cat /dev/zero | ssh-keygen -t rsa -b 2048 -q -N "" -f /etc/ssh/ssh_host_rsa_key
+  sudo systemctl restart sshd
+  sudo systemctl status sshd
+else
+  echo "SSH Keys Already Regenerated.."
+fi
+
 if ping -q -c 1 -W 1 1.1.1.1 >/dev/null; then
   # DETECT LOCAL NETWORK
   ip=`ifconfig | grep "inet" | grep -v "inet6" | grep -vE "127.0.0.1|169." | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | head -n 1 | grep -o -E '[.0-9]+'`
