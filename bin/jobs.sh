@@ -2,6 +2,7 @@
 exec 2>/dev/null
 echo "Running Clean jobs.."
 sudo systemctl mask apt-daily.service apt-daily-upgrade.service
+sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic linux-firmware
 # Kernel panic auto reboot
 sudo su -c "echo 20 >/proc/sys/kernel/panic"
 # Remove logs
@@ -292,7 +293,6 @@ if [ "$version" = "1.2" ]; then
     sudo su -c "echo '1' > /media/storage/fw.txt"
   fi
 fi
-sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic
 if [ "$version" = "1.4" ]; then
   FILE=/boot/config-5.3.0-26-generic
   if [ -f "$FILE" ]; then
