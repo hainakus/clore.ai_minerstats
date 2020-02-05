@@ -213,7 +213,10 @@ do
   
   if [ $RESPONSE = "DOWNLOADWATTS" ] || [ $RESPONSE = "RESTARTWATTS" ]; then
     echo "-------------------------------------------"
-    screen -A -m -d -S instantoc sudo /home/minerstat/minerstat-os/bin/overclock.sh &
+    screen -A -m -d -S overclocks sudo /home/minerstat/minerstat-os/bin/overclock.sh &
+    if [ ! -f "/tmp/stop.pid" ]; then
+        RESPONSE="RESTART"
+    fi
     echo "-------------------------------------------"
   fi
 
