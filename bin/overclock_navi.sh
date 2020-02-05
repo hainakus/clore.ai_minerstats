@@ -60,6 +60,14 @@ if [ $1 ]; then
   sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
   sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   
+   # FANS (for safety) from Radeon VII solution
+  for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+    TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
+    if [ ! -z "$TEST" ]; then
+      MAXFAN=$TEST
+    fi
+  done
+  
   # FANS
   if [ "$FANSPEED" != 0 ]; then
     FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $FANSPEED}" | cut -f1 -d".")
