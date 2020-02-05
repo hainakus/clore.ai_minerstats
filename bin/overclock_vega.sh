@@ -27,6 +27,11 @@ if [ $1 ]; then
   FANSPEED=$4
   VDDC=$5
   MVDD=$6
+  COREINDEX=$7
+
+  if [ -z "$COREINDEX" ]; then
+    COREINDEX="5"
+  fi
 
   echo "--**--**-- GPU $1 : VEGA 56/64 --**--**--"
 
@@ -34,7 +39,7 @@ if [ $1 ]; then
   sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon0/pwm1_enable"
   sudo su -c "echo low > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
   sudo su -c "echo 4 > /sys/class/drm/card$GPUID/device/pp_power_profile_mode" # Compute Mode
-  sudo su -c "echo 5 > /sys/class/drm/card$GPUID/device/pp_mclk_od" # test
+  #sudo su -c "echo $COREINDEX > /sys/class/drm/card$GPUID/device/pp_mclk_od" # test
 
   # Core clock & VDDC
 
@@ -48,10 +53,10 @@ if [ $1 ]; then
 
   if [ "$VDDC" != "skip" ]; then
     if [ "$CORECLOCK" != "skip" ]; then
-      echo "INFO: SETTING CORECLOCK : $CORECLOCK Mhz @ $VDDC mV"
+      echo "INFO: SETTING CORECLOCK : $CORECLOCK Mhz (STATE: $COREINDEX) @ $VDDC mV"
       #sudo su -c "echo 's 5 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       #sudo su -c "echo 's 6 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 0 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 's $COREINDEX $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       # NITRO has 8 core state ?!
       #sudo su -c "echo 's 8 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       #sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/pp_sclk_od"
@@ -65,10 +70,10 @@ if [ $1 ]; then
     echo "INFO: SETTING MEMCLOCK : $MEMCLOCK Mhz"
     #sudo su -c "echo 'm 1 $MEMCLOCK 1000' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
     #sudo su -c "echo 'm 2 $MEMCLOCK 1050' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
-    sudo su -c "echo 'm 2 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
+    sudo su -c "echo 'm 3 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
     #sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
     #sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
-    sudo ./rocm-smi --setmclk 0
+    sudo ./rocm-smi --setmclk 3
   fi
 
   # FANS (for safety) from Radeon VII solution
@@ -106,10 +111,10 @@ if [ $1 ]; then
   sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
 
   # Apply
-  sudo ./rocm-smi --setsclk 0
-  sudo ./rocm-smi --setmclk 2
-  sudo su -c "echo '0' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-  sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+  sudo ./rocm-smi --setsclk $COREINDEX
+  sudo ./rocm-smi --setmclk 3
+  sudo su -c "echo '$COREINDEX' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+  sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   # Check current states
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
   #sudo cat /sys/kernel/debug/dri/0/amdgpu_pm_info
@@ -119,8 +124,8 @@ if [ $1 ]; then
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
   echo "-÷-*-****** MEM  CLOCKS *****-*-*÷-"
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-  sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-  sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+  sudo su -c "echo '$COREINDEX' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+  sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
 
   exit 1
 
