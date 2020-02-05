@@ -205,6 +205,18 @@ do
     echo "-------------------------------------------"
   fi
 
+  if [ $RESPONSE = "SETFANS" ]; then
+    echo "-------------------------------------------"
+    screen -A -m -d -S instantoc sudo /home/minerstat/minerstat-os/bin/setfans.sh &
+    echo "-------------------------------------------"
+  fi
+  
+  if [ $RESPONSE = "DOWNLOADWATTS" ] || [ $RESPONSE = "RESTARTWATTS" ]; then
+    echo "-------------------------------------------"
+    screen -A -m -d -S instantoc sudo /home/minerstat/minerstat-os/bin/overclock.sh &
+    echo "-------------------------------------------"
+  fi
+
   if [ $RESPONSE = "DIAG" ]; then
     echo "-------------------------------------------"
     screen -A -m -d -S diag sudo /home/minerstat/minerstat-os/core/diag
