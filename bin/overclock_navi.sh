@@ -28,12 +28,12 @@ if [ $1 ]; then
   VDDC=$5
   MVDD=$6
 
-  echo "--**--**-- GPU $1 : VEGA 56/64 --**--**--"
+  echo "--**--**-- GPU $1 : NAVI --**--**--"
 
   # Requirements
   sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable"
   sudo su -c "echo manual > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
-  sudo su -c "echo 4 > /sys/class/drm/card$GPUID/device/pp_power_profile_mode" # Compute Mode
+  sudo su -c "echo 5 > /sys/class/drm/card$GPUID/device/pp_power_profile_mode" # Compute Mode
 
 
   # VDDC, MEMCLOCK, CORECLOCK
@@ -48,10 +48,11 @@ if [ $1 ]; then
   #sudo ./rocm-smi --setmclk 3
   sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
   sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+  sudo su -c "echo 'c'> /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
   # Check current states
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
   #sudo cat /sys/kernel/debug/dri/0/amdgpu_pm_info
-
+  
   # ECHO Changes
   echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
