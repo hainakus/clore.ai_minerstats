@@ -34,6 +34,7 @@ if [ $1 ]; then
   sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon0/pwm1_enable"
   sudo su -c "echo manual > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
   sudo su -c "echo 4 > /sys/class/drm/card$GPUID/device/pp_power_profile_mode" # Compute Mode
+  sudo su -c "echo 7 > /sys/class/drm/card$GPUID/device/pp_mclk_od" # test
 
   # Core clock & VDDC
 
@@ -53,8 +54,8 @@ if [ $1 ]; then
       sudo su -c "echo 's 7 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       # NITRO has 8 core state ?!
       sudo su -c "echo 's 8 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/pp_sclk_od"
-      sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_sclk_od"
+      #sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/pp_sclk_od"
+      #sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_sclk_od"
     fi
   fi
 
@@ -65,8 +66,8 @@ if [ $1 ]; then
     #sudo su -c "echo 'm 1 $MEMCLOCK 1000' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
     #sudo su -c "echo 'm 2 $MEMCLOCK 1050' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
     sudo su -c "echo 'm 3 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
-    sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
-    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
+    #sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
+    #sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
     sudo ./rocm-smi --setmclk 3
   fi
 
@@ -99,6 +100,10 @@ if [ $1 ]; then
   else
     sudo ./rocm-smi --setfan 70%
   fi
+
+   # comit
+  sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"	
+  sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
 
   # Apply
   sudo ./rocm-smi --setsclk 7
