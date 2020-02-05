@@ -34,7 +34,7 @@ if [ $1 ]; then
   sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon0/pwm1_enable"
   sudo su -c "echo manual > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
   sudo su -c "echo 4 > /sys/class/drm/card$GPUID/device/pp_power_profile_mode" # Compute Mode
-  sudo su -c "echo 7 > /sys/class/drm/card$GPUID/device/pp_mclk_od" # test
+  sudo su -c "echo 5 > /sys/class/drm/card$GPUID/device/pp_mclk_od" # test
 
   # Core clock & VDDC
 
@@ -51,9 +51,9 @@ if [ $1 ]; then
       echo "INFO: SETTING CORECLOCK : $CORECLOCK Mhz @ $VDDC mV"
       #sudo su -c "echo 's 5 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       #sudo su -c "echo 's 6 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 7 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 's 5 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       # NITRO has 8 core state ?!
-      sudo su -c "echo 's 8 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      #sudo su -c "echo 's 8 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       #sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/pp_sclk_od"
       #sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_sclk_od"
     fi
@@ -106,9 +106,9 @@ if [ $1 ]; then
   sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
 
   # Apply
-  sudo ./rocm-smi --setsclk 7
+  sudo ./rocm-smi --setsclk 5
   sudo ./rocm-smi --setmclk 3
-  sudo su -c "echo '7' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+  sudo su -c "echo '5' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
   sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   # Check current states
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
@@ -119,7 +119,7 @@ if [ $1 ]; then
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
   echo "-÷-*-****** MEM  CLOCKS *****-*-*÷-"
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-  sudo su -c "echo '7' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+  sudo su -c "echo '5' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
   sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
 
   exit 1
