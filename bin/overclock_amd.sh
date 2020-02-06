@@ -35,8 +35,10 @@ if [ $1 ]; then
     GPUBUSINT=$(echo $GPUBUS | cut -f 1 -d '.')
     GPUBUS=$(python -c 'print(int("'$GPUBUSINT'", 16))')
   fi
-  # instant
+  # instant / normal
   INSTANT=$9
+  # core state
+  GPUINDEX=${10}
 
   if [ "$INSTANT" = "instant" ]; then
     echo "INSTANT OVERRIDE"
@@ -149,7 +151,7 @@ if [ $1 ]; then
   if [ "$isThisNavi" -gt "0" ]; then
     echo "--**--**-- NAVI --**--**--"
     echo "Loading NAVI OC Script.."
-    sudo ./overclock_navi.sh $GPUID $2 $3 $4 $5 $7
+    sudo ./overclock_navi.sh $GPUID $2 $3 $4 $5 $7 ${10}
     exit 1
   fi
   ################################
@@ -158,7 +160,7 @@ if [ $1 ]; then
   if [ "$isThisVega" = "Vega" ]; then
     echo "--**--**-- VEGA --**--**--"
     echo "Loading VEGA OC Script.."
-    sudo ./overclock_vega.sh $GPUID $2 $3 $4 $5 $7
+    sudo ./overclock_vega.sh $GPUID $2 $3 $4 $5 $7 ${10}
     exit 1
   fi
   ################################
@@ -167,7 +169,7 @@ if [ $1 ]; then
   if [ "$isThisVegaVII" = "VII" ]; then
     echo "--**--**-- VII --**--**--"
     echo "Loading VEGA VII OC Script.."
-    sudo ./overclock_vega7.sh $GPUID $2 $3 $4 $5 $7
+    sudo ./overclock_vega7.sh $GPUID $2 $3 $4 $5 $7 ${10}
     exit 1
   fi
   ################################
@@ -176,7 +178,7 @@ if [ $1 ]; then
   if [ "$isThisVegaII" = "VegaFrontierEdition" ]; then
     echo "--**--**-- VEGA FRONTIER --**--**--"
     echo "Loading VEGA OC Script.."
-    sudo ./overclock_vega.sh $GPUID $2 $3 $4 $5 $7
+    sudo ./overclock_vega.sh $GPUID $2 $3 $4 $5 $7 ${10}
     exit 1
   fi
   ################################
