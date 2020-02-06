@@ -33,6 +33,10 @@ if [ $1 ]; then
     COREINDEX="5"
   fi
 
+  if [ "$COREINDEX" = "skip" ]; then
+    COREINDEX="5"
+  fi
+
   echo "--**--**-- GPU $1 : VEGA 56/64 --**--**--"
 
   # Reset
