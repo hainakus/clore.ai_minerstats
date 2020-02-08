@@ -99,8 +99,11 @@ if [ $1 ]; then
   elif echo "$QUERY" | grep "P102-100" ;then PLEVEL=1
   elif echo "$QUERY" | grep "P104-100" ;then PLEVEL=1
   elif echo "$QUERY" | grep "P106-090" ;then PLEVEL=1
-  elif echo "$QUERY" | grep "1660" ;then PLEVEL=4
+  elif echo "$QUERY" | grep "1660 SUPER" ;then PLEVEL=4
+  elif echo "$QUERY" | grep "1660 Ti" ;then PLEVEL=4
   elif echo "$QUERY" | grep "RTX" ;then PLEVEL=4
+  elif echo "$QUERY" | grep "1660" ;then PLEVEL=2
+  elif echo "$QUERY" | grep "1650" ;then PLEVEL=2
   fi
 
 
@@ -127,7 +130,7 @@ if [ $1 ]; then
   fi
 
   if [ "$FANSPEED" != "skip" ]
-  then
+  then   
     STR1="-a GPUFanControlState=1 -a GPUTargetFanSpeed="$FANSPEED""
     #STR1="-a [gpu:$GPUID]/GPUFanControlState=1 -a [fan:"$GPUID"]/GPUTargetFanSpeed="$FANSPEED""
     #edit=$((GPUID+1))
