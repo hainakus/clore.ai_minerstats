@@ -45,6 +45,27 @@ if [ ! -z "$DONVIDIA" ]; then
     sudo su minerstat -c "screen -A -m -d -S display sudo X"
   fi
 
+  NVIDIA_FAN_NUM=$(sudo nvidia-settings -c :0 -q fans | grep "fan:" | wc -l)
+
+  DUAL_FANS="no"
+
+  if [ "$NVIDIA_FAN_NUM" != "$NVIDIADEVICE" ]; then
+    echo "Nvidia: Some GPU may have dual fans."
+    DUAL_FANS="yes"
+  fi
+
+   echo
+   HOWMANYRTX=$(echo $NVIDIA | grep "RTX" | wc -l)
+   HOWMANYGTX=$(echo $NVIDIA | grep "GTX" | wc -l)
+   echo "RTX GPUs: ($HOWMANYRTX)"
+   echo "GTX GPUs: ($HOWMANYGTX)"
+   echo "Dual fans: $DUAL_FANS"
+   RTXID=$(echo $NVIDIA | grep GPU | grep RTX | awk -F '\\:' '{print $1}' | sed 's/[^0-9]*//g' | xargs echo -n | xargs)
+   GTXID=$(echo $NVIDIA | grep GPU | grep GTX | awk -F '\\:' '{print $1}' | sed 's/[^0-9]*//g' | xargs echo -n | xargs)
+   echo "RTX ID's: $RTXID"
+   echo "GTX ID's: $GTXID"
+   echo
+
   sudo nvidia-smi -pm 1
   wget -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=nvidia&token=$TOKEN&worker=$WORKER&nums=$NVIDIADEVICE&instant=$INSTANT"
   sleep 1.5
