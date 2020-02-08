@@ -27,8 +27,20 @@ if [ $1 ]; then
   FANSPEED=$4
   VDDC=$5
   MVDD=$6
+  COREINDEX=$7
+
+  if [ -z "$COREINDEX" ]; then
+    COREINDEX="7"
+  fi
+
+  if [ "$COREINDEX" = "skip" ]; then
+    COREINDEX="7"
+  fi
 
   echo "--**--**-- GPU $1 : VEGA VII --**--**--"
+
+  # Reset
+  sudo bash -c "echo r > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
   for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
     TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
@@ -59,8 +71,8 @@ if [ $1 ]; then
 
     sudo su -c "echo '0' > /sys/class/drm/card$GPUID/device/pp_mclk_od"
     sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_mclk_od"
-
     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+
   fi
 
   if [ "$VDDC" != "skip" ]; then
@@ -69,13 +81,14 @@ if [ $1 ]; then
       #sudo su -c "echo 'vc 1 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 'vc 2 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
-      echo "GPU$GPUID : CORECLOCK => $CORECLOCK Mhz ($VDDC mV)"
+      echo "GPU$GPUID : CORECLOCK => $CORECLOCK Mhz ($VDDC mV, state: $COREINDEX)"
 
       sudo su -c "echo '0' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
       sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
 
-      sudo su -c "echo 7 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-      sudo su -c "echo 8 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+      sudo su -c "echo $COREINDEX > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+      #sudo su -c "echo 8 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+
     fi
   fi
 
