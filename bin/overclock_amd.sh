@@ -191,6 +191,9 @@ if [ $1 ]; then
       fi
     fi
 
+    # Reset
+    sudo bash -c "echo r > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" 
+
     ## Detect state's
     maxMemState=$(sudo ./ohgodatool -i $GPUID --show-mem  | grep -E "Memory state ([0-9]+):" | tail -n 1 | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g')
     maxCoreState=$(sudo ./ohgodatool -i $GPUID --show-core | grep -E "DPM state ([0-9]+):"    | tail -n 1 | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g')
