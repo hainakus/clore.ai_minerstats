@@ -55,13 +55,13 @@ if [ ! -z "$DONVIDIA" ]; then
   fi
 
    echo
-   HOWMANYRTX=$(echo $NVIDIA | grep "RTX" | wc -l)
-   HOWMANYGTX=$(echo $NVIDIA | grep "GTX" | wc -l)
+   HOWMANYRTX=$(nvidia-smi -L | grep "RTX" | wc -l)
+   HOWMANYGTX=$(nvidia-smi -L | grep "GTX" | wc -l)
    echo "RTX GPUs: ($HOWMANYRTX)"
    echo "GTX GPUs: ($HOWMANYGTX)"
    echo "Dual fans: $DUAL_FANS"
-   RTXID=$(echo $NVIDIA | grep GPU | grep RTX | awk -F '\\:' '{print $1}' | sed 's/[^0-9]*//g' | xargs echo -n | xargs)
-   GTXID=$(echo $NVIDIA | grep GPU | grep GTX | awk -F '\\:' '{print $1}' | sed 's/[^0-9]*//g' | xargs echo -n | xargs)
+   RTXID=$(nvidia-smi -L | grep GPU | grep RTX | awk -F '\\:' '{print $1}' | sed 's/[^0-9]*//g' | xargs echo -n | xargs)
+   GTXID=$(nvidia-smi -L | grep GPU | grep GTX | awk -F '\\:' '{print $1}' | sed 's/[^0-9]*//g' | xargs echo -n | xargs)
    echo "RTX ID's: $RTXID"
    echo "GTX ID's: $GTXID"
    echo
