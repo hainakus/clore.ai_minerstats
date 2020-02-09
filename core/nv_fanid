@@ -11,29 +11,33 @@ ID2=""
 sudo echo "" > /dev/shm/id1.txt
 sudo echo "" > /dev/shm/id2.txt
 
-for i in {0..15}
-do
-  JSON_FAN=$JSON_FAN'"'$i'":'
+CACHEFILE="/dev/shm/nvid_cache.txt"
 
-  CHECKTYPE=$(nvidia-smi -L | grep "GPU $i")
-
-  if [[ $CHECKTYPE == *"RTX"* ]]; then
-    FANNUM="2"
-  elif [[ $CHECKTYPE == *"GTX"* ]]; then
-    FANNUM="1"
-  else
-    FANNUM="0"
-  fi
-
-  if [[ $i == "15" ]]; then
-    COMMA=""
-  else
-    COMMA=","
-  fi
-  JSON_FAN=$JSON_FAN'"'$FANNUM'"'$COMMA''
-done
-
-JSON_FAN=$JSON_FAN'}'
+if [ ! -f "$CACHEFILE" ]; then
+  for i in {0..15}
+  do
+    JSON_FAN=$JSON_FAN'"'$i'":'
+    CHECKTYPE=$(nvidia-smi -L | grep "GPU $i")
+    if [[ $CHECKTYPE == *"RTX"* ]]; then
+      FANNUM="2"
+    elif [[ $CHECKTYPE == *"GTX"* ]]; then
+      FANNUM="1"
+    else
+      FANNUM="0"
+    fi
+    if [[ $i == "15" ]]; then
+      COMMA=""
+    else
+      COMMA=","
+    fi
+    JSON_FAN=$JSON_FAN'"'$FANNUM'"'$COMMA''
+  done
+  JSON_FAN=$JSON_FAN'}'
+    # Cache
+    sudo echo $JSON_FAN > $CACHEFILE
+else
+  JSON_FAN=$(cat $CACHEFILE)
+fi
 
 #echo "DEBUG JSON:"
 #echo $JSON_FAN
