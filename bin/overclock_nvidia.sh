@@ -131,17 +131,18 @@ if [ $1 ]; then
 
   if [ "$FANSPEED" != "skip" ]
   then
-    sudo /home/minerstat/minerstat-os/core/nv_fanid $GPUID
-    ID1=$(cat /dev/shm/id1.txt | xargs) 
-    ID2=$(cat /dev/shm/id2.txt | xargs)
-    if [ -z "$ID1" ] && [ -z "$ID2" ]; then
-      STR1="-a [gpu:"$GPUID"]/GPUFanControlState=1 -a [fan:"$GPUID"]/GPUTargetFanSpeed="$FANSPEED""
-    else
-      STR1="-a [gpu:"$GPUID"]/GPUFanControlState=1 -a [fan:"$ID1"]/GPUTargetFanSpeed="$FANSPEED""
-      if [ ! -z "$ID2" ]; then
-        STR1="$STR1 -a [gpu:"$GPUID"]/GPUFanControlState=1 -a [fan:"$ID2"]/GPUTargetFanSpeed="$FANSPEED""
-      fi
-    fi
+    STR1="-a GPUFanControlState=1 -a GPUTargetFanSpeed="$FANSPEED""
+    #sudo /home/minerstat/minerstat-os/core/nv_fanid $GPUID
+    #ID1=$(cat /dev/shm/id1.txt | xargs) 
+    #ID2=$(cat /dev/shm/id2.txt | xargs)
+    #if [ -z "$ID1" ] && [ -z "$ID2" ]; then
+    #  STR1="-a [gpu:"$GPUID"]/GPUFanControlState=1 -a [fan:"$GPUID"]/GPUTargetFanSpeed="$FANSPEED""
+    #else
+    #  STR1="-a [gpu:"$GPUID"]/GPUFanControlState=1 -a [fan:"$ID1"]/GPUTargetFanSpeed="$FANSPEED""
+    #  if [ ! -z "$ID2" ]; then
+    #    STR1="$STR1 -a [gpu:"$GPUID"]/GPUFanControlState=1 -a [fan:"$ID2"]/GPUTargetFanSpeed="$FANSPEED""
+    #  fi
+    #fi
   fi
 
   #################################£
