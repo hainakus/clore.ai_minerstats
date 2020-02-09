@@ -165,9 +165,9 @@ loop() {
   fi
   if [[ $TEST_NVIDIA == *"GPU 0"* ]]; then
     # Check XSERVER
-    SNUMD=$(sudo su minerstat -c "screen -list | grep -c display")
+    SNUMD=$(sudo su minerstat -c "screen -list | grep -c display2")
     if [ "$SNUMD" = "0" ]; then
-      sudo su minerstat -c "screen -A -m -d -S display sudo X"
+      sudo su minerstat -c "screen -A -m -d -S display2 sudo X"
     fi
     NVIDIA_NUM=$(nvidia-smi --query-gpu=count --format=csv,noheader | tail -n1 | xargs | sed 's/[^0-9]*//g')
     NVIDIA_INUM=$((NVIDIA_NUM-1))
@@ -245,17 +245,26 @@ loop() {
             NEWFAN="100"
           fi
           if [ ! $FAN -eq $NEWFAN ]; then
-            if [ "$NVIDIA_FAN_NUM" != "$NVIDIA2X" ]; then
-              PARAM="$PARAM -a [gpu:$x]/GPUFanControlState=1"
-              PARAMS="$PARAMS -a [fan:"$x"]/GPUTargetFanSpeed="$NEWFAN""
-            else
-              PARAM="$PARAM -a [gpu:$x]/GPUFanControlState=1"
-              PARAMS="$PARAMS -a [fan:"$z"]/GPUTargetFanSpeed="$NEWFAN""
-              if [ "$NVIDIA_FAN_NUM" -gt "$NVIDIA_NUM" ]; then
-                edit=$((z+1))
-                PARAMSAFETY="$PARAMSAFETY -a [fan:"$edit"]/GPUTargetFanSpeed="$NEWFAN""
-              fi
-            fi
+              sudo /home/minerstat/minerstat-os/core/nv_fanid $x
+              ID1=$(cat /dev/shm/id1.txt | xargs) 
+              ID2=$(cat /dev/shm/id2.txt | xargs)
+              
+              if [ -z "$ID1" ] && [ -z "$ID2" ]; then
+                PARAM="$PARAM -a [gpu:$x]/GPUFanControlState=1"
+                PARAMS="$PARAMS -a [fan:"$z"]/GPUTargetFanSpeed="$NEWFAN""
+                if [ "$NVIDIA_FAN_NUM" -gt "$NVIDIA_NUM" ]; then
+                  edit=$((z+1))
+                  PARAMSAFETY="$PARAMSAFETY -a [fan:"$edit"]/GPUTargetFanSpeed="$NEWFAN""
+                fi   
+              else
+                PARAM="$PARAM -a [gpu:$x]/GPUFanControlState=1"
+                PARAMS="$PARAMS -a [fan:"$ID1"]/GPUTargetFanSpeed="$NEWFAN""
+                #PARAMSAFETY=""
+                 if [ ! -z "$ID2" ]; then
+                 PARAM="$PARAM -a [gpu:$x]/GPUFanControlState=1"
+                 PARAMS="$PARAMS -a [fan:"$ID2"]/GPUTargetFanSpeed="$NEWFAN""
+                 #PARAMSAFETY=""
+                fi  
             MSG="$MSG,NEWFAN: $NEWFAN%"
           fi
         fi
