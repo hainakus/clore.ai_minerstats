@@ -265,6 +265,7 @@ loop() {
                  PARAMS="$PARAMS -a [fan:"$ID2"]/GPUTargetFanSpeed="$NEWFAN""
                  #PARAMSAFETY=""
                 fi  
+              fi
             MSG="$MSG,NEWFAN: $NEWFAN%"
           fi
         fi
