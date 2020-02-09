@@ -36,6 +36,7 @@ echo "WORKER: $WORKER"
 echo "--------------------------"
 
 sudo rm doclock.sh
+sudo rm /dev/shm/nvid_cache.txt
 sleep 1
 
 if [ ! -z "$DONVIDIA" ]; then
