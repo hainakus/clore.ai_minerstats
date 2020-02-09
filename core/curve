@@ -27,17 +27,6 @@ NUM_AMD=$(sudo lshw -C display | grep AMD | wc -l)
 TEST_AMD=$NUM_AMD
 if [[ $TEST_NVIDIA == *"GPU 0"* ]]; then
   NVIDIA_FAN_NUM=$(sudo nvidia-settings -c :0 -q fans | grep "fan:" | wc -l)
-   echo
-   HOWMANYRTX=$(nvidia-smi -L | grep "RTX" | wc -l)
-   HOWMANYGTX=$(nvidia-smi -L | grep "GTX" | wc -l)
-   echo "RTX GPUs: ($HOWMANYRTX)"
-   echo "GTX GPUs: ($HOWMANYGTX)"
-   echo "Dual fans: $DUAL_FANS"
-   RTXID=$(nvidia-smi -L | grep GPU | grep RTX | awk -F '\\:' '{print $1}' | sed 's/[^0-9]*//g' | xargs echo -n | xargs)
-   GTXID=$(nvidia-smi -L | grep GPU | grep GTX | awk -F '\\:' '{print $1}' | sed 's/[^0-9]*//g' | xargs echo -n | xargs)
-   echo "RTX ID's: $RTXID"
-   echo "GTX ID's: $GTXID"
-   echo
 fi
 
 loop() {
