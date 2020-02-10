@@ -3,6 +3,7 @@ exec 2>/dev/null
 echo "Running Clean jobs.."
 sudo systemctl mask apt-daily.service apt-daily-upgrade.service
 sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic linux-firmware
+sudo systemctl daemon-reload
 # Kernel panic auto reboot
 sudo su -c "echo 20 >/proc/sys/kernel/panic"
 # Remove logs
