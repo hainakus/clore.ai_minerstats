@@ -294,15 +294,10 @@ if [ "$version" = "1.2" ]; then
     sudo su -c "echo '1' > /media/storage/fw.txt"
   fi
 fi
-if [ "$version" = "1.4" ]; then
-  sudo rm -rf /boot/*5.3.0*
-  FILE=/boot/config-5.3.0-26-generic
-  if [ -f "$FILE" ]; then
-    sudo update-grub2
-    sync
-  fi
-  FILE=/boot/config-5.3.0-28-generic
-  if [ -f "$FILE" ]; then    
+if [ "$version" = "1.4" ] || [ "$version" = "1.4.5" ]; then
+  CHECK=$(ls /boot | grep "5.3.0" | wc - l)
+  if [ "$CHECK" != "0" ]; then
+    sudo rm -rf /boot/*5.3.0*
     sudo update-grub2
     sync
   fi
