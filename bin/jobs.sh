@@ -294,15 +294,14 @@ if [ "$version" = "1.2" ]; then
   fi
 fi
 if [ "$version" = "1.4" ]; then
+  sudo rm -rf /boot/*5.3.0*
   FILE=/boot/config-5.3.0-26-generic
   if [ -f "$FILE" ]; then
-    sudo rm -rf /boot/*5.3.0*
     sudo update-grub2
     sync
   fi
   FILE=/boot/config-5.3.0-28-generic
-  if [ -f "$FILE" ]; then
-    sudo rm -rf /boot/*5.3.0*
+  if [ -f "$FILE" ]; then    
     sudo update-grub2
     sync
   fi
