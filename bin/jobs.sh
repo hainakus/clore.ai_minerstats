@@ -302,4 +302,25 @@ if [ "$version" = "1.4" ] || [ "$version" = "1.4.5" ]; then
     sudo update-grub2
     sync
   fi
+  CHECK=$(ls /boot | grep "5.4.0" | wc -l)
+  if [ "$CHECK" != "0" ]; then
+    sudo rm -rf /boot/*5.4.0*
+    echo "generating new grub"
+    sudo update-grub2
+    sync
+  fi
+  CHECK=$(ls /boot | grep "5.5.0" | wc -l)
+  if [ "$CHECK" != "0" ]; then
+    sudo rm -rf /boot/*5.4.0*
+    echo "generating new grub"
+    sudo update-grub2
+    sync
+  fi
+  CHECK=$(ls /boot | grep "5.6.0" | wc -l)
+  if [ "$CHECK" != "0" ]; then
+    sudo rm -rf /boot/*5.6.0*
+    echo "generating new grub"
+    sudo update-grub2
+    sync
+  fi
 fi
