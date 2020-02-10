@@ -298,6 +298,7 @@ if [ "$version" = "1.4" ] || [ "$version" = "1.4.5" ]; then
   CHECK=$(ls /boot | grep "5.3.0" | wc - l)
   if [ "$CHECK" != "0" ]; then
     sudo rm -rf /boot/*5.3.0*
+    echo "generating new grub"
     sudo update-grub2
     sync
   fi
