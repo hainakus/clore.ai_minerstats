@@ -40,7 +40,7 @@ if [ $1 ]; then
   echo "--**--**-- GPU $1 : VEGA VII --**--**--"
 
   # Reset
-  sudo bash -c "echo r > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+  #sudo bash -c "echo r > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
   for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
     TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
@@ -86,8 +86,9 @@ if [ $1 ]; then
       sudo su -c "echo '0' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
       sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
 
-      sudo su -c "echo $COREINDEX > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-      #sudo su -c "echo 8 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+      #sudo su -c "echo $COREINDEX > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+      sudo su -c "echo 7 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+      sudo su -c "echo 8 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
 
     fi
   fi
