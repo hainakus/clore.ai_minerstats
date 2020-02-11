@@ -234,14 +234,14 @@ if [ $1 ]; then
     if [ "$VDDC" != "skip" ] && [ "$VDDC" != "0" ]; then
       echo "--- Setting up VDDC Voltage GPU$GPUID (VS: $currentVoltState) ---"
       # set all voltage states from 1 upwards to xxx mV:
-      if [ "$maxMemState" != "2" ]
-      then
-      	sudo ./ohgodatool -i $GPUID --volt-state $currentVoltState --vddc-table-set $VDDC
-      else
-      	for voltstate in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-      		sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
-      	done
-      fi
+      #if [ "$maxMemState" != "2" ]
+      #then
+      #	sudo ./ohgodatool -i $GPUID --volt-state $currentVoltState --vddc-table-set $VDDC
+      #else
+      #	for voltstate in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+      #		sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
+      #	done
+      #fi
       for voltstate in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
         sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
       done
