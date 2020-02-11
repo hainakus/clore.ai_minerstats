@@ -92,3 +92,48 @@ if [[ $1 == "amd" ]]; then
   /home/minerstat/minerstat-os/bin/amdinfo
 
 fi
+
+# ==================================
+# = AMD with Voltages
+# ==================================
+
+if [[ $1 == "amd2" ]]; then
+
+AMDINFO_ORIGINAL=$(sudo /home/minerstat/minerstat-os/bin/amdinfo)
+JQ_PATH="/home/minerstat/minerstat-os/bin/jq"
+AMD_NEW='{'
+for i in {0..15}
+do
+  STRING=$(echo $AMDINFO_ORIGINAL | $JQ_PATH -r .[\"$i\"])
+  if [ "$STRING" != "null" ]; then
+    AMD_NEW=$AMD_NEW'"'$i'":'
+    GPUID=$i
+    currentCoreState=$(sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk | grep '*' | cut -f1 -d':' | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g'")
+    currentMemState=$(sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk | grep '*' | cut -f1 -d':' | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g'")
+    #echo "Core State: $currentCoreState, Mem State: $currentMemState, "
+    currentVDDC=$(sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" | sed '/OD_MCLK/Q' | grep "$currentCoreState:" | awk '{ print $3 }' | sed 's/[^0-9]*//g' | xargs)
+    currentMVDD=$(sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" | sed '/OD_MCLK/,$!d' | grep "$currentMemState:" | awk '{ print $3 }' | sed 's/[^0-9]*//g' | xargs)
+    #echo "VDDC: $currentVDDC, MVDD: $currentMVDD"
+    #echo
+    #echo $STRING
+    NEWSTRING="$STRING, $currentVDDC, $currentMVDD"
+    #echo $NEWSTRING
+    TESTNUM=$((i + 1))
+    TEST=$(echo $AMDINFO_ORIGINAL | $JQ_PATH -r .[\"$TESTNUM\"])
+    if [[ $TEST == "null" ]]; then
+      COMMA=""
+    else
+      COMMA=","
+    fi
+    AMD_NEW=$AMD_NEW'"'$NEWSTRING'"'$COMMA''
+  fi
+done
+AMD_NEW=$AMD_NEW'}'
+
+if [ -z "$AMD_NEW" ]; then
+  AMD_NEW="$AMDINFO_ORIGINAL"
+fi
+
+echo $AMD_NEW
+
+fi
