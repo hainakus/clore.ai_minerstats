@@ -281,6 +281,10 @@ if [ $1 ]; then
         if [ -z "$VDDC" ]; then
           VDDC="930"
         fi
+        
+        if [ "$VDDC" = "skip" ]; then
+          VDDC="930"
+        fi
 
         sudo su -c "echo 's 1 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
         sudo su -c "echo 's 2 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
@@ -294,6 +298,9 @@ if [ $1 ]; then
         # APPLY AT THE END
         STR4="cmemclk:$GPUID=$MEMCLOCK"
         if [ -z "$MVDD" ]; then
+          MVDD="1000"
+        fi
+        if [ "$MVDD" = "skip" ]; then
           MVDD="1000"
         fi
         #OHGOD2=" --mem-state $maxMemState --mem-clock $MEMCLOCK"
