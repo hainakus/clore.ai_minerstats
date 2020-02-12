@@ -831,7 +831,7 @@ module.exports = {
 
     if (global.PrivateMiner == "True") {
       var fetchMiner = require('child_process').exec;
-      var fetchMinerAPI = fetchMiner("sudo /home/minerstat/minerstat-os/clients/" + global.startMinerName + "/api", function(error, stdout, stderr) {
+      var fetchMinerAPI = fetchMiner("sudo bash /home/minerstat/minerstat-os/clients/" + global.startMinerName + "/api", function(error, stdout, stderr) {
         var statusCode = stdout;
         if (statusCode.includes("error")) {
           gpuSyncDone = false;
