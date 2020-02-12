@@ -256,11 +256,11 @@ if [ $1 ]; then
       sudo su -c "echo 's 6 $currentCoreClock $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 's 7 $currentCoreClock $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 's 8 $currentCoreClock $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      if [ -z "$currentVDDC" ]; then
+      #if [ -z "$currentVDDC" ]; then
         for voltstate in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
           sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
         done
-      fi
+      #fi
     fi
 
     # VDDCI
