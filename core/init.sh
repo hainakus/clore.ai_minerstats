@@ -272,7 +272,7 @@ do
   echo "monitor logs"
 
   if [ "$MONITOR_TYPE" = "amd" ]; then
-    AMDINFO=$(sudo /home/minerstat/minerstat-os/bin/amdinfo)
+    AMDINFO=$(sudo /home/minerstat/minerstat-os/bin/gpuinfo amd2)
     QUERYPOWER=$(cd /home/minerstat/minerstat-os/bin/; sudo ./rocm-smi -P | grep 'Average Graphics Package Power:' | sed 's/.*://' | sed 's/W/''/g' | xargs)
     HWMEMORY=$(cd /home/minerstat/minerstat-os/bin/; cat amdmeminfo.txt)
     sudo chmod 777 /dev/shm/amdmeminfo.txt
