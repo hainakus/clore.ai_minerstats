@@ -192,17 +192,12 @@ if [ $1 ]; then
     fi
 
     # Reset
-    sudo bash -c "echo r > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+    sudo bash -c "echo r > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" 
 
     ## Detect state's
-    maxMemState=$(sudo cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk | tac | head -n1 | sed 's/\:.*//' | sed 's/[^0-9]*//g' | xargs)
-    maxCoreState=$(sudo cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk | tac | head -n1 | sed 's/\:.*//' | sed 's/[^0-9]*//g' | xargs)
-    #currentCoreState=$(sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk | grep '*' | cut -f1 -d':' | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g'")
-    #currentMemState=$(sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk | grep '*' | cut -f1 -d':' | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g'")
-    currentCoreState="3"
-    currentMemState="1"
-    currentVDDC=$(sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" | sed '/OD_MCLK/Q' | grep "$currentCoreState:" | awk '{ print $3 }' | sed 's/[^0-9]*//g' | xargs)
-    currentMVDD=$(sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" | sed '/OD_MCLK/,$!d' | grep "$currentMemState:" | awk '{ print $3 }' | sed 's/[^0-9]*//g' | xargs)
+    maxMemState=$(sudo ./ohgodatool -i $GPUID --show-mem  | grep -E "Memory state ([0-9]+):" | tail -n 1 | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g')
+    maxCoreState=$(sudo ./ohgodatool -i $GPUID --show-core | grep -E "DPM state ([0-9]+):"    | tail -n 1 | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g')
+    currentCoreState=$(sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk | grep '*' | cut -f1 -d':' | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g'")
     #currentCoreState=5
 
     if [ "$R9" != "" ]; then
@@ -214,12 +209,12 @@ if [ $1 ]; then
 
     if [ -z $currentCoreState ]; then
       echo "ERROR: No Current Core State found for GPU$GPUID"
-      currentCoreState=3
+      currentCoreState=5
     fi
 
     if [ "$currentCoreState" = 0 ]; then
       echo "WARN: GPU$GPUID was idle, using default states (5) (Idle)"
-      currentCoreState=3
+      currentCoreState=5
     fi
 
     ## Memstate just for protection
@@ -230,8 +225,8 @@ if [ $1 ]; then
 
 
     # CURRENT Volt State for Undervolt
-    #voltStateLine=$(($currentCoreState + 1))
-    #currentVoltState=$(sudo ./ohgodatool -i $GPUID --show-core | grep -E "VDDC:" | sed -n $voltStateLine"p" | sed 's/^.*entry/entry/' | sed 's/[^0-9]*//g')
+    voltStateLine=$(($currentCoreState + 1))
+    currentVoltState=$(sudo ./ohgodatool -i $GPUID --show-core | grep -E "VDDC:" | sed -n $voltStateLine"p" | sed 's/^.*entry/entry/' | sed 's/[^0-9]*//g')
 
     echo "DEBUG: C $currentCoreState / VL $voltStateLine / CVS $currentVoltState"
     echo ""
@@ -247,20 +242,9 @@ if [ $1 ]; then
       #		sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
       #	done
       #fi
-      currentCoreClock=$(sudo cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk | grep '*' | awk '{ print $2 }' | sed 's/[^0-9]*//g')
-      sudo su -c "echo 's 1 $currentCoreClock $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 2 $currentCoreClock $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 3 $currentCoreClock $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 4 $currentCoreClock $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 5 $currentCoreClock $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 6 $currentCoreClock $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 7 $currentCoreClock $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 8 $currentCoreClock $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      #if [ -z "$currentVDDC" ]; then
-      #  for voltstate in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-      #    sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
-      #  done
-      #fi
+      for voltstate in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+        sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
+      done
     fi
 
     # VDDCI
@@ -278,12 +262,7 @@ if [ $1 ]; then
       echo
       echo "--- Setting up MVDD Voltage GPU$GPUID ---"
       echo
-      currentMemoryClock=$(sudo cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk | grep '*' | awk '{ print $2 }' | sed 's/[^0-9]*//g')
-      sudo su -c "echo 's 1 $currentMemoryClock $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 2 $currentMemoryClock $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      if [ -z "$currentVDDC" ]; then
-        sudo ./ohgodatool -i $GPUID --mem-state $maxMemState --mvdd $MVDD
-      fi
+      sudo ./ohgodatool -i $GPUID --mem-state $maxMemState --mvdd $MVDD
     fi
 
     #################################£
@@ -294,29 +273,16 @@ if [ $1 ]; then
         # APPLY AT THE END
         STR5="coreclk:$GPUID=$CORECLOCK"
 
-        if [ -z "$VDDC" ] || [ "$VDDC" = "skip" ]; then
-          if [ ! -z "$currentVDDC" ]; then
-            VDDC="$currentVDDC"
-          else
-            VDDC="980"
-          fi
+        if [ "$maxMemState" != "2" ]; then
+          #OHGOD1=" --core-state $currentCoreState --core-clock $CORECLOCK"
+          for corestate in 3 4 5 6 7 8; do
+            sudo ./ohgodatool -i $GPUID --core-state $corestate --core-clock $CORECLOCK
+          done
+        else
+          for corestate in 3 4 5 6 7 8; do
+            sudo ./ohgodatool -i $GPUID --core-state $corestate --core-clock $CORECLOCK
+          done
         fi
-
-        echo "VDDC => $VDDC"
-        sudo su -c "echo 's 1 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-        sudo su -c "echo 's 2 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-        sudo su -c "echo 's 3 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-        sudo su -c "echo 's 4 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-        sudo su -c "echo 's 5 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-        sudo su -c "echo 's 6 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-        sudo su -c "echo 's 7 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-        sudo su -c "echo 's 8 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-
-        #if [ -z "$currentVDDC" ]; then
-            for corestate in 3 4 5 6 7 8; do
-              sudo ./ohgodatool -i $GPUID --core-state $corestate --core-clock $CORECLOCK
-            done
-        #fi
 
       fi
     fi
@@ -326,19 +292,7 @@ if [ $1 ]; then
       if [ "$MEMCLOCK" != "0" ]; then
         # APPLY AT THE END
         STR4="cmemclk:$GPUID=$MEMCLOCK"
-        if [ -z "$MVDD" ] || [ "$MVDD" = "skip" ]; then
-          if [ ! -z "$currentMVDD" ]; then
-            MVDD="$currentMVDD"
-          else
-            MVDD="980"
-          fi
-        fi
-        echo "MVDD => $MVDD"
-        sudo su -c "echo 'm 1 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-        sudo su -c "echo 'm 2 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-        #if [ -z "$currentVDDC" ]; then
-          OHGOD2=" --mem-state $maxMemState --mem-clock $MEMCLOCK"
-        #fi
+        OHGOD2=" --mem-state $maxMemState --mem-clock $MEMCLOCK"
       fi
     fi
 
@@ -370,32 +324,14 @@ if [ $1 ]; then
     echo "- SET | GPU$GPUID Performance level: manual -"
     echo "- SET | GPU$GPUID DPM state: $currentCoreState -"
     echo "- SET | GPU$GPUID MEM state: $maxMemState -"
-    sudo ./ohgodatool -i $GPUID $OHGOD1 $OHGOD3
+    sudo ./ohgodatool -i $GPUID $OHGOD1 $OHGOD2 $OHGOD3
 
     sudo su -c "echo 'manual' > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
-    sudo su -c "echo $maxCoreState > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+    sudo su -c "echo $currentCoreState > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
     sudo su -c "echo $maxMemState > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-
-    # comit
-    sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-    sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
     echo ""
     echo "NOTICE: If below is empty try to use a 'Supported clock or flash your gpu bios' "
     echo ""
-
-    if [ -z "$GPUINDEX" ]; then
-      GPUINDEX="3"
-    fi
-
-    if [ "$GPUINDEX" = "skip" ]; then
-      GPUINDEX="3"
-    fi
-
-    sudo ./rocm-smi -d $GPUID --setsclk $GPUINDEX
-    sudo ./rocm-smi -d $GPUID --setmclk 2
-    sudo su -c "echo '$GPUINDEX' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-    sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-
     sleep 0.2
     sudo ./amdcovc $STR4 $STR5 $STR2 | grep "Setting"
 
@@ -403,14 +339,6 @@ if [ $1 ]; then
     # CURRENT_Clock Protection
     sudo ./amdcovc memclk:$GPUID=$MEMCLOCK | grep "Setting"
     sudo ./amdcovc ccoreclk:$GPUID=$CORECLOCK | grep "Setting"
-
-    echo "-÷-*-****** ALL *****-*-*÷-"
-    sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-    echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
-    sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-    echo "-÷-*-****** MEM  CLOCKS *****-*-*÷-"
-    sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-
 
     # Fans for security
     for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
