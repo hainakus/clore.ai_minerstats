@@ -138,7 +138,7 @@ do
     #echo $STRING
     NEWSTRING="$STRING, $currentVDDC, $currentMVDD"
     #echo $NEWSTRING
-    I=$((i + $START))
+    I=$((i + 1))
     TEST=$(echo $AMDINFO_ORIGINAL | $JQ_PATH -r .[\"$I\"])
     if [[ $TEST == "null" ]]; then
       COMMA=""
