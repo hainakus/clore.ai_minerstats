@@ -343,9 +343,9 @@ if [ $1 ]; then
         echo "MVDD => $MVDD"
         sudo su -c "echo 'm 1 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
         sudo su -c "echo 'm 2 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-        if [ -z "$currentVDDC" ]; then
+        #if [ -z "$currentVDDC" ]; then
           OHGOD2=" --mem-state $maxMemState --mem-clock $MEMCLOCK"
-        fi
+        #fi
       fi
     fi
 
