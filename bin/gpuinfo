@@ -99,15 +99,23 @@ fi
 
 if [[ $1 == "amd2" ]]; then
 
+TEST=$(cat /sys/class/drm/card0/device/pp_dpm_sclk)
+if [ -z "$TEST" ]; then
+ START="1"
+else
+ START="0"
+fi
+
 AMDINFO_ORIGINAL=$(sudo /home/minerstat/minerstat-os/bin/amdinfo)
 JQ_PATH="/home/minerstat/minerstat-os/bin/jq"
 AMD_NEW='{'
 for i in {0..15}
 do
+  I=$((i + $START))
   STRING=$(echo $AMDINFO_ORIGINAL | $JQ_PATH -r .[\"$i\"])
   if [ "$STRING" != "null" ]; then
     AMD_NEW=$AMD_NEW'"'$i'":'
-    GPUID=$i
+    GPUID=$I
     currentCoreState=$(sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk | grep '*' | cut -f1 -d':' | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g'")
     currentMemState=$(sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk | grep '*' | cut -f1 -d':' | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g'")    
     if [ "$currentCoreState" = "0" ]; then
@@ -130,8 +138,8 @@ do
     #echo $STRING
     NEWSTRING="$STRING, $currentVDDC, $currentMVDD"
     #echo $NEWSTRING
-    TESTNUM=$((i + 1))
-    TEST=$(echo $AMDINFO_ORIGINAL | $JQ_PATH -r .[\"$TESTNUM\"])
+    I=$((i + $START))
+    TEST=$(echo $AMDINFO_ORIGINAL | $JQ_PATH -r .[\"$I\"])
     if [[ $TEST == "null" ]]; then
       COMMA=""
     else
