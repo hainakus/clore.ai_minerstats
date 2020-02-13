@@ -137,7 +137,7 @@ do
       currentVDDC=$(sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" | sed '/OD_VDDC_CURVE/,$!d' | grep "$currentMemState:" | awk '{ print $3 }' | sed 's/[^0-9]*//g' | cut -d ' ' -f 1 | xargs) 
     fi
     
-    currentMVDD=$(sudo /home/minerstat/minerstat-os/bin/ohgodatool --show-mem -i $GPUID | grep -A 5 "$currentmemState:" | grep "MVDD" | sed 's/[^0-9]*//g' | cut -d ' ' -f 1 | xargs)
+    currentMVDD=$(sudo /home/minerstat/minerstat-os/bin/ohgodatool --show-mem -i $GPUID | grep -A 5 "$currentMemState:" | grep "MVDD" | sed 's/[^0-9]*//g' | cut -d ' ' -f 1 | xargs)
     
     if [ -z "$currentMVDD" ]; then
       currentMVDD=$(sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" | sed '/OD_MCLK/,$!d' | grep "$currentMemState:" | awk '{ print $3 }' | sed 's/[^0-9]*//g' | cut -d ' ' -f 1 | xargs)   
