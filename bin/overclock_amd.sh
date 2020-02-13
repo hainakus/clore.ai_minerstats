@@ -257,9 +257,9 @@ if [ $1 ]; then
       sudo su -c "echo 's 7 $currentCoreClock $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 's 8 $currentCoreClock $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       #if [ -z "$currentVDDC" ]; then
-        for voltstate in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-          sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
-        done
+      #  for voltstate in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+      #    sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
+      #  done
       #fi
     fi
 
@@ -312,18 +312,11 @@ if [ $1 ]; then
         sudo su -c "echo 's 7 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
         sudo su -c "echo 's 8 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
-        if [ -z "$currentVDDC" ]; then
-          if [ "$maxMemState" != "2" ]; then
-            #OHGOD1=" --core-state $currentCoreState --core-clock $CORECLOCK"
+        #if [ -z "$currentVDDC" ]; then
             for corestate in 3 4 5 6 7 8; do
               sudo ./ohgodatool -i $GPUID --core-state $corestate --core-clock $CORECLOCK
             done
-          else
-            for corestate in 3 4 5 6 7 8; do
-              sudo ./ohgodatool -i $GPUID --core-state $corestate --core-clock $CORECLOCK
-            done
-          fi
-        fi
+        #fi
 
       fi
     fi
