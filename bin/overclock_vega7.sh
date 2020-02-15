@@ -106,6 +106,7 @@ if [ $1 ]; then
   if [ "$FANSPEED" != 0 ]; then
     FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $FANSPEED}" | cut -f1 -d".")
     FANVALUE=$(printf "%.0f\n" $FANVALUE)
+    FANVALUE=$(awk -v n="$FANVALUE" 'BEGIN{print int((n+5)/10) * 10}')
     echo "GPU$GPUID : FANSPEED => $FANSPEED% ($FANVALUE)"
   else
     FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * 70}" | cut -f1 -d".")
