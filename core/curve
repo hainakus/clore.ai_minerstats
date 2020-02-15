@@ -132,7 +132,7 @@ loop() {
               FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $NEWFAN}" | cut -f1 -d".")
               FANVALUE=$(printf "%.0f\n" $FANVALUE)
               FANVALUE=$(awk -v n="$FANVALUE" 'BEGIN{print int((n+5)/10) * 10}')
-              FANVALUE=$((FANVALUE - 1))
+              #FANVALUE=$((FANVALUE - 1))
               if [ $NEWFAN -gt 99 ]; then
                 FANVALUE=$MAXFAN
               fi
@@ -142,7 +142,7 @@ loop() {
                 sudo su -c "echo $FANVALUE > /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1"
                 sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon??/pwm1_enable"
                 sudo su -c "echo $FANVALUE > /sys/class/drm/card$y/device/hwmon/hwmon??/pwm1"
-                sudo /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $y &
+                #sudo /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $y &
                 #sudo /home/minerstat/minerstat-os/bin/rocm-smi -d $y --setfan $FANVALUE
               fi
             fi
