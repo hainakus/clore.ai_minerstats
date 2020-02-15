@@ -131,6 +131,7 @@ loop() {
               echo "MAXFAN FOR $x $y : $MAXFAN"
               FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $NEWFAN}" | cut -f1 -d".")
               FANVALUE=$(printf "%.0f\n" $FANVALUE)
+              FANVALUE=$(awk -v n="$FANVALUE" 'BEGIN{print int((n+5)/10) * 10}')
               if [ $NEWFAN -gt 99 ]; then
                 FANVALUE=$MAXFAN
               fi
