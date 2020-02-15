@@ -140,8 +140,8 @@ loop() {
               if [ "$CURRFAN" != "$FANVALUE" ] && [ "$CURRFANFIVE" != "$FANVALUE" ]; then
                 sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1_enable"
                 sudo su -c "echo $FANVALUE > /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1"
-                sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon??/pwm1_enable"
-                sudo su -c "echo $FANVALUE > /sys/class/drm/card$y/device/hwmon/hwmon??/pwm1"
+                sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon??/pwm1_enable" >/dev/null 2>&1
+                sudo su -c "echo $FANVALUE > /sys/class/drm/card$y/device/hwmon/hwmon??/pwm1" >/dev/null 2>&1
                 #sudo /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $y &
                 #sudo /home/minerstat/minerstat-os/bin/rocm-smi -d $y --setfan $FANVALUE
               fi
