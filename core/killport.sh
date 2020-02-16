@@ -19,7 +19,7 @@ for con in `sudo netstat -anp | grep $PORT | grep TIME_WAIT | awk '{print $5}'`;
   #sudo /home/minerstat/minerstat-os/core/killcx.pl $con $interface
 done
 
-if [ "$PORT" != "4028" ] && [ "$PORT" != "7887"]
+if [ "$PORT" != "4028" ] && [ "$PORT" != "7887"]; then
 
   RETEST=$(sudo netstat -anp | grep $PORT 2> /dev/null | grep TIME_WAIT 2> /dev/null | awk '{print $5}' | wc -l)
 
@@ -27,7 +27,7 @@ if [ "$PORT" != "4028" ] && [ "$PORT" != "7887"]
   do
     #sudo su -c "kill $(sudo lsof -t -i:$PORT)"
     #sudo fuser -k $PORT/tcp
-    sleep 1
+    sleep 5
     RETEST=$(sudo netstat -anp | grep $PORT 2> /dev/null | grep TIME_WAIT 2> /dev/null | awk '{print $5}' | wc -l)
   done 
 
