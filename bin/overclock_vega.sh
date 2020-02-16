@@ -67,10 +67,11 @@ if [ $1 ]; then
       sudo su -c "echo 'vc 2 $CORECLOCK $VDDC' > /sys/class/drm/card0/device/pp_od_clk_voltage"
       sudo su -c "echo 'c' > /sys/class/drm/card0/device/pp_od_clk_voltage"
       
-      sudo su -c "echo '0' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
-      sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
+      #sudo su -c "echo '0' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
+      #sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
 
       sudo su -c "echo $COREINDEX > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+      sudo su -c "echo 'c' > /sys/class/drm/card0/device/pp_od_clk_voltage"
       
     fi
   fi
@@ -83,6 +84,7 @@ if [ $1 ]; then
     #sudo su -c "echo 'm 2 $MEMCLOCK 1050' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
     sudo su -c "echo 'm 2 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
     sudo su -c "echo 'm 3 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
+    sudo su -c "echo 'c' > /sys/class/drm/card0/device/pp_od_clk_voltage"
     #sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
     #sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
     sudo ./rocm-smi --setmclk 3
