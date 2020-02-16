@@ -28,7 +28,7 @@ if [ "$PORT" != "4028" ] && [ "$PORT" != "7887"]; then
     #sudo su -c "kill $(sudo lsof -t -i:$PORT)"
     #sudo fuser -k $PORT/tcp
     sleep 5
-    RETEST=$(sudo netstat -anp | grep $PORT 2> /dev/null | grep TIME_WAIT 2> /dev/null | awk '{print $5}' | wc -l)
+    RETEST=$(sudo netstat -p 2> /dev/null | grep -c $PORT 2> /dev/null)
   done 
 
 fi
