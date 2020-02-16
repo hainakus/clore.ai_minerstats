@@ -64,10 +64,14 @@ if [ $1 ]; then
       #sudo su -c "echo 's 5 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       #sudo su -c "echo 's 6 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 's $COREINDEX $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      # NITRO has 8 core state ?!
-      #sudo su -c "echo 's 8 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      #sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/pp_sclk_od"
-      #sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_sclk_od"
+      sudo su -c "echo 'vc 2 $CORECLOCK $VDDC' > /sys/class/drm/card0/device/pp_od_clk_voltage"
+      sudo su -c "echo 'c' > /sys/class/drm/card0/device/pp_od_clk_voltage"
+      
+      sudo su -c "echo '0' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
+      sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
+
+      sudo su -c "echo $COREINDEX > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+      
     fi
   fi
 
