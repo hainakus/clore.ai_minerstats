@@ -50,26 +50,28 @@ function runMiner(miner, execFile, args, plus) {
 }
 
 function restartNode() {
-  if (global.benchmark.toString() == 'false') {
+  //console.log(global.benchmark);
+  //console.log(global.watchnum);
+  if (global.benchmark == false) {
+    //console.log("yes false");
     var main = require('./start.js');
-    global.watchnum++;
-    if (global.watchnum == 6 || global.watchnum == 12) {
+    //console.log(global.watchnum);
+    if (global.watchnum == 8 || global.watchnum == 16) {
       console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;31mError (" + global.watchnum + "×)\x1b[0m");
       console.log("\x1b[1;94m== \x1b[0mAction: Restarting client ...");
       clearInterval(global.timeout);
       clearInterval(global.hwmonitor);
       var killMinerQueryB = require('child_process').exec;
       try {
-      var killMinerQueryProcB = killMinerQueryB("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
+        var killMinerQueryProcB = killMinerQueryB("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
           main.main();
         });
-      }
-      catch(err) {
+      } catch (err) {
         console.log(err);
         main.main();
       }
     }
-    if (global.watchnum >= 18) {
+    if (global.watchnum >= 24) {
       console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;31mError (" + global.watchnum + "×)\x1b[0m");
       console.log("\x1b[1;94m== \x1b[0mAction: Rebooting ...");
       clearInterval(global.timeout);
@@ -79,6 +81,7 @@ function restartNode() {
         console.log(stdout + " " + stderr);
       });
     }
+    global.watchnum++;
   }
 }
 const MINER_JSON = {
@@ -865,9 +868,9 @@ module.exports = {
               main.main();
             }
           } else {
-          gpuSyncDone = true;
-          global.sync = true;
-          global.res_data = statusCode;
+            gpuSyncDone = true;
+            global.sync = true;
+            global.res_data = statusCode;
           }
         }
         //console.log(statusCode);
@@ -897,7 +900,7 @@ module.exports = {
           gpuSyncDone = false;
           global.sync = true;
           restartNode();
-          if(global.watchnum>1){
+          if (global.watchnum > 1) {
             console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
             console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + err.message + ")\x1b[0m");
             console.log("\x1b[1;94m== \x1b[0mPossible reasons:\x1b[0m");
@@ -921,7 +924,7 @@ module.exports = {
             gpuSyncDone = false;
             global.sync = true;
             restartNode();
-            if(global.watchnum>1){
+            if (global.watchnum > 1) {
               console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
               console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + error + ")\x1b[0m");
               console.log("\x1b[1;94m== \x1b[0mPossible reasons:\x1b[0m");
@@ -953,7 +956,7 @@ module.exports = {
           gpuSyncDone = false;
           global.sync = true;
           restartNode();
-          if(global.watchnum>1){
+          if (global.watchnum > 1) {
             console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
             console.log("\x1b[1;94m== \x1b[0m- Mining client or API not started\x1b[0m");
             console.log("\x1b[1;94m== \x1b[0m- Too much Overclock / Undervolt\x1b[0m");
