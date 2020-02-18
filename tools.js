@@ -58,10 +58,16 @@ function restartNode() {
       console.log("\x1b[1;94m== \x1b[0mAction: Restarting client ...");
       clearInterval(global.timeout);
       clearInterval(global.hwmonitor);
-      var killMinerQueryB = require('child_process').exec,
-        killMinerQueryProcB = killMinerQueryB("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
+      var killMinerQueryB = require('child_process').exec;
+      try {
+      var killMinerQueryProcB = killMinerQueryB("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
           main.main();
         });
+      }
+      catch(err) {
+        console.log(err);
+        main.main();
+      }
     }
     if (global.watchnum >= 18) {
       console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;31mError (" + global.watchnum + "×)\x1b[0m");
