@@ -119,14 +119,14 @@ loop() {
           if [ ! -z "$PARAM" ]; then
             #sudo nvidia-settings -c :0 $PARAM &> /dev/null
             if [ "$MSG" != "ON TARGET" ]; then
-              MAXFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon?/fan1_max)
-              if [ -z "$MAXFAN" ]; then
+              #MAXFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon?/fan1_max)
+              #if [ -z "$MAXFAN" ]; then
                 MAXFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1_max)
-              fi
+              #fi
               CURRFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1)
-              if [ -z "$MAXFAN" ]; then
-                MAXFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon??/fan1_max)
-              fi
+              #if [ -z "$MAXFAN" ]; then
+                #MAXFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon??/fan1_max)
+              #fi
               if [ -z "$MAXFAN" ]; then
                 MAXFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon??/pwm1_max)
               fi
