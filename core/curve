@@ -21,6 +21,12 @@ if [ -z "$TARGET" ]; then
   echo "TARGET_TEMP has no value [Set to $TARGET]"
 fi
 
+if [ "$FANMIN" = "$FANMAX" ]; then 
+  SLEEP=75
+else
+  SLEEP=20
+fi
+
 # Drivers
 TEST_NVIDIA=$(nvidia-smi -L)
 NUM_AMD=$(sudo lshw -C display | grep AMD | wc -l)
@@ -291,7 +297,7 @@ loop() {
      fi
   fi
 
-  sleep 20
+  sleep $SLEEP
   loop
 
 }
