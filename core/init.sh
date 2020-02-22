@@ -7,9 +7,9 @@ DETECT="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | s
 PART=$DETECT"1"
 
 if [ "$DETECT" = "nvmenp" ]; then
-    echo "Changeing header, NVM drive detected.."
-    DETECT="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | xargs | sed 's/.$//' | sed 's/\s.*$//' | xargs | sed 's/\p//g')"
-    PART=$DETECT"p1"
+  echo "Changeing header, NVM drive detected.."
+  DETECT="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | xargs | sed 's/.$//' | sed 's/\s.*$//' | xargs | sed 's/\p//g')"
+  PART=$DETECT"p1"
 fi
 
 DISK="$(df -hm | grep $PART | awk '{print $2}')"
@@ -20,7 +20,7 @@ DETECTA=$(nvidia-smi -L | grep "GPU 0:" | wc -l)
 DETECTB=$(sudo lshw -C display | grep AMD | wc -l)
 
 if [ "$DETECTB" = "0" ]; then
-    DETECTB=$(sudo lshw -C display | grep amd | wc -l)
+  DETECTB=$(sudo lshw -C display | grep amd | wc -l)
 fi
 
 if grep -q experimental "/etc/lsb-release"; then
@@ -56,7 +56,7 @@ if [ -z "$NVIDIA_DRIVER" ]; then
   NVIDIA_DRIVER=$(nvidia-smi | grep "Driver Version" | xargs | sed 's/[^0-9. ]*//g' | xargs | cut -d ' ' -f 1 | xargs)
 fi
 if [ -z "$NVIDIA_DRIVER" ]; then
-    NVIDIA_DRIVER=$(dpkg -l | grep nvidia-driver | grep ii | awk '{print $3}' | xargs | cut -d '-' -f 1)
+  NVIDIA_DRIVER=$(dpkg -l | grep nvidia-driver | grep ii | awk '{print $3}' | xargs | cut -d '-' -f 1)
 fi
 AMD_DRIVER=$(dpkg -l | grep vulkan-amdgpu-pro | head -n1 | awk '{print $3}' | xargs)
 KERNEL_VERSION=$(uname -r)
@@ -162,9 +162,9 @@ do
   if [ -f "/dev/shm/maintenance.pid" ]; then
     echo "Maintenance mode, all remote commands disabled."
     if [ $RESPONSE = "CONSOLE" ]; then
-            RESPONSE="CONSOLE"
+      RESPONSE="CONSOLE"
     else
-            RESPONSE="null"
+      RESPONSE="null"
     fi
   fi
 
@@ -198,7 +198,7 @@ do
     sync
     sudo shutdown -h now
   fi
-  
+
   if [ $RESPONSE = "INSTANTOC" ]; then
     echo "-------------------------------------------"
     screen -A -m -d -S instantoc sudo /home/minerstat/minerstat-os/bin/overclock.sh instant &
@@ -210,12 +210,12 @@ do
     screen -A -m -d -S instantoc sudo /home/minerstat/minerstat-os/bin/setfans.sh &
     echo "-------------------------------------------"
   fi
-  
+
   if [ $RESPONSE = "DOWNLOADWATTS" ] || [ $RESPONSE = "RESTARTWATTS" ]; then
     echo "-------------------------------------------"
     screen -A -m -d -S overclocks sudo /home/minerstat/minerstat-os/bin/overclock.sh &
     if [ ! -f "/tmp/stop.pid" ]; then
-        RESPONSE="RESTART"
+      RESPONSE="RESTART"
     fi
     echo "-------------------------------------------"
   fi
@@ -277,19 +277,19 @@ do
     HWMEMORY=$(cd /home/minerstat/minerstat-os/bin/; cat amdmeminfo.txt)
     sudo chmod 777 /dev/shm/amdmeminfo.txt
     if [ ! -f "/dev/shm/amdmeminfo.txt" ]; then
-        sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q | tac > /dev/shm/amdmeminfo.txt &
-        sudo cp -rf /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
-        sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
-        HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
+      sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q | tac > /dev/shm/amdmeminfo.txt &
+      sudo cp -rf /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
+      sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
+      HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
     fi
     if [ -z "$HWMEMORY" ] || [ -f "/dev/shm/amdmeminfo.txt" ]; then
-        HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
+      HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
     fi
     if [ -z "$AMDINFO" ]; then
-        AMDINFO=$(sudo /home/minerstat/minerstat-os/bin/amdcovc)
+      AMDINFO=$(sudo /home/minerstat/minerstat-os/bin/amdcovc)
     fi
     HWSTRAPS=$(cd /home/minerstat/minerstat-os/bin/; sudo ./"$STRAPFILENAME" --current-minerstat)
-    sudo curl --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=amd" --data "hwData=$AMDINFO" --data "hwPower=$QUERYPOWER" --data "hwMemory=$HWMEMORY" --data "hwStrap=$HWSTRAPS" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os.php"
+    sudo curl --insecure --connect-timeout 15 --max-time 25 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=amd" --data "hwData=$AMDINFO" --data "hwPower=$QUERYPOWER" --data "hwMemory=$HWMEMORY" --data "hwStrap=$HWSTRAPS" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os.php"
   fi
 
   if [ "$MONITOR_TYPE" = "nvidia" ]; then
@@ -297,7 +297,7 @@ do
     # NVIDIA DRIVER CRASH WATCHDOG
     TESTVIDIA=$(sudo nvidia-smi --query-gpu=count --format=csv,noheader | grep "lost")
     RAMLOG="$RAMLOG $TESTVIDIA"
-    sudo curl --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=nvidia" --data "hwData=$QUERYNVIDIA" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os.php"
+    sudo curl --insecure --connect-timeout 15 --max-time 25 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=nvidia" --data "hwData=$QUERYNVIDIA" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os.php"
 
   fi
 
