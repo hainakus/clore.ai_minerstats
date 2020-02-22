@@ -527,7 +527,9 @@ module.exports = {
       needle = require('needle');
     clearInterval(global.timeout);
     clearInterval(global.hwmonitor);
-    needle.get('https://api.minerstat.com/v2/benchmark/' + global.accesskey + '/' + global.worker, function(error, response) {
+    needle.get('https://api.minerstat.com/v2/benchmark/' + global.accesskey + '/' + global.worker, {
+      "timeout": 15000
+    }, function(error, response) {
       if (error === null) {
         console.log(response.body);
         global.benchmark = true;
@@ -555,6 +557,7 @@ module.exports = {
             // SEND TO THE SERVER
             request.get({
               url: 'https://api.minerstat.com/v2/benchmark/result/' + global.accesskey + '/' + global.worker + '/' + global.B_ID + '/' + global.B_HASH,
+              timeout: 15000,
               form: {
                 dump: "BenchmarkInit"
               }
