@@ -126,6 +126,7 @@ module.exports = {
     //console.log(res_data);
     request.post({
       url: 'https://api.minerstat.com:2053/v2/set_node_config.php?token=' + global.accesskey + '&worker=' + global.worker + '&miner=' + global.client.toLowerCase() + '&ver=4&cpuu=' + global.minerCpu + '&cpud=HASH' + '&os=linux&hwNew=true&currentcpu=' + global.cpuDefault.toLowerCase() + '&hwType=' + global.minerType + '&privateMiner=' + global.PrivateMiner + '&currentMinerVersion=' + global.minerVersion + '&currentCPUVersion=' + global.cpuVersion,
+      timeout: 15000,
       form: {
         minerData: res_data,
         cpuData: cpu_data
@@ -154,13 +155,13 @@ module.exports = {
           console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32m" + global.worker + " (" + global.client + ") synced\x1b[0m");
           //console.log("\x1b[1;94m== \x1b[0m[" + global.minerType + "] \x1b " + hwdatas.replace(/(\r\n|\n|\r)/gm, ""));
         } else {
-		if(global.watchnum>1){	
-          		console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (Not hashing)\x1b[0m");
-          		console.log("\x1b[1;94m== \x1b[0mWorker: " + global.worker);
-          		console.log("\x1b[1;94m== \x1b[0mClient: " + global.client);
-          		//console.log("\x1b[1;94m== \x1b[0m[" + global.minerType + "] \x1b " + hwdatas.replace(/(\r\n|\n|\r)/gm, ""));
-		}
-		global.watchnum++;
+          if (global.watchnum > 1) {
+            console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (Not hashing)\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0mWorker: " + global.worker);
+            console.log("\x1b[1;94m== \x1b[0mClient: " + global.client);
+            //console.log("\x1b[1;94m== \x1b[0m[" + global.minerType + "] \x1b " + hwdatas.replace(/(\r\n|\n|\r)/gm, ""));
+          }
+          global.watchnum++;
         }
         if (global.minerCpu.toString() === "true") {
           if (cpuSync.toString() === "true") {
@@ -246,7 +247,9 @@ module.exports = {
     sleep.sleep(1);
     const https = require('https');
     var needle = require('needle');
-    needle.get('https://api.minerstat.com/v2/node/gpu/' + global.accesskey + '/' + global.worker, function(error, response) {
+    needle.get('https://api.minerstat.com/v2/node/gpu/' + global.accesskey + '/' + global.worker, {
+      "timeout": 15000
+    }, function(error, response) {
       if (error === null) {
         console.log(response.body);
 
@@ -304,6 +307,7 @@ module.exports = {
           var request = require('request');
           request.get({
             url: 'https://api.minerstat.com:2053/v2/set_node_config.php?token=' + global.accesskey + '&worker=' + global.worker + '&miner=' + global.client.toLowerCase() + '&os=linux&nodel=yes&ver=5&cpuu=' + global.minerCpu + '&currentMinerVersion=undefined&currentCPUVersion=undefined',
+            timeout: 15000,
             form: {
               dump: "minerstatOSInit"
             }
@@ -357,7 +361,8 @@ module.exports = {
       // Fetch Server Version
       var request = require('request');
       request.get({
-        url: 'https://static-ssl.minerstat.farm/miners/linux/version.json'
+        url: 'https://static-ssl.minerstat.farm/miners/linux/version.json',
+        timeout: 15000,
       }, function(error, response, body) {
         if (error != null) {
           console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + error + ")\x1b[0m");
@@ -454,7 +459,8 @@ module.exports = {
         }
         var request = require('request');
         request.get({
-          url: 'https://static-ssl.minerstat.farm/miners/linux/cuda.json'
+          url: 'https://static-ssl.minerstat.farm/miners/linux/cuda.json',
+          timeout: 15000,
         }, function(cudaerror, cudaresponse, cudabody) {
 
           var minerNameWithCuda = gpuMiner.toLowerCase().replace("_10", "");
@@ -688,7 +694,7 @@ module.exports = {
         "kbminer": "start.bash",
         "ttminer": "start.bash",
         "vkminer": "start.bash",
-	"srbminer-multi": "start.bash"
+        "srbminer-multi": "start.bash"
       };
 
       try {
@@ -703,7 +709,9 @@ module.exports = {
         }
       }
 
-      needle.get('https://api.minerstat.com/v2/conf/gpu/' + global.accesskey + '/' + global.worker + '/' + miner.toLowerCase().replace("_10", ""), function(error, response) {
+      needle.get('https://api.minerstat.com/v2/conf/gpu/' + global.accesskey + '/' + global.worker + '/' + miner.toLowerCase().replace("_10", ""), {
+        "timeout": 15000
+      }, function(error, response) {
         if (error === null) {
           var str = response.body;
           if (clientType == "cpu") {
