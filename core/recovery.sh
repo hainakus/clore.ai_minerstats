@@ -14,6 +14,7 @@ ls
 git clone https://github.com/minerstat/minerstat-os
 chmod 777 minerstat-os
 cd /home/minerstat/minerstat-os
+sudo npm update
 sudo npm install
 chmod -R 777 *
 echo "Copy config from MSOS (NTFS) Partition"
