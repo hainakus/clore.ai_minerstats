@@ -26,6 +26,8 @@ if [ ! -f "$CACHEFILE" ]; then
       FANNUM="1"
     elif [[ $CHECKTYPE == *"P102"* ]]; then
       FANNUM="1"
+    elif [[ $CHECKTYPE == *"P106"* ]]; then
+      FANNUM="1"
     else
       FANNUM="0"
     fi
