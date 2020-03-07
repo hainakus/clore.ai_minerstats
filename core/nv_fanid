@@ -22,8 +22,12 @@ if [ ! -f "$CACHEFILE" ]; then
       FANNUM="2"
     elif [[ $CHECKTYPE == *"GTX"* ]]; then
       FANNUM="1"
-    else
+    elif [[ $CHECKTYPE == *"P104"* ]]; then
       FANNUM="1"
+    elif [[ $CHECKTYPE == *"P102"* ]]; then
+      FANNUM="1"
+    else
+      FANNUM="0"
     fi
     if [[ $i == "15" ]]; then
       COMMA=""
