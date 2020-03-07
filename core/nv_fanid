@@ -23,7 +23,7 @@ if [ ! -f "$CACHEFILE" ]; then
     elif [[ $CHECKTYPE == *"GTX"* ]]; then
       FANNUM="1"
     else
-      FANNUM="0"
+      FANNUM="1"
     fi
     if [[ $i == "15" ]]; then
       COMMA=""
