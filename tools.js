@@ -427,8 +427,7 @@ module.exports = {
       sleep = require('sleep'),
       mains = require('./start.js'),
       miner = miner.toLowerCase();
-    console.log("\x1b[1;94m== \x1b[0mAction: Starting " + miner + " ...");
-    console.log(chalk.white(getDateTime() + " " + miner + " => " + startArgs));
+    console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32m" + global.worker + " (" + miner + ") applying config:\x1b[0m " + startArgs);
     sleep.sleep(2);
 
     if (global.PrivateMiner == "True" && miner != "xmrig" && miner != "cpuminer-opt") {
@@ -484,17 +483,15 @@ module.exports = {
     writeStream.write("" + str);
     writeStream.end();
     writeStream.on('finish', function() {
-      console.log(chalk.gray.bold(getDateTime() + " DELAYED MINER START (1-40s): " + miner));
-      console.log(chalk.gray.bold(getDateTime() + " Please, wait.. Killing ports for: " + miner));
+      console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32m" + global.worker + " (" + miner + ") preparing ...\x1b[0m");
       sleep.sleep(2);
-
 
       try {
         var killQuery = require('child_process').exec,
           killQueryProc = killQuery("sudo /home/minerstat/minerstat-os/core/killport.sh " + MINER_JSON[miner]["apiPort"], function(error, stdout, stderr) {
             if (global.PrivateMiner == "False") {
               console.log(stdout);
-              console.log("Starting miner screen...");
+              //console.log("Starting miner screen...");
               mains.setsync();
               runMiner(miner, execFile, args);
             }
@@ -503,7 +500,7 @@ module.exports = {
 
       if (global.PrivateMiner == "True") {
         //console.log(stdout);
-        console.log("Starting miner screen...");
+        //console.log("Starting miner screen...");
         mains.setsync();
         runMiner(miner, execFile, args);
       }
