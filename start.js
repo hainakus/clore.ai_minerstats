@@ -119,7 +119,7 @@ module.exports = {
     // SEND LOG TO SERVER
     //console.log("MINER:" + global.minerVersion + ", CPU:" + global.cpuVersion);
     if (global.benchmark.toString() != 'false' && res_data == "") {
-      console.log("NOTE: Blank send request during benchmark, ignoring..");
+      console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;33m" + global.worker + " (" + global.client + ") blank sync\x1b[0m");
       return "blank";
     }
     var request = require('request');
@@ -312,8 +312,8 @@ module.exports = {
               dump: "minerstatOSInit"
             }
           }, function(error, response, body) {
-            console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
-            console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32mFirst sync (~30 sec)\x1b[0m");
+            //console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32mFirst sync ...\x1b[0m");
           });
         }
       } else {
@@ -439,13 +439,13 @@ module.exports = {
       var chmodQuery = require('child_process').exec;
       try {
         var setChmod = chmodQuery("cd /home/minerstat/minerstat-os/; sudo chmod -R 777 *", function(error, stdout, stderr) {
-          console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;32mPermissions applied (" + minerName.replace("_10", "") + ")\x1b[0m");
+          //console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;32mPermissions applied (" + minerName.replace("_10", "") + ")\x1b[0m");
           dlconf(minerName.replace("_10", ""), minerType);
         });
       } catch (error) {
         console.error(error);
         var setChmod = chmodQuery("sync; cd /home/minerstat/minerstat-os/; sudo chmod -R 777 *", function(error, stdout, stderr) {
-          console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;32mPermissions applied (" + minerName.replace("_10", "") + ")\x1b[0m");
+          //console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;32mPermissions applied (" + minerName.replace("_10", "") + ")\x1b[0m");
           dlconf(minerName.replace("_10", ""), minerType);
         });
       }
