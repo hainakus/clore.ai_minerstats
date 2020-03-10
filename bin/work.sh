@@ -214,7 +214,7 @@ if ! screen -list | grep -q "dummy"; then
   screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done
   sudo su minerstat -c "screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
   sudo su minerstat -c "screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh"
-  sudo rm /tmp/stop.pid
+  sudo rm /tmp/stop.pid > /dev/null 2>&1
   sleep 2
   sudo su minerstat -c "screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh"
 
@@ -274,7 +274,7 @@ if ! screen -list | grep -q "dummy"; then
   echo "Waiting for console output.."
 
   # Remove pending commands
-  curl --request POST "https://api.minerstat.com/v2/set_node_config.php?token=$TOKEN&worker=$WORKER" &
+  timeout 10 curl --request POST "https://api.minerstat.com/v2/set_node_config.php?token=$TOKEN&worker=$WORKER" &
 
   sleep 3
   sudo chvt 1
