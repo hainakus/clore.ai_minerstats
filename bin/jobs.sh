@@ -1,8 +1,8 @@
 #!/bin/bash
 exec 2>/dev/null
 echo "Running Clean jobs.."
-sudo systemctl mask apt-daily.service apt-daily-upgrade.service
-sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic linux-firmware
+sudo systemctl mask apt-daily.service apt-daily-upgrade.service 
+sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic linux-firmware > /dev/null 2>&1
 sudo systemctl daemon-reload
 # Kernel panic auto reboot
 sudo su -c "echo 20 >/proc/sys/kernel/panic"
@@ -56,13 +56,13 @@ else
   HPAGE=128
 fi
 
-sudo su -c "echo $HPAGE > /proc/sys/vm/nr_hugepages"
-sudo su -c "sysctl vm.nr_hugepages=$HPAGE"
-sudo su -c "echo always > /sys/kernel/mm/transparent_hugepage/enabled"
-sudo su -c "sysctl vm.dirty_background_ratio=20"
-sudo su -c "sysctl vm.dirty_expire_centisecs=0"
-sudo su -c "sysctl vm.dirty_ratio=80"
-sudo su -c "sysctl vm.dirty_writeback_centisecs=0"
+sudo su -c "echo $HPAGE > /proc/sys/vm/nr_hugepages" > /dev/null 2>&1
+sudo su -c "sysctl vm.nr_hugepages=$HPAGE" > /dev/null 2>&1
+sudo su -c "echo always > /sys/kernel/mm/transparent_hugepage/enabled" > /dev/null 2>&1
+sudo su -c "sysctl vm.dirty_background_ratio=20" > /dev/null 2>&1
+sudo su -c "sysctl vm.dirty_expire_centisecs=0" > /dev/null 2>&1
+sudo su -c "sysctl vm.dirty_ratio=80" > /dev/null 2>&1
+sudo su -c "sysctl vm.dirty_writeback_centisecs=0" > /dev/null 2>&1
 
 # Fix ERROR Messages
 export LC_CTYPE=en_US.UTF-8
