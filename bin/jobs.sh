@@ -199,7 +199,7 @@ sudo ln -s /home/minerstat/minerstat-os/bin/jq /sbin &> /dev/null
 # Restart fan curve if running
 FNUM=$(sudo su -c "screen -list | grep -c curve")
 if [ "$FNUM" -gt "0" ]; then
-  echo "Fan curve detected.. restarting"
+  #echo "Fan curve detected.. restarting"
   sudo killall curve
   sudo screen -A -m -d -S curve /home/minerstat/minerstat-os/core/curve
 fi
@@ -224,6 +224,7 @@ if [ "$SNUMD" = "0" ]; then
   sudo su -c "sudo screen -X -S display quit" &
   sudo killall X
   sudo killall Xorg
+  sudo kill -9 $(sudo pidof Xorg)
   sudo rm /tmp/.X0-lock
   sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0"
   sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf
