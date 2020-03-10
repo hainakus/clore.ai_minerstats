@@ -49,7 +49,7 @@ if ! screen -list | grep -q "dummy"; then
   if [ "$HAVECONNECTION" != "true" ]
   then
 
-    GET_GATEWAY=$(route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
+    GET_GATEWAY=$(timeout 10 route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
     # systemd resolve casusing problems with 127.0.0.53
     if [ ! -z "$GET_GATEWAY" ]; then
       sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/resolvconf/interface/systemd-resolved" 2>/dev/null
