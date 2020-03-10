@@ -195,8 +195,8 @@ if [ $1 ]; then
     sudo bash -c "echo r > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" 
 
     ## Detect state's
-    maxMemState=$(sudo ./ohgodatool -i $GPUID --show-mem  | grep -E "Memory state ([0-9]+):" | tail -n 1 | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g')
-    maxCoreState=$(sudo ./ohgodatool -i $GPUID --show-core | grep -E "DPM state ([0-9]+):"    | tail -n 1 | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g')
+    maxMemState=$(timeout 10 sudo ./ohgodatool -i $GPUID --show-mem  | grep -E "Memory state ([0-9]+):" | tail -n 1 | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g')
+    maxCoreState=$(timeout 10 sudo ./ohgodatool -i $GPUID --show-core | grep -E "DPM state ([0-9]+):"    | tail -n 1 | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g')
     currentCoreState=$(sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk | grep '*' | cut -f1 -d':' | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g'")
     #currentCoreState=5
 
@@ -226,7 +226,7 @@ if [ $1 ]; then
 
     # CURRENT Volt State for Undervolt
     voltStateLine=$(($currentCoreState + 1))
-    currentVoltState=$(sudo ./ohgodatool -i $GPUID --show-core | grep -E "VDDC:" | sed -n $voltStateLine"p" | sed 's/^.*entry/entry/' | sed 's/[^0-9]*//g')
+    currentVoltState=$(timeout 10 sudo ./ohgodatool -i $GPUID --show-core | grep -E "VDDC:" | sed -n $voltStateLine"p" | sed 's/^.*entry/entry/' | sed 's/[^0-9]*//g')
 
     echo "DEBUG: C $currentCoreState / VL $voltStateLine / CVS $currentVoltState"
     echo ""
@@ -243,7 +243,7 @@ if [ $1 ]; then
       #	done
       #fi
       for voltstate in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-        sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
+        timeout 10 sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
       done
     fi
 
@@ -254,7 +254,7 @@ if [ $1 ]; then
       echo
       echo "--- Setting up VDDCI Voltage GPU$GPUID ---"
       echo
-      sudo ./ohgodatool -i $GPUID --mem-state $maxMemState --vddci $VDDCI
+      timeout 10 sudo ./ohgodatool -i $GPUID --mem-state $maxMemState --vddci $VDDCI
     fi
 
     # MVDCC
@@ -262,7 +262,7 @@ if [ $1 ]; then
       echo
       echo "--- Setting up MVDD Voltage GPU$GPUID ---"
       echo
-      sudo ./ohgodatool -i $GPUID --mem-state $maxMemState --mvdd $MVDD
+      timeout 10 sudo ./ohgodatool -i $GPUID --mem-state $maxMemState --mvdd $MVDD
     fi
 
     #################################£
@@ -276,11 +276,11 @@ if [ $1 ]; then
         if [ "$maxMemState" != "2" ]; then
           #OHGOD1=" --core-state $currentCoreState --core-clock $CORECLOCK"
           for corestate in 3 4 5 6 7 8; do
-            sudo ./ohgodatool -i $GPUID --core-state $corestate --core-clock $CORECLOCK
+            timeout 10 sudo ./ohgodatool -i $GPUID --core-state $corestate --core-clock $CORECLOCK
           done
         else
           for corestate in 3 4 5 6 7 8; do
-            sudo ./ohgodatool -i $GPUID --core-state $corestate --core-clock $CORECLOCK
+            timeout 10 sudo ./ohgodatool -i $GPUID --core-state $corestate --core-clock $CORECLOCK
           done
         fi
 
@@ -324,7 +324,7 @@ if [ $1 ]; then
     echo "- SET | GPU$GPUID Performance level: manual -"
     echo "- SET | GPU$GPUID DPM state: $currentCoreState -"
     echo "- SET | GPU$GPUID MEM state: $maxMemState -"
-    sudo ./ohgodatool -i $GPUID $OHGOD1 $OHGOD2 $OHGOD3
+    timeout 10 sudo ./ohgodatool -i $GPUID $OHGOD1 $OHGOD2 $OHGOD3
 
     sudo su -c "echo 'manual' > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
     sudo su -c "echo $currentCoreState > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
