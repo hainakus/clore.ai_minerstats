@@ -122,7 +122,7 @@ if ! screen -list | grep -q "dummy"; then
   echo "It can take a few moments! You may see ping messages for a while"
   echo ""
 
-  nslookup api.minerstat.com
+  timeout 10 nslookup api.minerstat.com
 
   while ! sudo ping api.minerstat.com. -w 1 | grep "0%"; do
     sudo /home/minerstat/minerstat-os/core/dnser
