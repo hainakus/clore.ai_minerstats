@@ -12,10 +12,11 @@ interface=$(ip addr | awk '/state UP/ {print $2}' | sed 's/.$//')
 #sudo su -c "kill $(sudo lsof -t -i:$PORT)"
 #sudo fuser -k $PORT/tcp
 
-echo "Freeing up API Port at: $PORT [$interface]";
+now=$(date +"%T")
+printf "\033[1;34m== \033[0m$now:\033[1;32m Freeing up API Port at: $PORT [$interface]\033[0m ..."
 
 for con in `sudo netstat -anp | grep $PORT | grep TIME_WAIT | awk '{print $5}'`; do
-  sudo /home/minerstat/minerstat-os/core/killcx.pl $con lo
+  sudo /home/minerstat/minerstat-os/core/killcx.pl $con lo >/dev/null
   #sudo /home/minerstat/minerstat-os/core/killcx.pl $con $interface
 done
 
@@ -33,6 +34,6 @@ if [ "$PORT" != "4028" ] && [ "$PORT" != "7887"]; then
 
 fi
 
-echo "Done."
+printf "\033[1;32m done\033[0m"
 
 sudo su -c "echo 10 > /proc/sys/net/ipv4/tcp_fin_timeout"
