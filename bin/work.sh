@@ -27,13 +27,13 @@ if ! screen -list | grep -q "dummy"; then
   NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
 
   echo ""
-  echo "-------- GRAPHICS CARDS -------------"
-  echo "FOUND AMD    :  $AMDDEVICE"
-  echo "FOUND NVIDIA :  $NVIDIADEVICE"
+  echo "\033[1;34m================= GPUs =================\033[0m"
+  echo "\033[1;34m== \033[1;32mAMD:\033[0m $AMDDEVICE"
+  echo "\033[1;34m== \033[1;32mNVIDIA:\033[0m $NVIDIADEVICE"
   echo ""
 
   echo " "
-  echo "-------- CONFIGURE NETWORK ADAPTERS --------------"
+  echo "\033[1;34m=========== NETWORK ADAPTERS ===========\033[0m"
   SSID=$(cat /media/storage/network.txt | grep 'WIFISSID="' | sed 's/WIFISSID="//g' | sed 's/"//g' | xargs | wc -L)
   DHCP=$(cat /media/storage/network.txt | grep "DHCP=" | sed 's/DHCP=//g' | sed 's/"//g')
 
@@ -106,11 +106,11 @@ if ! screen -list | grep -q "dummy"; then
 
   sleep 1
 
-  echo "-------- WAITING FOR CONNECTION -----------------"
+  echo "\033[1;34m======== WAITING FOR CONNECTION ========\033[0m"
   echo ""
 
   # Cache management
-  while ! sudo ping minerstat.com. -w 1 | grep "0%"; do
+  while ! sudo ping minerstat.com -w 1 | grep "0%"; do
     sudo service network-manager restart
     sudo /usr/sbin/netplan apply
     break
@@ -118,31 +118,30 @@ if ! screen -list | grep -q "dummy"; then
   #sudo su -c "ifdown lo"
   #sudo su -c "ifup lo"
 
-  echo "Waiting for DNS resolve.."
-  echo "It can take a few moments! You may see ping messages for a while"
+  echo "\033[1;34m== \033[0m Please wait ..."
   echo ""
 
   timeout 10 nslookup api.minerstat.com
 
-  while ! sudo ping api.minerstat.com. -w 1 | grep "0%"; do
+  while ! sudo ping api.minerstat.com -w 1 | grep "0%"; do
     sudo /home/minerstat/minerstat-os/core/dnser
     sleep 3
   done
 
   echo ""
-  echo "-------- AUTO UPDATE MINERSTAT ------------------"
+  echo "\033[1;34m============ UPDATING msOS =============\033[0m"
   echo ""
   #sudo update-pciids
   cd /home/minerstat/minerstat-os
   sudo sh git.sh
   echo ""
   sudo chmod -R 777 /home/minerstat/minerstat-os/*
-  echo "Moving MSOS config.js to / (LINUX)"
+  #echo "Moving MSOS config.js to / (LINUX)"
   sudo cp -rf "/media/storage/config.js" "/home/minerstat/minerstat-os/"
 
   echo ""
-  echo "-------- INITIALIZING FAKE DUMMY PLUG -------------"
-  echo "Please wait.."
+  echo "\033[1;34m===== INITIALIZING FAKE DUMMY PLUG =====\033[0m"
+  echo "\033[1;34m== \033[0m Please wait ..."
 
   sudo killall X
   sudo killall Xorg
@@ -168,7 +167,7 @@ if ! screen -list | grep -q "dummy"; then
   echo ""
 
   echo " "
-  echo "-------- OVERCLOCKING ---------------------------"
+  echo "\033[1;34m============ OVERCLOCKING ==============\033[0m"
   cd /home/minerstat/minerstat-os/
   sudo node stop
   sudo su minerstat -c "screen -X -S minerstat-console quit"
@@ -193,19 +192,18 @@ if ! screen -list | grep -q "dummy"; then
     sudo curl --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwMemory=$HWMEMORY" "https://api.minerstat.com/v2/set_node_config_os.php"
   fi
   # MCLOCK
-  echo "To run Overclock script manually type: mclock"
-  echo "Adjusting clocks in the background.."
+  echo "\033[1;34m== \033[0m Adjusting clocks in the background ..."
   #sudo chvt 1
   sudo sh /home/minerstat/minerstat-os/bin/overclock.sh
 
   if [ "$AMDDEVICE" -gt 0 ]; then
     echo ""
-    echo "--- Apply Strap (AMD TWEAK) from DB ---"
+	echo "\033[1;34m========= APPLYING AMD TWEAK ===========\033[0m"
     sudo screen -A -m -d -S delaymem sh /home/minerstat/minerstat-os/bin/setmem_bg.sh
   fi
 
   echo " "
-  echo "-------- INITALIZING MINERSTAT CLIENT -----------"
+  echo "\033[1;34m======= INITALIZING MINERSTAT ==========\033[0m"
   cd /home/minerstat/minerstat-os
   sudo su -c "sudo screen -X -S minew quit"
   sudo su -c "sudo screen -X -S fakescreen quit"
@@ -219,8 +217,7 @@ if ! screen -list | grep -q "dummy"; then
   sudo su minerstat -c "screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh"
 
   echo ""
-  echo "Minerstat has been started in the background.."
-
+  echo "\033[1;34m== \033[0m Minerstat started in the background ..."
   
   if grep -q experimental "/etc/lsb-release"; then
     if [ "$AMDDEVICE" -gt 0 ]; then
@@ -260,7 +257,7 @@ if ! screen -list | grep -q "dummy"; then
   fi
 
   echo " "
-  echo "-------- RUNNING JOBS ---------------------------"
+  echo "\033[1;34m========== INITALIZING JOBS ============\033[0m"
   cd /home/minerstat/minerstat-os/bin
   sudo sh jobs.sh $AMDDEVICE &
   echo ""
@@ -271,7 +268,7 @@ if ! screen -list | grep -q "dummy"; then
   cd /home/minerstat/minerstat-os/core
   sudo sh expand.sh &
 
-  echo "Waiting for console output.."
+  echo "\033[1;34m== \033[0m Waiting for console output ..."
 
   # Remove pending commands
   timeout 10 curl --request POST "https://api.minerstat.com/v2/set_node_config.php?token=$TOKEN&worker=$WORKER" &
