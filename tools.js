@@ -1,8 +1,6 @@
-var colors = require('colors'),
-  pump = require('pump'),
+var pump = require('pump'),
   fs = require('fs');
-const https = require('https'),
-  chalk = require('chalk');
+const https = require('https');
 var spec = null,
   syncs = null;
 
@@ -39,7 +37,7 @@ function runMiner(miner, execFile, args, plus) {
           detached: false,
           stdio: "inherit"
         }).then(result => {
-          console.log("CPU MINER => Closed");
+		  console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mCPU client closed\x1b[0m");
           global.minerRunning = false;
         });
       }
@@ -479,7 +477,7 @@ module.exports = {
         str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + " " + args + "" + logInFile + "; sleep 20";
       }
     }
-    console.log("Starting command: " + str);
+    //console.log("Starting command: " + str);
     writeStream.write("" + str);
     writeStream.end();
     writeStream.on('finish', function() {
@@ -758,12 +756,10 @@ module.exports = {
           });
           break;
         case 'REBOOT':
-          console.log("REBOOT => 3.. 2...");
           console.log("\x1b[1;94m== \x1b[0mRebooting ...");
           var queryBoot = exec("sudo su -c 'sudo reboot -f'", function(error, stdout, stderr) {});
           break;
         case 'FORCEREBOOT':
-          console.log("FORCE REBOOT => 3.. 2...");
           console.log("\x1b[1;94m== \x1b[0mRebooting ...");
           var queryBoot = exec("sudo su -c 'echo 1 > /proc/sys/kernel/sysrq'; sudo su -c 'echo b > /proc/sysrq-trigger';", function(error, stdout, stderr) {});
           break;
