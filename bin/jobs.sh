@@ -1,6 +1,6 @@
 #!/bin/bash
 exec 2>/dev/null
-echo "Running Clean jobs.."
+echo "Running Clean jobs ..."
 sudo systemctl mask apt-daily.service apt-daily-upgrade.service 
 sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic linux-firmware > /dev/null 2>&1
 sudo systemctl daemon-reload
@@ -199,18 +199,15 @@ sudo ln -s /home/minerstat/minerstat-os/bin/jq /sbin &> /dev/null
 # Restart fan curve if running
 FNUM=$(sudo su -c "screen -list | grep -c curve")
 if [ "$FNUM" -gt "0" ]; then
-  #echo "Fan curve detected.. restarting"
-  sudo killall curve
+  sudo kill -9 $(sudo pidof curve)
+  sleep 0.1
   sudo screen -A -m -d -S curve /home/minerstat/minerstat-os/core/curve
 fi
 # Safety layer
 CURVE_FILE=/media/storage/fans.txt
 if [ -f "$CURVE_FILE" ]; then
-  echo "Fan curve detected.. restarting"
-  sudo killall curve
-  sleep 2
-  sudo killall curve
-  sleep 1
+  sudo kill -9 $(sudo pidof curve)
+  sleep 0.1
   sudo screen -A -m -d -S curve /home/minerstat/minerstat-os/core/curve
 fi
 # Time Date SYNC
