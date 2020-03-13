@@ -199,13 +199,17 @@ sudo ln -s /home/minerstat/minerstat-os/bin/jq /sbin &> /dev/null
 # Restart fan curve if running
 FNUM=$(sudo su -c "screen -list | grep -c curve")
 if [ "$FNUM" -gt "0" ]; then
-  sudo kill -9 $(sudo pidof curve)
+  sudo killall curve
   sleep 0.1
+  sudo kill -9 $(sudo pidof curve)
+  sleep 0.2
   sudo screen -A -m -d -S curve /home/minerstat/minerstat-os/core/curve
 fi
 # Safety layer
 CURVE_FILE=/media/storage/fans.txt
 if [ -f "$CURVE_FILE" ]; then
+  sudo killall curve
+  sleep 0.1
   sudo kill -9 $(sudo pidof curve)
   sleep 0.1
   sudo screen -A -m -d -S curve /home/minerstat/minerstat-os/core/curve
