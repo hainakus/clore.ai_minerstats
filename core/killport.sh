@@ -8,6 +8,8 @@ if [ ! -z "$1" ]; then
   PORT=$1
 fi
 
+sudo kill -9 $(pidof PhoenixMiner)
+
 interface=$(ip addr | awk '/state UP/ {print $2}' | sed 's/.$//')
 #sudo su -c "kill $(sudo lsof -t -i:$PORT)"
 #sudo fuser -k $PORT/tcp
