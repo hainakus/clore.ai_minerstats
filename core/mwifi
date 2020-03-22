@@ -18,6 +18,9 @@ fi
 echo "SSID: $1"
 echo "PASSWD: $2"
 
+sudo systemctl enable NetworkManager >/dev/null
+sudo systemctl start NetworkManager >/dev/null
+
 echo
 nmcli d wifi rescan
 nmcli d wifi list
