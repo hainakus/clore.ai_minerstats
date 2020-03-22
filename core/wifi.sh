@@ -15,6 +15,9 @@ for dev in $INTERFACE; do
   if [ -d "/sys/class/net/$dev/wireless" ]; then DEVICE=$dev; fi;
 done
 
+sudo systemctl enable NetworkManager
+sudo systemctl start NetworkManager
+
 if echo "$DEVICE" | grep "w" ;then
 
   echo "Configuring Wifi Connection for: "$DEVICE
