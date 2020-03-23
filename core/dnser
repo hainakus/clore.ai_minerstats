@@ -3,7 +3,44 @@
 sudo systemctl disable systemd-resolved
 sudo systemctl stop systemd-resolved
 
-GET_GATEWAY=$(timeout 10 route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
+# check cloudflare ips
+SERVERA="104.20.2.95"
+SERVERB="104.20.3.95"
+DNSA=$(ping -c 1 $SERVERA &> /dev/null && echo success || echo fail)
+DNSB=$(ping -c 1 $SERVERB &> /dev/null && echo success || echo fail)
+SERVERC="$SERVERB"
+if [ "$DNSA" = "success" ] && [ "$DNSB" != "success" ]; then
+        SERVERC="$SERVERA"
+fi
+if [ "$DNSA" != "success" ] && [ "$DNSB" = "success" ]; then
+        SERVERC="$SERVERB"
+fi
+if [ "$DNSA" = "success" ] && [ "$DNSB" = "success" ]; then
+        SERVERC="$SERVERB"
+fi
+if [ "$DNSA" != "success" ] && [ "$DNSB" != "success" ]; then
+        SERVERC="$SERVERB"
+fi
+# /etc/hosts
+WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
+sudo echo "
+127.0.0.1 localhost
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+127.0.1.1 $WNAME
+$SERVERC minerstat.com
+$SERVERC api.minerstat.com
+104.24.98.231 static-ssl.minerstat.farm
+68.183.74.40 eu.pool.ms
+167.71.240.6 us.pool.ms
+68.183.74.40 eu.sandbox.pool.ms
+167.71.240.6 us.sandbox.pool.ms
+" > /etc/hosts
+
+GET_GATEWAY=$(timeout 5 route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
 # systemd resolve casusing problems with 127.0.0.53
 if [ ! -z "$GET_GATEWAY" ]; then
   sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/resolvconf/interface/systemd-resolved" 2>/dev/null
