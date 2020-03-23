@@ -13,10 +13,6 @@ if ! screen -list | grep -q "dummy"; then
   sudo systemctl start nvidia-persistenced &
   screen -A -m -d -S chvt sudo /home/minerstat/minerstat-os/bin/chvta
 
-  # TELEPROXY
-  #cd /home/minerstat/minerstat-os/bin
-  #sudo su minerstat -c "screen -A -m -d -S telp sh teleconsole.sh"
-
   NVIDIA="$(nvidia-smi -L)"
   AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
   if [ "$AMDDEVICE" = "0" ]; then
