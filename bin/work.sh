@@ -17,8 +17,6 @@ if ! screen -list | grep -q "dummy"; then
   #cd /home/minerstat/minerstat-os/bin
   #sudo su minerstat -c "screen -A -m -d -S telp sh teleconsole.sh"
 
-  sudo find /var/log -type f -delete
-
   NVIDIA="$(nvidia-smi -L)"
   AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
   if [ "$AMDDEVICE" = "0" ]; then
@@ -86,8 +84,8 @@ if ! screen -list | grep -q "dummy"; then
   fi
 
   # Rewrite
-  sudo systemctl stop systemd-resolved
-  GET_GATEWAY=$(timeout 10 route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
+  sudo systemctl stop systemd-resolved &
+  GET_GATEWAY=$(timeout 10 route -n -e -4 2>/dev/null | awk {'print $2'} 2>/dev/null | grep -vE "0.0.0.0|IP|Gateway" 2>/dev/null | head -n1 2>/dev/null | xargs 2>/dev/null)
   sudo su -c 'echo "" > /etc/resolv.conf' 2>/dev/null
   if [ ! -z "$GET_GATEWAY" ]; then
     sudo su -c "echo 'nameserver $GET_GATEWAY' >> /etc/resolv.conf" 2>/dev/null
@@ -102,7 +100,7 @@ if ! screen -list | grep -q "dummy"; then
   # IPV6
   sudo su -c 'echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf' 2>/dev/null
   sudo su -c 'echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf' 2>/dev/null
-  sudo systemd-resolve --flush-caches
+  #sudo systemd-resolve --flush-caches
 
   sleep 1
 
@@ -113,20 +111,19 @@ if ! screen -list | grep -q "dummy"; then
   while ! sudo ping 104.24.98.231 -w 1 | grep "0%"; do
     sudo service network-manager restart
     sudo /usr/sbin/netplan apply
+    sudo /home/minerstat/minerstat-os/core/dnser
     sleep 5
     break
   done
-  #sudo su -c "ifdown lo"
-  #sudo su -c "ifup lo"
 
   echo "\033[1;34m== \033[0m Please wait ..."
   echo ""
 
-  timeout 10 nslookup api.minerstat.com
+  timeout 5 nslookup api.minerstat.com
 
   while ! sudo ping api.minerstat.com -w 1 | grep "0%"; do
     sudo /home/minerstat/minerstat-os/core/dnser
-    sleep 3
+    sleep 2
   done
 
   echo ""
@@ -152,8 +149,7 @@ if ! screen -list | grep -q "dummy"; then
   sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf
   
   sleep 1
-  sudo service dgm stop
-  sleep 3
+  sudo service dgm stop &
   if [ "$NVIDIADEVICE" -gt 0 ]; then
     sudo su -c "sudo screen -X -S display quit" &
     sudo killall X
