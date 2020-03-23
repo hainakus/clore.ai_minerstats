@@ -110,9 +110,10 @@ if ! screen -list | grep -q "dummy"; then
   echo ""
 
   # Cache management
-  while ! sudo ping minerstat.com -w 1 | grep "0%"; do
+  while ! sudo ping 104.24.98.231 -w 1 | grep "0%"; do
     sudo service network-manager restart
     sudo /usr/sbin/netplan apply
+    sleep 5
     break
   done
   #sudo su -c "ifdown lo"
@@ -273,7 +274,6 @@ if ! screen -list | grep -q "dummy"; then
   # Remove pending commands
   timeout 10 curl --request POST "https://api.minerstat.com/v2/set_node_config.php?token=$TOKEN&worker=$WORKER" &
 
-  sleep 3
   sudo chvt 1
   sleep 3
   sudo su minerstat -c "sh /home/minerstat/minerstat-os/core/view"
