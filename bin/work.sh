@@ -267,9 +267,9 @@ if ! screen -list | grep -q "dummy"; then
   timeout 10 curl --request POST "https://api.minerstat.com/v2/set_node_config.php?token=$TOKEN&worker=$WORKER" &
 
   sudo chvt 1
-  sleep 3
-  sudo su minerstat -c "sh /home/minerstat/minerstat-os/core/view"
   sleep 1
+  sudo su minerstat -c "sh /home/minerstat/minerstat-os/core/view"
+  sleep 4
   exec bash
   source ~/.bashrc
 fi
