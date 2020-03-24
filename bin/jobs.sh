@@ -63,7 +63,20 @@ sudo su -c "sysctl vm.dirty_background_ratio=20" > /dev/null 2>&1
 sudo su -c "sysctl vm.dirty_expire_centisecs=0" > /dev/null 2>&1
 sudo su -c "sysctl vm.dirty_ratio=80" > /dev/null 2>&1
 sudo su -c "sysctl vm.dirty_writeback_centisecs=0" > /dev/null 2>&1
-
+# Auto OpenCL for/above v1.5
+version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
+if [ "$version" = "1.5" ] || [ "$version" = "1.6" ] || [ "$version" = "1.7" ]; then
+  FILE=/media/storage/opencl.txt
+  # If not exists then automatic openCL versioning
+  if [ ! -f "$FILE" ]; then
+    naviCount=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep -E "5500|5550|5600|5650|5700|5750|5800|5850|5900|5950" | wc -l)
+    if [ "$naviCount" -gt "0" ]; then
+      sudo su -c "echo '/opt/rocm-3.1.0/opencl/lib/x86_64/libamdocl64.so' > /etc/OpenCL/vendors/amdocl64.icd"
+    else
+      sudo su -c "echo '/opt/amdgpu-pro/lib/x86_64-linux-gnu/libamdocl64.so' > /etc/OpenCL/vendors/amdocl64.icd"
+    fi
+  fi
+fi
 # Fix ERROR Messages
 export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
@@ -285,7 +298,6 @@ if [ -f "/etc/netplan/minerstat.yaml" ]; then
   fi
 fi
 # Firmware for v1.2
-version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
 if [ "$version" = "1.2" ]; then
   echo "Checking Firmware.."
   FILE=/media/storage/fw.txt
