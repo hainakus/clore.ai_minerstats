@@ -148,6 +148,7 @@ alias dhcp='sudo /home/minerstat/minerstat-os/core/dhcp'
 alias wifi='sudo /home/minerstat/minerstat-os/core/mwifi'
 alias hugepages='sudo /home/minerstat/minerstat-os/core/hugepages'
 alias maintenance='sudo /home/minerstat/minerstat-os/core/maintenance'
+alias opencl='sudo /home/minerstat/minerstat-os/core/opencl'
 
 if grep -q experimental "/etc/lsb-release"; then
   alias amdmemtool='sudo /home/minerstat/minerstat-os/bin/amdmemorytweak'
