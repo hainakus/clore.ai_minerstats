@@ -20,7 +20,7 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-ip=`ifconfig | grep "inet" | grep -v "inet6" | grep -vE "127.0.0.1|169." | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | head -n 1 | grep -o -E '[.0-9]+'`
+ip=`ifconfig | grep "inet" | grep -v "inet6" | grep -vE "127.0.0.1|169.|172.17." | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | head -n 1 | grep -o -E '[.0-9]+'`
 version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
 [ -d /sys/firmware/efi ] && BOOTED="UEFI" || BOOTED="LEGACY"
 
