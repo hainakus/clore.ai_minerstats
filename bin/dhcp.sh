@@ -5,7 +5,7 @@ echo ""
 
 sudo su -c "rm /etc/netplan/minerstat.yaml"
 
-INTERFACE="$(sudo cat /proc/net/dev | grep -vE lo | tail -n1 | awk -F '\\:' '{print $1}' | xargs)"
+INTERFACE="$(sudo cat /proc/net/dev | grep -vE "lo|docker0" | tail -n1 | awk -F '\\:' '{print $1}' | xargs)"
 
 echo "Configuring LAN DHCP for: "$INTERFACE
 echo ""
