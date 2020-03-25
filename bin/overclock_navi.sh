@@ -37,7 +37,7 @@ if [ $1 ]; then
     COREINDEX="2"
   fi
 
-  echo "--**--**-- GPU $1 : VEGA VII --**--**--"
+  echo "--**--**-- GPU $1 : NAVI --**--**--"
 
   # Reset
   #sudo bash -c "echo r > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
