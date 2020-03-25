@@ -43,7 +43,7 @@ sudo su -c 'echo options edns0 >> /run/systemd/resolve/stub-resolv.conf' 2>&1 >/
 
 echo ""
 sleep 3
-TEST="$(ping api.minerstat.com. -w 1 | grep '1 packets transmitted')"
+TEST="$(ping api.minerstat.com -w 1 | grep '1 packets transmitted')"
 
 if echo "$TEST" | grep "0%" ;then
   echo ""
