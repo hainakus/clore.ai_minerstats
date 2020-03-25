@@ -37,6 +37,14 @@ if [ $1 ]; then
     COREINDEX="2"
   fi
 
+  if [ "$COREINDEX" = "5" ]; then
+    COREINDEX="2"
+  fi
+
+  if [ "$COREINDEX" = "1" ]; then
+    COREINDEX="2"
+  fi
+
   echo "--**--**-- GPU $1 : NAVI --**--**--"
 
   # Reset
