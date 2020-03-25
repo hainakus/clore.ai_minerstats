@@ -50,7 +50,7 @@ sudo su -c '/etc/init.d/networking restart'
 sudo su -c "systemctl restart systemd-networkd"
 
 echo ""
-TEST="$(ping api.minerstat.com. -w 1 | grep '1 packets transmitted')"
+TEST="$(ping api.minerstat.com -w 1 | grep '1 packets transmitted')"
 
 if echo "$TEST" | grep "0%" ;then
   echo ""
