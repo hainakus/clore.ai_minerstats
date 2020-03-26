@@ -37,24 +37,25 @@ if ! screen -list | grep -q "dummy"; then
 
   while ! sudo ping 1.1.1.1 -w 1 | grep "0%"; do
     HAVECONNECTION="false"
+    echo "No iPV4 - running network scripts"
     break
   done
 
   if [ "$HAVECONNECTION" != "true" ]
   then
 
-    GET_GATEWAY=$(timeout 10 route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
+    #GET_GATEWAY=$(timeout 10 route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
     # systemd resolve casusing problems with 127.0.0.53
-    if [ ! -z "$GET_GATEWAY" ]; then
-      sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/resolvconf/interface/systemd-resolved" 2>/dev/null
-    fi
+    #if [ ! -z "$GET_GATEWAY" ]; then
+    #  sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/resolvconf/interface/systemd-resolved" 2>/dev/null
+    #fi
     sudo su -c 'echo "nameserver 1.1.1.1" >> /run/resolvconf/interface/systemd-resolved' 2>/dev/null
     sudo su -c 'echo "nameserver 1.0.0.1" >> /run/resolvconf/interface/systemd-resolved' 2>/dev/null
     sudo su -c 'echo "nameserver 8.8.8.8" >> /run/resolvconf/interface/systemd-resolved' 2>/dev/null
     sudo su -c 'echo "nameserver 8.8.4.4" >> /run/resolvconf/interface/systemd-resolved' 2>/dev/null
-    if [ ! -z "$GET_GATEWAY" ]; then
-      sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/systemd/resolve/stub-resolv.conf" 2>/dev/null
-    fi
+    #if [ ! -z "$GET_GATEWAY" ]; then
+    #  sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/systemd/resolve/stub-resolv.conf" 2>/dev/null
+    #fi
     sudo su -c 'echo "nameserver 1.1.1.1" >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
     sudo su -c 'echo "nameserver 1.0.0.1" >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
     sudo su -c 'echo "nameserver 8.8.8.8" >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
@@ -80,12 +81,12 @@ if ! screen -list | grep -q "dummy"; then
   fi
 
   # Rewrite
-  sudo systemctl stop systemd-resolved &
-  GET_GATEWAY=$(timeout 10 route -n -e -4 2>/dev/null | awk {'print $2'} 2>/dev/null | grep -vE "0.0.0.0|IP|Gateway" 2>/dev/null | head -n1 2>/dev/null | xargs 2>/dev/null)
-  sudo su -c 'echo "" > /etc/resolv.conf' 2>/dev/null
-  if [ ! -z "$GET_GATEWAY" ]; then
-    sudo su -c "echo 'nameserver $GET_GATEWAY' >> /etc/resolv.conf" 2>/dev/null
-  fi
+  #sudo systemctl stop systemd-resolved &
+  #GET_GATEWAY=$(timeout 10 route -n -e -4 2>/dev/null | awk {'print $2'} 2>/dev/null | grep -vE "0.0.0.0|IP|Gateway" 2>/dev/null | head -n1 2>/dev/null | xargs 2>/dev/null)
+  #sudo su -c 'echo "" > /etc/resolv.conf' 2>/dev/null
+  #if [ ! -z "$GET_GATEWAY" ]; then
+  #  sudo su -c "echo 'nameserver $GET_GATEWAY' >> /etc/resolv.conf" 2>/dev/null
+  #fi
   sudo su -c 'echo "nameserver 1.1.1.1" >> /etc/resolv.conf' 2>/dev/null
   sudo su -c 'echo "nameserver 1.0.0.1" >> /etc/resolv.conf' 2>/dev/null
   sudo su -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf' 2>/dev/null
@@ -108,18 +109,19 @@ if ! screen -list | grep -q "dummy"; then
     sudo service network-manager restart
     sudo /usr/sbin/netplan apply
     sudo /home/minerstat/minerstat-os/core/dnser
-    sleep 5
+    sleep 2
     break
   done
 
   echo "\033[1;34m== \033[0m Please wait ..."
   echo ""
 
-  timeout 5 nslookup api.minerstat.com
+  timeout 3 nslookup api.minerstat.com
 
   while ! sudo ping api.minerstat.com -w 1 | grep "0%"; do
     sudo /home/minerstat/minerstat-os/core/dnser
     sleep 2
+    break
   done
 
   echo ""
