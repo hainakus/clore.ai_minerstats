@@ -1,6 +1,10 @@
 #!/bin/bash
 exec 2>/dev/null
 echo "Running Clean jobs ..."
+TESTLOGIN=$(systemctl list-jobs)
+if [ "$TESTLOGIN" != "systemctl list-jobs" ]; then
+  sudo systemctl restart systemd-logind.service
+fi
 sudo systemctl mask apt-daily.service apt-daily-upgrade.service 
 sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic linux-firmware > /dev/null 2>&1
 sudo systemctl daemon-reload
