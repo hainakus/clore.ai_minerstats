@@ -63,11 +63,11 @@ if [ $1 ]; then
 
   # CoreClock
   if [ "$VDDC" = "0" ] || [ "$VDDC" = "skip" ] || [ -z "$VDDC" ]; then
-    VDDC="980" # DEFAULT FOR 1801Mhz @1114mV
+    VDDC="980"
   fi
 
   if [ "$MVDD" = "0" ] || [ "$MVDD" = "skip" ] || [ -z "$MVDD" ]; then
-    MVDD="1070"
+    MVDD="1000"
   fi
 
   # MemoryClock
