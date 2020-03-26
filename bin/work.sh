@@ -7,6 +7,11 @@ if ! screen -list | grep -q "dummy"; then
   systemctl stop NetworkManager
   systemctl disable NetworkManager
 
+  TESTLOGIN=$(systemctl list-jobs)
+  if [ "$TESTLOGIN" != "systemctl list-jobs" ]; then
+  	sudo systemctl restart systemd-logind.service
+  fi
+
   # validate OC
   screen -A -m -d -S checkclock sudo bash /home/minerstat/minerstat-os/core/checkclock
   
