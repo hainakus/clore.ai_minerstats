@@ -2,6 +2,10 @@ if ! screen -list | grep -q "dummy"; then
   screen -A -m -d -S dummy sleep 22176000
   screen -S listener -X quit # kill running process
   screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
+ 
+  # Stop and start later if needed
+  systemctl stop NetworkManager
+  systemctl disable NetworkManager
 
   # validate OC
   screen -A -m -d -S checkclock sudo bash /home/minerstat/minerstat-os/core/checkclock
