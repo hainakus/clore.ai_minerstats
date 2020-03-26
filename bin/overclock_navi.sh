@@ -104,11 +104,11 @@ if [ $1 ]; then
   fi
 
   ###########################################################################
-  version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
-  if [ "$version" = "1.4" ] || [ "$version" = "1.4.5" ]; then
+  #version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
+  #if [ "$version" = "1.4" ] || [ "$version" = "1.4.5" ]; then
     sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
     sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-  fi
+  #fi
   ##########################################################################
 
   # Apply Changes
