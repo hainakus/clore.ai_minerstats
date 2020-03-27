@@ -4,8 +4,8 @@ if ! screen -list | grep -q "dummy"; then
   screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
  
   # Stop and start later if needed
-  systemctl stop NetworkManager
-  systemctl disable NetworkManager
+  sudo systemctl stop NetworkManager
+  sudo systemctl disable NetworkManager
 
   TESTLOGIN=$(systemctl list-jobs)
   if [ "$TESTLOGIN" != "systemctl list-jobs" ]; then
