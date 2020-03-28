@@ -133,6 +133,11 @@ if [ $1 ]; then
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
   #sudo cat /sys/kernel/debug/dri/0/amdgpu_pm_info
 
+  version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
+  if [ "$version" = "1.4.6" ]; then
+    sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+  fi
+
   # ECHO Changes
   echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
