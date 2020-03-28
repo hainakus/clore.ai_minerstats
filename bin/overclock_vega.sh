@@ -34,7 +34,7 @@ if [ $1 ]; then
   fi
 
   if [ "$COREINDEX" = "skip" ]; then
-    COREINDEX="5"
+    COREINDEX="7"
   fi
 
   echo "--**--**-- GPU $1 : VEGA 56/64 --**--**--"
