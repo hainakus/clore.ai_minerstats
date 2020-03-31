@@ -1,4 +1,10 @@
 if ! screen -list | grep -q "dummy"; then
+
+  # Stop before OC
+  echo "stop" > /tmp/stop.pid > /dev/null 2>&1;
+  echo "stop" > /tmp/justbooted.pid > /dev/null 2>&1;
+  screen -A -m -d -S just sudo bash /home/minerstat/minerstat-os/core/justboot
+
   screen -A -m -d -S dummy sleep 22176000
   screen -S listener -X quit # kill running process
   screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
