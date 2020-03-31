@@ -1,0 +1,8 @@
+#!/bin/bash
+
+sleep 300
+
+# if just booted pid exists
+# agent not running
+# stop file contains "stopboot"
+# remove stop file
