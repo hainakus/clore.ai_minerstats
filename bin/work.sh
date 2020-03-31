@@ -1,7 +1,7 @@
 if ! screen -list | grep -q "dummy"; then
 
   # Stop before OC
-  echo "stop" > /tmp/stop.pid > /dev/null 2>&1;
+  echo "stopboot" > /tmp/stop.pid > /dev/null 2>&1;
   echo "stop" > /tmp/justbooted.pid > /dev/null 2>&1;
   screen -A -m -d -S just sudo bash /home/minerstat/minerstat-os/core/justboot
 
