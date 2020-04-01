@@ -204,7 +204,7 @@ do
     BL=""
     MA="WORKERNAME "
     WN=$(echo $RESPONSE | sed "s/$MA/$BL/" | xargs | xargs)
-    screen -A -m -d -S namechange sudo /home/minerstat/minerstat-os/core/namenstart $TOKEN $WN
+    sudo bash /home/minerstat/minerstat-os/core/namenstart $TOKEN $WN
     echo "-------------------------------------------"
   fi
 
