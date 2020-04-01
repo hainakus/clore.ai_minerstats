@@ -44,7 +44,7 @@ fi
 # Check "LISTENER"
 if ! screen -list | grep -q "listener"; then
   screen -S listener -X quit # kill running process
-  screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
+  screen -A -m -d -S listener sudo bash /home/minerstat/minerstat-os/core/init.sh
 fi
 
 # Check manually stopped or not with "mstop"
