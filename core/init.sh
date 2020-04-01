@@ -204,7 +204,20 @@ do
     BL=""
     MA="WORKERNAME "
     WN=$(echo $RESPONSE | sed "s/$MA/$BL/" | xargs | xargs)
-    sudo bash /home/minerstat/minerstat-os/core/namenstart $TOKEN $WN
+    echo "New AccessKey: $1"
+    echo "New Worker Name: $2"
+    echo
+    echo "stop" > /tmp/stop.pid;
+    sudo node /home/minerstat/minerstat-os/stop.js
+    sudo su minerstat -c "screen -X -S minerstat-console quit";
+    sudo su -c "sudo screen -X -S minew quit"
+    sudo echo global.accesskey = '"'$1'";' > /media/storage/config.js
+    sudo echo global.worker = '"'$2'";' >> /media/storage/config.js
+    sudo cp /media/storage/config.js /home/minerstat/minerstat-os/
+    echo "Validate Config..."
+    echo
+    sudo cat /media/storage/config.js
+    screen -A -m -d -S namechange sudo bash /home/minerstat/minerstat-os/core/namenstart
     echo "-------------------------------------------"
   fi
 
