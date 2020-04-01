@@ -1,8 +1,5 @@
 #!/bin/bash
 
-BL=""
-MA="WORKERNAME "
-WN=$(echo $RESPONSE | sed "s/$MA/$BL/" | xargs | xargs)
 echo "New AccessKey: $1"
 echo "New Worker Name: $2"
 echo
