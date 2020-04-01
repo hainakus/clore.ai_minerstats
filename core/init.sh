@@ -200,37 +200,12 @@ do
   fi
 
   if [[ $RESPONSE == *"WORKERNAME"* ]]; then
+    echo "-------------------------------------------"
     BL=""
     MA="WORKERNAME "
     WN=$(echo $RESPONSE | sed "s/$MA/$BL/" | xargs | xargs)
-    echo "New AccessKey: $TOKEN"
-    echo "New Worker Name: $WN"
-    echo
-    echo "stop" > /tmp/stop.pid;
-    sudo node /home/minerstat/minerstat-os/stop.js
-    sudo su minerstat -c "screen -X -S minerstat-console quit";
-    sudo su -c "sudo screen -X -S minew quit"
-    sudo echo global.accesskey = '"'$TOKEN'";' > /media/storage/config.js
-    sudo echo global.worker = '"'$WN'";' >> /media/storage/config.js
-    sudo cp /media/storage/config.js /home/minerstat/minerstat-os/
-    echo "Validate Config..."
-    echo
-    sudo cat /media/storage/config.js
-    echo "Reinitalize, hostname etc.."
-    echo
-    sudo sh /home/minerstat/minerstat-os/bin/jobs.sh
-    echo "done"
-    sudo su -c "sudo screen -X -S minew quit"
-    sudo su -c "sudo screen -X -S fakescreen quit"
-    sudo su -c "screen -ls minew | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
-    sudo su minerstat -c "screen -X -S fakescreen quit"
-    sudo su minerstat -c "screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
-    sudo killall node
-    sudo sh /home/minerstat/minerstat-os/bin/overclock.sh &
-    sleep 15
-    sudo su minerstat -c "screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh"
-    sleep 2
-    sudo su minerstat -c "screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh"
+    screen -A -m -d -S namechange sudo /home/minerstat/minerstat-os/core/namenstart $TOKEN $WN
+    echo "-------------------------------------------"
   fi
 
   if [ $RESPONSE = "INSTANTOC" ]; then
