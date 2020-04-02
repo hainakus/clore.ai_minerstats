@@ -5,6 +5,13 @@ FANMIN=$(cat /media/storage/fans.txt | grep "FANMIN=" | xargs | sed 's/[^0-9]*//
 FANMAX=$(cat /media/storage/fans.txt | grep "FANMAX=" | xargs | sed 's/[^0-9]*//g')
 TARGET=$(cat /media/storage/fans.txt | grep "TARGET_TEMP=" | xargs | sed 's/[^0-9]*//g')
 
+# Navi "2" pwm
+PWM=$(cat /dev/shm/fantype.txt | xargs | sed 's/[^0-9]*//g')
+
+if [ -z "$PWM" ]; then
+  PWM="1"
+fi
+
 # If no settings
 if [ -z "$FANMIN" ]; then
   FANMIN=70
@@ -150,9 +157,9 @@ loop() {
               fi
               #if [ "$CURRFAN" != "$FANVALUE" ]; then
               if [ "$CURRFAN" != "$FANVALUE" ] && [ "$CURRFANFIVE" != "$FANVALUE" ]; then
-                sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1_enable"
+                sudo su -c "echo $PWM > /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1_enable"
                 sudo su -c "echo $FANVALUE > /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1"
-                sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon??/pwm1_enable" >/dev/null 2>&1
+                sudo su -c "echo $PWM > /sys/class/drm/card$y/device/hwmon/hwmon??/pwm1_enable" >/dev/null 2>&1
                 sudo su -c "echo $FANVALUE > /sys/class/drm/card$y/device/hwmon/hwmon??/pwm1" >/dev/null 2>&1
                 sudo /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $y &
                 #sudo /home/minerstat/minerstat-os/bin/rocm-smi -d $y --setfan $FANVALUE
