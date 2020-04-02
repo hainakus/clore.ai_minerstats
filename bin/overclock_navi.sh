@@ -138,10 +138,9 @@ if [ $1 ]; then
   done
 
   if [ "$version" = "1.5.1" ] || [ "$version" = "1.5.2" ] || [ "$version" = "1.5.3" ]; then
-    for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-      sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_enable" 2>/dev/null
-      #sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1" 2>/dev/null # 70%
-    done
+      sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
+      sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1_enable" 2>/dev/null
+      echo "2" > /dev/shm/fantype.txt
   fi
 
   exit 1
