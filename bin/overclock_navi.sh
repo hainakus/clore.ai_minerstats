@@ -139,7 +139,7 @@ if [ $1 ]; then
 
   sudo rm /dev/shm/fantype.txt
 
-  if [ "$version" = "1.5.1" ] || [ "$version" = "1.5.2" ] || [ "$version" = "1.5.3" ]; then
+  if [ "$version" = "1.5.1" ] || [ "$version" = "1.5.2" ]; then
     VALIDATE=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1)
     if [ -z "$VALIDATE" ]; then
           VALIDATE=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1)
