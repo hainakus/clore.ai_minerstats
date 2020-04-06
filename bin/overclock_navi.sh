@@ -140,7 +140,10 @@ if [ $1 ]; then
   sudo rm /dev/shm/fantype.txt
 
   if [ "$version" = "1.5.1" ] || [ "$version" = "1.5.2" ] || [ "$version" = "1.5.3" ]; then
-    VALIDATE=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1)
+    VALIDATE=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1)
+    if [ -z "$VALIDATE" ]; then
+          VALIDATE=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1)
+    fi
     echo "validate: $VALIDATE"
     if (( "$VALIDATE" < "$FANVALUE" )); then
       sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
