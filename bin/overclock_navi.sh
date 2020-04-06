@@ -132,10 +132,12 @@ if [ $1 ]; then
     echo "GPU$GPUID : FANSPEED => 70% ($FANVALUE)"
   fi
 
-  for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_enable" 2>/dev/null
-    sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1" 2>/dev/null # 70%
-  done
+  #for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
+    sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1" 2>/dev/null # 70%
+    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1_enable" 2>/dev/null
+    sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1" 2>/dev/null # 70%
+  #done
 
   sudo rm /dev/shm/fantype.txt
 
@@ -151,6 +153,15 @@ if [ $1 ]; then
       echo "2" > /dev/shm/fantype.txt
      fi
    fi
+
+  if [ "$version" = "1.5.3" ]; then
+     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
+     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1_enable" 2>/dev/null
+     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
+     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1_enable" 2>/dev/null
+     sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1" 2>/dev/null # 70%
+     sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1" 2>/dev/null # 70%
+  fi
 
   exit 1
 
