@@ -139,29 +139,15 @@ if [ $1 ]; then
     sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1" 2>/dev/null # 70%
   #done
 
-  sudo rm /dev/shm/fantype.txt
+  #sudo rm /dev/shm/fantype.txt
+  echo "2" > /dev/shm/fantype.txt
 
-  if [ "$version" = "1.5.1" ] || [ "$version" = "1.5.2" ]; then
-    VALIDATE=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1)
-    if [ -z "$VALIDATE" ]; then
-          VALIDATE=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1)
-    fi
-    echo "validate: $VALIDATE"
-    if (( "$VALIDATE" < "$FANVALUE" )); then
-      sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
-      sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1_enable" 2>/dev/null
-      echo "2" > /dev/shm/fantype.txt
-     fi
-   fi
-
-  if [ "$version" = "1.5.3" ]; then
-     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
-     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1_enable" 2>/dev/null
-     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
-     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1_enable" 2>/dev/null
-     sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1" 2>/dev/null # 70%
-     sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1" 2>/dev/null # 70%
-  fi
+  sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
+  sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1_enable" 2>/dev/null
+  sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
+  sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1_enable" 2>/dev/null
+  sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1" 2>/dev/null # 70%
+  sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1" 2>/dev/null # 70%
 
   exit 1
 
