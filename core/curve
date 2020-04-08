@@ -37,6 +37,9 @@ fi
 # Drivers
 TEST_NVIDIA=$(nvidia-smi -L)
 NUM_AMD=$(sudo lshw -C display | grep AMD | wc -l)
+if [ -z "$NUM_AMD" ];
+  NUM_AMD=$(sudo lshw -C display | grep amdgpu | wc -l)
+fi
 TEST_AMD=$NUM_AMD
 if [[ $TEST_NVIDIA == *"GPU 0"* ]]; then
   NVIDIA_FAN_NUM=$(sudo nvidia-settings -c :0 -q fans | grep "fan:" | wc -l)
