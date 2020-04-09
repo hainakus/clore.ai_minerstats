@@ -108,6 +108,8 @@ if [ $1 ]; then
 
 
   echo "--- PERFORMANCE LEVEL: $PLEVEL ---";
+  
+  sudo nvidia-smi -pm 1
 
   #################################£
   # POWER LIMIT
