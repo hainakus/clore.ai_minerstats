@@ -242,9 +242,12 @@ if [ $1 ]; then
       #		sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
       #	done
       #fi
-      for voltstate in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+      for voltstate in 1 2 3 4 5 6 7; do
         timeout 10 sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
       done
+      #for voltstate in 8 9 10 11 12 13 14 15; do
+      #  timeout 10 sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
+      #done
     fi
 
     # VDDCI
@@ -257,7 +260,7 @@ if [ $1 ]; then
       timeout 10 sudo ./ohgodatool -i $GPUID --mem-state $maxMemState --vddci $VDDCI
     fi
 
-    # MVDCC
+    # MVDD
     if [ "$MVDD" != "" ] && [ "$MVDD" != "0" ] && [ "$MVDD" != "skip" ]; then
       echo
       echo "--- Setting up MVDD Voltage GPU$GPUID ---"
