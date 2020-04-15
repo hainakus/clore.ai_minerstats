@@ -43,3 +43,5 @@ echo
 echo
 echo "You are done !"
 echo "Start mining with: mstart"
+
+sync
