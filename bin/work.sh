@@ -69,21 +69,21 @@ if ! screen -list | grep -q "dummy"; then
     #if [ ! -z "$GET_GATEWAY" ]; then
     #  sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/resolvconf/interface/systemd-resolved" 2>/dev/null
     #fi
-    sudo chmod 777 /run/resolvconf/interface/systemd-resolved 2>/dev/null
-    sudo chmod 777 /run/systemd/resolve/stub-resolv.conf 2>/dev/null
-    sudo chmod 777 /etc/resolv.conf 2>/dev/null
-    sudo su -c 'echo "nameserver 1.1.1.1" > /run/resolvconf/interface/systemd-resolved' 2>/dev/null
-    sudo su -c 'echo "nameserver 1.0.0.1" >> /run/resolvconf/interface/systemd-resolved' 2>/dev/null
-    sudo su -c 'echo "nameserver 8.8.8.8" >> /run/resolvconf/interface/systemd-resolved' 2>/dev/null
-    sudo su -c 'echo "nameserver 8.8.4.4" >> /run/resolvconf/interface/systemd-resolved' 2>/dev/null
+    #sudo chmod 777 /run/resolvconf/interface/systemd-resolved 2>/dev/null
+    #sudo chmod 777 /run/systemd/resolve/stub-resolv.conf 2>/dev/null
+    #sudo chmod 777 /etc/resolv.conf 2>/dev/null
+    #sudo su -c 'echo "nameserver 1.1.1.1" > /run/resolvconf/interface/systemd-resolved' 2>/dev/null
+    #sudo su -c 'echo "nameserver 1.0.0.1" >> /run/resolvconf/interface/systemd-resolved' 2>/dev/null
+    #sudo su -c 'echo "nameserver 8.8.8.8" >> /run/resolvconf/interface/systemd-resolved' 2>/dev/null
+    #sudo su -c 'echo "nameserver 8.8.4.4" >> /run/resolvconf/interface/systemd-resolved' 2>/dev/null
     #if [ ! -z "$GET_GATEWAY" ]; then
     #  sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/systemd/resolve/stub-resolv.conf" 2>/dev/null
     #fi
-    sudo su -c 'echo "nameserver 1.1.1.1" > /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
-    sudo su -c 'echo "nameserver 1.0.0.1" >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
-    sudo su -c 'echo "nameserver 8.8.8.8" >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
-    sudo su -c 'echo "nameserver 8.8.4.4" >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
-    sudo su -c 'echo options edns0 >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
+    #sudo su -c 'echo "nameserver 1.1.1.1" > /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
+    #sudo su -c 'echo "nameserver 1.0.0.1" >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
+    #sudo su -c 'echo "nameserver 8.8.8.8" >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
+    #sudo su -c 'echo "nameserver 8.8.4.4" >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
+    #sudo su -c 'echo options edns0 >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
 
     if [ "$SSID" -gt 0 ]; then
       cd /home/minerstat/minerstat-os/core
@@ -110,13 +110,13 @@ if ! screen -list | grep -q "dummy"; then
   #if [ ! -z "$GET_GATEWAY" ]; then
   #  sudo su -c "echo 'nameserver $GET_GATEWAY' >> /etc/resolv.conf" 2>/dev/null
   #fi
-  sudo su -c 'echo "nameserver 1.1.1.1" > /etc/resolv.conf' 2>/dev/null
-  sudo su -c 'echo "nameserver 1.0.0.1" >> /etc/resolv.conf' 2>/dev/null
-  sudo su -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf' 2>/dev/null
-  sudo su -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf' 2>/dev/null
+  #sudo su -c 'echo "nameserver 1.1.1.1" > /etc/resolv.conf' 2>/dev/null
+  #sudo su -c 'echo "nameserver 1.0.0.1" >> /etc/resolv.conf' 2>/dev/null
+  #sudo su -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf' 2>/dev/null
+  #sudo su -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf' 2>/dev/null
   # China
-  sudo su -c 'echo "nameserver 114.114.114.114" >> /etc/resolv.conf' 2>/dev/null
-  sudo su -c 'echo "nameserver 114.114.115.115" >> /etc/resolv.conf' 2>/dev/null
+  #sudo su -c 'echo "nameserver 114.114.114.114" >> /etc/resolv.conf' 2>/dev/null
+  #sudo su -c 'echo "nameserver 114.114.115.115" >> /etc/resolv.conf' 2>/dev/null
   # IPV6
   #sudo echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf 2>/dev/null
   #sudo echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf 2>/dev/null
