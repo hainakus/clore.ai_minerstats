@@ -245,9 +245,9 @@ if [ $1 ]; then
       for voltstate in 1 2 3 4 5 6 7; do
         timeout 10 sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
       done
-      #for voltstate in 8 9 10 11 12 13 14 15; do
-      #  timeout 10 sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
-      #done
+      for voltstate in 8 9 10 11 12 13 14 15; do
+        timeout 10 sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
+      done
     fi
 
     # VDDCI
