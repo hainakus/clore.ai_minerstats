@@ -106,11 +106,14 @@ fi
 if [ "$DNSA" != "success" ] && [ "$DNSB" != "success" ]; then
         SERVERC="$SERVERB"
 fi
+# Change hostname
+sudo su -c "echo '$WNAME' > /etc/hostname"
+sudo hostname -F /etc/hostname
 # /etc/hosts
 WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
 sudo echo "
-127.0.0.1 localhost
-::1     ip6-localhost ip6-loopback
+127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1 localhost localhost.localdomain localhost6 localhost6.localdomain6
 fe00::0 ip6-localnet
 ff00::0 ip6-mcastprefix
 ff02::1 ip6-allnodes
@@ -124,7 +127,6 @@ $SERVERC api.minerstat.com
 68.183.74.40 eu.sandbox.pool.ms
 167.71.240.6 us.sandbox.pool.ms
 " > /etc/hosts
-# Change hostname
 #sudo sed -i s/"minerstat"/"$WNAME"/ /etc/hosts
 if grep -q $WNAME "/etc/hosts"; then
   echo ""
@@ -133,8 +135,6 @@ else
   sudo su -c "sed -i '/127.0.1.1/d' /etc/hosts"
   sudo su -c "echo '127.0.1.1   $WNAME' >> /etc/hosts"
 fi
-sudo su -c "echo '$WNAME' > /etc/hostname"
-sudo hostname -F /etc/hostname
 #WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
 #sudo sed -i s/"$WNAME"/"minerstat"/ /etc/hosts
 #sudo su -c "echo 'minerstat' > /etc/hostname"
