@@ -9,14 +9,12 @@ if ! screen -list | grep -q "dummy"; then
   screen -S listener -X quit # kill running process
   screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
  
-  TESTLOGIN=$(systemctl list-jobs)
-  if [ "$TESTLOGIN" != "systemctl list-jobs" ]; then
-  	sudo systemctl restart systemd-logind.service &
-  fi
+  sudo systemctl stop thermald &
+  sudo systemctl disable thermald &
 
-  TESTLOGIN=$(systemctl list-jobs)
-  if [ "$TESTLOGIN" != "systemctl list-jobs" ]; then
-  	sudo systemctl restart thermald.service &
+  TESTLOGIN=$(timeout 2 systemctl list-jobs)
+  if [ "$TESTLOGIN" != "No jobs running." ]; then
+  	sudo systemctl restart systemd-logind.service &
   fi
 
   # Stop and start later if needed
@@ -34,17 +32,17 @@ if ! screen -list | grep -q "dummy"; then
   screen -A -m -d -S chvt sudo /home/minerstat/minerstat-os/bin/chvta
 
   NVIDIA="$(nvidia-smi -L)"
-  AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
-  if [ "$AMDDEVICE" = "0" ]; then
-    AMDDEVICE=$(sudo lshw -C display | grep driver=amdgpu | wc -l)
-  fi
-  NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
+  AMDDEVICE=$(lsmod | grep amdgpu | wc -l)
+  #if [ "$AMDDEVICE" = "0" ]; then
+  #  AMDDEVICE=$(sudo lshw -C display | grep driver=amdgpu | wc -l)
+  #fi
+  NVIDIADEVICE=$(lsmod | grep nvidia | wc -l)
 
-  echo ""
-  echo "\033[1;34m================= GPUs =================\033[0m"
-  echo "\033[1;34m== \033[1;32mAMD:\033[0m $AMDDEVICE"
-  echo "\033[1;34m== \033[1;32mNVIDIA:\033[0m $NVIDIADEVICE"
-  echo ""
+  #echo ""
+  #echo "\033[1;34m================= GPUs =================\033[0m"
+  #echo "\033[1;34m== \033[1;32mAMD:\033[0m $AMDDEVICE"
+  #echo "\033[1;34m== \033[1;32mNVIDIA:\033[0m $NVIDIADEVICE"
+  #echo ""
 
   echo " "
   echo "\033[1;34m=========== NETWORK ADAPTERS ===========\033[0m"
