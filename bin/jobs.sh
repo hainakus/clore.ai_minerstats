@@ -128,6 +128,7 @@ $SERVERC api.minerstat.com
 167.71.240.6 us.pool.ms
 68.183.74.40 eu.sandbox.pool.ms
 167.71.240.6 us.sandbox.pool.ms
+162.159.200.1 ntp.ubuntu.com
 " > /etc/hosts
 #sudo sed -i s/"minerstat"/"$WNAME"/ /etc/hosts
 if grep -q $WNAME "/etc/hosts"; then
