@@ -3,11 +3,11 @@ echo "*-*-* Overclocking in progress *-*-*"
 
 INSTANT=$1
 
-AMDDEVICE=$(lsmod | grep amdgpu | wc -l)
-#if [ "$AMDDEVICE" = "0" ]; then
-#  AMDDEVICE=$(sudo lshw -C display | grep driver=amdgpu | wc -l)
-#fi
-NVIDIADEVICE=$(lsmod | grep nvidia | wc -l)
+AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
+ if [ "$AMDDEVICE" = "0" ]; then
+   AMDDEVICE=$(sudo lshw -C display | grep driver=amdgpu | wc -l)
+ fi
+NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
 FORCE="no"
 
 NVIDIA="$(nvidia-smi -L)"
