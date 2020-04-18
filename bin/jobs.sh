@@ -107,10 +107,10 @@ if [ "$DNSA" != "success" ] && [ "$DNSB" != "success" ]; then
         SERVERC="$SERVERB"
 fi
 # Change hostname
+WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
 sudo su -c "echo '$WNAME' > /etc/hostname"
 sudo hostname -F /etc/hostname
 # /etc/hosts
-WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
 sudo echo "
 127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1 localhost localhost.localdomain localhost6 localhost6.localdomain6
