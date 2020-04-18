@@ -5,9 +5,11 @@ TESTLOGIN=$(systemctl list-jobs)
 if [ "$TESTLOGIN" != "systemctl list-jobs" ]; then
   sudo systemctl restart systemd-logind.service &
 fi
-sudo systemctl mask apt-daily.service apt-daily-upgrade.service 
-sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic linux-firmware > /dev/null 2>&1
-sudo systemctl daemon-reload
+sudo systemctl mask apt-daily.service apt-daily-upgrade.service &
+sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic linux-firmware > /dev/null 2>&1 &
+sudo systemctl daemon-reload &
+sudo systemctl stop thermald &
+sudo systemctl disable thermald &
 # Kernel panic auto reboot
 sudo su -c "echo 20 >/proc/sys/kernel/panic"
 # Remove logs
@@ -18,7 +20,7 @@ sudo su -c "sudo service rsyslog stop"
 #sudo su -c "systemctl disable wpa_supplicant"
 #echo "Log files deleted"
 sudo dmesg -n 1
-sudo apt clean
+sudo apt clean &
 # Apply crontab
 sudo su -c "cp /home/minerstat/minerstat-os/core/minerstat /var/spool/cron/crontabs/minerstat"
 sudo su -c "chmod 600 /var/spool/cron/crontabs/minerstat"
