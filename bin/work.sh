@@ -9,17 +9,17 @@ if ! screen -list | grep -q "dummy"; then
   screen -S listener -X quit # kill running process
   screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
  
-  sudo systemctl stop thermald &
-  sudo systemctl disable thermald &
+  #sudo systemctl stop thermald &
+  #sudo systemctl disable thermald &
 
-  TESTLOGIN=$(timeout 2 systemctl list-jobs)
-  if [ "$TESTLOGIN" != "No jobs running." ]; then
-  	sudo systemctl restart systemd-logind.service &
-  fi
+  #TESTLOGIN=$(timeout 2 systemctl list-jobs)
+  #if [ "$TESTLOGIN" != "No jobs running." ]; then
+  sudo systemctl restart systemd-logind.service &
+  #fi
 
   # Stop and start later if needed
-  sudo systemctl stop NetworkManager &
-  sudo systemctl disable NetworkManager &
+  #sudo systemctl stop NetworkManager &
+  #sudo systemctl disable NetworkManager &
 
   # validate OC
   screen -A -m -d -S checkclock sudo bash /home/minerstat/minerstat-os/core/checkclock
