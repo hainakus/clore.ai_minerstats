@@ -24,7 +24,7 @@ fi
 # /etc/hosts
 WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
 sudo echo "
-127.0.0.1 localhost
+127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1     ip6-localhost ip6-loopback
 fe00::0 ip6-localnet
 ff00::0 ip6-mcastprefix
@@ -38,6 +38,7 @@ $SERVERC api.minerstat.com
 167.71.240.6 us.pool.ms
 68.183.74.40 eu.sandbox.pool.ms
 167.71.240.6 us.sandbox.pool.ms
+162.159.200.1 ntp.ubuntu.com
 " > /etc/hosts
 
 GET_GATEWAY=$(timeout 5 route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
