@@ -7,9 +7,9 @@ if [ "$TESTLOGIN" != "No jobs running." ]; then
 fi
 sudo systemctl mask apt-daily.service apt-daily-upgrade.service &
 sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic linux-firmware > /dev/null 2>&1 &
+sudo systemctl disable thermald systemd-timesyncd.service &
+sudo systemctl stop thermald systemd-timesyncd.service &
 sudo systemctl daemon-reload &
-sudo systemctl stop thermald &
-sudo systemctl disable thermald &
 # Kernel panic auto reboot
 sudo su -c "echo 20 >/proc/sys/kernel/panic"
 # Remove logs
