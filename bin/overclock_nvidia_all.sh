@@ -158,9 +158,9 @@ if [ $1 ]; then
 
   #################################£
   # APPLY THIS GPU SETTINGS AT ONCE
-  echo "$STR1 $STR2 $STR3 $STR4"
+  echo "nvidia-settings -c :0 $STR1 $STR2 $STR3 $STR5"
   STR5="-a GPUPowerMizerMode=1"
-  sudo nvidia-settings -c :0 $STR1 $STR2 $STR3 $STR5
+  nvidia-settings -c :0 $STR1 $STR2 $STR3 $STR5
 
   sleep 2
   sudo chvt 1
