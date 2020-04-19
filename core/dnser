@@ -6,23 +6,15 @@ sudo systemctl stop systemd-resolved &
 # check cloudflare ips
 SERVERA="104.20.2.95"
 SERVERB="104.20.3.95"
-DNSA=$(ping -c 1 $SERVERA &> /dev/null && echo success || echo fail)
-DNSB=$(ping -c 1 $SERVERB &> /dev/null && echo success || echo fail)
 SERVERC="$SERVERB"
-if [ "$DNSA" = "success" ] && [ "$DNSB" != "success" ]; then
-        SERVERC="$SERVERA"
-fi
-if [ "$DNSA" != "success" ] && [ "$DNSB" = "success" ]; then
-        SERVERC="$SERVERB"
-fi
-if [ "$DNSA" = "success" ] && [ "$DNSB" = "success" ]; then
-        SERVERC="$SERVERB"
-fi
-if [ "$DNSA" != "success" ] && [ "$DNSB" != "success" ]; then
-        SERVERC="$SERVERB"
+DNSA=$(ping -c 1 $SERVERA &> /dev/null && echo success || echo fail)
+if [ "$DNSA" = "success" ]; then
+    SERVERC="$SERVERA"
 fi
 # /etc/hosts
-WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
+HCHECK=$(cat /etc/hosts | grep "$SERVERC minerstat.com" | xargs)
+WCHECK=$(cat /etc/hosts | grep "127.0.1.1 $WNAME" | xargs)
+if [ "$HCHECK" != "$SERVERC minerstat.com" ] || [ "$WCHECK" != "127.0.1.1 $WNAME" ]; then
 sudo echo "
 127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1     ip6-localhost ip6-loopback
@@ -40,36 +32,16 @@ $SERVERC api.minerstat.com
 167.71.240.6 us.sandbox.pool.ms
 162.159.200.1 ntp.ubuntu.com
 " > /etc/hosts
+fi
 
+NSCHECK=$(cat /etc/resolv.conf | grep "nameserver 1.1.1.1" | xargs)
+if [ "$NSCHECK" != "nameserver 1.1.1.1" ]; then
+  sudo su -c "echo -n > /etc/resolv.conf; echo 'nameserver 1.1.1.1' >> /etc/resolv.conf; echo 'nameserver 1.0.0.1' >> /etc/resolv.conf; echo 'nameserver 8.8.8.8' >> /etc/resolv.conf; echo 'nameserver 8.8.4.4' >> /etc/resolv.conf; echo 'nameserver 114.114.114.114' >> /etc/resolv.conf; echo 'nameserver 114.114.115.115' >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf" 2>/dev/null
+fi
 GET_GATEWAY=$(timeout 5 route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
-# systemd resolve casusing problems with 127.0.0.53
 if [ ! -z "$GET_GATEWAY" ]; then
-  sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/resolvconf/interface/systemd-resolved" 2>/dev/null
+	GCHECK=$(cat /etc/resolv.conf | grep "nameserver $GET_GATEWAY" | xargs)
+	if [ "GCHECK" != "nameserver $GET_GATEWAY" ]; then
+		sudo su -c "echo 'nameserver $GET_GATEWAY' >> /etc/resolv.conf" 2>/dev/null
+	fi
 fi
-sudo su -c 'echo "nameserver 1.1.1.1" >> /run/resolvconf/interface/systemd-resolved' 2>/dev/null
-sudo su -c 'echo "nameserver 1.0.0.1" >> /run/resolvconf/interface/systemd-resolved' 2>/dev/null
-sudo su -c 'echo "nameserver 8.8.8.8" >> /run/resolvconf/interface/systemd-resolved' 2>/dev/null
-sudo su -c 'echo "nameserver 8.8.4.4" >> /run/resolvconf/interface/systemd-resolved' 2>/dev/null
-if [ ! -z "$GET_GATEWAY" ]; then
-  sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/systemd/resolve/stub-resolv.conf" 2>/dev/null
-fi
-sudo su -c 'echo "nameserver 1.1.1.1" >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
-sudo su -c 'echo "nameserver 1.0.0.1" >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
-sudo su -c 'echo "nameserver 8.8.8.8" >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
-sudo su -c 'echo "nameserver 8.8.4.4" >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
-sudo su -c 'echo options edns0 >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
-# Rewrite
-sudo su -c 'echo "" > /etc/resolv.conf'
-if [ ! -z "$GET_GATEWAY" ]; then
-  sudo su -c "echo 'nameserver $GET_GATEWAY' >> /etc/resolv.conf" 2>/dev/null
-fi
-sudo su -c 'echo "nameserver 1.1.1.1" >> /etc/resolv.conf' 2>/dev/null
-sudo su -c 'echo "nameserver 1.0.0.1" >> /etc/resolv.conf' 2>/dev/null
-sudo su -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf' 2>/dev/null
-sudo su -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf' 2>/dev/null
-# China
-sudo su -c 'echo "nameserver 114.114.114.114" >> /etc/resolv.conf' 2>/dev/null
-sudo su -c 'echo "nameserver 114.114.115.115" >> /etc/resolv.conf' 2>/dev/null
-# IPV6
-sudo su -c 'echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf' 2>/dev/null
-sudo su -c 'echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf' 2>/dev/null
