@@ -42,6 +42,8 @@ sleep 1
 if [ ! -z "$DONVIDIA" ]; then
   # Check XSERVER
   sudo su -c "sudo screen -X -S display quit" &
+  screen -X -S display quit &
+  screen -X -S display2 quit &
   sudo killall X
   sudo killall Xorg
   sudo kill -9 $(sudo pidof Xorg)
