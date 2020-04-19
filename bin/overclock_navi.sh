@@ -109,6 +109,10 @@ if [ $1 ]; then
     sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
     sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   fi
+  if [ "$version" = "1.5.3" ]; then
+    sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+    sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+  fi
   ##########################################################################
 
   # Apply Changes
