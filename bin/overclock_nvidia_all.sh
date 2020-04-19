@@ -162,7 +162,7 @@ if [ $1 ]; then
   STR5="-a GPUPowerMizerMode=1"
   DISPLAY=:0
   export DISPLAY=:0
-  nvidia-settings -c :0 $STR1 $STR2 $STR3 $STR5
+  sudo su minerstat -c "nvidia-settings -c :0 $STR1 $STR2 $STR3 $STR5"
 
   sleep 2
   sudo chvt 1
