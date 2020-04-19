@@ -13,17 +13,14 @@ if [ "$NSCHECK" != "nameserver 1.1.1.1" ]; then
 fi
 
 NETRESTART="NO"
-IFACE=$(cat /etc/network/interfaces | grep "allow-hotplug $INTERFACE" | xargs)
-if [ "$IFACE" != "allow-hotplug $INTERFACE" ]; then
-  sudo su -c "echo -n > /etc/network/interfaces; echo allow-hotplug $INTERFACE >> /etc/network/interfaces" 2>/dev/null
+IFACE1=$(cat /etc/network/interfaces | grep "allow-hotplug $INTERFACE" | xargs)
+IFACE2=$(cat /etc/network/interfaces | grep "iface $INTERFACE inet dhcp" | xargs)
+if [ "$IFACE1" != "allow-hotplug $INTERFACE" ] || [ "$IFACE2" != "iface $INTERFACE inet dhcp" ]; then
+  sudo su -c "echo -n > /etc/network/interfaces; echo allow-hotplug $INTERFACE >> /etc/network/interfaces; echo iface $INTERFACE inet dhcp >> /etc/network/interfaces" 2>/dev/null
   NETRESTART="YES"
 fi
 
-IFACE=$(cat /etc/network/interfaces | grep "iface $INTERFACE inet dhcp" | xargs)
-if [ "$IFACE" != "iface $INTERFACE inet dhcp" ]; then
-  sudo su -c "echo iface $INTERFACE inet dhcp >> /etc/network/interfaces" 2>/dev/null
-  NETRESTART="YES"
-fi
+sudo su -c "/etc/init.d/networking restart" 1>/dev/null
 
 IFACESTATUS=$(sudo /sbin/ifconfig $INTERFACE | grep "UP," | xargs)
 if [[ "$IFACESTATUS" != *"UP,"* ]]; then
@@ -43,7 +40,7 @@ else
 fi
 
 if [ "$NETRESTART" = "YES" ]; then
-  sudo su -c "/etc/init.d/networking restart; systemctl restart systemd-networkd" 2>/dev/null
+  sudo su -c "systemctl restart systemd-networkd" 1>/dev/null
 fi
 
 if [ "$INTERFACE" = "eth0" ]; then
