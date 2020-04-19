@@ -3,10 +3,6 @@ echo "*-*-* Overclocking in progress *-*-*"
 
 INSTANT=$1
 
-AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
- if [ "$AMDDEVICE" = "0" ]; then
-   AMDDEVICE=$(sudo lshw -C display | grep driver=amdgpu | wc -l)
- fi
 NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
 FORCE="no"
 
@@ -15,8 +11,24 @@ NVIDIA="$(nvidia-smi -L)"
 if [ ! -z "$NVIDIA" ]; then
   if echo "$NVIDIA" | grep -iq "^GPU 0:" ;then
     DONVIDIA="YES"
+    # Check XSERVER
+    sudo su -c "sudo screen -X -S display quit" &
+    screen -X -S display quit &
+    screen -X -S display2 quit &
+    sudo killall X
+    sudo killall Xorg
+    sudo kill -9 $(sudo pidof Xorg)
+    sudo rm /tmp/.X0-lock
+    sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0"
+    sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf
+    sudo su minerstat -c "screen -A -m -d -S display2 sudo X :0"
   fi
 fi
+
+AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
+ if [ "$AMDDEVICE" = "0" ]; then
+   AMDDEVICE=$(sudo lshw -C display | grep driver=amdgpu | wc -l)
+ fi
 
 if [ "$AMDDEVICE" -gt "0" ]; then
   DOAMD="YES"
@@ -40,21 +52,9 @@ sudo rm /dev/shm/nvid_cache.txt
 sleep 1
 
 if [ ! -z "$DONVIDIA" ]; then
-  # Check XSERVER
-  sudo su -c "sudo screen -X -S display quit" &
-  screen -X -S display quit &
-  screen -X -S display2 quit &
-  sudo killall X
-  sudo killall Xorg
-  sudo kill -9 $(sudo pidof Xorg)
-  sudo rm /tmp/.X0-lock
-  sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0"
-  sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf
-  sudo su minerstat -c "screen -A -m -d -S display2 sudo X :0"
-  
   sudo nvidia-smi -pm 1
   wget -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=nvidia&token=$TOKEN&worker=$WORKER&nums=$NVIDIADEVICE&instant=$INSTANT"
-  sleep 1.5
+  sleep 2
   sudo sh doclock.sh
   sync
 
