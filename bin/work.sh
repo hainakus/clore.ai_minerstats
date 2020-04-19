@@ -7,7 +7,7 @@ if ! screen -list | grep -q "dummy"; then
 
   screen -A -m -d -S dummy sleep 22176000
   screen -S listener -X quit # kill running process
-  screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
+  screen -A -m -d -S listener sudo bash /home/minerstat/minerstat-os/core/init.sh
  
   #sudo systemctl stop thermald &
   #sudo systemctl disable thermald &
@@ -85,18 +85,18 @@ if ! screen -list | grep -q "dummy"; then
 
     if [ "$SSID" -gt 0 ]; then
       cd /home/minerstat/minerstat-os/core
-      sudo sh wifi.sh
+      sudo bash wifi.sh
 
     else
 
       if [ "$DHCP" != "NO" ]
       then
         cd /home/minerstat/minerstat-os/bin
-        sudo sh dhcp.sh
+        sudo bash dhcp.sh
         #sudo dhclient -v -r
       else
         cd /home/minerstat/minerstat-os/bin
-        sudo sh static.sh
+        sudo bash static.sh
       fi
     fi
   fi
@@ -150,7 +150,7 @@ if ! screen -list | grep -q "dummy"; then
   echo ""
   #sudo update-pciids
   cd /home/minerstat/minerstat-os
-  sudo sh git.sh
+  sudo bash git.sh
   echo ""
   sudo chmod -R 777 /home/minerstat/minerstat-os/*
   #echo "Moving MSOS config.js to / (LINUX)"
@@ -210,7 +210,7 @@ if ! screen -list | grep -q "dummy"; then
   # MCLOCK
   echo "\033[1;34m== \033[0m Adjusting clocks in the background ..."
   #sudo chvt 1
-  sudo sh /home/minerstat/minerstat-os/bin/overclock.sh
+  sudo bash /home/minerstat/minerstat-os/bin/overclock.sh
 
   if [ "$AMDDEVICE" -gt 0 ]; then
     echo ""
@@ -266,7 +266,7 @@ if ! screen -list | grep -q "dummy"; then
       then
         cd /home/minerstat/minerstat-os/bin
         sudo chmod 777 /home/minerstat/minerstat-os/bin/OhGodAnETHlargementPill-r2
-        screen -A -m -d -S ethboost sudo sh ethpill.sh $ETHPILLARGS $ETHPILLDELAY
+        screen -A -m -d -S ethboost sudo bash ethpill.sh $ETHPILLARGS $ETHPILLDELAY
       fi
 
     fi
@@ -275,14 +275,14 @@ if ! screen -list | grep -q "dummy"; then
   echo " "
   echo "\033[1;34m========== INITALIZING JOBS ============\033[0m"
   cd /home/minerstat/minerstat-os/bin
-  sudo sh jobs.sh $AMDDEVICE &
+  sudo bash jobs.sh $AMDDEVICE &
   echo ""
 
   sleep 1
   sudo chvt 1
 
   cd /home/minerstat/minerstat-os/core
-  sudo sh expand.sh &
+  sudo bash expand.sh &
 
   echo "\033[1;34m== \033[0m Waiting for console output ..."
 
