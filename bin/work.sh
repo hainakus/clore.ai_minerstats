@@ -48,13 +48,16 @@ if ! screen -list | grep -q "dummy"; then
 
   #sudo screen -A -m -d -S restartnet sudo /etc/init.d/networking restart
 
+  echo -e "\033[1;34m==\033[0m Waiting for connection ...\033[0m"
+  
+  sleep 1
   HAVECONNECTION="true"	
   ping -c1 1.1.1.1 -w 1 &>/dev/null && HAVECONNECTION="true" || HAVECONNECTION="false"   
   if [ "$HAVECONNECTION" = "false" ]; then
     if [ "$SSID" -gt 0 ]; then
       cd /home/minerstat/minerstat-os/core
       sudo bash wifi.sh
-	  
+
     else
 	
       if [ "$DHCP" != "NO" ]; then
@@ -68,8 +71,6 @@ if ! screen -list | grep -q "dummy"; then
     fi
   fi
 
-  echo -e "\033[1;34m==\033[0m Waiting for connection ...\033[0m"
-
   # Cache management
   ping -c1 104.24.98.231 -w 1 &>/dev/null && HAVECONNECTION="true" || HAVECONNECTION="false"
   if [ "$HAVECONNECTION" = "false" ]; then
@@ -78,8 +79,6 @@ if ! screen -list | grep -q "dummy"; then
     sudo /home/minerstat/minerstat-os/core/dnser
     sleep 2
   fi
-
-  #timeout 3 nslookup api.minerstat.com
 
   ping -c1 api.minerstat.com -w 1 &>/dev/null && HAVECONNECTION="true" || HAVECONNECTION="false"
   if [ "$HAVECONNECTION" = "false" ]; then
@@ -172,7 +171,7 @@ if ! screen -list | grep -q "dummy"; then
 
   if [ ! -z "$NVIDIA" ]; then
 
-    if echo "$NVIDIA" | grep -iq "^GPU 0:" ;then
+    if echo "$NVIDIA" | grep -iq "^GPU 0:"; then
 
       ETHPILLARGS=$(cat /media/storage/settings.txt 2>/dev/null | grep 'OHGODARGS="' | sed 's/OHGODARGS="//g' | sed 's/"//g')
       ETHPILLDELAY=$(cat /media/storage/settings.txt 2>/dev/null | grep 'OHGODADELAY=' | sed 's/[^0-9]*//g')
@@ -189,8 +188,7 @@ if ! screen -list | grep -q "dummy"; then
         fi
       fi
 
-      if [ "$ETHPILLDELAY" != "999" ]
-      then
+      if [ "$ETHPILLDELAY" != "999" ]; then
         cd /home/minerstat/minerstat-os/bin
         sudo chmod 777 /home/minerstat/minerstat-os/bin/OhGodAnETHlargementPill-r2
         screen -A -m -d -S ethboost sudo bash ethpill.sh $ETHPILLARGS $ETHPILLDELAY
@@ -202,7 +200,6 @@ if ! screen -list | grep -q "dummy"; then
   echo -e "\033[1;34m==\033[0m Initializing jobs ...\033[0m"
   cd /home/minerstat/minerstat-os/bin
   sudo bash jobs.sh $AMDDEVICE &
-  echo ""
 
   sleep 1
   sudo chvt 1
