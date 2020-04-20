@@ -14,7 +14,10 @@ fi
 # /etc/hosts
 HCHECK=$(cat /etc/hosts | grep "$SERVERC minerstat.com" | xargs)
 WCHECK=$(cat /etc/hosts | grep "127.0.1.1 $WNAME" | xargs)
+WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
 if [ "$HCHECK" != "$SERVERC minerstat.com" ] || [ "$WCHECK" != "127.0.1.1 $WNAME" ]; then
+sudo su -c "echo '$WNAME' > /etc/hostname"
+sudo hostname -F /etc/hostname
 sudo echo "
 127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1     ip6-localhost ip6-loopback
