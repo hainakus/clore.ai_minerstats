@@ -9,7 +9,7 @@
 0 */2 * * * sync
 0 */8 * * * sudo killall tmate
 #0 * * * * sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=28 --use-display-device="DFP-0" --connected-monitor="DFP-0" --enable-all-gpus
-@reboot sudo systemctl stop systemd-udevd systemd-udevd-kernel.socket systemd-udevd-control.socket
+#@reboot sudo systemctl stop systemd-udevd systemd-udevd-kernel.socket systemd-udevd-control.socket
 @reboot find '/home/minerstat/minerstat-os/clients' -name "*log.txt" -type f -delete
 @reboot /usr/sbin/netplan apply
 @reboot sudo systemctl restart systemd-logind.service
