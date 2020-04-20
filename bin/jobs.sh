@@ -21,14 +21,9 @@ sudo su -c "sudo service rsyslog stop"
 #echo "Log files deleted"
 sudo dmesg -n 1
 sudo apt clean &
-# Apply crontab
-sudo su -c "cp /home/minerstat/minerstat-os/core/minerstat /var/spool/cron/crontabs/minerstat"
-sudo su -c "chmod 600 /var/spool/cron/crontabs/minerstat"
-sudo su -c "chown minerstat /var/spool/cron/crontabs/minerstat"
+# Apply crontab + Fix slow start
+sudo su -c "cp /home/minerstat/minerstat-os/core/minerstat /var/spool/cron/crontabs/minerstat; chmod 600 /var/spool/cron/crontabs/; chown minerstat /var/spool/cron/crontabs/minerstat; systemctl disable NetworkManager-wait-online.service; systemctl disable systemd-networkd-wait-online.service"
 sudo service cron restart
-# Fix Slow start bug
-sudo su -c "systemctl disable NetworkManager-wait-online.service"
-sudo su -c "systemctl disable systemd-networkd-wait-online.service"
 sudo sed -i s/"TimeoutStartSec=5min"/"TimeoutStartSec=5sec"/ /etc/systemd/system/network-online.target.wants/networking.service
 sudo sed -i s/"timeout 300"/"timeout 5"/ /etc/dhcp/dhclient.conf
 # Nvidia PCI_BUS_ID
@@ -62,27 +57,10 @@ else
   HPAGE=128
 fi
 
-sudo su -c "echo $HPAGE > /proc/sys/vm/nr_hugepages" > /dev/null 2>&1
-sudo su -c "sysctl vm.nr_hugepages=$HPAGE" > /dev/null 2>&1
-sudo su -c "echo always > /sys/kernel/mm/transparent_hugepage/enabled" > /dev/null 2>&1
-sudo su -c "sysctl vm.dirty_background_ratio=20" > /dev/null 2>&1
-sudo su -c "sysctl vm.dirty_expire_centisecs=0" > /dev/null 2>&1
-sudo su -c "sysctl vm.dirty_ratio=80" > /dev/null 2>&1
-sudo su -c "sysctl vm.dirty_writeback_centisecs=0" > /dev/null 2>&1
+sudo su -c "echo $HPAGE > /proc/sys/vm/nr_hugepages; sysctl vm.nr_hugepages=$HPAGE; echo always > /sys/kernel/mm/transparent_hugepage/enabled; sysctl vm.dirty_background_ratio=20; sysctl vm.dirty_expire_centisecs=0; sysctl vm.dirty_ratio=80; sysctl vm.dirty_writeback_centisecs=0" > /dev/null 2>&1
 # Auto OpenCL for/above v1.5
 version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
-if [ "$version" = "1.5" ] || [ "$version" = "1.6" ] || [ "$version" = "1.7" ]; then
-  FILE=/media/storage/opencl.txt
-  # If not exists then automatic openCL versioning
-  if [ ! -f "$FILE" ]; then
-    naviCount=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep -E "5500|5550|5600|5650|5700|5750|5800|5850|5900|5950" | wc -l)
-    if [ "$naviCount" -gt "0" ]; then
-      sudo su -c "echo '/opt/rocm-3.1.0/opencl/lib/x86_64/libamdocl64.so' > /etc/OpenCL/vendors/amdocl64.icd"
-    else
-      sudo su -c "echo '/opt/amdgpu-pro/lib/x86_64-linux-gnu/libamdocl64.so' > /etc/OpenCL/vendors/amdocl64.icd"
-    fi
-  fi
-fi
+
 # Fix ERROR Messages
 export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
@@ -93,26 +71,20 @@ sudo sed -i s/"#FSCKFIX=no"/"FSCKFIX=yes"/ /etc/default/rcS
 # check cloudflare ips
 SERVERA="104.20.2.95"
 SERVERB="104.20.3.95"
-DNSA=$(ping -c 1 $SERVERA &> /dev/null && echo success || echo fail)
-DNSB=$(ping -c 1 $SERVERB &> /dev/null && echo success || echo fail)
 SERVERC="$SERVERB"
-if [ "$DNSA" = "success" ] && [ "$DNSB" != "success" ]; then
-        SERVERC="$SERVERA"
+DNSA=$(ping -c 1 $SERVERA &> /dev/null && echo success || echo fail)
+if [ "$DNSA" = "success" ]; then
+    SERVERC="$SERVERA"
 fi
-if [ "$DNSA" != "success" ] && [ "$DNSB" = "success" ]; then
-        SERVERC="$SERVERB"
-fi
-if [ "$DNSA" = "success" ] && [ "$DNSB" = "success" ]; then
-        SERVERC="$SERVERB"
-fi
-if [ "$DNSA" != "success" ] && [ "$DNSB" != "success" ]; then
-        SERVERC="$SERVERB"
-fi
+
 # Change hostname
 WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
 sudo su -c "echo '$WNAME' > /etc/hostname"
 sudo hostname -F /etc/hostname
-# /etc/hosts
+
+HCHECK=$(cat /etc/hosts | grep "$SERVERC minerstat.com" | xargs)
+WCHECK=$(cat /etc/hosts | grep "127.0.1.1 $WNAME" | xargs)
+if [ "$HCHECK" != "$SERVERC minerstat.com" ] || [ "$WCHECK" != "127.0.1.1 $WNAME" ]; then
 sudo echo "
 127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1     ip6-localhost ip6-loopback
@@ -130,52 +102,19 @@ $SERVERC api.minerstat.com
 167.71.240.6 us.sandbox.pool.ms
 162.159.200.1 ntp.ubuntu.com
 " > /etc/hosts
-#sudo sed -i s/"minerstat"/"$WNAME"/ /etc/hosts
-if grep -q $WNAME "/etc/hosts"; then
-  echo ""
-else
-  echo " Hostname mismatch - FIXING.. "
-  sudo su -c "sed -i '/127.0.1.1/d' /etc/hosts"
-  sudo su -c "echo '127.0.1.1   $WNAME' >> /etc/hosts"
 fi
-#WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
-#sudo sed -i s/"$WNAME"/"minerstat"/ /etc/hosts
-#sudo su -c "echo 'minerstat' > /etc/hostname"
-#sudo hostname -F /etc/hostname
-# CloudFlare DNS
-#sudo resolvconf -u
-GET_GATEWAY=$(route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
-# systemd resolve casusing problems with 127.0.0.53
-if [ ! -z "$GET_GATEWAY" ]; then
-  sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/resolvconf/interface/systemd-resolved" 2>/dev/null
+
+GET_GATEWAY=$(timeout 5 route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
+NSCHECK=$(cat /etc/resolv.conf | grep "nameserver 1.1.1.1" | xargs)
+if [ "$NSCHECK" != "nameserver 1.1.1.1" ] || [ ! -z "$GET_GATEWAY" ]; then
+	GCHECK=$(cat /etc/resolv.conf | grep "nameserver $GET_GATEWAY" | xargs)
+	if [ "$GCHECK" != "nameserver $GET_GATEWAY" ] && [ ! -z "$GET_GATEWAY" ]; then
+		sudo su -c "echo -n > /etc/resolv.conf; echo 'nameserver 1.1.1.1' >> /etc/resolv.conf; echo 'nameserver 1.0.0.1' >> /etc/resolv.conf; echo 'nameserver 8.8.8.8' >> /etc/resolv.conf; echo 'nameserver 8.8.4.4' >> /etc/resolv.conf; echo 'nameserver 114.114.114.114' >> /etc/resolv.conf; echo 'nameserver 114.114.115.115' >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf; echo 'nameserver $GET_GATEWAY' >> /etc/resolv.conf" 2>/dev/null
+	else
+		sudo su -c "echo -n > /etc/resolv.conf; echo 'nameserver 1.1.1.1' >> /etc/resolv.conf; echo 'nameserver 1.0.0.1' >> /etc/resolv.conf; echo 'nameserver 8.8.8.8' >> /etc/resolv.conf; echo 'nameserver 8.8.4.4' >> /etc/resolv.conf; echo 'nameserver 114.114.114.114' >> /etc/resolv.conf; echo 'nameserver 114.114.115.115' >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf" 2>/dev/null
+	fi
 fi
-sudo su -c 'echo "nameserver 1.1.1.1" >> /run/resolvconf/interface/systemd-resolved' 2>/dev/null
-sudo su -c 'echo "nameserver 1.0.0.1" >> /run/resolvconf/interface/systemd-resolved' 2>/dev/null
-sudo su -c 'echo "nameserver 8.8.8.8" >> /run/resolvconf/interface/systemd-resolved' 2>/dev/null
-sudo su -c 'echo "nameserver 8.8.4.4" >> /run/resolvconf/interface/systemd-resolved' 2>/dev/null
-if [ ! -z "$GET_GATEWAY" ]; then
-  sudo su -c "echo 'nameserver $GET_GATEWAY' > /run/systemd/resolve/stub-resolv.conf" 2>/dev/null
-fi
-sudo su -c 'echo "nameserver 1.1.1.1" >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
-sudo su -c 'echo "nameserver 1.0.0.1" >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
-sudo su -c 'echo "nameserver 8.8.8.8" >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
-sudo su -c 'echo "nameserver 8.8.4.4" >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
-sudo su -c 'echo options edns0 >> /run/systemd/resolve/stub-resolv.conf' 2>/dev/null
-# Rewrite
-sudo su -c 'echo "" > /etc/resolv.conf'
-if [ ! -z "$GET_GATEWAY" ]; then
-  sudo su -c "echo 'nameserver $GET_GATEWAY' >> /etc/resolv.conf" 2>/dev/null
-fi
-sudo su -c 'echo "nameserver 1.1.1.1" >> /etc/resolv.conf' 2>/dev/null
-sudo su -c 'echo "nameserver 1.0.0.1" >> /etc/resolv.conf' 2>/dev/null
-sudo su -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf' 2>/dev/null
-sudo su -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf' 2>/dev/null
-# China
-sudo su -c 'echo "nameserver 114.114.114.114" >> /etc/resolv.conf' 2>/dev/null
-sudo su -c 'echo "nameserver 114.114.115.115" >> /etc/resolv.conf' 2>/dev/null
-# IPV6
-sudo su -c 'echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf' 2>/dev/null
-sudo su -c 'echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf' 2>/dev/null
+
 # Memory Info
 sudo chmod -R 777 * /home/minerstat/minerstat-os
 sudo rm /home/minerstat/minerstat-os/bin/amdmeminfo.txt
@@ -287,7 +226,6 @@ if [ -f "/etc/netplan/minerstat.yaml" ]; then
   if grep -q dhcp-identifier "/etc/netplan/minerstat.yaml"; then
     echo ""
   else
-    echo ""
     INTERFACE="$(sudo cat /proc/net/dev | grep -vE lo | tail -n1 | awk -F '\\:' '{print $1}' | xargs)"
     if [ "$INTERFACE" = "eth0" ]; then
       sudo echo "network:" > /etc/netplan/minerstat.yaml
