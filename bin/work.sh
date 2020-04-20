@@ -169,17 +169,17 @@ if ! screen -list | grep -q "dummy"; then
   
   sleep 1
   sudo service dgm stop &
-  if [ "$NVIDIADEVICE" -gt 0 ]; then
-    sudo su -c "sudo screen -X -S display quit" &
-    sudo killall X
-    sudo killall Xorg
-    sudo kill -9 $(sudo pidof Xorg)
-    sudo rm /tmp/.X0-lock
-    sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0"
-    sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf
-    sudo su minerstat -c "screen -A -m -d -S display2 sudo X"
-  fi
-  sudo chvt 1
+  #if [ "$NVIDIADEVICE" -gt 0 ]; then
+  #  sudo su -c "sudo screen -X -S display quit" &
+  #  sudo killall X
+  #  sudo killall Xorg
+  #  sudo kill -9 $(sudo pidof Xorg)
+  #  sudo rm /tmp/.X0-lock
+  #  sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0"
+  #  sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf
+  #  sudo su minerstat -c "screen -A -m -d -S display2 sudo X"
+  #fi
+  #sudo chvt 1
   echo ""
 
   echo " "
