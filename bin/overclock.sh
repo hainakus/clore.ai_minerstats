@@ -47,8 +47,8 @@ echo "WORKER: $WORKER"
 
 echo "--------------------------"
 
-sudo rm doclock.sh
-sudo rm /dev/shm/nvid_cache.txt
+sudo rm doclock.sh > /dev/null
+sudo rm /dev/shm/nvid_cache.txt > /dev/null
 sleep 1
 
 if [ ! -z "$DONVIDIA" ]; then
@@ -116,8 +116,8 @@ if [ ! -z "$DOAMD" ]; then
     echo "Integrated Graphics ID: "$SKIP
   fi
 
-  sudo rm /media/storage/fans.txt
-  sudo killall curve
+  sudo rm /media/storage/fans.txt > /dev/null
+  sudo killall curve > /dev/null
   
   #isThisVega=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
   #isThisVegaII=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
