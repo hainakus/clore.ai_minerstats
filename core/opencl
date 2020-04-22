@@ -2,7 +2,7 @@
 
 version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
 
-if [ "$version" = "1.5" ] || [ "$version" = "1.6" ] || [ "$version" = "1.7" ] || [ "$version" = "1.4.6" ] || [ "$version" = "1.5.1" ] || [ "$version" = "1.5.2" ]; then
+if [ "$version" = "1.5" ] || [ "$version" = "1.6" ] || [ "$version" = "1.7" ] || [ "$version" = "1.4.6" ] || [ "$version" = "1.5.1" ] || [ "$version" = "1.5.2" ] || [ "$version" = "1.5.3" ] || [ "$version" = "1.4.7" ]; then
   if [ -z "$1" ]; then
     echo "Usage: opencl version"
     echo "e.g: opencl auto"
@@ -15,6 +15,12 @@ if [ "$version" = "1.5" ] || [ "$version" = "1.6" ] || [ "$version" = "1.7" ] ||
     echo "Error: OpenCL version can't be empty"
     exit 1
   fi
+  
+  
+  FOLDER='rocm-3.1.0'
+  if [ -d "/opt/rocm-3.3.0" ]; then
+    FOLDER='rocm-3.3.0'
+  fi
 
   FILE=/media/storage/opencl.txt
 
@@ -24,7 +30,7 @@ if [ "$version" = "1.5" ] || [ "$version" = "1.6" ] || [ "$version" = "1.7" ] ||
       sudo rm $FILE >/dev/null
       naviCount=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep -E "5500|5550|5600|5650|5700|5750|5800|5850|5900|5950" | wc -l)
       if [ "$naviCount" -gt "0" ]; then
-        sudo su -c "echo '/opt/rocm-3.1.0/opencl/lib/x86_64/libamdocl64.so' > /etc/OpenCL/vendors/amdocl64.icd"
+        sudo su -c "echo '/opt/$FOLDER/opencl/lib/x86_64/libamdocl64.so' > /etc/OpenCL/vendors/amdocl64.icd"
         echo "OpenCL switched to: rocm"
       else
         sudo su -c "echo '/opt/amdgpu-pro/lib/x86_64-linux-gnu/libamdocl64.so' > /etc/OpenCL/vendors/amdocl64.icd"
