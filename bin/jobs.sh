@@ -143,8 +143,8 @@ echo "" | ssh-keygen -N "" &> /dev/null
 sudo chmod 777 /etc/profile
 sudo cp /home/minerstat/minerstat-os/core/profile /etc
 # Restart listener, Maintenance Process, Also from now it can be updated in runtime (mupdate)
-sudo su -c "screen -S listener -X quit"
-sudo su minerstat -c "screen -S listener -X quit"
+sudo su -c "screen -S listener -X quit" > /dev/null
+sudo su minerstat -c "screen -S listener -X quit" > /dev/null
 sudo su minerstat -c "screen -A -m -d -S listener sudo bash /home/minerstat/minerstat-os/core/init.sh"
 # Disable UDEVD & JOURNAL
 sudo systemctl stop systemd-udevd systemd-udevd-kernel.socket systemd-udevd-control.socket
