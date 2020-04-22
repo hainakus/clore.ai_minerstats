@@ -1,4 +1,6 @@
 #!/bin/bash
+exec 2>/dev/null
+
 if ! screen -list | grep -q "dummy"; then
   screen -A -m -d -S dummy sleep 22176000
 	
