@@ -3,11 +3,11 @@ if ! screen -list | grep -q "dummy"; then
   screen -A -m -d -S dummy sleep 22176000
 	
   # Stop before OC
-  echo "stopboot" > /tmp/stop.pid > /dev/null 2>&1;
-  echo "stop" > /tmp/justbooted.pid > /dev/null 2>&1;
+  echo "stopboot" > /tmp/stop.pid;
+  echo "stop" > /tmp/justbooted.pid;
   screen -A -m -d -S just sudo bash /home/minerstat/minerstat-os/core/justboot
   
-  screen -S listener -X quit # kill running process
+  screen -S listener -X quit > /dev/null # kill running process
   screen -A -m -d -S listener sudo bash /home/minerstat/minerstat-os/core/init.sh
 
   #sudo systemctl stop thermald &
@@ -26,7 +26,7 @@ if ! screen -list | grep -q "dummy"; then
   screen -A -m -d -S checkclock sudo bash /home/minerstat/minerstat-os/core/checkclock
 
   # FIX CTRL + ALT + F1
-  sudo systemctl start nvidia-persistenced &
+  sudo systemctl start nvidia-persistenced > /dev/null &
   screen -A -m -d -S chvt sudo /home/minerstat/minerstat-os/bin/chvta
 
   NVIDIA="$(nvidia-smi -L)"
@@ -98,15 +98,15 @@ if ! screen -list | grep -q "dummy"; then
   sudo cp -rf "/media/storage/config.js" "/home/minerstat/minerstat-os/"
 
   sleep 1
-  sudo service dgm stop &
+  sudo service dgm stop > /dev/null &
   sudo chvt 1
 
   echo -e "\033[1;34m==\033[0m Overclocking ...\033[0m"
   cd /home/minerstat/minerstat-os/
-  sudo node stop
-  sudo su minerstat -c "screen -X -S minerstat-console quit"
+  sudo node stop > /dev/null
+  sudo su minerstat -c "screen -X -S minerstat-console quit" > /dev/null
   echo "stop" > /tmp/stop.pid
-  sudo su -c "sudo screen -X -S minew quit"
+  sudo su -c "sudo screen -X -S minew quit" > /dev/null
   cd /home/minerstat/minerstat-os/bin
   
   TOKEN="$(cat /media/storage/config.js | grep 'global.accesskey' | sed 's/global.accesskey =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g' | sed 's/[^a-zA-Z0-9]*//g')"
@@ -144,14 +144,14 @@ if ! screen -list | grep -q "dummy"; then
 
   echo -e "\033[1;34m==\033[0m Initializing minerstat OS ...\033[0m"
   cd /home/minerstat/minerstat-os
-  sudo su -c "sudo screen -X -S minew quit"
-  sudo su -c "sudo screen -X -S fakescreen quit"
-  sudo su -c "screen -ls minew | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
-  sudo su minerstat -c "screen -X -S fakescreen quit"
+  sudo su -c "sudo screen -X -S minew quit" > /dev/null
+  sudo su -c "sudo screen -X -S fakescreen quit" > /dev/null
+  sudo su -c "screen -ls minew | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done" > /dev/null
+  sudo su minerstat -c "screen -X -S fakescreen quit" > /dev/null
   screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done
   sudo su minerstat -c "screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
   sudo su minerstat -c "screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh"
-  sudo rm /tmp/stop.pid > /dev/null 2>&1
+  sudo rm /tmp/stop.pid > /dev/null
   sleep 2
   sudo su minerstat -c "screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh"
 
