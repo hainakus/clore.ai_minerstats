@@ -181,14 +181,14 @@ sudo getent passwd nvidia-persistenced &>/dev/null || sudo useradd -c 'NVIDIA Pe
 # Check XSERVER
 SNUMD=$(sudo su minerstat -c "screen -list | grep -c display2")
 if [ "$SNUMD" = "0" ]; then
-  sudo su -c "sudo screen -X -S display quit" &
-  sudo killall X
-  sudo killall Xorg
-  sudo kill -9 $(sudo pidof Xorg)
-  sudo rm /tmp/.X0-lock
-  sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0"
-  sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf
-  sudo su minerstat -c "screen -A -m -d -S display2 sudo X"
+  sudo su -c "sudo screen -X -S display quit" 2> /dev/null &
+  sudo killall X 2> /dev/null
+  sudo killall Xorg 2> /dev/null
+  sudo kill -9 $(sudo pidof Xorg) 2> /dev/null
+  sudo rm /tmp/.X0-lock 2> /dev/null
+  sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" 2> /dev/null
+  sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf 2> /dev/null
+  sudo su minerstat -c "screen -A -m -d -S display2 sudo X" 2> /dev/null
 fi
 # Check CURL is installed
 ISCURL=$(dpkg -l curl | grep curl | wc -l | sed 's/[^0-9]*//g')
