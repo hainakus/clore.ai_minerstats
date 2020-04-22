@@ -29,5 +29,7 @@ echo -e "${BLUE}static${NC}\t\tYou can now configure static IP with static comma
 echo -e "${BLUE}dhcp${NC}\t\tSwitch back to Dynamic IP"
 echo -e "${BLUE}amdmemtool${NC}\tAMD Memory Tweak"
 echo -e "${BLUE}nvflash${NC}\t\tNVIDIA VBIOS Flasher"
+echo -e "${BLUE}atiflash${NC}\t\tPolaris (RX400/500) VBIOS Flasher"
+echo -e "${BLUE}amdvbflash${NC}\t\tNavi/Vega VBIOS Flasher"
 echo -e "${BLUE}hugepages${NC}\t\tSet Custom Hugepages for CPU mining"
 echo -e "${END}"
