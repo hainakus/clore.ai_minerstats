@@ -5,11 +5,11 @@ TESTLOGIN=$(timeout 2 systemctl list-jobs)
 if [ "$TESTLOGIN" != "No jobs running." ]; then
   sudo systemctl restart systemd-logind.service &
 fi
-sudo systemctl mask apt-daily.service apt-daily-upgrade.service &
-sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic linux-firmware > /dev/null 2>&1 &
-sudo systemctl disable thermald systemd-timesyncd.service &
-sudo systemctl stop thermald systemd-timesyncd.service &
-sudo systemctl daemon-reload &
+sudo systemctl mask apt-daily.service apt-daily-upgrade.service > /dev/null &
+sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic linux-firmware > /dev/null &
+sudo systemctl disable thermald systemd-timesyncd.service > /dev/null &
+sudo systemctl stop thermald systemd-timesyncd.service > /dev/null &
+sudo systemctl daemon-reload > /dev/null &
 # Kernel panic auto reboot
 sudo su -c "echo 20 >/proc/sys/kernel/panic"
 # Remove logs
@@ -158,18 +158,18 @@ sudo ln -s /home/minerstat/minerstat-os/bin/jq /sbin &> /dev/null
 # Restart fan curve if running
 FNUM=$(sudo su -c "screen -list | grep -c curve")
 if [ "$FNUM" -gt "0" ]; then
-  sudo killall curve
+  sudo killall curve > /dev/null
   sleep 0.1
-  sudo kill -9 $(sudo pidof curve)
+  sudo kill -9 $(sudo pidof curve) > /dev/null
   sleep 0.2
   sudo screen -A -m -d -S curve /home/minerstat/minerstat-os/core/curve
 fi
 # Safety layer
 CURVE_FILE=/media/storage/fans.txt
 if [ -f "$CURVE_FILE" ]; then
-  sudo killall curve
+  sudo killall curve > /dev/null
   sleep 0.1
-  sudo kill -9 $(sudo pidof curve)
+  sudo kill -9 $(sudo pidof curve) > /dev/null
   sleep 0.1
   sudo screen -A -m -d -S curve /home/minerstat/minerstat-os/core/curve
 fi
@@ -181,14 +181,14 @@ sudo getent passwd nvidia-persistenced &>/dev/null || sudo useradd -c 'NVIDIA Pe
 # Check XSERVER
 SNUMD=$(sudo su minerstat -c "screen -list | grep -c display2")
 if [ "$SNUMD" = "0" ]; then
-  sudo su -c "sudo screen -X -S display quit" 2> /dev/null &
-  sudo killall X 2> /dev/null
-  sudo killall Xorg 2> /dev/null
-  sudo kill -9 $(sudo pidof Xorg) 2> /dev/null
-  sudo rm /tmp/.X0-lock 2> /dev/null
-  sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" 2> /dev/null
-  sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf 2> /dev/null
-  sudo su minerstat -c "screen -A -m -d -S display2 sudo X" 2> /dev/null
+  sudo su -c "sudo screen -X -S display quit" > /dev/null &
+  sudo killall X > /dev/null
+  sudo killall Xorg > /dev/null
+  sudo kill -9 $(sudo pidof Xorg) > /dev/null
+  sudo rm /tmp/.X0-lock > /dev/null
+  sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" > /dev/null
+  sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf > /dev/null
+  sudo su minerstat -c "screen -A -m -d -S display2 sudo X" > /dev/null
 fi
 # Check CURL is installed
 ISCURL=$(dpkg -l curl | grep curl | wc -l | sed 's/[^0-9]*//g')
