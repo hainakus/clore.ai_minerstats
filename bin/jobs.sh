@@ -5,6 +5,11 @@ TESTLOGIN=$(timeout 2 systemctl list-jobs)
 if [ "$TESTLOGIN" != "No jobs running." ]; then
   sudo systemctl restart systemd-logind.service &
 fi
+CL=/media/storage/opencl.txt
+if [ ! -f "$CL" ]; then
+    sudo su -c "echo 'amd' > $FILE; echo '/opt/amdgpu-pro/lib/x86_64-linux-gnu/libamdocl64.so' > /etc/OpenCL/vendors/amdocl64.icd"
+    echo "OpenCL switched to: amdgpu"
+fi
 sudo systemctl mask apt-daily.service apt-daily-upgrade.service > /dev/null &
 sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic linux-firmware > /dev/null &
 sudo systemctl disable thermald systemd-timesyncd.service > /dev/null &
