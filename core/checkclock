@@ -2,6 +2,9 @@
 
 sleep 90
 
+# Check if clocktune applied or not after boot
+# If not exec for protection
+
 FILE=/dev/shm/bootclock.pid
 if [ -f "$FILE" ]; then
     echo "pid found"
