@@ -9,4 +9,6 @@ else
   sleep 10
 fi
 
-sudo /home/minerstat/minerstat-os/bin/OhGodAnETHlargementPill-r2 $1
+while true; do
+    sudo /home/minerstat/minerstat-os/bin/OhGodAnETHlargementPill-r2 $1
+done
