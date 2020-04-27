@@ -161,7 +161,12 @@ do
     #echo "VDDC: $currentVDDC, MVDD: $currentMVDD"
     #echo
     #echo $STRING
-    NEWSTRING="$STRING, $currentVDDC, $currentMVDD"
+    
+    # Send GPU (VRAM) Memory info in Mb
+    VRAM=$(timeout 3 sudo stat -c %s -- /sys/kernel/debug/dri/$GPUID/amdgpu_vram)
+    VRAM_MB=$(($VRAM / 1024 / 1024))
+    
+    NEWSTRING="$STRING, $currentVDDC, $currentMVDD, $VRAM_MB"
     #echo $NEWSTRING
     I=$((i + 1))
     TEST=$(echo $AMDINFO_ORIGINAL | $JQ_PATH -r .[\"$I\"])
