@@ -374,6 +374,14 @@ if [ $1 ]; then
       sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_enable" 2>/dev/null
       sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1" 2>/dev/null # 70%
     done
+    
+    echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
+    sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+    echo "-÷-*-****** MEM  CLOCKS *****-*-*÷-"
+    sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+    echo "-÷-*-******  PP_TABLE   *****-*-*÷-"
+    sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+
 
   else
 
