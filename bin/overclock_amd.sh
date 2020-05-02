@@ -257,7 +257,11 @@ if [ $1 ]; then
       echo
       echo "--- Setting up VDDCI Voltage GPU$GPUID ---"
       echo
-      timeout 10 sudo ./ohgodatool -i $GPUID --mem-state $maxMemState --vddci $VDDCI
+      if [ "$VDDCI" -gt "1000" ]; then
+        echo "WARNING!!! HIGH VDDCI Voltage setting skipping to apply."
+       else
+        timeout 10 sudo ./ohgodatool -i $GPUID --mem-state $maxMemState --vddci $VDDCI
+      fi
     fi
 
     # MVDD
