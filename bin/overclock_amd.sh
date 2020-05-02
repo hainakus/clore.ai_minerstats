@@ -132,11 +132,11 @@ if [ $1 ]; then
     GID=""
   fi
 
-  isThisR9=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "R9"| sed 's/^.*R9/R9/' | cut -f1 -d' ' | sed 's/[^A-Z0-9]*//g')
-  isThisVega=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
-  isThisVegaII=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
-  isThisVegaVII=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g')
-  isThisNavi=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep -E "5500|5550|5600|5650|5700|5750|5800|5850|5900|5950" | wc -l)
+  isThisR9=$(timeout 10 sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "R9"| sed 's/^.*R9/R9/' | cut -f1 -d' ' | sed 's/[^A-Z0-9]*//g')
+  isThisVega=$(timeout 10 sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
+  isThisVegaII=$(timeout 10 sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
+  isThisVegaVII=$(timeout 10 sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g')
+  isThisNavi=$(timeout 10 sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep -E "5500|5550|5600|5650|5700|5750|5800|5850|5900|5950" | wc -l)
 
   ##  echo "----"
   ##  echo $GPUBUS
@@ -197,7 +197,7 @@ if [ $1 ]; then
     ## Detect state's
     maxMemState=$(timeout 10 sudo ./ohgodatool -i $GPUID --show-mem  | grep -E "Memory state ([0-9]+):" | tail -n 1 | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g')
     maxCoreState=$(timeout 10 sudo ./ohgodatool -i $GPUID --show-core | grep -E "DPM state ([0-9]+):"    | tail -n 1 | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g')
-    currentCoreState=$(sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk | grep '*' | cut -f1 -d':' | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g'")
+    currentCoreState=$(sudo su -c "timeout 10 cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk | grep '*' | cut -f1 -d':' | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g'")
     #currentCoreState=5
 
     if [ "$R9" != "" ]; then
@@ -376,21 +376,21 @@ if [ $1 ]; then
     done
     
     echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
-    sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+    sudo su -c "timeout 3 cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
     echo "-÷-*-****** MEM  CLOCKS *****-*-*÷-"
-    sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+    sudo su -c "timeout 3 cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
     echo "-÷-*-******  PP_TABLE   *****-*-*÷-"
-    sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+    sudo su -c "timeout 3 cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
 
   else
 
     # R9 starts with 0 (zero)
     # Need new FUNC if GPU ID 1, apply to 0 too
-    if [ "$GPUID" = "1" ]; then
-      echo "-------- ID: 1 ---> Apply to ID: 0 also to make sure -----"
-      sudo sh overclock_amd.sh 0 $MEMCLOCK $CORECLOCK $FANSPEED $VDDC $VDDCI $MVDCC
-    fi
+    #if [ "$GPUID" = "1" ]; then
+    #  echo "-------- ID: 1 ---> Apply to ID: 0 also to make sure -----"
+    #  sudo sh overclock_amd.sh 0 $MEMCLOCK $CORECLOCK $FANSPEED $VDDC $VDDCI $MVDCC
+    #fi
 
     echo "== SETTING GPU$GPUID ==="
 
