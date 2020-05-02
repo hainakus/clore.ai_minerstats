@@ -270,7 +270,7 @@ if [ $1 ]; then
       fi
       if [ "$MVDD" -lt "950" ]; then
        MVDD="950"
-       echo "WARNING!! You have set lower MVDD than 985 so for protection we set 985mV for you to keep your rig solid."
+       echo "WARNING!! You have set lower MVDD than 950 so for protection we set 950mV for you to keep your rig solid."
        echo "If mining not start 0H/s set MVDD back to 1000mV."
       fi
       timeout 10 sudo ./ohgodatool -i $GPUID --mem-state $maxMemState --mvdd $MVDD
