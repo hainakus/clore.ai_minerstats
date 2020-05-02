@@ -268,8 +268,8 @@ if [ $1 ]; then
       if [ "$MVDD" -lt "1000" ]; then
        echo "WARNING!!! If you mining ETH keep memory voltages on 1000mv and try to reduce VDDC instead."
       fi
-      if [ "$MVDD" -lt "985" ]; then
-       MVDD="985"
+      if [ "$MVDD" -lt "950" ]; then
+       MVDD="950"
        echo "WARNING!! You have set lower MVDD than 985 so for protection we set 985mV for you to keep your rig solid."
        echo "If mining not start 0H/s set MVDD back to 1000mV."
       fi
