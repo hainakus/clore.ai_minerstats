@@ -7,6 +7,10 @@ INSTANT=$1
 NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
 FORCE="no"
 
+TOKEN="$(cat /media/storage/config.js | grep 'global.accesskey' | sed 's/global.accesskey =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g' | sed 's/[^a-zA-Z0-9]*//g')"
+WORKER="$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g')"
+
+
 NVIDIA="$(nvidia-smi -L)"
 
 if [ ! -z "$NVIDIA" ]; then
@@ -27,9 +31,9 @@ if [ ! -z "$NVIDIA" ]; then
 fi
 
 AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
- if [ "$AMDDEVICE" = "0" ]; then
-   AMDDEVICE=$(sudo lshw -C display | grep driver=amdgpu | wc -l)
- fi
+if [ "$AMDDEVICE" = "0" ]; then
+  AMDDEVICE=$(sudo lshw -C display | grep driver=amdgpu | wc -l)
+fi
 
 if [ "$AMDDEVICE" -gt "0" ]; then
   DOAMD="YES"
@@ -57,6 +61,17 @@ if [ ! -z "$DONVIDIA" ]; then
   wget -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=nvidia&token=$TOKEN&worker=$WORKER&nums=$NVIDIADEVICE&instant=$INSTANT"
   sleep 2
   sudo sh doclock.sh
+
+
+
+  QUERYNVIDIA=$(sudo /home/minerstat/minerstat-os/bin/gpuinfo nvidia)
+  # NVIDIA DRIVER CRASH WATCHDOG
+  TESTVIDIA=$(sudo nvidia-smi --query-gpu=count --format=csv,noheader | grep "lost")
+  RAMLOG=$(cat /dev/shm/miner.log | tac | head --lines 10 | tac)
+  RAMLOG="$RAMLOG $TESTVIDIA"
+  sudo curl --insecure --connect-timeout 15 --max-time 25 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=nvidia" --data "hwData=$QUERYNVIDIA" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os.php"
+
+
   sync
 
   # NO IDEA, BUT THIS SOLVE P8 STATE ISSUES (ON ALL CARD!)
@@ -68,8 +83,6 @@ fi
 
 if [ ! -z "$DOAMD" ]; then
 
-  TOKEN="$(cat /media/storage/config.js | grep 'global.accesskey' | sed 's/global.accesskey =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g' | sed 's/[^a-zA-Z0-9]*//g')"
-  WORKER="$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g')"
   HWMEMORY=$(cd /home/minerstat/minerstat-os/bin/; cat amdmeminfo.txt)
   if [ -z "$HWMEMORY" ] || [ -f "/dev/shm/amdmeminfo.txt" ]; then
     HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
@@ -119,22 +132,44 @@ if [ ! -z "$DOAMD" ]; then
 
   sudo rm /media/storage/fans.txt > /dev/null
   sudo killall curve > /dev/null
-  
+
   #isThisVega=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
   #isThisVegaII=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
-  
-  #sudo su minerstat -c "screen -X -S minerstat-console quit"; 
-  #sudo su -c "sudo screen -X -S minew quit"; 
+
+  #sudo su minerstat -c "screen -X -S minerstat-console quit";
+  #sudo su -c "sudo screen -X -S minew quit";
   #sudo su -c "echo "" > /dev/shm/miner.log";
 
   #if [ "$isThisVega" = "Vega" ] || [ "$isThisVegaII" = "VegaFrontierEdition" ]; then
-    #sudo /home/minerstat/minerstat-os/core/autotune
+  #sudo /home/minerstat/minerstat-os/core/autotune
   #fi
 
   wget -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=amd&token=$TOKEN&worker=$WORKER&nums=$AMDDEVICE&instant=$INSTANT&starts=$STARTS"
 
   sleep 1.5
   sudo sh doclock.sh
+
+  ###################
+  AMDINFO=$(sudo /home/minerstat/minerstat-os/bin/gpuinfo amd2)
+  QUERYPOWER=$(cd /home/minerstat/minerstat-os/bin/; sudo ./rocm-smi -P | grep 'Average Graphics Package Power:' | sed 's/.*://' | sed 's/W/''/g' | xargs)
+  HWMEMORY=$(cd /home/minerstat/minerstat-os/bin/; cat amdmeminfo.txt)
+  sudo chmod 777 /dev/shm/amdmeminfo.txt
+  if [ ! -f "/dev/shm/amdmeminfo.txt" ]; then
+    sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q | tac > /dev/shm/amdmeminfo.txt &
+    sudo cp -rf /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
+    sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
+    HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
+  fi
+  if [ -z "$HWMEMORY" ] || [ -f "/dev/shm/amdmeminfo.txt" ]; then
+    HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
+  fi
+  if [ -z "$AMDINFO" ]; then
+    AMDINFO=$(sudo /home/minerstat/minerstat-os/bin/amdcovc)
+  fi
+  HWSTRAPS=$(cd /home/minerstat/minerstat-os/bin/; sudo ./"$STRAPFILENAME" --current-minerstat)
+  sudo curl --insecure --connect-timeout 15 --max-time 25 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=amd" --data "hwData=$AMDINFO" --data "hwPower=$QUERYPOWER" --data "hwMemory=$HWMEMORY" --data "hwStrap=$HWSTRAPS" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os.php"
+
+
   sync
   sudo chvt 1
 fi
