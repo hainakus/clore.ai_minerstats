@@ -10,6 +10,15 @@ if [ ! -f "$CL" ]; then
     sudo su -c "echo 'amd' > $CL; echo '/opt/amdgpu-pro/lib/x86_64-linux-gnu/libamdocl64.so' > /etc/OpenCL/vendors/amdocl64.icd"
     echo "OpenCL switched to: amdgpu"
 fi
+#START SOCKET
+SNUM=$(sudo su minerstat -c "screen -list | grep -c sockets")
+if [ "$SNUM" -gt "1" ]; then
+  sudo su minerstat -c "screen -ls | grep sockets | cut -d. -f1 | awk '{print $1}' | xargs kill"
+fi
+if [ "$SNUM" -lt "1" ]; then
+  sudo su minerstat -c "screen -A -m -d -S sockets sudo node /home/minerstat/minerstat-os/client.js"
+fi
+#END SOCKET
 sudo systemctl mask apt-daily.service apt-daily-upgrade.service > /dev/null &
 sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic linux-firmware > /dev/null &
 sudo systemctl disable thermald systemd-timesyncd.service > /dev/null &
