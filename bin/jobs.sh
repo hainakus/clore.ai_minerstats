@@ -13,7 +13,7 @@ fi
 #START SOCKET
 SNUM=$(sudo su minerstat -c "screen -list | grep -c sockets")
 #if [ "$SNUM" -gt "1" ]; then
-sudo su minerstat -c "screen -ls | grep sockets | cut -d. -f1 | awk '{print $1}' | xargs kill"
+sudo su minerstat -c "screen -ls | grep sockets | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe"
 #fi
 #END SOCKET
 sudo systemctl mask apt-daily.service apt-daily-upgrade.service > /dev/null &
