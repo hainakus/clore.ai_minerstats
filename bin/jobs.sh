@@ -13,7 +13,7 @@ fi
 #START SOCKET
 SNUM=$(sudo su minerstat -c "screen -list | grep -c sockets")
 #if [ "$SNUM" -gt "1" ]; then
-sudo su minerstat -c "screen -ls | grep sockets | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe" > /dev/null
+sudo su minerstat -c "screen -ls | grep sockets | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe; screen -A -m -d -S sockets sudo node /home/minerstat/minerstat-os/client.js" > /dev/null
 #fi
 #END SOCKET
 sudo systemctl mask apt-daily.service apt-daily-upgrade.service > /dev/null &
@@ -50,9 +50,6 @@ export GPU_USE_SYNC_OBJECTS=1
 export GPU_MAX_ALLOC_PERCENT=100
 export GPU_SINGLE_ALLOC_PERCENT=100
 export GPU_MAX_HEAP_SIZE=100
-#if [ "$SNUM" -lt "1" ]; then
-sudo su minerstat -c "screen -A -m -d -S sockets sudo node /home/minerstat/minerstat-os/client.js"
-#fi
 # Check SSH Keys
 screen -A -m -d -S sshgens sudo /home/minerstat/minerstat-os/core/ressh &
 # .bashrc
