@@ -6,6 +6,11 @@ if [ "$SNUM" -gt "1" ]; then
   sudo killall screen
 fi
 
+SNUM=$(sudo su minerstat -c "screen -list | grep -c sockets")
+if [ "$SNUM" -gt "1" ]; then
+sudo su minerstat -c "screen -ls | grep sockets | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe; sudo killall sockets; screen -A -m -d -S sockets sudo bash /home/minerstat/minerstat-os/core/sockets" > /dev/null
+fi
+
 # Check lost
 STARTJS=$(wc -c < /home/minerstat/minerstat-os/start.js)
 WORKSH=$(wc -c < /home/minerstat/minerstat-os/bin/work.sh)
