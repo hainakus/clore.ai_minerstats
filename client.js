@@ -80,4 +80,7 @@ client.on('data', function(data) {
 
 client.on('close', function() {
   console.log('Connection closed');
+  setTimeout(function() {
+    connect();
+  }, 5000);
 });
