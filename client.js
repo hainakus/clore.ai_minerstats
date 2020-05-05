@@ -28,7 +28,7 @@ function connect() {
         var workerName = data.split('global.worker')[1].split('"')[1];
 
         if (accessKey != '' && workerName != '') {
-          client.write(accessKey + '.' + workerName);
+          client.write(accessKey + '.' + workerName + '\n');
         } else {
           console.log('[\x1B[31mFAIL\x1B[0m] Unable to parse config.js');
         }
