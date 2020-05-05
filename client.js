@@ -9,6 +9,12 @@ function handle(signal) {
 
 process.on('uncaughtException', function(err) {
   console.error("uncaughtException: " + err);
+  if (err.toString().includes("connect")) {
+    client.destroy();
+    setTimeout(function() {
+      connect();
+    }, 1000);
+  }
 });
 process.on('unhandledRejection', (reason, promise) => {
   console.error("unhandledRejection:" + reason.stack);
@@ -50,12 +56,21 @@ client.on('data', function(data) {
   } else if (data == 'UNAUTHORIZED') {
     console.log('[\x1B[31mFAIL\x1B[0m] Unauthorized');
     client.destroy();
+    setTimeout(function() {
+      connect();
+    }, 1000);
   } else if (data == 'INVALID WORKER') {
     console.log('[\x1B[31mFAIL\x1B[0m] Invalid worker');
     client.destroy();
+    setTimeout(function() {
+      connect();
+    }, 1000);
   } else if (data == 'RESERVED') {
     console.log('[\x1B[31mFAIL\x1B[0m] Already authed');
     client.destroy();
+    setTimeout(function() {
+      connect();
+    }, 1000);
   } else if (data != '') {
     exec('sudo bash /home/minerstat/minerstat-os/bin/commands ' + data, function(msg) {
       console.log(msg)
@@ -65,7 +80,4 @@ client.on('data', function(data) {
 
 client.on('close', function() {
   console.log('Connection closed');
-  setTimeout(function() {
-    connect();
-  }, 10000);
 });
