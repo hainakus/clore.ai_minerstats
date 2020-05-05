@@ -11,10 +11,7 @@ if [ ! -f "$CL" ]; then
     echo "OpenCL switched to: amdgpu"
 fi
 #START SOCKET
-SNUM=$(sudo su minerstat -c "screen -list | grep -c sockets")
-#if [ "$SNUM" -gt "1" ]; then
-sudo su minerstat -c "screen -ls | grep sockets | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe; screen -A -m -d -S sockets sudo bash /home/minerstat/minerstat-os/core/sockets" > /dev/null
-#fi
+sudo su minerstat -c "screen -ls | grep sockets | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe; sudo killall sockets; screen -A -m -d -S sockets sudo bash /home/minerstat/minerstat-os/core/sockets" > /dev/null
 #END SOCKET
 sudo systemctl mask apt-daily.service apt-daily-upgrade.service > /dev/null &
 sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic linux-firmware > /dev/null &
@@ -189,6 +186,11 @@ sudo timedatectl set-ntp on &
 # NVIDIA
 sudo getent group nvidia-persistenced &>/dev/null || sudo groupadd -g 143 nvidia-persistenced
 sudo getent passwd nvidia-persistenced &>/dev/null || sudo useradd -c 'NVIDIA Persistence Daemon' -u 143 -g nvidia-persistenced -d '/' -s /sbin/nologin nvidia-persistenced
+# Safety check for sockets, if double instance kill
+SNUM=$(sudo su minerstat -c "screen -list | grep -c sockets")
+if [ "$SNUM" -gt "1" ]; then
+sudo su minerstat -c "screen -ls | grep sockets | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe; sudo killall sockets; screen -A -m -d -S sockets sudo bash /home/minerstat/minerstat-os/core/sockets" > /dev/null
+fi
 # Check XSERVER
 SNUMD=$(sudo su minerstat -c "screen -list | grep -c display2")
 if [ "$SNUMD" = "0" ]; then
