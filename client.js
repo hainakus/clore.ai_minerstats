@@ -67,5 +67,5 @@ client.on('close', function() {
   console.log('Connection closed');
   setTimeout(function() {
     connect();
-  }, 1000);
+  }, 10000);
 });
