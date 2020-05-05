@@ -1,0 +1,3 @@
+#!/bin/bash
+
+while true; do node /home/minerstat/minerstat-os/client.js && break; done
