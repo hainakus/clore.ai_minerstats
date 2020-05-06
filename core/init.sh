@@ -140,8 +140,39 @@ do
     #SEND INFO
     #echo "wget done"
 
+    echo "monitor logs"
+
+    if [ "$MONITOR_TYPE" = "amd" ]; then
+      AMDINFO=$(sudo /home/minerstat/minerstat-os/bin/gpuinfo amd2)
+      QUERYPOWER=$(cd /home/minerstat/minerstat-os/bin/; sudo ./rocm-smi -P | grep 'Average Graphics Package Power:' | sed 's/.*://' | sed 's/W/''/g' | xargs)
+      HWMEMORY=$(cd /home/minerstat/minerstat-os/bin/; cat amdmeminfo.txt)
+      sudo chmod 777 /dev/shm/amdmeminfo.txt
+      if [ ! -f "/dev/shm/amdmeminfo.txt" ]; then
+        sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q | tac > /dev/shm/amdmeminfo.txt &
+        sudo cp -rf /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
+        sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
+        HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
+      fi
+      if [ -z "$HWMEMORY" ] || [ -f "/dev/shm/amdmeminfo.txt" ]; then
+        HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
+      fi
+      if [ -z "$AMDINFO" ]; then
+        AMDINFO=$(sudo /home/minerstat/minerstat-os/bin/amdcovc)
+      fi
+      HWSTRAPS=$(cd /home/minerstat/minerstat-os/bin/; sudo ./"$STRAPFILENAME" --current-minerstat)
+      RESPONSE=$(sudo curl --insecure --connect-timeout 15 --max-time 25 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=amd" --data "hwData=$AMDINFO" --data "hwPower=$QUERYPOWER" --data "hwMemory=$HWMEMORY" --data "hwStrap=$HWSTRAPS" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os2.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&freemem=$STR5&teleid=$TELEID&systime=$SYSTIME&mobo=$MOBO_TYPE&bios=$BIOS_VERSION&msos=$MSOS_VERSION&mac=$MAC_ADDRESS&cputype=$CPU_TYPE&cpu_usage=$CPU_USAGE&cpu_temp=$CPU_TEMP&disk_type=$DISK_TYPE&nvidiad=$NVIDIA_DRIVER&amdd=$AMD_DRIVER&kernel=$KERNEL_VERSION&ubuntu=$UBUNTU_VERSION")
+    fi
+
+    if [ "$MONITOR_TYPE" = "nvidia" ]; then
+      QUERYNVIDIA=$(sudo /home/minerstat/minerstat-os/bin/gpuinfo nvidia)
+      # NVIDIA DRIVER CRASH WATCHDOG
+      TESTVIDIA=$(sudo nvidia-smi --query-gpu=count --format=csv,noheader | grep "lost")
+      RAMLOG="$RAMLOG $TESTVIDIA"
+      RESPONSE=$(sudo curl --insecure --connect-timeout 15 --max-time 25 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=nvidia" --data "hwData=$QUERYNVIDIA" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os2.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&freemem=$STR5&teleid=$TELEID&systime=$SYSTIME&mobo=$MOBO_TYPE&bios=$BIOS_VERSION&msos=$MSOS_VERSION&mac=$MAC_ADDRESS&cputype=$CPU_TYPE&cpu_usage=$CPU_USAGE&cpu_temp=$CPU_TEMP&disk_type=$DISK_TYPE&nvidiad=$NVIDIA_DRIVER&amdd=$AMD_DRIVER&kernel=$KERNEL_VERSION&ubuntu=$UBUNTU_VERSION")
+
+    fi
+
     echo "-*- MINERSTAT LISTENER -*-"
-    RESPONSE="$(wget -qO- "https://api.minerstat.com:2053/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&freemem=$STR5&teleid=$TELEID&systime=$SYSTIME&mobo=$MOBO_TYPE&bios=$BIOS_VERSION&msos=$MSOS_VERSION&mac=$MAC_ADDRESS&cputype=$CPU_TYPE&cpu_usage=$CPU_USAGE&cpu_temp=$CPU_TEMP&disk_type=$DISK_TYPE&nvidiad=$NVIDIA_DRIVER&amdd=$AMD_DRIVER&kernel=$KERNEL_VERSION&ubuntu=$UBUNTU_VERSION" ; echo)"
 
     echo "RESPONSE: $RESPONSE"
 
@@ -287,38 +318,6 @@ do
 
   if [ $RESPONSE = "null" ]; then
     echo "No remote command pending..";
-  fi
-
-  echo "monitor logs"
-
-  if [ "$MONITOR_TYPE" = "amd" ]; then
-    AMDINFO=$(sudo /home/minerstat/minerstat-os/bin/gpuinfo amd2)
-    QUERYPOWER=$(cd /home/minerstat/minerstat-os/bin/; sudo ./rocm-smi -P | grep 'Average Graphics Package Power:' | sed 's/.*://' | sed 's/W/''/g' | xargs)
-    HWMEMORY=$(cd /home/minerstat/minerstat-os/bin/; cat amdmeminfo.txt)
-    sudo chmod 777 /dev/shm/amdmeminfo.txt
-    if [ ! -f "/dev/shm/amdmeminfo.txt" ]; then
-      sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q | tac > /dev/shm/amdmeminfo.txt &
-      sudo cp -rf /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
-      sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
-      HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
-    fi
-    if [ -z "$HWMEMORY" ] || [ -f "/dev/shm/amdmeminfo.txt" ]; then
-      HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
-    fi
-    if [ -z "$AMDINFO" ]; then
-      AMDINFO=$(sudo /home/minerstat/minerstat-os/bin/amdcovc)
-    fi
-    HWSTRAPS=$(cd /home/minerstat/minerstat-os/bin/; sudo ./"$STRAPFILENAME" --current-minerstat)
-    sudo curl --insecure --connect-timeout 15 --max-time 25 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=amd" --data "hwData=$AMDINFO" --data "hwPower=$QUERYPOWER" --data "hwMemory=$HWMEMORY" --data "hwStrap=$HWSTRAPS" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os.php"
-  fi
-
-  if [ "$MONITOR_TYPE" = "nvidia" ]; then
-    QUERYNVIDIA=$(sudo /home/minerstat/minerstat-os/bin/gpuinfo nvidia)
-    # NVIDIA DRIVER CRASH WATCHDOG
-    TESTVIDIA=$(sudo nvidia-smi --query-gpu=count --format=csv,noheader | grep "lost")
-    RAMLOG="$RAMLOG $TESTVIDIA"
-    sudo curl --insecure --connect-timeout 15 --max-time 25 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=nvidia" --data "hwData=$QUERYNVIDIA" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os.php"
-
   fi
 
   sleep 17
