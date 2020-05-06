@@ -193,7 +193,7 @@ sudo getent passwd nvidia-persistenced &>/dev/null || sudo useradd -c 'NVIDIA Pe
 # Safety check for sockets, if double instance kill
 SNUM=$(sudo su minerstat -c "screen -list | grep -c sockets")
 if [ "$SNUM" -gt "1" ]; then
-sudo su minerstat -c "screen -ls | grep sockets | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe; sudo killall sockets; screen -A -m -d -S sockets sudo bash /home/minerstat/minerstat-os/core/sockets" > /dev/null
+sudo su minerstat -c "screen -ls | grep sockets | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe; sudo killall sockets; sleep 0.5; sudo killall sockets; screen -A -m -d -S sockets sudo bash /home/minerstat/minerstat-os/core/sockets" > /dev/null
 fi
 # Check XSERVER
 SNUMD=$(sudo su minerstat -c "screen -list | grep -c display2")
