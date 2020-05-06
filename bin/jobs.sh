@@ -192,7 +192,7 @@ sudo getent group nvidia-persistenced &>/dev/null || sudo groupadd -g 143 nvidia
 sudo getent passwd nvidia-persistenced &>/dev/null || sudo useradd -c 'NVIDIA Persistence Daemon' -u 143 -g nvidia-persistenced -d '/' -s /sbin/nologin nvidia-persistenced
 # Safety check for sockets, if double instance kill
 SNUM=$(sudo su minerstat -c "screen -list | grep -c sockets")
-if [ "$SNUM" -gt "1" ]; then
+if [ "$SNUM" != "1" ]; then
 sudo su minerstat -c "screen -ls | grep sockets | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe; sudo killall sockets; sleep 0.5; sudo killall sockets; screen -A -m -d -S sockets sudo bash /home/minerstat/minerstat-os/core/sockets" > /dev/null
 fi
 # Check XSERVER
