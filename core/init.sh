@@ -143,12 +143,12 @@ do
     echo "monitor logs"
 
     if [ "$MONITOR_TYPE" = "amd" ]; then
-      AMDINFO=$(sudo /home/minerstat/minerstat-os/bin/gpuinfo amd2)
-      QUERYPOWER=$(cd /home/minerstat/minerstat-os/bin/; sudo ./rocm-smi -P | grep 'Average Graphics Package Power:' | sed 's/.*://' | sed 's/W/''/g' | xargs)
+      AMDINFO=$(sudo timeout 15 /home/minerstat/minerstat-os/bin/gpuinfo amd2)
+      QUERYPOWER=$(cd /home/minerstat/minerstat-os/bin/; sudo timeout 5 ./rocm-smi -P | grep 'Average Graphics Package Power:' | sed 's/.*://' | sed 's/W/''/g' | xargs)
       HWMEMORY=$(cd /home/minerstat/minerstat-os/bin/; cat amdmeminfo.txt)
       sudo chmod 777 /dev/shm/amdmeminfo.txt
       if [ ! -f "/dev/shm/amdmeminfo.txt" ]; then
-        sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q | tac > /dev/shm/amdmeminfo.txt &
+        sudo timeout 10 /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q | tac > /dev/shm/amdmeminfo.txt &
         sudo cp -rf /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
         sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
         HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
@@ -164,9 +164,9 @@ do
     fi
 
     if [ "$MONITOR_TYPE" = "nvidia" ]; then
-      QUERYNVIDIA=$(sudo /home/minerstat/minerstat-os/bin/gpuinfo nvidia)
+      QUERYNVIDIA=$(sudo timeout 15 /home/minerstat/minerstat-os/bin/gpuinfo nvidia)
       # NVIDIA DRIVER CRASH WATCHDOG
-      TESTVIDIA=$(sudo nvidia-smi --query-gpu=count --format=csv,noheader | grep "lost")
+      TESTVIDIA=$(sudo timeout 10 nvidia-smi --query-gpu=count --format=csv,noheader | grep "lost")
       RAMLOG="$RAMLOG $TESTVIDIA"
       RESPONSE=$(sudo curl --insecure --connect-timeout 15 --max-time 25 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=nvidia" --data "hwData=$QUERYNVIDIA" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os2.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&freemem=$STR5&teleid=$TELEID&systime=$SYSTIME&mobo=$MOBO_TYPE&bios=$BIOS_VERSION&msos=$MSOS_VERSION&mac=$MAC_ADDRESS&cputype=$CPU_TYPE&cpu_usage=$CPU_USAGE&cpu_temp=$CPU_TEMP&disk_type=$DISK_TYPE&nvidiad=$NVIDIA_DRIVER&amdd=$AMD_DRIVER&kernel=$KERNEL_VERSION&ubuntu=$UBUNTU_VERSION")
 
