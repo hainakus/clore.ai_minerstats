@@ -132,11 +132,11 @@ if [ $1 ]; then
     GID=""
   fi
 
-  isThisR9=$(timeout 10 sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "R9"| sed 's/^.*R9/R9/' | cut -f1 -d' ' | sed 's/[^A-Z0-9]*//g')
-  isThisVega=$(timeout 10 sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
-  isThisVegaII=$(timeout 10 sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
-  isThisVegaVII=$(timeout 10 sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g')
-  isThisNavi=$(timeout 10 sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep -E "5500|5550|5600|5650|5700|5750|5800|5850|5900|5950" | wc -l)
+  isThisR9=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "R9"| sed 's/^.*R9/R9/' | cut -f1 -d' ' | sed 's/[^A-Z0-9]*//g')
+  isThisVega=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
+  isThisVegaII=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
+  isThisVegaVII=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g')
+  isThisNavi=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep -E "5500|5550|5600|5650|5700|5750|5800|5850|5900|5950" | wc -l)
 
   ##  echo "----"
   ##  echo $GPUBUS
@@ -195,8 +195,8 @@ if [ $1 ]; then
     sudo bash -c "echo r > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" 
 
     ## Detect state's
-    maxMemState=$(timeout 10 sudo ./ohgodatool -i $GPUID --show-mem  | grep -E "Memory state ([0-9]+):" | tail -n 1 | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g')
-    maxCoreState=$(timeout 10 sudo ./ohgodatool -i $GPUID --show-core | grep -E "DPM state ([0-9]+):"    | tail -n 1 | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g')
+    maxMemState=$(sudo timeout 10 ./ohgodatool -i $GPUID --show-mem  | grep -E "Memory state ([0-9]+):" | tail -n 1 | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g')
+    maxCoreState=$(sudo timeout 10 ./ohgodatool -i $GPUID --show-core | grep -E "DPM state ([0-9]+):"    | tail -n 1 | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g')
     currentCoreState=$(sudo su -c "timeout 10 cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk | grep '*' | cut -f1 -d':' | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g'")
     #currentCoreState=5
 
@@ -226,7 +226,7 @@ if [ $1 ]; then
 
     # CURRENT Volt State for Undervolt
     voltStateLine=$(($currentCoreState + 1))
-    currentVoltState=$(timeout 10 sudo ./ohgodatool -i $GPUID --show-core | grep -E "VDDC:" | sed -n $voltStateLine"p" | sed 's/^.*entry/entry/' | sed 's/[^0-9]*//g')
+    currentVoltState=$(sudo timeout 10 ./ohgodatool -i $GPUID --show-core | grep -E "VDDC:" | sed -n $voltStateLine"p" | sed 's/^.*entry/entry/' | sed 's/[^0-9]*//g')
 
     echo "DEBUG: C $currentCoreState / VL $voltStateLine / CVS $currentVoltState"
     echo ""
@@ -243,10 +243,10 @@ if [ $1 ]; then
       #	done
       #fi
       for voltstate in 1 2 3 4 5 6 7; do
-        timeout 10 sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
+        sudo timeout 10 ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
       done
       for voltstate in 8 9 10 11 12 13 14 15; do
-        timeout 10 sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
+        sudo timeout 10 ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
       done
     fi
 
@@ -260,7 +260,7 @@ if [ $1 ]; then
       if [ "$VDDCI" -gt "1000" ]; then
         echo "WARNING!!! HIGH VDDCI Voltage setting skipping to apply."
        else
-        timeout 10 sudo ./ohgodatool -i $GPUID --mem-state $maxMemState --vddci $VDDCI
+        sudo timeout 10 ./ohgodatool -i $GPUID --mem-state $maxMemState --vddci $VDDCI
       fi
     fi
 
@@ -277,7 +277,7 @@ if [ $1 ]; then
        echo "WARNING!! You have set lower MVDD than 950 so for protection we set 950mV for you to keep your rig solid."
        echo "If mining not start 0H/s set MVDD back to 1000mV."
       fi
-      timeout 10 sudo ./ohgodatool -i $GPUID --mem-state $maxMemState --mvdd $MVDD
+      sudo timeout 10 ./ohgodatool -i $GPUID --mem-state $maxMemState --mvdd $MVDD
     fi
 
     #################################£
@@ -291,11 +291,11 @@ if [ $1 ]; then
         if [ "$maxMemState" != "2" ]; then
           #OHGOD1=" --core-state $currentCoreState --core-clock $CORECLOCK"
           for corestate in 3 4 5 6 7 8; do
-            timeout 10 sudo ./ohgodatool -i $GPUID --core-state $corestate --core-clock $CORECLOCK
+            sudo timeout 10 ./ohgodatool -i $GPUID --core-state $corestate --core-clock $CORECLOCK
           done
         else
           for corestate in 3 4 5 6 7 8; do
-            timeout 10 sudo ./ohgodatool -i $GPUID --core-state $corestate --core-clock $CORECLOCK
+            sudo timeout 10 ./ohgodatool -i $GPUID --core-state $corestate --core-clock $CORECLOCK
           done
         fi
 
@@ -339,7 +339,7 @@ if [ $1 ]; then
     echo "- SET | GPU$GPUID Performance level: manual -"
     echo "- SET | GPU$GPUID DPM state: $currentCoreState -"
     echo "- SET | GPU$GPUID MEM state: $maxMemState -"
-    timeout 10 sudo ./ohgodatool -i $GPUID $OHGOD1 $OHGOD2 $OHGOD3
+    sudo timeout 10 ./ohgodatool -i $GPUID $OHGOD1 $OHGOD2 $OHGOD3
 
     sudo su -c "echo 'manual' > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
     sudo su -c "echo $currentCoreState > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
