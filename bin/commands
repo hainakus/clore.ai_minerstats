@@ -17,7 +17,6 @@ if [ -f "/dev/shm/maintenance.pid" ]; then
 fi
 
 if [ $RESPONSE = "REBOOT" ]; then
-  sync
   sudo su -c "echo 1 > /proc/sys/kernel/sysrq"
   sudo su -c "echo b > /proc/sysrq-trigger"
   sudo reboot -f
