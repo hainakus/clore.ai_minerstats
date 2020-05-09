@@ -200,6 +200,11 @@ if ! screen -list | grep -q "dummy"; then
   fi
   
   echo -e "\033[1;34m==\033[0m Initializing jobs ...\033[0m"
+  # Safety check for sockets, if double instance kill
+  SNUM=$(sudo su minerstat -c "screen -list | grep -c sockets")
+  if [ "$SNUM" != "1" ]; then
+    sudo su minerstat -c "screen -ls | grep sockets | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe; sudo killall sockets; sleep 0.5; sudo killall sockets; screen -A -m -d -S sockets sudo bash /home/minerstat/minerstat-os/core/sockets" > /dev/null
+  fi
   cd /home/minerstat/minerstat-os/bin
   sudo bash jobs.sh $AMDDEVICE &
 
