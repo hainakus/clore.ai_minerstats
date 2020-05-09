@@ -273,8 +273,8 @@ if [ $1 ]; then
        echo "WARNING!!! If you mining ETH keep memory voltages on 1000mv and try to reduce VDDC instead."
       fi
       if [ "$MVDD" -lt "950" ]; then
-       MVDD="950"
-       echo "WARNING!! You have set lower MVDD than 950 so for protection we set 950mV for you to keep your rig solid."
+       #MVDD="950"
+       echo "WARNING!! You have set lower MVDD than 950"
        echo "If mining not start 0H/s set MVDD back to 1000mV."
       fi
       sudo timeout 10 ./ohgodatool -i $GPUID --mem-state $maxMemState --mvdd $MVDD
