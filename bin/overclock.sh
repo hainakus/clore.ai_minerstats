@@ -14,20 +14,20 @@ WORKER="$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.wo
 NVIDIA="$(nvidia-smi -L)"
 
 if [ ! -z "$NVIDIA" ]; then
-  if echo "$NVIDIA" | grep -iq "^GPU 0:" ;then
+  #if echo "$NVIDIA" | grep -iq "^GPU 0:" ;then
     DONVIDIA="YES"
     # Check XSERVER
-    sudo su -c "sudo screen -X -S display quit" > /dev/null &
-    screen -X -S display quit > /dev/null &
-    screen -X -S display2 quit > /dev/null &
-    sudo killall X > /dev/null
-    sudo killall Xorg > /dev/null
-    sudo kill -9 $(sudo pidof Xorg) > /dev/null
-    sudo rm /tmp/.X0-lock > /dev/null
-    sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" > /dev/null
+    sudo su -c "timeout 10 sudo screen -X -S display quit" > /dev/null 
+    timeout 10 screen -X -S display quit > /dev/null
+    timeout 10 screen -X -S display2 quit > /dev/null
+    sudo timeout 10 killall X > /dev/null
+    sudo timeout 10 killall Xorg > /dev/null
+    sudo timeoout 5 kill -9 $(sudo pidof Xorg) > /dev/null
+    sudo timeout 5 rm /tmp/.X0-lock > /dev/null
+    sudo timeout 10 nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" > /dev/null 
     sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf > /dev/null
     sudo su minerstat -c "screen -A -m -d -S display2 sudo X :0" > /dev/null
-  fi
+  #fi
 fi
 
 AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
@@ -59,10 +59,8 @@ sleep 1
 if [ ! -z "$DONVIDIA" ]; then
   sudo nvidia-smi -pm 1
   wget -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=nvidia&token=$TOKEN&worker=$WORKER&nums=$NVIDIADEVICE&instant=$INSTANT"
-  sleep 2
+  sleep 3
   sudo sh doclock.sh
-
-
 
   QUERYNVIDIA=$(sudo /home/minerstat/minerstat-os/bin/gpuinfo nvidia)
   # NVIDIA DRIVER CRASH WATCHDOG
