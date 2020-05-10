@@ -115,7 +115,10 @@ do
   echo "RAMLOG"
 
   # Extended Query with loop
-  CPU_TEMP=$(cat /sys/class/thermal/thermal_zone*/temp | column -s $'\t' -t | sed 's/\(.\)..$/.\1/' | head -n 1)
+  CPU_TEMP=$(cat /sys/class/thermal/thermal_zone*/temp 2> /dev/null | column -s $'\t' -t | sed 's/\(.\)..$/.\1/' | head -n 1)
+  if [ -z "$CPU_TEMP" ]; then
+    CPU_TEMP="0"
+  fi
   #CPU_USAGE=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage ""}')
 
   #echo "Remote IP: $STR4"
