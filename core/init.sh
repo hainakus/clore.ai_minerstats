@@ -16,11 +16,11 @@ DISK="$(df -hm | grep $PART | awk '{print $2}')"
 
 MONITOR_TYPE="unknown"
 STRAPFILENAME="amdmemorytweak-stable"
-DETECTA=$(nvidia-smi -L | grep "GPU 0:" | wc -l)
-DETECTB=$(sudo lshw -C display | grep AMD | wc -l)
+DETECTA=$(timeout 10 nvidia-smi -L | grep "GPU 0:" | wc -l)
+DETECTB=$(lsmod | grep amdgpu | wc -l)
 
 if [ "$DETECTB" = "0" ]; then
-  DETECTB=$(sudo lshw -C display | grep amd | wc -l)
+  DETECTB=$(lsmod | grep nvidia | wc -l)
 fi
 
 if grep -q experimental "/etc/lsb-release"; then
@@ -38,29 +38,29 @@ if [ "$DETECTB" -gt "0" ]; then
 fi
 
 # Extended Query without loop
-MOBO_TYPE=$(sudo dmidecode --string baseboard-product-name)
+MOBO_TYPE=$(sudo timeout 5 dmidecode --string baseboard-product-name)
 if [ "$MOBO_TYPE" = "Default string" ]; then
   MOBO_TYPE="Unbranded"
 fi
-BIOS_VERSION=$(sudo dmidecode --string bios-version)
+BIOS_VERSION=$(sudo timeout 5 dmidecode --string bios-version)
 MSOS_VERSION=$(cat /etc/lsb-release | grep DISTRIB_RELEASE= | head -n1 | sed 's/DISTRIB_RELEASE=//g')
 MAC_ADDRESS=$(cat /sys/class/net/$(ip route show default | awk '/default/ {print $5}')/address)
 if [ -z "$MAC_ADDRESS" ]; then
-  MAC_ADDRESS=$(ifconfig -a | grep : | grep -vE "eth0|lo|wlan0" | grep ether | awk '{print $2}')
+  MAC_ADDRESS=$(timeout 5 ifconfig -a | grep : | grep -vE "eth0|lo|wlan0" | grep ether | awk '{print $2}')
 fi
-CPU_TYPE=$(sudo dmidecode --string processor-version | xargs)
-DISK_TYPE=$(lsblk -io KNAME,MODEL,SIZE | grep $DETECT | head -n1 | xargs | awk '{print $2,$3}')
+CPU_TYPE=$(sudo timeout 5 dmidecode --string processor-version | xargs)
+DISK_TYPE=$(timeout 5 lsblk -io KNAME,MODEL,SIZE | grep $DETECT | head -n1 | xargs | awk '{print $2,$3}')
 # System & Graphics
-NVIDIA_DRIVER=$(dpkg -l | grep nvidia-opencl-icd | grep ii | awk '{print $3}' | xargs | cut -d '-' -f 1)
+NVIDIA_DRIVER=$(timeout 5 dpkg -l | grep nvidia-opencl-icd | grep ii | awk '{print $3}' | xargs | cut -d '-' -f 1)
 if [ -z "$NVIDIA_DRIVER" ]; then
-  NVIDIA_DRIVER=$(nvidia-smi | grep "Driver Version" | xargs | sed 's/[^0-9. ]*//g' | xargs | cut -d ' ' -f 1 | xargs)
+  NVIDIA_DRIVER=$(timeout 5 nvidia-smi | grep "Driver Version" | xargs | sed 's/[^0-9. ]*//g' | xargs | cut -d ' ' -f 1 | xargs)
 fi
 if [ -z "$NVIDIA_DRIVER" ]; then
-  NVIDIA_DRIVER=$(dpkg -l | grep nvidia-driver | grep ii | awk '{print $3}' | xargs | cut -d '-' -f 1)
+  NVIDIA_DRIVER=$(timeout 5 dpkg -l | grep nvidia-driver | grep ii | awk '{print $3}' | xargs | cut -d '-' -f 1)
 fi
-AMD_DRIVER=$(dpkg -l | grep vulkan-amdgpu-pro | head -n1 | awk '{print $3}' | xargs)
-KERNEL_VERSION=$(uname -r)
-UBUNTU_VERSION=$(cat /etc/os-release | grep "PRETTY_NAME" | sed 's/PRETTY_NAME="//g' | sed 's/"//g' | xargs)
+AMD_DRIVER=$(timeout 5 dpkg -l | grep vulkan-amdgpu-pro | head -n1 | awk '{print $3}' | xargs)
+KERNEL_VERSION=$(timeout 5 uname -r)
+UBUNTU_VERSION=$(timeout 5 cat /etc/os-release | grep "PRETTY_NAME" | sed 's/PRETTY_NAME="//g' | sed 's/"//g' | xargs)
 
 while true
 do
@@ -78,16 +78,16 @@ do
   echo "$WORKER"
 
   #FREE SPACE in Megabyte - SDA1
-  STR1="$(df -hm | grep $DISK | awk '{print $4}')"
+  STR1="$(timeout 5 df -hm | grep $DISK | awk '{print $4}')"
   if [ -z "$STR1" ]; then
-    STR1="$(df -hm | grep sdb1 | awk '{print $4}')"
+    STR1="$(timeout 5 df -hm | grep sdb1 | awk '{print $4}')"
   fi
 
   echo "Free Space: $STR1"
 
   #CPU USAGE
   #STR2="$(mpstat | awk '$13 ~ /[0-9.]+/ { print 100 - $13 }')"
-  STR2=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage ""}')
+  STR2=$(timeout 5 grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage ""}')
 
   echo "CPU Usage: $STR2"
 
@@ -95,27 +95,27 @@ do
   #STR4="$(wget -qO- http://ipecho.net/plain ; echo)"
 
   #LOCAL IP ADDRESS
-  STR3="$(ifconfig | grep "inet" | grep -v "inet6" | grep -vE "127.0.0.1|169.|172.17." | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | head -n 1 | grep -o -E '[.0-9]+')"
+  STR3="$(timeout 5 ifconfig | grep "inet" | grep -v "inet6" | grep -vE "127.0.0.1|169.|172.17." | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | head -n 1 | grep -o -E '[.0-9]+')"
   echo "Local IP: $STR3"
 
   #FREE MEMORY
-  STR5="$(free -m | grep 'Mem' | awk '{print $4}')"
+  STR5="$(timeout 5 free -m | grep 'Mem' | awk '{print $4}')"
   echo "Free Memory: $STR5"
 
   # TELEPROXY ID
-  TELEID=$(sudo /home/minerstat/minerstat-os/bin/tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}' | cut -f1 -d"@" | sed 's/.* //')
+  TELEID=$(timeout 5 sudo /home/minerstat/minerstat-os/bin/tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}' | cut -f1 -d"@" | sed 's/.* //')
   echo "TeleID: $TELEID"
 
   # SYSTEM UPTIME
-  SYSTIME=$(awk '{print $1}' /proc/uptime | xargs)
+  SYSTIME=$(timeout 5 awk '{print $1}' /proc/uptime | xargs)
   echo "SYS UPTIM: $SYSTIME"
 
   # MINER logs
-  RAMLOG=$(cat /dev/shm/miner.log | tac | head --lines 10 | tac)
+  RAMLOG=$(timeout 5 cat /dev/shm/miner.log | tac | head --lines 10 | tac)
   echo "RAMLOG"
 
   # Extended Query with loop
-  CPU_TEMP=$(cat /sys/class/thermal/thermal_zone*/temp 2> /dev/null | column -s $'\t' -t | sed 's/\(.\)..$/.\1/' | head -n 1)
+  CPU_TEMP=$(timeout 5 cat /sys/class/thermal/thermal_zone*/temp 2> /dev/null | column -s $'\t' -t | sed 's/\(.\)..$/.\1/' | head -n 1)
   if [ -z "$CPU_TEMP" ]; then
     CPU_TEMP="0"
   fi
