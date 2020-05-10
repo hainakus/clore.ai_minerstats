@@ -16,12 +16,9 @@ DISK="$(df -hm | grep $PART | awk '{print $2}')"
 
 MONITOR_TYPE="unknown"
 STRAPFILENAME="amdmemorytweak-stable"
-DETECTA=$(timeout 10 nvidia-smi -L | grep "GPU 0:" | wc -l)
+DETECTA=$(lsmod | grep nvidia | wc -l)
 DETECTB=$(lsmod | grep amdgpu | wc -l)
 
-if [ "$DETECTB" = "0" ]; then
-  DETECTB=$(lsmod | grep nvidia | wc -l)
-fi
 
 if grep -q experimental "/etc/lsb-release"; then
   STRAPFILENAME="amdmemorytweak"
