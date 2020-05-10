@@ -164,6 +164,7 @@ do
       fi
       HWSTRAPS=$(cd /home/minerstat/minerstat-os/bin/; sudo ./"$STRAPFILENAME" --current-minerstat)
       RESPONSE=$(sudo curl --insecure --connect-timeout 15 --max-time 25 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=amd" --data "hwData=$AMDINFO" --data "hwPower=$QUERYPOWER" --data "hwMemory=$HWMEMORY" --data "hwStrap=$HWSTRAPS" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os2.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&freemem=$STR5&teleid=$TELEID&systime=$SYSTIME&mobo=$MOBO_TYPE&bios=$BIOS_VERSION&msos=$MSOS_VERSION&mac=$MAC_ADDRESS&cputype=$CPU_TYPE&cpu_usage=$CPU_USAGE&cpu_temp=$CPU_TEMP&disk_type=$DISK_TYPE&nvidiad=$NVIDIA_DRIVER&amdd=$AMD_DRIVER&kernel=$KERNEL_VERSION&ubuntu=$UBUNTU_VERSION")
+      echo "https://api.minerstat.com:2053/v2/set_node_config_os2.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&freemem=$STR5&teleid=$TELEID&systime=$SYSTIME&mobo=$MOBO_TYPE&bios=$BIOS_VERSION&msos=$MSOS_VERSION&mac=$MAC_ADDRESS&cputype=$CPU_TYPE&cpu_usage=$CPU_USAGE&cpu_temp=$CPU_TEMP&disk_type=$DISK_TYPE&nvidiad=$NVIDIA_DRIVER&amdd=$AMD_DRIVER&kernel=$KERNEL_VERSION&ubuntu=$UBUNTU_VERSION"
     fi
 
     if [ "$MONITOR_TYPE" = "nvidia" ]; then
