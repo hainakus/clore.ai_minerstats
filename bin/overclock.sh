@@ -2,15 +2,6 @@
 exec 2>/dev/null
 echo "*-*-* Overclocking in progress *-*-*"
 
-INSTANT=$1
-
-NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
-FORCE="no"
-
-TOKEN="$(cat /media/storage/config.js | grep 'global.accesskey' | sed 's/global.accesskey =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g' | sed 's/[^a-zA-Z0-9]*//g')"
-WORKER="$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g')"
-
-
 NVIDIA="$(nvidia-smi -L)"
 
 if [ ! -z "$NVIDIA" ]; then
@@ -22,14 +13,22 @@ if [ ! -z "$NVIDIA" ]; then
     timeout 10 screen -X -S display2 quit > /dev/null
     sudo timeout 10 killall X > /dev/null
     sudo timeout 10 killall Xorg > /dev/null
-    sudo timeoout 5 kill -9 $(sudo pidof Xorg) > /dev/null
+    sudo timeout 5 kill -9 $(sudo pidof Xorg) > /dev/null
     sudo timeout 5 rm /tmp/.X0-lock > /dev/null
     sudo timeout 10 nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" > /dev/null 
     sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf > /dev/null
     sudo su minerstat -c "screen -A -m -d -S display2 sudo X :0" > /dev/null
-    sleep 15
+    sleep 20
   #fi
 fi
+
+INSTANT=$1
+
+NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
+FORCE="no"
+
+TOKEN="$(cat /media/storage/config.js | grep 'global.accesskey' | sed 's/global.accesskey =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g' | sed 's/[^a-zA-Z0-9]*//g')"
+WORKER="$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g')"
 
 AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
 if [ "$AMDDEVICE" = "0" ]; then
