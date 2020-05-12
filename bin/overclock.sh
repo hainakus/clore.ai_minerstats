@@ -8,17 +8,20 @@ if [ ! -z "$NVIDIA" ]; then
   #if echo "$NVIDIA" | grep -iq "^GPU 0:" ;then
     DONVIDIA="YES"
     # Check XSERVER
-    sudo su -c "timeout 10 sudo screen -X -S display quit" > /dev/null 
-    timeout 10 screen -X -S display quit > /dev/null
-    timeout 10 screen -X -S display2 quit > /dev/null
-    sudo timeout 10 killall X > /dev/null
-    sudo timeout 10 killall Xorg > /dev/null
-    sudo timeout 5 kill -9 $(sudo pidof Xorg) > /dev/null
-    sudo timeout 5 rm /tmp/.X0-lock > /dev/null
-    sudo timeout 10 nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" > /dev/null 
-    sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf > /dev/null
-    sudo su minerstat -c "screen -A -m -d -S display2 sudo X :0" > /dev/null
-    sleep 20
+    SNUM=$(sudo su minerstat -c "screen -list | grep -c display2")
+    if [ "$SNUM" != "1" ]; then
+        sudo su -c "timeout 10 sudo screen -X -S display quit" > /dev/null 
+        timeout 10 screen -X -S display quit > /dev/null
+        timeout 10 screen -X -S display2 quit > /dev/null
+        sudo timeout 10 killall X > /dev/null
+        sudo timeout 10 killall Xorg > /dev/null
+        sudo timeout 5 kill -9 $(sudo pidof Xorg) > /dev/null
+        sudo timeout 5 rm /tmp/.X0-lock > /dev/null
+        sudo timeout 10 nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" > /dev/null 
+        sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf > /dev/null
+        sudo su minerstat -c "screen -A -m -d -S display2 sudo X :0" > /dev/null
+        sleep 20
+    fi
   #fi
 fi
 
