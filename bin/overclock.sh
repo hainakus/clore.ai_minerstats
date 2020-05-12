@@ -27,6 +27,7 @@ if [ ! -z "$NVIDIA" ]; then
     sudo timeout 10 nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" > /dev/null 
     sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf > /dev/null
     sudo su minerstat -c "screen -A -m -d -S display2 sudo X :0" > /dev/null
+    sleep 5
   #fi
 fi
 
