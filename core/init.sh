@@ -124,7 +124,7 @@ do
   IS_ONLINE="YES"
   echo "NETCHECK"
 
-  while ! ping api.minerstat.com -w 1 | grep "0%"; do
+  while ! ping 104.24.98.231 -w 1 | grep "0%"; do
     OFFLINE_COUNT=$(($OFFLINE_COUNT + $OFFLINE_NUM))
     echo "$OFFLINE_COUNT"
     IS_ONLINE="NO"
