@@ -2,9 +2,10 @@
 exec 2>/dev/null
 echo "*-*-* Overclocking in progress *-*-*"
 
+NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
 NVIDIA="$(nvidia-smi -L)"
 
-if [ ! -z "$NVIDIA" ]; then
+if [ "$NVIDIADEVICE" != "0" ]; then
   #if echo "$NVIDIA" | grep -iq "^GPU 0:" ;then
     DONVIDIA="YES"
     # Check XSERVER
@@ -22,12 +23,11 @@ if [ ! -z "$NVIDIA" ]; then
         sudo su minerstat -c "screen -A -m -d -S display2 sudo X :0" > /dev/null
         sleep 20
     fi
-  #fi
+ #fi
 fi
 
 INSTANT=$1
 
-NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
 FORCE="no"
 
 TOKEN="$(cat /media/storage/config.js | grep 'global.accesskey' | sed 's/global.accesskey =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g' | sed 's/[^a-zA-Z0-9]*//g')"
