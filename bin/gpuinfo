@@ -7,16 +7,9 @@
 if [[ $1 == "nvidia" ]]; then
   TEST_NVIDIA=$(nvidia-smi -L)
   TEST_AMD=""
-  if [[ $TEST_NVIDIA == *"GPU 0"* ]]; then
+  if [[ $TEST_NVIDIA == *"GPU 0"* ]] && [[ $TEST_NVIDIA != *"Error"* ]]; then
     NVIDIA_NUM=$(nvidia-smi --query-gpu=count --format=csv,noheader | tail -n1)
-    if [[ $NVIDIA_NUM == *"Error"* ]]; then
-        NVIDIA_NUM=1
-    fi
     NVIDIA_INUM=$((NVIDIA_NUM-1))
-    if [[ $NVIDIA_NUM == *"Error"* ]]; then
-        NVIDIA_NUM=0
-        NVIDIA_INUM=0
-    fi
     #NVIDIA_BRAND=$(lspci -vnn | grep VGA -A 12 | grep Subsystem | grep -vE "HD Graphics|USB" > /dev/shm/nvidia_list.txt)
     lspci -vnn | grep NVIDIA -A 1 | grep VGA -A 1 | grep -vE "HD Graphics|USB|Processor" | grep Subsystem > /dev/shm/nvidia_list.txt
     NVIDIA_BRAND=$(cat /dev/shm/nvidia_list.txt)
