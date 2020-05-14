@@ -80,6 +80,8 @@ if [[ $1 == "nvidia" ]]; then
     done
     JSON_EOF=$JSON_EOF'}'
     echo $JSON_EOF
+  else
+    echo "$TEST_NVIDIA"
   fi
 fi
 
