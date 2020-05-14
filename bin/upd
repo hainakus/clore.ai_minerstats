@@ -1,7 +1,14 @@
 #!/bin/bash
 
 A=$(($RANDOM % 10 + 1))
+if [ "$A" = "10" ]; then
+    A="9"
+fi
 B=$(($RANDOM % 10 + 1))
+if [ "$B" = "10" ]; then
+    B="9"
+fi
+
 R="$A$B"
 
 sleep $R
