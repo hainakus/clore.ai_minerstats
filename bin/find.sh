@@ -6,7 +6,7 @@ echo ""
 
 #################################£
 # Check minerstat is running or not
-RESULT=$(sudo su minerstat -c "screen -list | grep -c minerstat")
+RESULT=$(sudo su minerstat -c "screen -list | grep 'console' | wc -l")
 echo "[] Instance Check: $RESULT"
 #RESULT=`pgrep node`
 
