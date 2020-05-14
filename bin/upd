@@ -1,0 +1,9 @@
+#!/bin/bash
+
+A=$(($RANDOM % 10 + 1))
+B=$(($RANDOM % 10 + 1))
+R="$A$B"
+
+sleep $R
+
+sudo /bin/sh /home/minerstat/minerstat-os/git.sh
