@@ -4,7 +4,7 @@
 * * * * * /bin/bash /home/minerstat/minerstat-os/core/screenr
 * * * * * sudo chvt 1
 30 * * * * sudo find /var/log -type f -delete
-0 * * * * sudo /bin/sh /home/minerstat/minerstat-os/git.sh
+0 * * * * sudo /bin/bash /home/minerstat/minerstat-os/bin/upd
 0 * * * * sudo update-pciids
 0 */2 * * * sync
 0 */8 * * * sudo killall tmate
