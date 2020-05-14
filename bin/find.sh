@@ -12,7 +12,8 @@ echo "[] Instance Check: $RESULT"
 
 if [ ! $1 ]; then
   echo "Type your GPU ID what you want to find."
-  echo "Example: mfind 0"
+  echo "NVIDIA Example: mfind 0"
+  echo "AMD Example with ID Search: mfind 3"
   echo "AMD Example with BUS Search: mfind 03.00.0"
 else
   #if [ "${RESULT:-null}" = null ]; then
