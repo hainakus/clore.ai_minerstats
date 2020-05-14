@@ -7,6 +7,7 @@ echo ""
 #################################£
 # Check minerstat is running or not
 RESULT=$(sudo su minerstat -c "screen -list | grep -c minerstat")
+echo "[] Instance Check: $RESULT"
 #RESULT=`pgrep node`
 
 if [ ! $1 ]; then
@@ -15,7 +16,7 @@ if [ ! $1 ]; then
   echo "AMD Example with BUS Search: mfind 03.00.0"
 else
   #if [ "${RESULT:-null}" = null ]; then
-  if [ "$RESULT" -lt "1" ]; then
+  if [ "$RESULT" = "0" ]; then
     #################################£
     # Detect GPU's
     AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
