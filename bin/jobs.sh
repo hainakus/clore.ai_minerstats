@@ -81,8 +81,8 @@ export OpenCL_ROOT=/opt/amdgpu-pro/lib/x86_64-linux-gnu
 # FSCK
 sudo sed -i s/"#FSCKFIX=no"/"FSCKFIX=yes"/ /etc/default/rcS
 # check cloudflare ips
-SERVERA="104.20.2.95"
-SERVERB="104.20.3.95"
+SERVERA="104.26.9.16"
+SERVERB="104.26.8.16"
 SERVERC="$SERVERB"
 DNSA=$(ping -c 1 $SERVERA &> /dev/null && echo success || echo fail)
 if [ "$DNSA" = "success" ]; then
