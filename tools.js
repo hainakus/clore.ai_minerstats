@@ -493,7 +493,7 @@ module.exports = {
 
       try {
         var killQuery = require('child_process').exec,
-          killQueryProc = killQuery("sudo /home/minerstat/minerstat-os/core/killport.sh " + MINER_JSON[miner]["apiPort"], function(error, stdout, stderr) {
+          killQueryProc = killQuery("sudo timeout 30 /home/minerstat/minerstat-os/core/killport.sh " + MINER_JSON[miner]["apiPort"], function(error, stdout, stderr) {
             if (global.PrivateMiner == "False") {
               console.log(stdout);
               //console.log("Starting miner screen...");
