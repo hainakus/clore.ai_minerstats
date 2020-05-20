@@ -378,7 +378,7 @@ if [ $1 ]; then
       echo "GPU$GPUID : FANSPEED => 70% ($FANVALUE)"
     fi
     
-    sudo ./rocm-smi --setfan $FANVALUE
+    sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
 
     #for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
     #  sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_enable" 2>/dev/null
