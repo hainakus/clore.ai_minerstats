@@ -358,12 +358,13 @@ if [ $1 ]; then
     sudo ./amdcovc ccoreclk:$GPUID=$CORECLOCK | grep "Setting"
 
     # Fans for security
-    for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-      TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
-      if [ ! -z "$TEST" ]; then
-        MAXFAN=$TEST
-      fi
-    done
+    #for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+    #  TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
+    #  if [ ! -z "$TEST" ]; then
+    #    MAXFAN=$TEST
+    #  fi
+    #done
+    MAXFAN=255
 
     # FANS
     if [ "$FANSPEED" != 0 ]; then
@@ -373,13 +374,16 @@ if [ $1 ]; then
     else
       FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * 70}" | cut -f1 -d".")
       FANVALUE=$(printf "%.0f\n" $FANVALUE)
+      FANSPEED="70"
       echo "GPU$GPUID : FANSPEED => 70% ($FANVALUE)"
     fi
+    
+    sudo ./rocm-smi --setfan $FANVALUE
 
-    for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-      sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_enable" 2>/dev/null
-      sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1" 2>/dev/null # 70%
-    done
+    #for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+    #  sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_enable" 2>/dev/null
+    #  sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1" 2>/dev/null # 70%
+    #done
     
     #echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
     #sudo su -c "timeout 3 cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
@@ -388,6 +392,7 @@ if [ $1 ]; then
     #echo "-÷-*-******  PP_TABLE   *****-*-*÷-"
     #sudo su -c "timeout 3 cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
+    exit 0
 
   else
 
