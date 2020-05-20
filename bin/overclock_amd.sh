@@ -131,6 +131,8 @@ if [ $1 ]; then
   else
     GID=""
   fi
+  
+  echo "Checking GPU type.."
 
   isThisR9=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "R9"| sed 's/^.*R9/R9/' | cut -f1 -d' ' | sed 's/[^A-Z0-9]*//g')
   isThisVega=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
@@ -192,7 +194,7 @@ if [ $1 ]; then
     fi
 
     # Reset
-    sudo bash -c "echo r > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" 
+    # sudo bash -c "echo r > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" 
 
     ## Detect state's
     maxMemState=$(sudo timeout 10 ./ohgodatool -i $GPUID --show-mem  | grep -E "Memory state ([0-9]+):" | tail -n 1 | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g')
