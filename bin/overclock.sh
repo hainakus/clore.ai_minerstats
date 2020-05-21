@@ -2,7 +2,10 @@
 exec 2>/dev/null
 echo "*-*-* Overclocking in progress *-*-*"
 
-NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
+NVIDIADEVICE=$(sudo lshw -C display | grep "driver=nvidia" | wc -l)
+if [ "$NVIDIADEVICE" = "0" ]; then
+    NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)    
+fi
 NVIDIA="$(nvidia-smi -L)"
 
 if [ "$NVIDIADEVICE" != "0" ]; then
