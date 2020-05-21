@@ -169,7 +169,7 @@ if ! screen -list | grep -q "dummy"; then
 
   echo -e "\033[1;34m==\033[0m Starting local web console ...\033[0m"
   cd /home/minerstat/minerstat-os/bin
-  ./shellinaboxd --port 4200 -b --css "/home/minerstat/minerstat-os/core/white-on-black.css" --disable-ssl
+  #./shellinaboxd --port 4200 -b --css "/home/minerstat/minerstat-os/core/white-on-black.css" --disable-ssl
 
   if [ ! -z "$NVIDIA" ]; then
 
