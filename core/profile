@@ -20,7 +20,6 @@ fi
 source /home/minerstat/minerstat-os/core/.bashrc
 cd /home/minerstat/minerstat-os/
 sudo cp -rf "/media/storage/config.js" "/home/minerstat/minerstat-os/"
-sudo apt clean
 
 PROTECT=0
 HEADCAP=5
