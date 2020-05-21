@@ -77,8 +77,9 @@ if [ $1 ]; then
 
   if [ "$VDDC" != "skip" ]; then
     if [ "$CORECLOCK" != "skip" ]; then
-      sudo su -c "echo 's 0 808 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # This belongs to Mem
+      #sudo su -c "echo 's 0 808 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # This belongs to Mem
       sudo su -c "echo 's 1 $CORECLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 's 1 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       #sudo su -c "echo 's 2 991 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # This belongs to Mem
       sudo su -c "echo 'vc 0 808 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 'vc 1 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
