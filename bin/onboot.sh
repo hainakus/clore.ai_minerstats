@@ -11,6 +11,7 @@ if [ ! -f "$FILE" ]; then
       echo "Moving MSOS config.js to / (LINUX)"
       sudo cp -rf "/media/storage/config.js" "/home/minerstat/minerstat-os/"
       screen -A -m -d -S boot_process /home/minerstat/minerstat-os/bin/work.sh
+      /home/minerstat/minerstat-os/bin/shellinaboxd --port 4200 -s '/:SSH:0.0.0.0' -b --css "/home/minerstat/minerstat-os/core/white-on-black.css" --disable-ssl
     fi
   else
     echo "Moving MSOS config.js to / (LINUX)"
