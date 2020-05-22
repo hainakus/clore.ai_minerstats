@@ -2,7 +2,7 @@
 echo -e ""
 echo -e "\033[1;34m=========== CONFIGURING DHCP ===========\033[0m"
 
-INTERFACE="$(sudo cat /proc/net/dev | grep -vE "lo|docker0" | tail -n1 | awk -F '\\:' '{print $1}' | xargs)"
+INTERFACE="$(sudo timeout 5 cat /proc/net/dev | grep -vE "lo|docker0" | tail -n1 | awk -F '\\:' '{print $1}' | xargs)"
 
 echo -e "\033[1;34m==\033[0m DHCP Interface: \033[1;32m$INTERFACE\033[0m"
 echo -e ""
@@ -22,7 +22,7 @@ fi
 
 sudo su -c "/etc/init.d/networking restart" 1>/dev/null
 
-IFACESTATUS=$(sudo /sbin/ifconfig $INTERFACE | grep "UP," | xargs)
+IFACESTATUS=$(sudo timeout 5 /sbin/ifconfig $INTERFACE | grep "UP," | xargs)
 if [[ "$IFACESTATUS" != *"UP,"* ]]; then
   sudo ifdown $INTERFACE
   sudo nohup ifup $INTERFACE &
@@ -54,5 +54,5 @@ if [ "$INTERFACE" = "eth0" ]; then
   sudo echo "     dhcp6: no" >> /etc/netplan/minerstat.yaml
   sudo echo "     nameservers:" >> /etc/netplan/minerstat.yaml
   sudo echo "         addresses: [1.1.1.1, 1.0.0.1]" >> /etc/netplan/minerstat.yaml
-  sudo /usr/sbin/netplan apply
+  sudo timeout 5 /usr/sbin/netplan apply
 fi
