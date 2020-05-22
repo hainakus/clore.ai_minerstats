@@ -76,15 +76,15 @@ if ! screen -list | grep -q "dummy"; then
   # Cache management
   ping -c1 104.24.98.231 -w 1 &>/dev/null && HAVECONNECTION="true" || HAVECONNECTION="false"
   if [ "$HAVECONNECTION" = "false" ]; then
-    sudo service network-manager restart
-    sudo /usr/sbin/netplan apply
-    sudo /home/minerstat/minerstat-os/core/dnser
+    sudo timeout 10 service network-manager restart
+    sudo timeout 10 /usr/sbin/netplan apply
+    sudo timeout 10 /home/minerstat/minerstat-os/core/dnser
     sleep 2
   fi
 
   ping -c1 api.minerstat.com -w 1 &>/dev/null && HAVECONNECTION="true" || HAVECONNECTION="false"
   if [ "$HAVECONNECTION" = "false" ]; then
-    sudo /home/minerstat/minerstat-os/core/dnser
+    sudo timeout 10 /home/minerstat/minerstat-os/core/dnser
     sleep 2
   fi
 
