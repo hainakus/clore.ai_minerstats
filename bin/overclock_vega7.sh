@@ -106,10 +106,10 @@ if [ $1 ]; then
 
 
   # ECHO Changes
-  echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
-  sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-  echo "-÷-*-****** MEM  CLOCKS *****-*-*÷-"
-  sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+  #echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
+  #sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+  #echo "-÷-*-****** MEM  CLOCKS *****-*-*÷-"
+  #sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
 
   # FANS
   if [ "$FANSPEED" != 0 ]; then
