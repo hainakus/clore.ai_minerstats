@@ -63,6 +63,7 @@ if [ $1 ]; then
       echo "INFO: SETTING CORECLOCK : $CORECLOCK Mhz (STATE: $COREINDEX) @ $VDDC mV"
       sudo su -c "echo 's 0 852 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # This belongs to Mem2
       sudo su -c "echo 's 2 991 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # This belongs to Mem3
+      sudo su -c "echo 's 6 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # This belongs to Mem3
       sudo su -c "echo 's $COREINDEX $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 'vc 2 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
