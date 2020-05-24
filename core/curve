@@ -51,11 +51,13 @@ loop() {
     
    #FANMIN n MAX
    FANMIN2=$(echo $FANMIN | cut -f1 -d".")
-   FANMIN2=$((FANMIN2 * 2.55))
+   FANMIN2=$((FANMIN2 * 255 / 100))
+   FANMIN2=$(echo $FANMIN2 | cut -f1 -d".")
    FANMIN2=$(printf "%.0f\n" $FANMIN2)
               
-   FANMAX2=$(echo $FANMIN | cut -f1 -d".")              
-   FANMAX2=$((FANMAX2 * 2.55))
+   FANMAX2=$(echo $FANMAX | cut -f1 -d".")              
+   FANMAX2=$((FANMAX2 * 255 / 100))
+   FANMAX2=$(echo $FANMAX2 | cut -f1 -d".")
    FANMAX2=$(printf "%.0f\n" $FANMAX2)
   
     QUERY=$(sudo /home/minerstat/minerstat-os/bin/amdinfo)
