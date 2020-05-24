@@ -95,6 +95,14 @@ if [ $1 ]; then
 
   # Apply Changes
   sudo su -c "echo 'c'> /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+  
+  sudo ./rocm-smi -d $GPUID --setsclk $COREINDEX
+  sudo ./rocm-smi -d $GPUID --setmclk 2
+  sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+  sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+  
+  # Check current states
+  sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
   # ECHO Changes
   echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
