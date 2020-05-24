@@ -96,9 +96,9 @@ if [ $1 ]; then
   sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
 
   # Apply
-  sudo ./rocm-smi -d $GPUID --setsclk 1
-  sudo ./rocm-smi -d $GPUID --setmclk 1
-  sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+  sudo ./rocm-smi -d $GPUID --setsclk 7
+  #sudo ./rocm-smi -d $GPUID --setmclk 1
+  #sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
   #sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   # Check current states
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
