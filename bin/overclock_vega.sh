@@ -68,9 +68,9 @@ if [ $1 ]; then
       sudo su -c "echo 's 4 856 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 's 5 857 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 's 6 858 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 7 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-
+      sudo su -c "echo 's 7 859 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 's $COREINDEX $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      
       sudo su -c "echo 'vc 2 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       
