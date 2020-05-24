@@ -109,9 +109,6 @@ loop() {
               CHANGE=30
             fi
             NEWFAN=$((FAN-CHANGE))
-            if [ $NEWFAN -lt $FANMIN2 ]; then
-              NEWFAN=$FANMIN
-            fi
             # Hotter than target temp
           elif [ $DIFF -lt -1 ]; then
             MSG="WARM >$DIFF C!"
@@ -132,13 +129,16 @@ loop() {
               CHANGE=30
             fi
             NEWFAN=$((FAN+CHANGE))
-            if [ $NEWFAN -gt $FANMAX2 ]; then
-              NEWFAN=$FANMAX
-            fi
           else
             # No fan changes needed
             #NEWFAN=$FANMIN
             MSG="ON TARGET"
+          fi
+          if [ $NEWFAN -lt $FANMIN2 ]; then
+              NEWFAN=$FANMIN
+          fi
+          if [ $NEWFAN -gt $FANMAX2 ]; then
+              NEWFAN=$FANMAX
           fi
           if [ "$MSG" != "ON TARGET" ]; then
             if [ $NEWFAN -gt 100 ]; then
