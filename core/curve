@@ -48,6 +48,16 @@ fi
 loop() {
   echo "---------------"
   if [ $NUM_AMD -gt 0 ]; then
+    
+   #FANMIN n MAX
+   FANMIN2=$((FANMIN * 2.55))
+   FANMIN2=$(echo $FANMIN | cut -f1 -d".")
+   FANMIN2=$(printf "%.0f\n" $FANMIN)
+              
+   FANMAX2=$((FANMAX * 2.55))
+   FANMAX2=$(echo $FANMIN | cut -f1 -d".")
+   FANMAX2=$(printf "%.0f\n" $FANMAX)
+  
     QUERY=$(sudo /home/minerstat/minerstat-os/bin/amdinfo)
     TEST_AMD=$NUM_AMD
     if [ ! -z "$QUERY" ]; then
@@ -91,7 +101,7 @@ loop() {
               CHANGE=30
             fi
             NEWFAN=$((FAN-CHANGE))
-            if [ $NEWFAN -lt $FANMIN ]; then
+            if [ $NEWFAN -lt $FANMIN2 ]; then
               NEWFAN=$FANMIN
             fi
             # Hotter than target temp
@@ -114,7 +124,7 @@ loop() {
               CHANGE=30
             fi
             NEWFAN=$((FAN+CHANGE))
-            if [ $NEWFAN -gt $FANMAX ]; then
+            if [ $NEWFAN -gt $FANMAX2 ]; then
               NEWFAN=$FANMAX
             fi
           else
