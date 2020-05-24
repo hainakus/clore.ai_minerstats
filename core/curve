@@ -5,6 +5,8 @@ FANMIN=$(cat /media/storage/fans.txt | grep "FANMIN=" | xargs | sed 's/[^0-9]*//
 FANMAX=$(cat /media/storage/fans.txt | grep "FANMAX=" | xargs | sed 's/[^0-9]*//g')
 TARGET=$(cat /media/storage/fans.txt | grep "TARGET_TEMP=" | xargs | sed 's/[^0-9]*//g')
 
+echo "Debug read: min: $FANMIN max: $FANMAX tar: $TARGET"
+
 # Navi "2" pwm
 PWM=$(cat /dev/shm/fantype.txt | xargs | sed 's/[^0-9]*//g')
 
@@ -34,6 +36,8 @@ else
   SLEEP=20
 fi
 
+echo "Debug final: min: $FANMIN max: $FANMAX tar: $TARGET"
+
 # Drivers
 TEST_NVIDIA=$(nvidia-smi -L)
 NUM_AMD=$(sudo lshw -C display | grep AMD | wc -l)
@@ -59,6 +63,8 @@ loop() {
    FANMAX2=$((FANMAX2 * 255 / 100))
    FANMAX2=$(echo $FANMAX2 | cut -f1 -d".")
    FANMAX2=$(printf "%.0f\n" $FANMAX2)
+   
+   echo "Debug: FANMIN: $FANMIN2 | FANMAX: $FANMAX2"
   
     QUERY=$(sudo /home/minerstat/minerstat-os/bin/amdinfo)
     TEST_AMD=$NUM_AMD
