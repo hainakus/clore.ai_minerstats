@@ -77,32 +77,35 @@ if [ $1 ]; then
 
   if [ "$VDDC" != "skip" ]; then
     if [ "$CORECLOCK" != "skip" ]; then
-      echo "INFO: SETTING CORECLOCK : $CORECLOCK Mhz (STATE: $COREINDEX) @ $VDDC mV"
-      sudo su -c "echo 's 0 852 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # This belongs to Mem2
-      sudo su -c "echo 's 2 991 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # This belongs to Mem3
-      sudo su -c "echo 's $COREINDEX $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 's 1 $CORECLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      #sudo su -c "echo 'vc 1 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 'vc 2 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      
-      #sudo su -c "echo '0' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
-      #sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
 
-      sudo su -c "echo $COREINDEX > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-      sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      
+      echo "GPU$GPUID : CORECLOCK => $CORECLOCK Mhz ($VDDC mV, state: $COREINDEX)"
+
+      sudo su -c "echo '0' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
+      sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
+
+      #sudo su -c "echo $COREINDEX > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+      sudo su -c "echo 7 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+      sudo su -c "echo 8 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+
     fi
   fi
 
-  # Apply Changes
-  sudo su -c "echo 'c'> /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-  
+  # comit
+  sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"	
+  sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
+
+  # Apply
   sudo ./rocm-smi -d $GPUID --setsclk $COREINDEX
   sudo ./rocm-smi -d $GPUID --setmclk 2
-  sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-  sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-  
+  sudo su -c "echo '$COREINDEX' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+  sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   # Check current states
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+  #sudo cat /sys/kernel/debug/dri/0/amdgpu_pm_info
+
 
   # ECHO Changes
   echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
