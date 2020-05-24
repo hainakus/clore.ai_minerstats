@@ -61,9 +61,15 @@ if [ $1 ]; then
   if [ "$VDDC" != "skip" ]; then
     if [ "$CORECLOCK" != "skip" ]; then
       echo "INFO: SETTING CORECLOCK : $CORECLOCK Mhz (STATE: $COREINDEX) @ $VDDC mV"
-      sudo su -c "echo 's 0 852 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # This belongs to Mem2
-      sudo su -c "echo 's 2 991 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # This belongs to Mem3
-      sudo su -c "echo 's 6 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # This belongs to Mem3
+      sudo su -c "echo 's 0 852 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 's 1 853 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 's 2 854 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 's 3 855 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 's 4 856 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 's 5 857 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 's 6 858 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 's 7 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+
       sudo su -c "echo 's $COREINDEX $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 'vc 2 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
