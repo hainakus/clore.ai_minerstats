@@ -134,10 +134,10 @@ loop() {
             #NEWFAN=$FANMIN
             MSG="ON TARGET"
           fi
-          if [ $NEWFAN -lt $FANMIN2 ]; then
+          if [ $NEWFAN -lt $FANMIN ]; then
               NEWFAN=$FANMIN
           fi
-          if [ $NEWFAN -gt $FANMAX2 ]; then
+          if [ $NEWFAN -gt $FANMAX ]; then
               NEWFAN=$FANMAX
           fi
           if [ "$MSG" != "ON TARGET" ]; then
