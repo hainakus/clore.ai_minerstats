@@ -469,19 +469,19 @@ module.exports = {
       str = "";
     if (args == "") {
       if (miner == "xmr-stak" || miner == "xmr-stak-randomx") {
-        str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + " --noCPU " + logInFile + "; sleep 20";
+        str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; sudo ./" + execFile + " --noCPU " + logInFile + "; sleep 20";
       } else {
-        str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + "" + logInFile + "; sleep 20 ";
+        str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; sudo ./" + execFile + "" + logInFile + "; sleep 20 ";
       }
     } else {
       if (miner == "progpowminer") {
         if (global.gputype === "nvidia") {
-          str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + " " + args + "" + logInFile + "; sleep 20";
+          str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; sudo ./" + execFile + " " + args + "" + logInFile + "; sleep 20";
         } else {
-          str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + "-opencl " + args + "" + logInFile + "; sleep 20";
+          str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; sudo ./" + execFile + "-opencl " + args + "" + logInFile + "; sleep 20";
         }
       } else {
-        str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + " " + args + "" + logInFile + "; sleep 20";
+        str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; sudo ./" + execFile + " " + args + "" + logInFile + "; sleep 20";
       }
     }
     //console.log("Starting command: " + str);
