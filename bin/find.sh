@@ -13,6 +13,7 @@ echo "[] Instance Check: $RESULT"
 if [ ! $1 ]; then
   echo "Type your GPU ID what you want to find."
   echo "NVIDIA Example: mfind 0"
+  echo "If you are looking Nvidia by BUS id. Check on Worker Page on my.minerstat.com and search by standard ID. for GPU0 use mfind 0"
   echo "AMD Example with ID Search: mfind 3"
   echo "AMD Example with BUS Search: mfind 03.00.0"
 else
@@ -40,7 +41,18 @@ else
         echo ""
         echo "-- NVIDIA --"
         echo "GPU $GID >> 100%"
-        STR2="-c :0 -a [gpu:$GID]/GPUFanControlState=1 -a [gpu:$GID]/GPUTargetFanSpeed=100"
+        #STR2="-c :0 -a [gpu:$GID]/GPUFanControlState=1 -a [gpu:$GID]/GPUTargetFanSpeed=100"
+        sudo /home/minerstat/minerstat-os/core/nv_fanid $GPUID
+        ID1=$(cat /dev/shm/id1.txt | xargs) 
+        ID2=$(cat /dev/shm/id2.txt | xargs)
+        if [ -z "$ID1" ] && [ -z "$ID2" ]; then
+            STR2="-a [gpu:"$GPUID"]/GPUFanControlState=1 -a [fan:"$GPUID"]/GPUTargetFanSpeed="$FANSPEED""
+        else
+            STR2="-a [gpu:"$GPUID"]/GPUFanControlState=1 -a [fan:"$ID1"]/GPUTargetFanSpeed="$FANSPEED""
+            if [ ! -z "$ID2" ]; then
+                STR2="$STR2 -a [gpu:"$GPUID"]/GPUFanControlState=1 -a [fan:"$ID2"]/GPUTargetFanSpeed="$FANSPEED""
+             fi
+        fi
         APPLY="$(sudo nvidia-settings $STR2)"
         echo $APPLY
         echo ""
