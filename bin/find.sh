@@ -36,8 +36,8 @@ else
         echo $FINISH
         echo ""
         echo "-- NVIDIA --"
-        echo "DONE, WAIT 5 SEC."
-        sleep 5
+        echo "DONE, WAIT 10 SEC."
+        sleep 10
         echo ""
         echo "-- NVIDIA --"
         echo "GPU $GID >> 100%"
@@ -57,8 +57,9 @@ else
         echo $APPLY
         echo ""
         echo "-- NVIDIA --"
-        echo "DONE, WAIT 5 SEC."
-        sleep 5
+        echo "DONE, WAIT 30 SEC."
+        echo "Check which GPU spinning fans at the moment. That should be GPU $GID"
+        sleep 30
         echo ""
         echo "--- Loading original settings --"
         cd /home/minerstat/minerstat-os/bin
@@ -83,16 +84,17 @@ else
       sudo /home/minerstat/minerstat-os/bin/rocm-smi --setfan 0
       echo ""
       echo "-- AMD --"
-      echo "DONE, WAIT 5 SEC."
-      sleep 5
+      echo "DONE, WAIT 10 SEC."
+      sleep 10
       echo ""
       echo "-- AMD --"
       echo "GPU $GID >> 200 RPM"
       sudo /home/minerstat/minerstat-os/bin/rocm-smi --setfan 200 -d $GID
       echo ""
       echo "-- AMD --"
-      echo "DONE, WAIT 3 SEC."
-      sleep 5
+      echo "DONE, WAIT 30 SEC."
+      echo "Check which GPU spinning fans at the moment. That should be GPU $GID"
+      sleep 30
       echo ""
       echo "--- Loading original settings --"
       cd /home/minerstat/minerstat-os/bin
@@ -104,7 +106,13 @@ else
     echo "-----"
     echo "You need to stop running miner before you can use this script."
     echo "Type: mstop"
-    echo "Then you are able to run again: mfind $GID"
+    echo "Then you are able to run again"
+    echo ""
+    echo "Type your GPU ID what you want to find."
+    echo "NVIDIA Example: mfind 0"
+    echo "If you are looking Nvidia by BUS id. Check on Worker Page on my.minerstat.com and search by standard ID. for GPU0 use mfind 0"
+    echo "AMD Example with ID Search: mfind 3"
+    echo "AMD Example with BUS Search: mfind 03.00.0"
     echo "-----"
   fi
 
