@@ -42,15 +42,15 @@ else
         echo "-- NVIDIA --"
         echo "GPU $GID >> 100%"
         #STR2="-c :0 -a [gpu:$GID]/GPUFanControlState=1 -a [gpu:$GID]/GPUTargetFanSpeed=100"
-        sudo /home/minerstat/minerstat-os/core/nv_fanid $GPUID
+        sudo /home/minerstat/minerstat-os/core/nv_fanid $GID
         ID1=$(cat /dev/shm/id1.txt | xargs) 
         ID2=$(cat /dev/shm/id2.txt | xargs)
         if [ -z "$ID1" ] && [ -z "$ID2" ]; then
-            STR2="-a [gpu:"$GPUID"]/GPUFanControlState=1 -a [fan:"$GPUID"]/GPUTargetFanSpeed="$FANSPEED""
+            STR2="-a [gpu:"$GID"]/GPUFanControlState=1 -a [fan:"$GID"]/GPUTargetFanSpeed="$FANSPEED""
         else
-            STR2="-a [gpu:"$GPUID"]/GPUFanControlState=1 -a [fan:"$ID1"]/GPUTargetFanSpeed="$FANSPEED""
+            STR2="-a [gpu:"$GID"]/GPUFanControlState=1 -a [fan:"$ID1"]/GPUTargetFanSpeed="$FANSPEED""
             if [ ! -z "$ID2" ]; then
-                STR2="$STR2 -a [gpu:"$GPUID"]/GPUFanControlState=1 -a [fan:"$ID2"]/GPUTargetFanSpeed="$FANSPEED""
+                STR2="$STR2 -a [gpu:"$GID"]/GPUFanControlState=1 -a [fan:"$ID2"]/GPUTargetFanSpeed="$FANSPEED""
              fi
         fi
         APPLY="$(sudo nvidia-settings $STR2)"
