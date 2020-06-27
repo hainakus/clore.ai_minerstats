@@ -28,6 +28,7 @@ if [ $1 ]; then
   VDDC=$5
   MVDD=$6
   COREINDEX=$7
+  version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
 
   if [ -z "$COREINDEX" ]; then
     COREINDEX="2"
@@ -41,8 +42,10 @@ if [ $1 ]; then
     COREINDEX="2"
   fi
 
-  if [ "$COREINDEX" = "1" ]; then
-    COREINDEX="2"
+  if [ "$version" = "1.4" ] || [ "$version" = "1.4.5" ] || [ "$version" = "1.4.6" ] || [ "$version" = "1.4.7" ] || [ "$version" = "1.4.8" ] || [ "$version" = "1.5.3" ] || [ "$version" = "1.4.9" ] || [ "$version" = "1.5.2" ]; then
+    if [ "$COREINDEX" = "1" ]; then
+        COREINDEX="2"
+    fi
   fi
 
   echo "--**--**-- GPU $1 : NAVI --**--**--"
@@ -106,7 +109,6 @@ if [ $1 ]; then
   fi
 
   ###########################################################################
-  version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
   if [ "$version" = "1.4" ] || [ "$version" = "1.4.5" ] || [ "$version" = "1.4.6" ] || [ "$version" = "1.4.7" ] || [ "$version" = "1.4.8" ]; then
     sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
     sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
