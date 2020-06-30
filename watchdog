@@ -1,0 +1,34 @@
+#!/bin/bash
+
+echo "Watchdog agent starting.."
+
+# ANPIX USB WatchDog Card
+P1=$(lsusb | grep "5131:2007")
+# domybest USB Watchdog Card
+P2=$(lsusb | grep "1a86:7523")
+# ALLOYSEED USB Watchdog
+P3=$(lsusb | grep "0471:2379")
+
+if [ ! -z "$P1" ] || [ ! -z "$P2" ] || [ ! -z "$P3" ]; then
+  echo "USB Watchdog detected.. Sending signal"
+  while true
+  do
+    sudo su -c "printf '\x1E\x00' >/dev/ttyUSB*"
+    sudo su -c "printf '\x1E\x00' >/dev/hidraw*"
+    sleep 1
+  done
+fi
+
+# Open-dev wdt
+OWDT=$(ls /dev/ttyACM* 2> /dev/null)
+if [ ! -z "$OWDT" ]; then
+  echo "Open-dev USB Watchdog detected.. Sending signal"
+  while true
+  do
+    sudo su -c "echo -n '~U' >/dev/ttyACM*"
+    sleep 1
+  done
+fi
+
+echo "No watchdog found / script closed.."
+exit 1
