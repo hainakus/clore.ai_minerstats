@@ -195,6 +195,11 @@ SNUM=$(sudo su minerstat -c "screen -list | grep -c sockets")
 if [ "$SNUM" != "1" ]; then
 sudo su minerstat -c "screen -ls | grep sockets | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe; sudo killall sockets; sleep 0.5; sudo killall sockets; screen -A -m -d -S sockets sudo bash /home/minerstat/minerstat-os/core/sockets" > /dev/null
 fi
+# Check for watchdogs
+SNUM=$(sudo su minerstat -c "screen -list | grep -c usbdog")
+if [ "$SNUM" != "1" ]; then
+sudo su minerstat -c "screen -ls | grep usbdog | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe; sudo killall usbdog; sleep 0.5; sudo killall usbdog; screen -A -m -d -S usbdog sudo bash /home/minerstat/minerstat-os/watchdog" > /dev/null
+fi
 # Check XSERVER
 SNUMD=$(sudo su minerstat -c "screen -list | grep -c display2")
 if [ "$SNUMD" = "0" ]; then
