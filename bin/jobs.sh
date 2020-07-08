@@ -145,7 +145,11 @@ git config --global http.sslverify false
 sudo chmod 777 /etc/update-motd.d/10-help-text
 sudo cp /home/minerstat/minerstat-os/core/10-help-text /etc/update-motd.d
 # Update tmux design
-sudo cp /home/minerstat/minerstat-os/core/.tmux.conf /home/minerstat
+if [ "$version" = "1.6.0" ]; then
+    sudo cp -f /home/minerstat/minerstat-os/core/.tmux2.conf /home/minerstat/.tmux.conf
+else
+    sudo cp -f /home/minerstat/minerstat-os/core/.tmux.conf /home/minerstat
+fi
 # Tmate config
 sudo cp /home/minerstat/minerstat-os/core/.tmate.conf /home/minerstat
 echo "" | ssh-keygen -N "" &> /dev/null
