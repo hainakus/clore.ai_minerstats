@@ -21,6 +21,9 @@ if [ "$version" = "1.5" ] || [ "$version" = "1.6" ] || [ "$version" = "1.7" ] ||
   if [ -d "/opt/rocm-3.3.0" ]; then
     FOLDER='rocm-3.3.0'
   fi
+  if [ -d "/opt/rocm-3.5.0" ]; then
+    FOLDER='rocm-3.5.0'
+  fi
 
   FILE=/media/storage/opencl.txt
 
@@ -48,7 +51,7 @@ if [ "$version" = "1.5" ] || [ "$version" = "1.6" ] || [ "$version" = "1.7" ] ||
 
     rocm)
       sudo su -c "echo 'rocm' > $FILE"
-      sudo su -c "echo '/opt/rocm-3.1.0/opencl/lib/x86_64/libamdocl64.so' > /etc/OpenCL/vendors/amdocl64.icd"
+      sudo su -c "echo '/opt/$FOLDER/opencl/lib/x86_64/libamdocl64.so' > /etc/OpenCL/vendors/amdocl64.icd"
       echo "OpenCL switched to: rocm"
       echo
       exit 4
