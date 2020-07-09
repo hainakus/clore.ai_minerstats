@@ -5,6 +5,9 @@ FANMIN=$(cat /media/storage/fans.txt | grep "FANMIN=" | xargs | sed 's/[^0-9]*//
 FANMAX=$(cat /media/storage/fans.txt | grep "FANMAX=" | xargs | sed 's/[^0-9]*//g')
 TARGET=$(cat /media/storage/fans.txt | grep "TARGET_TEMP=" | xargs | sed 's/[^0-9]*//g')
 
+# Override on static
+FANSTATIC=0
+
 echo "Debug read: min: $FANMIN max: $FANMAX tar: $TARGET"
 
 # Navi "2" pwm
@@ -32,6 +35,7 @@ fi
 
 if [ "$FANMIN" = "$FANMAX" ]; then 
   SLEEP=75
+  FANSTATIC=1
 else
   SLEEP=20
 fi
@@ -176,6 +180,9 @@ loop() {
               if [ $NEWFAN -gt 99 ]; then
                 FANVALUE=$MAXFAN
               fi
+              if [ $FANSTATIC -gt 0 ]; then
+                FANVALUE=$FANMAX2
+              fi
               #if [ "$CURRFAN" != "$FANVALUE" ]; then
               if [ "$CURRFAN" != "$FANVALUE" ] && [ "$CURRFANFIVE" != "$FANVALUE" ]; then
                 if [ "$PWM" = "1" ]; then
@@ -294,6 +301,9 @@ loop() {
         if [ "$MSG" != "ON TARGET" ]; then
           if [ $NEWFAN -gt 100 ]; then
             NEWFAN="100"
+          fi
+          if [ $FANSTATIC -gt 0 ]; then
+            NEWFAN=$FANMAX
           fi
           if [ ! $FAN -eq $NEWFAN ]; then
               sudo /home/minerstat/minerstat-os/core/nv_fanid $x
