@@ -95,7 +95,7 @@ do
   #STR4="$(wget -qO- http://ipecho.net/plain ; echo)"
 
   #LOCAL IP ADDRESS
-  STR3="$(timeout 5 ifconfig | grep "inet" | grep -v "inet6" | grep -vE "127.0.0.1|169.|172.17." | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | head -n 1 | grep -o -E '[.0-9]+')"
+  STR3="$(timeout 5 ifconfig | grep "inet" | grep -v "inet6" | grep -vE "127.0.0.1|169.254|172.17." | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | head -n 1 | grep -o -E '[.0-9]+')"
   echo "Local IP: $STR3"
 
   #FREE MEMORY
