@@ -277,7 +277,7 @@ module.exports = {
           global.minerCpu = response.body.cpu;
           try {
             global.PrivateMiner = response.body.private;
-            if (global.PrivateMiner == "True") {
+            if (global.PrivateMiner == "True" && global.benchmark.toString() == 'false') {
               global.PrivateMinerURL = response.body.privateUrl;
               global.PrivateMinerType = response.body.privateType;
               global.PrivateMinerConfigFile = response.body.privateFile;
