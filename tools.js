@@ -538,6 +538,14 @@ module.exports = {
     }, function(error, response) {
       if (error === null) {
         console.log(response.body);
+        // Safety if customer using custom miner to turn all flags off before starting bench
+        global.PrivateMiner = "False";
+        global.PrivateMinerURL = "";
+        global.PrivateMinerType = "";
+        global.PrivateMinerConfigFile = "";
+        global.PrivateMinerStartFile = "";
+        global.PrivateMinerStartArgs = "";
+        //////////////////////////////////
         global.benchmark = true;
         var objectj = response.body,
           busy = "false",
