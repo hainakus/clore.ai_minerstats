@@ -46,9 +46,9 @@ else
         ID1=$(cat /dev/shm/id1.txt | xargs) 
         ID2=$(cat /dev/shm/id2.txt | xargs)
         if [ -z "$ID1" ] && [ -z "$ID2" ]; then
-            STR2="-a [gpu:"$GID"]/GPUFanControlState=1 -a [fan:"$GID"]/GPUTargetFanSpeed="$FANSPEED""
+            STR2="-c :0 -a [gpu:"$GID"]/GPUFanControlState=1 -a [fan:"$GID"]/GPUTargetFanSpeed="$FANSPEED""
         else
-            STR2="-a [gpu:"$GID"]/GPUFanControlState=1 -a [fan:"$ID1"]/GPUTargetFanSpeed="$FANSPEED""
+            STR2="-c :0 -a [gpu:"$GID"]/GPUFanControlState=1 -a [fan:"$ID1"]/GPUTargetFanSpeed="$FANSPEED""
             if [ ! -z "$ID2" ]; then
                 STR2="$STR2 -a [gpu:"$GID"]/GPUFanControlState=1 -a [fan:"$ID2"]/GPUTargetFanSpeed="$FANSPEED""
              fi
