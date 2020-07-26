@@ -77,6 +77,7 @@ if [ $1 ]; then
   if [ "$MEMCLOCK" != "skip" ]; then
     sudo su -c "echo 'm 1 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
     sudo su -c "echo 'm 2 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+    sudo su -c "echo 'm 3 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
     # sudo su -c "echo 'm 1 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
     echo "GPU$GPUID : MEMCLOCK => $MEMCLOCK Mhz"
@@ -84,6 +85,7 @@ if [ $1 ]; then
     sudo su -c "echo '0' > /sys/class/drm/card$GPUID/device/pp_mclk_od"
     sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_mclk_od"
 
+    sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
     sudo su -c "echo 'c'> /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
