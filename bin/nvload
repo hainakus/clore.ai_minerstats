@@ -2,3 +2,8 @@
 
 sudo dkms install -m nvidia -v $(ls /usr/src | grep nvidia | sed 's/[nvidia][nvidia}]*//' | sed 's/[-][-}]*//')
 sudo su -c "cd /tmp; wget https://labs.minerstat.farm/repo/minerstat-os/-/raw/master/core/recovery.sh; chmod 777 recovery.sh; sh recovery.sh"
+
+sync
+
+echo
+echo "Nvidia drivers loaded, if you just flashed gpu bios, reboot the rig with: forcereboot"
