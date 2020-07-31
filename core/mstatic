@@ -27,6 +27,9 @@ else
     sudo echo 'GATEWAY="'$3'"' >> /media/storage/network.txt
     # RUN STATIC SCRIPT
     sudo /home/minerstat/minerstat-os/bin/static.sh
+    # Extension
+    sudo ifconfig eth0 $1 netmask $2
+    sudo route add default gw $3 eth0
     # CHECK IPV4
     if ping -q -c 1 -W 1 1.1.1.1 >/dev/null; then
       echo
