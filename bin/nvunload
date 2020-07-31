@@ -1,0 +1,17 @@
+#!/bin/bash
+
+sudo systemctl stop systemd-logind 
+cd /home/minerstat/minerstat-os/; sudo node stop; sudo su minerstat -c "screen -X -S minerstat-console quit"; echo "stop" > /tmp/stop.pid > /dev/null 2>&1; sudo su -c "sudo screen -X -S minew quit"; sudo su -c "echo "" > /dev/shm/miner.log";
+sudo /home/minerstat/minerstat-os/core/maintenance
+cd /home/minerstat/minerstat-os 
+mv core core2
+sudo killall screen 
+sudo killall Xorg 
+sudo su -c "rmmod -f nvidia_uvm; rmmod -f nvidia_drm; rmmod -f nvidia_modeset; rmmod -f nvidia" 
+sudo rmmod -f nvidia_uvm 
+sudo rmmod -f nvidia_drm 
+sudo rmmod -f nvidia_modeset 
+sudo rmmod -f nvidia
+
+echo
+echo "Nvidia drivers unloaded. Validate with: nvflash --list"
