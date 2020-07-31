@@ -34,6 +34,9 @@ if [ "$NETRESTART" = "YES" ]; then
   sudo su -c "/etc/init.d/networking restart; systemctl restart systemd-networkd" 2>/dev/null
 fi
 
+sudo ifconfig eth0 $ADDRESS netmask $NETMASK
+sudo route add default gw $GATEWAY eth0
+
 TEST="$(ping api.minerstat.com -w 1 | grep '1 packets transmitted' | xargs)"
 if [[ "$TEST" == *"0% packet loss"* ]]; then
   echo -e ""
