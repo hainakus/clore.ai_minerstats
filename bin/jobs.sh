@@ -69,8 +69,8 @@ else
   HPAGE=128
 fi
 
-FILE=/home/minerstat/minerstat-os/core2
-if [ -d "$FILE2" ]; then
+FILE_NVFLASH=/home/minerstat/minerstat-os/core2
+if [ -d "$FILE_NVFLASH" ]; then
 sudo mv /home/minerstat/minerstat-os/core2 /home/minerstat/minerstat-os/core
 fi
 
