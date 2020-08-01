@@ -6,11 +6,14 @@ sudo /home/minerstat/minerstat-os/core/maintenance
 cd /home/minerstat/minerstat-os 
 mv core core2
 sudo killall screen 
-sudo killall Xorg 
+sudo killall Xorg
+sudo init 3
 sudo su -c "rmmod -f nvidia_uvm; rmmod -f nvidia_drm; rmmod -f nvidia_modeset; rmmod -f nvidia" 
 sudo rmmod -f nvidia_uvm 
 sudo rmmod -f nvidia_drm 
 sudo rmmod -f nvidia_modeset 
+sudo rmmod -f nvidia
+sudo init 3
 sudo rmmod -f nvidia
 
 echo
