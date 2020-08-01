@@ -70,7 +70,7 @@ else
 fi
 
 FILE=/home/minerstat/minerstat-os/core2
-if [ -f "$FILE2" ]; then
+if [ -d "$FILE2" ]; then
 sudo mv /home/minerstat/minerstat-os/core2 /home/minerstat/minerstat-os/core
 fi
 
