@@ -69,6 +69,11 @@ else
   HPAGE=128
 fi
 
+FILE=/home/minerstat/minerstat-os/core2
+if [ -f "$FILE2" ]; then
+sudo mv /home/minerstat/minerstat-os/core2 /home/minerstat/minerstat-os/core
+fi
+
 sudo su -c "echo $HPAGE > /proc/sys/vm/nr_hugepages; sysctl vm.nr_hugepages=$HPAGE; echo always > /sys/kernel/mm/transparent_hugepage/enabled; sysctl vm.dirty_background_ratio=20; sysctl vm.dirty_expire_centisecs=0; sysctl vm.dirty_ratio=80; sysctl vm.dirty_writeback_centisecs=0" > /dev/null 2>&1
 # Auto OpenCL for/above v1.5
 version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
