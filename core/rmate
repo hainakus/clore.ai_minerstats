@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sudo killall tmate &> /dev/null
-sudo kill -9 $(pidof tmate) &> /dev/null
+sudo kill -9 $(pidof tmate &> /dev/null) &> /dev/null
 sudo rm /tmp/tmate.sock &> /dev/null
 sleep 5
 sudo /home/minerstat/minerstat-os/bin/tmate -S /tmp/tmate.sock new-session -d
