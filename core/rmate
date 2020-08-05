@@ -2,5 +2,5 @@
 
 sudo killall tmate
 sudo kill -9 $(pidof tmate)
-sleep 1
+sleep 3
 sudo /home/minerstat/minerstat-os/bin/tmate -S /tmp/tmate.sock new-session -d
