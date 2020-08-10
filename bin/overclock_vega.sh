@@ -151,6 +151,9 @@ if [ "$MEMCLOCK" != "skip" ]; then
     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   fi
 
+  # avoid 167Mhz bug
+  timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --mem-state 3 --mem-clock $MEMCLOCK
+
   # ECHO Changes
   echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
