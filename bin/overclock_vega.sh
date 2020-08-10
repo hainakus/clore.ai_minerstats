@@ -90,14 +90,9 @@ if [ $1 ]; then
 
   if [ "$MEMCLOCK" != "skip" ]; then
     echo "INFO: SETTING MEMCLOCK : $MEMCLOCK Mhz"
-    #sudo su -c "echo 'm 1 $MEMCLOCK 1000' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
-    #sudo su -c "echo 'm 2 $MEMCLOCK 1050' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
-    timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --mem-state 3 --mem-clock $MEMCLOCK
     sudo su -c "echo 'm 1 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
-    #sudo su -c "echo 'm 3 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
     sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-    #sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
-    #sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
+    timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --mem-state 3 --mem-clock $MEMCLOCK
     sudo ./rocm-smi -d $GPUID --setmclk 3
   fi
 
