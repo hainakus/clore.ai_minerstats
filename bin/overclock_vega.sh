@@ -138,10 +138,10 @@ if [ "$MEMCLOCK" != "skip" ]; then
 
   # Apply
   sudo ./rocm-smi -d $GPUID --setsclk $COREINDEX
-  sudo ./rocm-smi -d $GPUID --setmclk 3
+  #sudo ./rocm-smi -d $GPUID --setmclk 3
   sudo su -c "echo '$COREINDEX' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-  sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk" # fix 167Mhz
-  sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+  #sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk" # fix 167Mhz
+  #sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   # Check current states
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
   #sudo cat /sys/kernel/debug/dri/0/amdgpu_pm_info
@@ -157,7 +157,7 @@ if [ "$MEMCLOCK" != "skip" ]; then
   echo "-÷-*-****** MEM  CLOCKS *****-*-*÷-"
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   sudo su -c "echo '$COREINDEX' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-  sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+  #sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
 
   exit 1
 
