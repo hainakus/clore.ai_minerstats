@@ -40,7 +40,7 @@ if [ $1 ]; then
   echo "--**--**-- GPU $1 : VEGA 56/64 --**--**--"
 
   # Reset
-  sudo bash -c "echo r > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" 
+  sudo bash -c "echo r > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
   # Requirements
   sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon0/pwm1_enable"
@@ -70,16 +70,19 @@ if [ $1 ]; then
       sudo su -c "echo 's 6 858 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 's 7 859 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 's $COREINDEX $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      
+      timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --core-state $COREINDEX --core-clock $CORECLOCK
+
       sudo su -c "echo 'vc 2 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      
+
+      timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 7 --vddc-table-set $VDDC
+
       #sudo su -c "echo '0' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
       #sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
 
       sudo su -c "echo $COREINDEX > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
       sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      
+
     fi
   fi
 
@@ -91,6 +94,7 @@ if [ $1 ]; then
     #sudo su -c "echo 'm 2 $MEMCLOCK 1050' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
     sudo su -c "echo 'm 2 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
     sudo su -c "echo 'm 3 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
+    timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --mem-state 3 --mem-clock $MEMCLOCK
     sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
     #sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
     #sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
@@ -127,8 +131,8 @@ if [ $1 ]; then
     sudo ./rocm-smi -d $GPUID --setfan 70%
   fi
 
-   # comit
-  sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"	
+  # comit
+  sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
   sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
 
   # Apply
