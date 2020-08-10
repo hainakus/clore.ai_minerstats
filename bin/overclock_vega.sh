@@ -44,8 +44,8 @@ if [ $1 ]; then
 
   # Requirements
   sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon0/pwm1_enable"
-  sudo su -c "echo low > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
-  sudo su -c "echo 4 > /sys/class/drm/card$GPUID/device/pp_power_profile_mode" # Compute Mode
+  sudo su -c "echo manual > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
+  sudo su -c "echo 5 > /sys/class/drm/card$GPUID/device/pp_power_profile_mode" # Compute Mode
   #sudo su -c "echo $COREINDEX > /sys/class/drm/card$GPUID/device/pp_mclk_od" # test
 
   # Core clock & VDDC
@@ -56,20 +56,6 @@ if [ $1 ]; then
 
   if [ "$MVDD" = "0" ] || [ "$MVDD" = "skip" ] || [ -z "$MVDD" ]; then
     MVDD="1070"
-  fi
-  
-  if [ "$MEMCLOCK" != "skip" ]; then
-    echo "INFO: SETTING MEMCLOCK : $MEMCLOCK Mhz"
-    #sudo su -c "echo 'm 1 $MEMCLOCK 1000' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
-    #sudo su -c "echo 'm 2 $MEMCLOCK 1050' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
-    sudo su -c "echo 'm 2 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
-    sudo su -c "echo 'm 3 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
-    sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-    #timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --mem-state 2 --mem-clock $MEMCLOCK
-    timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --mem-state 3 --mem-clock $MEMCLOCK
-    #sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
-    #sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
-    sudo ./rocm-smi -d $GPUID --setmclk 3
   fi
 
   if [ "$VDDC" != "skip" ]; then
@@ -102,6 +88,18 @@ if [ $1 ]; then
 
   # Memory Clock
 
+  if [ "$MEMCLOCK" != "skip" ]; then
+    echo "INFO: SETTING MEMCLOCK : $MEMCLOCK Mhz"
+    #sudo su -c "echo 'm 1 $MEMCLOCK 1000' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
+    #sudo su -c "echo 'm 2 $MEMCLOCK 1050' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
+    sudo su -c "echo 'm 2 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
+    sudo su -c "echo 'm 3 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
+    timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --mem-state 3 --mem-clock $MEMCLOCK
+    sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+    #sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
+    #sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
+    sudo ./rocm-smi -d $GPUID --setmclk 3
+  fi
 
   # FANS (for safety) from Radeon VII solution
   for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
@@ -139,7 +137,7 @@ if [ $1 ]; then
 
   # Apply
   sudo ./rocm-smi -d $GPUID --setsclk $COREINDEX
-  #sudo ./rocm-smi -d $GPUID --setmclk 3
+  sudo ./rocm-smi -d $GPUID --setmclk 3
   sudo su -c "echo '$COREINDEX' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
   sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk" # fix 167Mhz
   sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
@@ -151,7 +149,6 @@ if [ $1 ]; then
   if [ "$version" = "1.4.6" ] || [ "$version" = "1.5.2" ] || [ "$version" = "1.4.7" ] || [ "$version" = "1.5.3" ] || [ "$version" = "1.5.4" ] || [ "$version" = "1.4.8" ]; then
     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   fi
-
 
   # ECHO Changes
   echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
