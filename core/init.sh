@@ -201,8 +201,10 @@ do
   fi
 
   if [ $RESPONSE = "REBOOT" ]; then
-    timeout 10 sync
+    timeout 9 sync
     #sudo reboot -f
+    echo 1 | sudo tee /proc/sys/kernel/sysrq
+    echo b | sudo tee /proc/sysrq-trigger
     sudo su -c "echo 1 > /proc/sys/kernel/sysrq"
     sudo su -c "echo b > /proc/sysrq-trigger"
     #sleep 2
@@ -211,7 +213,9 @@ do
 
   if [ $RESPONSE = "FORCEREBOOT" ]; then
     #sudo reboot -f
-    timeout 10 sync
+    timeout 9 sync
+    echo 1 | sudo tee /proc/sys/kernel/sysrq
+    echo b | sudo tee /proc/sysrq-trigger
     sudo su -c "echo 1 > /proc/sys/kernel/sysrq"
     sudo su -c "echo b > /proc/sysrq-trigger"
     #sleep 2
@@ -220,6 +224,8 @@ do
 
   if [ $RESPONSE = "SHUTDOWN" ]; then
     #sudo shutdown -h now
+    echo 1 | sudo tee /proc/sys/kernel/sysrq
+    echo o | sudo tee /proc/sysrq-trigger
     sudo su -c "echo 1 > /proc/sys/kernel/sysrq"
     sudo su -c "echo o > /proc/sysrq-trigger"
     sleep 2

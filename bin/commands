@@ -17,18 +17,26 @@ if [ -f "/dev/shm/maintenance.pid" ]; then
 fi
 
 if [ $RESPONSE = "REBOOT" ]; then
+  timeout 9 sync
+  echo 1 | sudo tee /proc/sys/kernel/sysrq
+  echo b | sudo tee /proc/sysrq-trigger
   sudo su -c "echo 1 > /proc/sys/kernel/sysrq"
   sudo su -c "echo b > /proc/sysrq-trigger"
   sudo reboot -f
 fi
 
 if [ $RESPONSE = "FORCEREBOOT" ]; then
+  timeout 9 sync
+  echo 1 | sudo tee /proc/sys/kernel/sysrq
+  echo b | sudo tee /proc/sysrq-trigger
   sudo su -c "echo 1 > /proc/sys/kernel/sysrq"
   sudo su -c "echo b > /proc/sysrq-trigger"
   sudo reboot -f
 fi
 
 if [ $RESPONSE = "SHUTDOWN" ]; then
+  echo 1 | sudo tee /proc/sys/kernel/sysrq
+  echo o | sudo tee /proc/sysrq-trigger
   sudo su -c "echo 1 > /proc/sys/kernel/sysrq"
   sudo su -c "echo o > /proc/sysrq-trigger"
   sleep 2
