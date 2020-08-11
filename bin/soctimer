@@ -1,0 +1,5 @@
+#!/bin/bash
+
+sleep 50
+
+timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $1 --socclk-state 5 --socclk 1150
