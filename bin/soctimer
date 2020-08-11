@@ -19,7 +19,7 @@ if [ "$TEST" = "1" ]; then
   done
   # Miner up and running
   echo "Miner started, wait 10 sec then apply clocks"
-  sleep 10
+  sleep 60
   sudo bash /home/minerstat/minerstat-os/bin/overclock.sh
 else
   exit 0
