@@ -1,5 +1,26 @@
 #!/bin/bash
 
-sleep 50
+TEST=$(sudo screen -list | grep -wc curve)
 
-timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $1 --socclk-state 5 --socclk 1150
+if [ "$TEST" = "1" ]; then
+
+  echo "Waiting 20..."
+  sleep 10
+  echo "Waiting 10..."
+  sleep 10
+
+  TEST=$(sudo screen -list | grep -wc minew)
+
+  until [ $TEST = 1 ]
+  do
+  TEST=$(sudo screen -list | grep -wc minew)
+  echo "Waiting miner to reclock.. (VEGA)"
+  sleep 1
+  done
+  # Miner up and running
+  echo "Miner started, wait 10 sec then apply clocks"
+  sleep 10
+  sudo bash /home/minerstat/minerstat-os/bin/overclock.sh
+else
+  exit 0
+fi
