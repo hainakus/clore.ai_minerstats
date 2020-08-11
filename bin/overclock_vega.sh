@@ -99,6 +99,7 @@ if [ $1 ]; then
     #sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
     #sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
     sudo ./rocm-smi -d $GPUID --setmclk 3
+    timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --mem-state 3 --core-state $COREINDEX --mem-clock $MEMCLOCK --core-clock $CORECLOCK
   fi
 
   # FANS (for safety) from Radeon VII solution
