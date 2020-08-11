@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TEST=$(sudo screen -list | grep -wc curve)
+TEST=$(sudo screen -list | grep -wc soctimer)
 
 if [ "$TEST" = "1" ]; then
 
