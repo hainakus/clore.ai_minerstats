@@ -65,6 +65,8 @@ if [ $1 ]; then
       timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 5 --vddc-table-set $VDDC
       timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 6 --vddc-table-set $VDDC
       timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 7 --vddc-table-set $VDDC
+      timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --socclk-state 5 --socclk 1100
+      timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --socclk-state 5 --socclk 1100
 
       sudo su -c "echo 's 0 852 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 's 1 853 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
