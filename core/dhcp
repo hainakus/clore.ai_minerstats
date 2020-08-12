@@ -4,10 +4,12 @@
 sudo sed -i '/IPADDRESS/d' /media/storage/network.txt
 sudo sed -i '/NETMASK/d' /media/storage/network.txt
 sudo sed -i '/GATEWAY/d' /media/storage/network.txt
+sudo sed -i '/DHCP/d' /media/storage/network.txt
 sudo echo "" >> /media/storage/network.txt
 sudo echo 'IPADDRESS=""' >> /media/storage/network.txt
 sudo echo 'NETMASK=""' >> /media/storage/network.txt
 sudo echo 'GATEWAY=""' >> /media/storage/network.txt
+sudo echo 'DHCP="YES"' >> /media/storage/network.txt
 
 # RUN STATIC SCRIPT
 sudo /home/minerstat/minerstat-os/bin/dhcp.sh
