@@ -21,10 +21,12 @@ else
     sudo sed -i '/IPADDRESS/d' /media/storage/network.txt
     sudo sed -i '/NETMASK/d' /media/storage/network.txt
     sudo sed -i '/GATEWAY/d' /media/storage/network.txt
+    sudo sed -i '/DHCP/d' /media/storage/network.txt
     sudo echo "" >> /media/storage/network.txt
     sudo echo 'IPADDRESS="'$1'"' >> /media/storage/network.txt
     sudo echo 'NETMASK="'$2'"' >> /media/storage/network.txt
     sudo echo 'GATEWAY="'$3'"' >> /media/storage/network.txt
+    sudo echo 'DHCP="NO"' >> /media/storage/network.txt
     # RUN STATIC SCRIPT
     sudo /home/minerstat/minerstat-os/bin/static.sh
     # Extension
