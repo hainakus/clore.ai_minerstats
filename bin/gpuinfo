@@ -174,20 +174,6 @@ do
     
     # Sending Memory Temperature
     MEMTEMP=0
-    CHECK_LABEL=$(timeout 5 sudo su -c "cat /sys/class/drm/card$GPUID/device/hwmon/hwmon?/temp3_label)
-    if [ "$CHECK_LABEL" = "mem" ]; then
-        MEMTEMP=$(CHECK_LABEL=$(timeout 5 sudo su -c "cat /sys/class/drm/card$GPUID/device/hwmon/hwmon?/temp3_input)
-        MEMTEMP=$((MEMTEMP / 1000))
-    else
-        CHECK_LABEL=$(timeout 5 sudo su -c "cat /sys/class/drm/card$GPUID/device/hwmon/hwmon??/temp3_label)
-        if [ "$CHECK_LABEL" = "mem" ]; then
-            MEMTEMP=$(CHECK_LABEL=$(timeout 5 sudo su -c "cat /sys/class/drm/card$GPUID/device/hwmon/hwmon??/temp3_input)
-            MEMTEMP=$((MEMTEMP / 1000))
-        fi
-    fi
-    if [ -z "$MEMTEMP" ]; then
-      MEMTEMP=0
-    fi
     
     NEWSTRING="$STRING, $currentVDDC, $currentMVDD, $VRAM_MB, $MEMTEMP"
     #echo $NEWSTRING
