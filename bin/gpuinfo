@@ -170,6 +170,12 @@ do
     
     # Send GPU (VRAM) Memory info in Mb
     VRAM=$(timeout 3 sudo stat -c %s -- /sys/kernel/debug/dri/$GPUID/amdgpu_vram)
+    
+    # Protection for reading
+    if [ -z "$VRAM" ]; then
+        VRAM=0
+    fi
+    
     VRAM_MB=$(($VRAM / 1024 / 1024))
     
     # Sending Memory Temperature
