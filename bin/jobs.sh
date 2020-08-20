@@ -17,11 +17,11 @@ fi
 #sudo su minerstat -c "screen -ls | grep sockets | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe; sudo killall sockets; screen -A -m -d -S sockets sudo bash /home/minerstat/minerstat-os/core/sockets" > /dev/null
 #fi
 #END SOCKET
-sudo systemctl mask apt-daily.service apt-daily-upgrade.service > /dev/null &
-sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic linux-firmware > /dev/null &
-sudo systemctl disable thermald systemd-timesyncd.service > /dev/null &
-sudo systemctl stop thermald systemd-timesyncd.service > /dev/null &
-sudo systemctl daemon-reload > /dev/null &
+timeout 10 sudo systemctl mask apt-daily.service apt-daily-upgrade.service > /dev/null &
+timeout 10 sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic linux-firmware > /dev/null &
+timeout 10 sudo systemctl disable thermald systemd-timesyncd.service > /dev/null &
+timeout 10 sudo systemctl stop thermald systemd-timesyncd.service > /dev/null &
+timeout 10 sudo systemctl daemon-reload > /dev/null &
 # Kernel panic auto reboot
 sudo su -c "echo 20 >/proc/sys/kernel/panic"
 # Remove logs
