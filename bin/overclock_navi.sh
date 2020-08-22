@@ -62,7 +62,7 @@ if [ $1 ]; then
 
   # Requirements
   sudo su -c "echo manual > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
-  sudo su -c "echo 6 > /sys/class/drm/card$GPUID/device/pp_power_profile_mode"
+  sudo su -c "echo 5 > /sys/class/drm/card$GPUID/device/pp_power_profile_mode"
 
   # CoreClock
   if [ "$VDDC" = "0" ] || [ "$VDDC" = "skip" ] || [ -z "$VDDC" ]; then
