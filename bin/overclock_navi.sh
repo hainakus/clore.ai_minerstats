@@ -93,6 +93,11 @@ if [ $1 ]; then
 
   if [ "$VDDC" != "skip" ]; then
     if [ "$CORECLOCK" != "skip" ]; then
+      if [ "$VDDC" -lt "800" ]; then
+        echo "Driver accept VDDC range until 800mV, you have set $VDDC and it got adjusted to 800mV"
+        echo "You can set Core State 1 or Core State 2 for lower voltages"
+        VDDC=800
+      fi
       sudo su -c "echo 's 1 $CORECLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       #sudo su -c "echo 'vc 1 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       #sudo su -c "echo 'vc 1 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
