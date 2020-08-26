@@ -48,6 +48,14 @@ if [ $1 ]; then
     sudo su minerstat -c "pip3 install upp"
   fi
 
+  # Check UPP installed
+  FILE=/home/minerstat/.local/bin/upp
+  if [ -f "$FILE" ]; then
+    echo "UPP exists."
+  else
+    sudo su minerstat -c "pip3 install upp"
+  fi
+
   if [ -z "$COREINDEX" ]; then
     COREINDEX="2"
   fi
