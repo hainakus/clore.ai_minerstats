@@ -45,7 +45,7 @@ if [ $1 ]; then
   if [[ -z $CHECKPY ]]; then
     sudo apt-get update
     sudo apt-get -y install python3-pip --fix-missing
-    pip3 install upp
+    sudo su minerstat -c "pip3 install upp"
   fi
 
   if [ -z "$COREINDEX" ]; then
