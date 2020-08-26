@@ -131,7 +131,7 @@ if [ $1 ]; then
   else
     GID=""
   fi
-  
+
   echo "Checking GPU type.."
 
   isThisR9=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "R9"| sed 's/^.*R9/R9/' | cut -f1 -d' ' | sed 's/[^A-Z0-9]*//g')
@@ -153,7 +153,7 @@ if [ $1 ]; then
   if [ "$isThisNavi" -gt "0" ]; then
     echo "--**--**-- NAVI --**--**--"
     echo "Loading NAVI OC Script.."
-    sudo ./overclock_navi.sh $GPUID $2 $3 $4 $5 $7 ${10}
+    sudo ./overclock_navi.sh $GPUID $2 $3 $4 $5 $7 ${10} $6
     exit 1
   fi
   ################################
@@ -194,7 +194,7 @@ if [ $1 ]; then
     fi
 
     # Reset
-    # sudo bash -c "echo r > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" 
+    # sudo bash -c "echo r > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
     ## Detect state's
     maxMemState=$(sudo timeout 10 ./ohgodatool -i $GPUID --show-mem  | grep -E "Memory state ([0-9]+):" | tail -n 1 | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g')
@@ -261,7 +261,7 @@ if [ $1 ]; then
       echo
       if [ "$VDDCI" -gt "1000" ]; then
         echo "WARNING!!! HIGH VDDCI Voltage setting skipping to apply."
-       else
+      else
         sudo timeout 10 ./ohgodatool -i $GPUID --mem-state $maxMemState --vddci $VDDCI
       fi
     fi
@@ -272,12 +272,12 @@ if [ $1 ]; then
       echo "--- Setting up MVDD Voltage GPU$GPUID ---"
       echo
       if [ "$MVDD" -lt "1000" ]; then
-       echo "WARNING!!! If you mining ETH keep memory voltages on 1000mv and try to reduce VDDC instead."
+        echo "WARNING!!! If you mining ETH keep memory voltages on 1000mv and try to reduce VDDC instead."
       fi
       if [ "$MVDD" -lt "950" ]; then
-       #MVDD="950"
-       echo "WARNING!! You have set lower MVDD than 950"
-       echo "If mining not start 0H/s set MVDD back to 1000mV."
+        #MVDD="950"
+        echo "WARNING!! You have set lower MVDD than 950"
+        echo "If mining not start 0H/s set MVDD back to 1000mV."
       fi
       sudo timeout 10 ./ohgodatool -i $GPUID --mem-state $maxMemState --mvdd $MVDD
     fi
@@ -377,14 +377,14 @@ if [ $1 ]; then
       FANSPEED="70"
       echo "GPU$GPUID : FANSPEED => 70% ($FANVALUE)"
     fi
-    
+
     sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
 
     #for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
     #  sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_enable" 2>/dev/null
     #  sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1" 2>/dev/null # 70%
     #done
-    
+
     #echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
     #sudo su -c "timeout 3 cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
     #echo "-÷-*-****** MEM  CLOCKS *****-*-*÷-"
