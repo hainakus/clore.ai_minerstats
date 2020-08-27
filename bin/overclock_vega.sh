@@ -30,7 +30,7 @@ if [ $1 ]; then
   COREINDEX=$7
 
   if [ -z "$COREINDEX" ]; then
-    COREINDEX="5"
+    COREINDEX="7"
   fi
 
   if [ "$COREINDEX" = "skip" ]; then
