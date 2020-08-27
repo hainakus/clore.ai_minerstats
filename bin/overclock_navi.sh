@@ -33,12 +33,12 @@ if [ $1 ]; then
   version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
 
   # Setting up limits
-  MCMIN=675  #minimum vddci
-  #MCDEF=820  #default vddci
+  MCMIN=685  #minimum vddci
   MCMAX=850  #max vddci
-  MVMIN=1200 #minimum mvdd
-  #MVDEF=1300 #default mvdd
+  MVMIN=1250 #minimum mvdd
   MVMAX=1350 #max mvdd
+  #MCDEF=820  #default vddci
+  #MVDEF=1300 #default mvdd
 
   # Check Python3 PIP
   CHECKPY=$(dpkg -l | grep python3-pip)
