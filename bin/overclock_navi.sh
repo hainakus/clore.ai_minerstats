@@ -149,8 +149,8 @@ if [ $1 ]; then
 
   if [ "$VDDC" != "skip" ]; then
     if [ "$CORECLOCK" != "skip" ]; then
-      if [ "$VDDC" -lt "750" ]; then
-        echo "Driver accept VDDC range until 800mV, you have set $VDDC and it got adjusted to 800mV"
+      if [ "$VDDC" -lt "700" ]; then
+        echo "Driver accept VDDC range until 700mV, you have set $VDDC and it got adjusted to 800mV"
         echo "You can set Core State 1 or Core State 2 for lower voltages"
         VDDC=800
       fi
