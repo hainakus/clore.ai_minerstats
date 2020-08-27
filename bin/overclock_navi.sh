@@ -131,6 +131,12 @@ if [ $1 ]; then
 
   # MemoryClock
   if [ "$MEMCLOCK" != "skip" ]; then
+    if [[ $MEMCLOCK -gt "960" ]]; then
+      echo "!! Invalid memory clock detected, auto fixing.."
+      echo "Maximum possible clock atm 960Mhz (Windows: 960*2 = 1920Mhz)"
+      echo "You have set $MEMCLOCK Mhz reducing back to 940Mhz"
+      MEMCLOCK=940
+    fi
     sudo su -c "echo 'm 1 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
     sudo su -c "echo 'm 2 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
     sudo su -c "echo 'm 3 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
@@ -209,21 +215,21 @@ if [ $1 ]; then
 
   TESTD=$(timeout 5 dpkg -l | grep opencl-amdgpu-pro-icd | head -n1 | awk '{print $3}' | xargs | cut -f1 -d"-")
 
-  if [ "$TESTD" != "20.30" ]; then
-    echo "2" > /dev/shm/fantype.txt
-    sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
-    sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1_enable" 2>/dev/null
-    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
-    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1_enable" 2>/dev/null
-    sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1" 2>/dev/null # 70%
-    sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1" 2>/dev/null # 70%
-  else
-    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
-    sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1" 2>/dev/null # 70%
-    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1_enable" 2>/dev/null
-    sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1" 2>/dev/null # 70%
-    sudo rm /dev/shm/fantype.txt 2>/dev/null
-  fi
+  #if [ "$TESTD" != "20.30" ]; then
+  #  echo "2" > /dev/shm/fantype.txt
+  #  sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
+  #  sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1_enable" 2>/dev/null
+  #  sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
+  #  sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1_enable" 2>/dev/null
+  #  sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1" 2>/dev/null # 70%
+  #  sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1" 2>/dev/null # 70%
+  #else
+  sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
+  sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1" 2>/dev/null # 70%
+  sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1_enable" 2>/dev/null
+  sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1" 2>/dev/null # 70%
+  sudo rm /dev/shm/fantype.txt 2>/dev/null
+  #fi
 
   if [ "$FANSPEED" = "100" ]; then
     echo "2" > /dev/shm/fantype.txt
