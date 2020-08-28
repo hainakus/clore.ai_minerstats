@@ -104,10 +104,15 @@ if [ $1 ]; then
     pmvdd="smc_pptable/MemMvddVoltage/2=$AMVDD smc_pptable/MemMvddVoltage/3=$AMVDD"
   fi
 
-  sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
-    overdrive_table/max/8=960 overdrive_table/min/3=700 overdrive_table/min/5=700 overdrive_table/min/7=700 smc_pptable/MinVoltageGfx=2800 \
-    smc_pptable/FanTargetTemperature=50 smc_pptable/FanThrottlingRpm=3000 $pmvdd $pvddci \
-    smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=0 smc_pptable/FanZeroRpmEnable=0 --write
+  if [ "$version" = "1.5.4" ]; then
+    echo "To enable PP_Table unlock flash to v1.6 or higher"
+  else
+    sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
+      overdrive_table/max/8=960 overdrive_table/min/3=700 overdrive_table/min/5=700 overdrive_table/min/7=700 smc_pptable/MinVoltageGfx=2800 \
+      smc_pptable/FanTargetTemperature=50 smc_pptable/FanThrottlingRpm=3000 $pmvdd $pvddci \
+      smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=0 smc_pptable/FanZeroRpmEnable=0 --write
+  fi
+
 
   for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
     TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
@@ -137,9 +142,15 @@ if [ $1 ]; then
       echo "You have set $MEMCLOCK Mhz reducing back to 940Mhz"
       MEMCLOCK=940
     fi
-    sudo su -c "echo 'm 1 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-    sudo su -c "echo 'm 2 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-    sudo su -c "echo 'm 3 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+    if [ "$version" = "1.5.4" ]; then
+      sudo su -c "echo 'm 1 $MEMCLOCK 1000' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 'm 2 $MEMCLOCK 1000' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 'm 3 $MEMCLOCK 1000' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+    else
+      sudo su -c "echo 'm 1 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 'm 2 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 'm 3 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+    fi
     # sudo su -c "echo 'm 1 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
     echo "GPU$GPUID : MEMCLOCK => $MEMCLOCK Mhz"
@@ -155,10 +166,18 @@ if [ $1 ]; then
 
   if [ "$VDDC" != "skip" ]; then
     if [ "$CORECLOCK" != "skip" ]; then
-      if [ "$VDDC" -lt "700" ]; then
-        echo "Driver accept VDDC range until 700mV, you have set $VDDC and it got adjusted to 800mV"
-        echo "You can set Core State 1 or Core State 2 for lower voltages"
-        VDDC=800
+      if [ "$version" = "1.5.4" ]; then
+        if [ "$VDDC" -lt "800" ]; then
+          echo "Driver accept VDDC range until 800mV, you have set $VDDC and it got adjusted to 800mV"
+          echo "You can set Core State 1 or Core State 2 for lower voltages or flash to v1.6 or higher where lowest possible value is 700mv"
+          VDDC=800
+        fi
+      else
+        if [ "$VDDC" -lt "700" ]; then
+          echo "Driver accept VDDC range until 700mV, you have set $VDDC and it got adjusted to 800mV"
+          echo "You can set Core State 1 or Core State 2 for lower voltages"
+          VDDC=800
+        fi
       fi
       sudo su -c "echo 's 1 $CORECLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       #sudo su -c "echo 'vc 1 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
