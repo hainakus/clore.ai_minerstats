@@ -7,8 +7,8 @@ if [ "$TESTLOGIN" != "No jobs running." ]; then
 fi
 CL=/media/storage/opencl.txt
 if [ ! -f "$CL" ]; then
-    sudo su -c "echo 'amd' > $CL; echo '/opt/amdgpu-pro/lib/x86_64-linux-gnu/libamdocl64.so' > /etc/OpenCL/vendors/amdocl64.icd"
-    echo "OpenCL switched to: amdgpu"
+  sudo su -c "echo 'amd' > $CL; echo '/opt/amdgpu-pro/lib/x86_64-linux-gnu/libamdocl64.so' > /etc/OpenCL/vendors/amdocl64.icd"
+  echo "OpenCL switched to: amdgpu"
 fi
 #START SOCKET
 # Only start if no sockets instance running
@@ -71,7 +71,7 @@ fi
 
 FILE_NVFLASH=/home/minerstat/minerstat-os/core2
 if [ -d "$FILE_NVFLASH" ]; then
-sudo mv /home/minerstat/minerstat-os/core2 /home/minerstat/minerstat-os/core
+  sudo mv /home/minerstat/minerstat-os/core2 /home/minerstat/minerstat-os/core
 fi
 
 sudo su -c "echo $HPAGE > /proc/sys/vm/nr_hugepages; sysctl vm.nr_hugepages=$HPAGE; echo always > /sys/kernel/mm/transparent_hugepage/enabled; sysctl vm.dirty_background_ratio=20; sysctl vm.dirty_expire_centisecs=0; sysctl vm.dirty_ratio=80; sysctl vm.dirty_writeback_centisecs=0" > /dev/null 2>&1
@@ -91,7 +91,7 @@ SERVERB="104.26.8.16"
 SERVERC="$SERVERB"
 DNSA=$(ping -c 1 $SERVERA &> /dev/null && echo success || echo fail)
 if [ "$DNSA" = "success" ]; then
-    SERVERC="$SERVERA"
+  SERVERC="$SERVERA"
 fi
 
 # Change hostname
@@ -102,7 +102,7 @@ sudo hostname -F /etc/hostname
 HCHECK=$(cat /etc/hosts | grep "$SERVERC minerstat.com" | xargs)
 WCHECK=$(cat /etc/hosts | grep "127.0.1.1 $WNAME" | xargs)
 if [ "$HCHECK" != "$SERVERC minerstat.com" ] || [ "$WCHECK" != "127.0.1.1 $WNAME" ]; then
-sudo echo "
+  sudo echo "
 127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1     ip6-localhost ip6-loopback
 fe00::0 ip6-localnet
@@ -118,18 +118,18 @@ $SERVERC api.minerstat.com
 68.183.74.40 eu.sandbox.pool.ms
 167.71.240.6 us.sandbox.pool.ms
 162.159.200.1 ntp.ubuntu.com
-" > /etc/hosts
+  " > /etc/hosts
 fi
 
 GET_GATEWAY=$(timeout 5 route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
 NSCHECK=$(cat /etc/resolv.conf | grep "nameserver 1.1.1.1" | xargs)
 if [ "$NSCHECK" != "nameserver 1.1.1.1" ] || [ ! -z "$GET_GATEWAY" ]; then
-	GCHECK=$(cat /etc/resolv.conf | grep "nameserver $GET_GATEWAY" | xargs)
-	if [ "$GCHECK" != "nameserver $GET_GATEWAY" ] && [ ! -z "$GET_GATEWAY" ]; then
-		sudo su -c "echo -n > /etc/resolv.conf; echo 'nameserver 1.1.1.1' >> /etc/resolv.conf; echo 'nameserver 1.0.0.1' >> /etc/resolv.conf; echo 'nameserver 8.8.8.8' >> /etc/resolv.conf; echo 'nameserver 8.8.4.4' >> /etc/resolv.conf; echo 'nameserver 114.114.114.114' >> /etc/resolv.conf; echo 'nameserver 114.114.115.115' >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf; echo 'nameserver $GET_GATEWAY' >> /etc/resolv.conf" 2>/dev/null
-	else
-		sudo su -c "echo -n > /etc/resolv.conf; echo 'nameserver 1.1.1.1' >> /etc/resolv.conf; echo 'nameserver 1.0.0.1' >> /etc/resolv.conf; echo 'nameserver 8.8.8.8' >> /etc/resolv.conf; echo 'nameserver 8.8.4.4' >> /etc/resolv.conf; echo 'nameserver 114.114.114.114' >> /etc/resolv.conf; echo 'nameserver 114.114.115.115' >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf" 2>/dev/null
-	fi
+  GCHECK=$(cat /etc/resolv.conf | grep "nameserver $GET_GATEWAY" | xargs)
+  if [ "$GCHECK" != "nameserver $GET_GATEWAY" ] && [ ! -z "$GET_GATEWAY" ]; then
+    sudo su -c "echo -n > /etc/resolv.conf; echo 'nameserver 1.1.1.1' >> /etc/resolv.conf; echo 'nameserver 1.0.0.1' >> /etc/resolv.conf; echo 'nameserver 8.8.8.8' >> /etc/resolv.conf; echo 'nameserver 8.8.4.4' >> /etc/resolv.conf; echo 'nameserver 114.114.114.114' >> /etc/resolv.conf; echo 'nameserver 114.114.115.115' >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf; echo 'nameserver $GET_GATEWAY' >> /etc/resolv.conf" 2>/dev/null
+  else
+    sudo su -c "echo -n > /etc/resolv.conf; echo 'nameserver 1.1.1.1' >> /etc/resolv.conf; echo 'nameserver 1.0.0.1' >> /etc/resolv.conf; echo 'nameserver 8.8.8.8' >> /etc/resolv.conf; echo 'nameserver 8.8.4.4' >> /etc/resolv.conf; echo 'nameserver 114.114.114.114' >> /etc/resolv.conf; echo 'nameserver 114.114.115.115' >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf" 2>/dev/null
+  fi
 fi
 
 # Memory Info
@@ -151,9 +151,9 @@ sudo chmod 777 /etc/update-motd.d/10-help-text
 sudo cp /home/minerstat/minerstat-os/core/10-help-text /etc/update-motd.d
 # Update tmux design
 if [ "$version" = "1.6.0" ]; then
-    sudo cp -f /home/minerstat/minerstat-os/core/.tmux2.conf /home/minerstat/.tmux.conf
+  sudo cp -f /home/minerstat/minerstat-os/core/.tmux2.conf /home/minerstat/.tmux.conf
 else
-    sudo cp -f /home/minerstat/minerstat-os/core/.tmux.conf /home/minerstat
+  sudo cp -f /home/minerstat/minerstat-os/core/.tmux.conf /home/minerstat
 fi
 # Tmate config
 sudo cp /home/minerstat/minerstat-os/core/.tmate.conf /home/minerstat
@@ -202,12 +202,12 @@ sudo getent passwd nvidia-persistenced &>/dev/null || sudo useradd -c 'NVIDIA Pe
 # Safety check for sockets, if double instance kill
 SNUM=$(sudo su minerstat -c "screen -list | grep -c sockets")
 if [ "$SNUM" != "1" ]; then
-sudo su minerstat -c "screen -ls | grep sockets | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe; sudo killall sockets; sleep 0.5; sudo killall sockets; screen -A -m -d -S sockets sudo bash /home/minerstat/minerstat-os/core/sockets" > /dev/null
+  sudo su minerstat -c "screen -ls | grep sockets | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe; sudo killall sockets; sleep 0.5; sudo killall sockets; screen -A -m -d -S sockets sudo bash /home/minerstat/minerstat-os/core/sockets" > /dev/null
 fi
 # Check for watchdogs
 SNUM=$(sudo su minerstat -c "screen -list | grep -c usbdog")
 if [ "$SNUM" != "1" ]; then
-sudo su minerstat -c "screen -ls | grep usbdog | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe; sudo killall usbdog; sleep 0.5; sudo killall usbdog; screen -A -m -d -S usbdog sudo bash /home/minerstat/minerstat-os/watchdog" > /dev/null
+  sudo su minerstat -c "screen -ls | grep usbdog | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe; sudo killall usbdog; sleep 0.5; sudo killall usbdog; screen -A -m -d -S usbdog sudo bash /home/minerstat/minerstat-os/watchdog" > /dev/null
 fi
 # Check XSERVER
 SNUMD=$(sudo su minerstat -c "screen -list | grep -c display2")

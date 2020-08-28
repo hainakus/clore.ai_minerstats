@@ -15,14 +15,17 @@ if [ "$version" = "1.5" ] || [ "$version" = "1.6" ] || [ "$version" = "1.7" ] ||
     echo "Error: OpenCL version can't be empty"
     exit 1
   fi
-  
-  
+
+
   FOLDER='rocm-3.1.0'
   if [ -d "/opt/rocm-3.3.0" ]; then
     FOLDER='rocm-3.3.0'
   fi
   if [ -d "/opt/rocm-3.5.0" ]; then
     FOLDER='rocm-3.5.0'
+  fi
+  if [ -d "/opt/rocm-3.7.0" ]; then
+    FOLDER='rocm-3.7.0'
   fi
 
   FILE=/media/storage/opencl.txt
