@@ -2,7 +2,7 @@
 
 version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
 
-if [ "$version" = "1.5" ] || [ "$version" = "1.6" ] || [ "$version" = "1.7" ] || [ "$version" = "1.4.6" ] || [ "$version" = "1.5.1" ] || [ "$version" = "1.5.2" ] || [ "$version" = "1.5.3" ] || [ "$version" = "1.4.7" ] || [ "$version" = "1.4.8" ] || [ "$version" = "1.5.4" ] || [ "$version" = "1.6.0" ]; then
+if [ "$version" = "1.5" ] || [ "$version" = "1.6" ] || [ "$version" = "1.7" ] || [ "$version" = "1.4.6" ] || [ "$version" = "1.5.1" ] || [ "$version" = "1.5.2" ] || [ "$version" = "1.5.3" ] || [ "$version" = "1.4.7" ] || [ "$version" = "1.4.8" ] || [ "$version" = "1.5.4" ] || [ "$version" = "1.5.5" ] || [ "$version" = "1.6.0" ]; then
   if [ -z "$1" ]; then
     echo "Usage: opencl version"
     echo "e.g: opencl auto"

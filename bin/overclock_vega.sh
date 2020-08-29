@@ -155,7 +155,7 @@ if [ $1 ]; then
   #sudo cat /sys/kernel/debug/dri/0/amdgpu_pm_info
 
   version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
-  if [ "$version" = "1.4.6" ] || [ "$version" = "1.5.2" ] || [ "$version" = "1.4.7" ] || [ "$version" = "1.5.3" ] || [ "$version" = "1.5.4" ] || [ "$version" = "1.4.8" ]; then
+  if [ "$version" = "1.4.6" ] || [ "$version" = "1.5.2" ] || [ "$version" = "1.4.7" ] || [ "$version" = "1.5.3" ] || [ "$version" = "1.5.4" ] || [ "$version" = "1.5.5" ] || [ "$version" = "1.4.8" ]; then
     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   fi
 

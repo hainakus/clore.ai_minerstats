@@ -51,20 +51,20 @@ fi
 
 # All port is disabled from public already, for new packages generating new host keys for additional layer of security
 # On iptables already all port disabled 4200,22,7777,3333,42000,1880,4028,2222,5008,9090,9091,5777,20000 only local network access enabled
-if [ "$version" = "1.4.9" ] || [ "$version" = "1.5.3" ] || [ "$version" = "1.5.4" ] || [ "$version" = "1.6.0" ] || [ "$version" = "1.2.6" ]; then
-    FILE=/media/storage/ssh.txt
-    if [ -f "$FILE" ]; then
-        echo "SSH Keys Already Regenerated.."
-    else
-        echo "Generating new SSH Keys..."
-        sudo rm /etc/ssh/ssh_host_dsa_key
-        sudo rm /etc/ssh/ssh_host_rsa_key
-        sudo cat /dev/zero | ssh-keygen -t ecdsa -b 384 -q -N "" -f /etc/ssh/ssh_host_dsa_key
-        sudo cat /dev/zero | ssh-keygen -t rsa -b 2048 -q -N "" -f /etc/ssh/ssh_host_rsa_key
-        sudo systemctl restart sshd
-        sudo systemctl status sshd
-        sudo su -c "echo '1' > /media/storage/ssh.txt"
-    fi
+if [ "$version" = "1.4.9" ] || [ "$version" = "1.5.3" ] || [ "$version" = "1.5.4" ] || [ "$version" = "1.5.5" ] || [ "$version" = "1.6.0" ] || [ "$version" = "1.2.6" ]; then
+  FILE=/media/storage/ssh.txt
+  if [ -f "$FILE" ]; then
+    echo "SSH Keys Already Regenerated.."
+  else
+    echo "Generating new SSH Keys..."
+    sudo rm /etc/ssh/ssh_host_dsa_key
+    sudo rm /etc/ssh/ssh_host_rsa_key
+    sudo cat /dev/zero | ssh-keygen -t ecdsa -b 384 -q -N "" -f /etc/ssh/ssh_host_dsa_key
+    sudo cat /dev/zero | ssh-keygen -t rsa -b 2048 -q -N "" -f /etc/ssh/ssh_host_rsa_key
+    sudo systemctl restart sshd
+    sudo systemctl status sshd
+    sudo su -c "echo '1' > /media/storage/ssh.txt"
+  fi
 fi
 
 
