@@ -158,10 +158,16 @@ if [ $1 ]; then
       echo "You have set $MEMCLOCK Mhz reducing back to 940Mhz"
       MEMCLOCK=940
     fi
+    # Auto fix Windows Clocks to linux ones
+    # Windows is memclock * 2
+    if [[ $MEMCLOCK -gt "1500" ]]; then
+      echo "!! MEMORY CLOCK CONVERTED TO LINUX FORMAT [WINDOWS_MEMCLOCK/2]"
+      MEMCLOCK=$((MEMCLOCK/2))
+    fi
     if [ "$version" = "1.5.4" ]; then
-      sudo su -c "echo 'm 1 $MEMCLOCK 1000' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 'm 2 $MEMCLOCK 1000' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 'm 3 $MEMCLOCK 1000' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 'm 1 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 'm 2 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 'm 3 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
     else
       sudo su -c "echo 'm 1 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 'm 2 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
