@@ -147,7 +147,7 @@ if [ $1 ]; then
   fi
 
   if [ "$MVDD" = "0" ] || [ "$MVDD" = "skip" ] || [ -z "$MVDD" ]; then
-    MVDD="1250"
+    MVDD="1350"
   fi
 
   # MemoryClock
