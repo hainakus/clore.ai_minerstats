@@ -9,16 +9,16 @@ SERVERB="104.26.8.16"
 SERVERC="$SERVERB"
 DNSA=$(ping -c 1 $SERVERA &> /dev/null && echo success || echo fail)
 if [ "$DNSA" = "success" ]; then
-    SERVERC="$SERVERA"
+  SERVERC="$SERVERA"
 fi
 # /etc/hosts
 HCHECK=$(cat /etc/hosts | grep "$SERVERC minerstat.com" | xargs)
 WCHECK=$(cat /etc/hosts | grep "127.0.1.1 $WNAME" | xargs)
 WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
 if [ "$HCHECK" != "$SERVERC minerstat.com" ] || [ "$WCHECK" != "127.0.1.1 $WNAME" ]; then
-sudo su -c "echo '$WNAME' > /etc/hostname"
-sudo hostname -F /etc/hostname
-sudo echo "
+  sudo su -c "echo '$WNAME' > /etc/hostname"
+  sudo hostname -F /etc/hostname
+  sudo echo "
 127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1     ip6-localhost ip6-loopback
 fe00::0 ip6-localnet
@@ -34,16 +34,17 @@ $SERVERC api.minerstat.com
 68.183.74.40 eu.sandbox.pool.ms
 167.71.240.6 us.sandbox.pool.ms
 162.159.200.1 ntp.ubuntu.com
-" > /etc/hosts
+  " > /etc/hosts
 fi
 
 GET_GATEWAY=$(timeout 5 route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
+RES_TEST=$(timeout 5 ping -c1 wikipedia.org > /dev/null && echo "ok" || echo "failed")
 NSCHECK=$(cat /etc/resolv.conf | grep "nameserver 1.1.1.1" | xargs)
-if [ "$NSCHECK" != "nameserver 1.1.1.1" ] || [ ! -z "$GET_GATEWAY" ]; then
-	GCHECK=$(cat /etc/resolv.conf | grep "nameserver $GET_GATEWAY" | xargs)
-	if [ "$GCHECK" != "nameserver $GET_GATEWAY" ] && [ ! -z "$GET_GATEWAY" ]; then
-		sudo su -c "echo -n > /etc/resolv.conf; echo 'nameserver 1.1.1.1' >> /etc/resolv.conf; echo 'nameserver 1.0.0.1' >> /etc/resolv.conf; echo 'nameserver 8.8.8.8' >> /etc/resolv.conf; echo 'nameserver 8.8.4.4' >> /etc/resolv.conf; echo 'nameserver 114.114.114.114' >> /etc/resolv.conf; echo 'nameserver 114.114.115.115' >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf; echo 'nameserver $GET_GATEWAY' >> /etc/resolv.conf" 2>/dev/null
-	else
-		sudo su -c "echo -n > /etc/resolv.conf; echo 'nameserver 1.1.1.1' >> /etc/resolv.conf; echo 'nameserver 1.0.0.1' >> /etc/resolv.conf; echo 'nameserver 8.8.8.8' >> /etc/resolv.conf; echo 'nameserver 8.8.4.4' >> /etc/resolv.conf; echo 'nameserver 114.114.114.114' >> /etc/resolv.conf; echo 'nameserver 114.114.115.115' >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf" 2>/dev/null
-	fi
+if [ "$NSCHECK" != "nameserver 1.1.1.1" ] || [ ! -z "$GET_GATEWAY" ] || [ "$RES_TEST" = "failed" ]; then
+  #GCHECK=$(cat /etc/resolv.conf | grep "nameserver $GET_GATEWAY" | xargs)
+  if [ ! -z "$GET_GATEWAY" ]; then
+    sudo su -c "echo -n > /etc/resolv.conf; echo 'nameserver $GET_GATEWAY' >> /etc/resolv.conf; echo 'nameserver 1.1.1.1' >> /etc/resolv.conf; echo 'nameserver 1.0.0.1' >> /etc/resolv.conf; echo 'nameserver 8.8.8.8' >> /etc/resolv.conf; echo 'nameserver 8.8.4.4' >> /etc/resolv.conf; echo 'nameserver 114.114.114.114' >> /etc/resolv.conf; echo 'nameserver 114.114.115.115' >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf;" 2>/dev/null
+  else
+    sudo su -c "echo -n > /etc/resolv.conf; echo 'nameserver 1.1.1.1' >> /etc/resolv.conf; echo 'nameserver 1.0.0.1' >> /etc/resolv.conf; echo 'nameserver 8.8.8.8' >> /etc/resolv.conf; echo 'nameserver 8.8.4.4' >> /etc/resolv.conf; echo 'nameserver 114.114.114.114' >> /etc/resolv.conf; echo 'nameserver 114.114.115.115' >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf" 2>/dev/null
+  fi
 fi
