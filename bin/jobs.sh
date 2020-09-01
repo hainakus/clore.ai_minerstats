@@ -26,8 +26,8 @@ if [[ -z "$AUTOLOGIN" ]]; then
   echo "Applying autologin settings.."
   sudo sed -i '/agetty -o/d' /lib/systemd/system/getty@.service
   sudo sed -i '/Type=idle/ i ExecStart=-/sbin/agetty --autologin minerstat --noclear %I $TERM' /lib/systemd/system/getty@.service
-  sudo systemctl daemon-reload
-  sudo systemctl restart getty@tty1
+  timeout 10 sudo systemctl daemon-reload
+  timeout 10 sudo systemctl restart getty@tty1
 fi
 timeout 10 sudo systemctl daemon-reload > /dev/null &
 # Kernel panic auto reboot
