@@ -21,6 +21,14 @@ timeout 10 sudo systemctl mask apt-daily.service apt-daily-upgrade.service > /de
 timeout 10 sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic linux-firmware > /dev/null &
 timeout 10 sudo systemctl disable thermald systemd-timesyncd.service > /dev/null &
 timeout 10 sudo systemctl stop thermald systemd-timesyncd.service > /dev/null &
+AUTOLOGIN=$(cat /lib/systemd/system/getty@.service | grep autologin)
+if [[ -z "$AUTOLOGIN" ]]; then
+  echo "Applying autologin settings.."
+  sudo sed -i '/agetty -o/d' /lib/systemd/system/getty@.service
+  sudo sed -i '/Type=idle/ i ExecStart=-/sbin/agetty --autologin minerstat --noclear %I $TERM' /lib/systemd/system/getty@.service
+  sudo systemctl daemon-reload
+  sudo systemctl restart getty@tty1
+fi
 timeout 10 sudo systemctl daemon-reload > /dev/null &
 # Kernel panic auto reboot
 sudo su -c "echo 20 >/proc/sys/kernel/panic"
