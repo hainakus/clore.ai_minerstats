@@ -212,6 +212,10 @@ if [ -f "$CURVE_FILE" ]; then
 fi
 # Time Date SYNC
 sudo timedatectl set-ntp on &
+DATES=$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)
+if [[ ! -z "$DATES" ]]; then
+    sudo date -s "$(echo $DATES)Z"
+fi
 # NVIDIA
 sudo getent group nvidia-persistenced &>/dev/null || sudo groupadd -g 143 nvidia-persistenced
 sudo getent passwd nvidia-persistenced &>/dev/null || sudo useradd -c 'NVIDIA Persistence Daemon' -u 143 -g nvidia-persistenced -d '/' -s /sbin/nologin nvidia-persistenced
