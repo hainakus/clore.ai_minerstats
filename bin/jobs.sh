@@ -215,6 +215,11 @@ sudo timedatectl set-ntp on &
 DATES=$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)
 if [[ ! -z "$DATES" ]]; then
     sudo date -s "$(echo $DATES)Z"
+    else
+    DATES=$(wget -qSO- --max-redirect=0 www.minerstat.com 2>&1 | grep Date: | cut -d' ' -f5-8)
+    if [[ ! -z "$DATES" ]]; then
+        sudo date -s "$(echo $DATES)Z"
+    fi
 fi
 # NVIDIA
 sudo getent group nvidia-persistenced &>/dev/null || sudo groupadd -g 143 nvidia-persistenced
