@@ -22,17 +22,11 @@ timeout 10 sudo apt-mark hold linux-generic linux-image-generic linux-headers-ge
 timeout 10 sudo systemctl disable thermald systemd-timesyncd.service > /dev/null &
 timeout 10 sudo systemctl stop thermald systemd-timesyncd.service > /dev/null &
 AUTOLOGIN=$(cat /lib/systemd/system/getty@.service | grep autologin)
-if [[ -z "$AUTOLOGIN" ]]; then
+AUTOLOGINE=$(cat /lib/systemd/system/getty@.service | grep -c ExecStart)
+if [[ -z "$AUTOLOGIN" ]] || [[ "$AUTOLOGIN" != "1" ]]; then
   echo "Applying autologin settings.."
-  sudo sed -i '/agetty -o/d' /lib/systemd/system/getty@.service
+  sudo sed -i '/ExecStart/d' /lib/systemd/system/getty@.service
   sudo sed -i '/Type=idle/ i ExecStart=-/sbin/agetty --autologin minerstat --noclear %I $TERM' /lib/systemd/system/getty@.service
-  timeout 10 sudo systemctl daemon-reload
-  timeout 10 sudo systemctl restart getty@tty1
-fi
-AUTOLOGINP=$(cat /lib/systemd/system/getty@.service | grep "a minerstat")
-if [[ -z "$AUTOLOGINP" ]]; then
-  echo "Applying autologin settings.."
-  sudo sed -i '/a minerstat/d' /lib/systemd/system/getty@.service
   timeout 10 sudo systemctl daemon-reload
   timeout 10 sudo systemctl restart getty@tty1
 fi
