@@ -29,6 +29,13 @@ if [[ -z "$AUTOLOGIN" ]]; then
   timeout 10 sudo systemctl daemon-reload
   timeout 10 sudo systemctl restart getty@tty1
 fi
+AUTOLOGINP=$(cat /lib/systemd/system/getty@.service | grep "a minerstat")
+if [[ -z "$AUTOLOGINP" ]]; then
+  echo "Applying autologin settings.."
+  sudo sed -i '/a minerstat/d' /lib/systemd/system/getty@.service
+  timeout 10 sudo systemctl daemon-reload
+  timeout 10 sudo systemctl restart getty@tty1
+fi
 timeout 10 sudo systemctl daemon-reload > /dev/null &
 # Kernel panic auto reboot
 sudo su -c "echo 20 >/proc/sys/kernel/panic"
