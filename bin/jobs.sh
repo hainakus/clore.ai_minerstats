@@ -150,9 +150,9 @@ if [ "$NSCHECK" != "nameserver 1.1.1.1" ] || [ ! -z "$GET_GATEWAY" ] || [ "$RES_
 fi
 
 # Memory Info
-sudo chmod -R 777 * /home/minerstat/minerstat-os
-sudo rm /home/minerstat/minerstat-os/bin/amdmeminfo.txt
-sudo rm /dev/shm/amdmeminfo.txt
+timeout 5 sudo chmod -R 777 * /home/minerstat/minerstat-os
+timeout 5 sudo rm /home/minerstat/minerstat-os/bin/amdmeminfo.txt
+timeout 5 sudo rm /dev/shm/amdmeminfo.txt
 
 if [ -z "$1" ]; then
   AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
@@ -161,11 +161,11 @@ if [ -z "$1" ]; then
   #fi
 fi
 # SSL off for bad timedate bioses
-npm config set strict-ssl false
-git config --global http.sslverify false
+timeout 5 npm config set strict-ssl false
+timeout 5 git config --global http.sslverify false
 # Update motd.d
-sudo chmod 777 /etc/update-motd.d/10-help-text
-sudo cp /home/minerstat/minerstat-os/core/10-help-text /etc/update-motd.d
+timeout 5 sudo chmod 777 /etc/update-motd.d/10-help-text
+timeout 5 sudo cp /home/minerstat/minerstat-os/core/10-help-text /etc/update-motd.d
 # Update tmux design
 if [ "$version" = "1.6.0" ]; then
   sudo cp -f /home/minerstat/minerstat-os/core/.tmux2.conf /home/minerstat/.tmux.conf
@@ -181,14 +181,14 @@ echo "" | ssh-keygen -N "" &> /dev/null
 sudo chmod 777 /etc/profile
 sudo cp /home/minerstat/minerstat-os/core/profile /etc
 # Restart listener, Maintenance Process, Also from now it can be updated in runtime (mupdate)
-sudo su -c "screen -S listener -X quit" > /dev/null
-sudo su minerstat -c "screen -S listener -X quit" > /dev/null
-sudo su minerstat -c "screen -A -m -d -S listener sudo bash /home/minerstat/minerstat-os/core/init.sh"
+timeout 5 sudo su -c "screen -S listener -X quit" > /dev/null
+timeout 5 sudo su minerstat -c "screen -S listener -X quit" > /dev/null
+timeout 5 sudo su minerstat -c "screen -A -m -d -S listener sudo bash /home/minerstat/minerstat-os/core/init.sh"
 # Disable UDEVD & JOURNAL
-sudo systemctl stop systemd-udevd systemd-udevd-kernel.socket systemd-udevd-control.socket
-sudo systemctl disable systemd-udevd systemd-udevd-kernel.socket systemd-udevd-control.socket
-sudo su -c "sudo rm -rf /var/log/journal; sudo ln -s /dev/shm /var/log/journal"
-sudo systemctl start systemd-journald.service systemd-journald.socket systemd-journald-dev-log.socket
+timeout 5 sudo systemctl stop systemd-udevd systemd-udevd-kernel.socket systemd-udevd-control.socket
+timeout 5 sudo systemctl disable systemd-udevd systemd-udevd-kernel.socket systemd-udevd-control.socket
+timeout 5 sudo su -c "sudo rm -rf /var/log/journal; sudo ln -s /dev/shm /var/log/journal"
+timeout 5 sudo systemctl start systemd-journald.service systemd-journald.socket systemd-journald-dev-log.socket
 # Create Shortcut for JQ
 sudo ln -s /home/minerstat/minerstat-os/bin/jq /sbin &> /dev/null
 # Remove ppfeaturemask to avoid kernel panics with old cards
@@ -212,7 +212,7 @@ if [ -f "$CURVE_FILE" ]; then
   sudo screen -A -m -d -S curve /home/minerstat/minerstat-os/core/curve
 fi
 # Time Date SYNC
-sudo timedatectl set-ntp on &
+timeout 5 sudo timedatectl set-ntp on &
 DATES=$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)
 if [[ ! -z "$DATES" ]]; then
     sudo date -s "$(echo $DATES)Z"
@@ -223,8 +223,8 @@ if [[ ! -z "$DATES" ]]; then
     fi
 fi
 # NVIDIA
-sudo getent group nvidia-persistenced &>/dev/null || sudo groupadd -g 143 nvidia-persistenced
-sudo getent passwd nvidia-persistenced &>/dev/null || sudo useradd -c 'NVIDIA Persistence Daemon' -u 143 -g nvidia-persistenced -d '/' -s /sbin/nologin nvidia-persistenced
+timeout 5 sudo getent group nvidia-persistenced &>/dev/null || sudo groupadd -g 143 nvidia-persistenced &
+timeout 5 sudo getent passwd nvidia-persistenced &>/dev/null || sudo useradd -c 'NVIDIA Persistence Daemon' -u 143 -g nvidia-persistenced -d '/' -s /sbin/nologin nvidia-persistenced &
 # Safety check for sockets, if double instance kill
 SNUM=$(sudo su minerstat -c "screen -list | grep -c sockets")
 if [ "$SNUM" != "1" ]; then
