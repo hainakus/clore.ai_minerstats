@@ -236,6 +236,7 @@ if [ "$SNUM" != "1" ]; then
   sudo su minerstat -c "screen -ls | grep usbdog | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe; sudo killall usbdog; sleep 0.5; sudo killall usbdog; screen -A -m -d -S usbdog sudo bash /home/minerstat/minerstat-os/watchdog" > /dev/null
 fi
 # Check XSERVER
+NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
 SNUMD=$(sudo su minerstat -c "screen -list | grep -c display2")
 if [ "$SNUMD" = "0" ]; then
   sudo su -c "sudo screen -X -S display quit" > /dev/null &
@@ -243,7 +244,9 @@ if [ "$SNUMD" = "0" ]; then
   sudo killall Xorg > /dev/null
   sudo kill -9 $(sudo pidof Xorg) > /dev/null
   sudo rm /tmp/.X0-lock > /dev/null
-  sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" > /dev/null
+  if [ "$NVIDIADEVICE" -gt 0 ]; then
+    timeout 5 sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" > /dev/null
+  fi
   sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf > /dev/null
   sudo su minerstat -c "screen -A -m -d -S display2 sudo X" > /dev/null
 fi
@@ -259,7 +262,6 @@ if [ -z "${curlPresent:-}" ]; then
   echo "CURL FIX"
   sudo apt --yes --force-yes --fix-broken install
   sudo apt-get --yes --force-yes install curl libcurl4
-  NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
   if [ "$NVIDIADEVICE" -gt 0 ]; then
     sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
   fi
@@ -267,7 +269,6 @@ fi
 # nvidia-settings fix for Segmentation fault
 CHECKAPTXN=$(dpkg -l | grep "libegl1-amdgpu-pro" | wc -l)
 if [ "$CHECKAPTXN" -gt "0" ]; then
-  NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
   if [ "$NVIDIADEVICE" -gt 0 ]; then
     sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
   fi
