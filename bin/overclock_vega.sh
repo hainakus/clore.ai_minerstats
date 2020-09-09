@@ -28,6 +28,7 @@ if [ $1 ]; then
   VDDC=$5
   MVDD=$6
   COREINDEX=$7
+  version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
 
   if [ -z "$COREINDEX" ]; then
     COREINDEX="7"
@@ -58,18 +59,37 @@ if [ $1 ]; then
     MVDD="1070"
   fi
 
+
+  # PP_TABLE MOD
+
+  CHECKPY=$(dpkg -l | grep python3-pip)
+  if [[ -z $CHECKPY ]]; then
+    sudo apt-get update
+    sudo apt-get -y install python3-pip --fix-missing
+    sudo su minerstat -c "pip3 install upp"
+  fi
+
+  # Check UPP installed
+  FILE=/home/minerstat/.local/bin/upp
+  if [ -f "$FILE" ]; then
+    echo "UPP exists."
+  else
+    sudo su minerstat -c "pip3 install upp"
+  fi
+
+  if [ "$MEMCLOCK" != "skip" ]; then
+    mclk="MclkDependencyTable/entries/3/MemClk=$((MEMCLOCK*100))"
+  fi
+
+  sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
+    VddcLookupTable/entries/0=$VDDC VddcLookupTable/entries/1=$VDDC VddcLookupTable/entries/2=$VDDC VddcLookupTable/entries/3=$VDDC VddcLookupTable/entries/4=$MVDD VddcLookupTable/entries/5=$VDDC VddcLookupTable/entries/6=$VDDC VddcLookupTable/entries/7=$VDDC \
+    MclkDependencyTable/entries/3/VddInd=4 $mclk \
+    StateArray/states/0/MemClockIndexLow=3 StateArray/states/0/MemClockIndexHigh=3 StateArray/states/1/MemClockIndexLow=3 StateArray/states/1/MemClockIndexHigh=3 StateArray/states/1/GfxClockIndexLow=7 \
+    --write
+
   if [ "$VDDC" != "skip" ]; then
     if [ "$CORECLOCK" != "skip" ]; then
       echo "INFO: SETTING CORECLOCK : $CORECLOCK Mhz (STATE: $COREINDEX) @ $VDDC mV"
-      timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 1 --vddc-table-set $VDDC
-      timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 2 --vddc-table-set $VDDC
-      timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 3 --vddc-table-set $VDDC
-      timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 4 --vddc-table-set $VDDC
-      timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 5 --vddc-table-set $VDDC
-      timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 6 --vddc-table-set $VDDC
-      timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 7 --vddc-table-set $VDDC
-      timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --socclk-state 2 --socclk 1100
-      timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --socclk-state 5 --socclk 1150
 
       #sudo su -c "echo 's 0 852 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 's 1 $((CORECLOCK-60)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
