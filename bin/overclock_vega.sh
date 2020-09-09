@@ -184,13 +184,17 @@ if [ $1 ]; then
     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   fi
 
+  # Safety
+  sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+  sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+  
   # ECHO Changes
   echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
   echo "-÷-*-****** MEM  CLOCKS *****-*-*÷-"
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   #sudo su -c "echo '$COREINDEX' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-  #sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+
 
   screen -A -m -D -S soctimer sudo bash /home/minerstat/minerstat-os/bin/soctimer $GPUID &
 
