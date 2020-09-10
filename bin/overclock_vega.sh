@@ -87,7 +87,7 @@ if [ $1 ]; then
   fi
 
   TESTMV=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card0/device/pp_table get VddmemLookupTable/entries/0 2> /dev/null | grep -c "ERROR")
-  if [[ "$TESTMV" -gt 0 ]]; then
+  if [[ "$TESTMV" -lt 1 ]]; then
     mvdd="VddmemLookupTable/entries/0=$MVDD"
   fi
 
