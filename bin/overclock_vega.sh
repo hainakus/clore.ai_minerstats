@@ -80,12 +80,17 @@ if [ $1 ]; then
   if [ "$MEMCLOCK" != "skip" ]; then
     mclk="MclkDependencyTable/entries/3/MemClk=$((MEMCLOCK*100))"
   fi
-  
+
   TESTGFX=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card0/device/pp_table get GfxclkDependencyTable/entries/7 2> /dev/null | grep -c "ERROR")
   if [ "$TESTGFX" -lt 1 ]; then
     gfx="GfxclkDependencyTable/entries/7=$VDDC GfxclkDependencyTable/entries/6=$VDDC GfxclkDependencyTable/entries/4=$VDDC"
   fi
-  
+
+  TESTGFX=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card0/device/pp_table get GfxclkDependencyTable/entries/7 2> /dev/null | grep -c "ERROR")
+  if [[ "$TESTGFX" -gt 0 ]]; then
+    mvdd="VddmemLookupTable/entries/0=$MVDD"
+  fi
+
   timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 1 --vddc-table-set $VDDC
   timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 2 --vddc-table-set $VDDC
   timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 3 --vddc-table-set $VDDC
@@ -95,8 +100,8 @@ if [ $1 ]; then
   timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 7 --vddc-table-set $VDDC
 
   sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
-    VddcLookupTable/entries/1=$VDDC VddcLookupTable/entries/2=$VDDC VddcLookupTable/entries/3=$VDDC VddcLookupTable/entries/4=$VDDC VddcLookupTable/entries/5=$VDDC VddcLookupTable/entries/6=$VDDC VddcLookupTable/entries/7=$VDDC \
-    MclkDependencyTable/entries/3/VddInd=4 $mclk $gfx \
+    VddcLookupTable/entries/0=$VDDC VddcLookupTable/entries/1=$VDDC VddcLookupTable/entries/2=$VDDC VddcLookupTable/entries/3=$VDDC VddcLookupTable/entries/4=$VDDC VddcLookupTable/entries/5=$VDDC VddcLookupTable/entries/6=$VDDC VddcLookupTable/entries/7=$VDDC \
+    MclkDependencyTable/entries/3/VddInd=4 $mclk $mvdd $gfx \
     StateArray/states/0/MemClockIndexLow=3 StateArray/states/0/MemClockIndexHigh=3 StateArray/states/1/MemClockIndexLow=3 StateArray/states/1/MemClockIndexHigh=3 StateArray/states/1/GfxClockIndexLow=7 \
     --write
 
@@ -195,7 +200,7 @@ if [ $1 ]; then
   # Safety
   sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-  
+
   # ECHO Changes
   echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
