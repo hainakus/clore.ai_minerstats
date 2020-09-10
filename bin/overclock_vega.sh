@@ -82,7 +82,7 @@ if [ $1 ]; then
   fi
   
   TESTGFX=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card0/device/pp_table get GfxclkDependencyTable/entries/7 2> /dev/null | grep -c "ERROR")
-  if [[ "$TESTGFX" -gt 0 ]];
+  if [ "$TESTGFX" -lt 1 ]; then
     gfx="GfxclkDependencyTable/entries/7=$VDDC GfxclkDependencyTable/entries/6=$VDDC GfxclkDependencyTable/entries/4=$VDDC"
   fi
   
