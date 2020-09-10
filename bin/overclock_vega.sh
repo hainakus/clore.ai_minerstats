@@ -86,8 +86,8 @@ if [ $1 ]; then
     gfx="GfxclkDependencyTable/entries/7=$VDDC GfxclkDependencyTable/entries/6=$VDDC GfxclkDependencyTable/entries/4=$VDDC"
   fi
 
-  TESTGFX=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card0/device/pp_table get GfxclkDependencyTable/entries/7 2> /dev/null | grep -c "ERROR")
-  if [[ "$TESTGFX" -gt 0 ]]; then
+  TESTMV=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card0/device/pp_table get VddmemLookupTable/entries/0 2> /dev/null | grep -c "ERROR")
+  if [[ "$TESTMV" -gt 0 ]]; then
     mvdd="VddmemLookupTable/entries/0=$MVDD"
   fi
 
