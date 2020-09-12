@@ -281,6 +281,11 @@ if [ $1 ]; then
     sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1" 2>/dev/null # 70%
     sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1" 2>/dev/null # 70%
   fi
+  
+  sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+  sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+  sleep 0.25
+  sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
 
   exit 1
 
