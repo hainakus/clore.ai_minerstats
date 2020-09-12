@@ -146,9 +146,9 @@ if [ $1 ]; then
     VDDC="850"
   fi
 
-  if [ "$MVDD" = "0" ] || [ "$MVDD" = "skip" ] || [ -z "$MVDD" ]; then
-    MVDD="1350"
-  fi
+  #if [ "$MVDD" = "0" ] || [ "$MVDD" = "skip" ] || [ -z "$MVDD" ]; then
+  #  MVDD="1350"
+  #fi
 
   # MemoryClock
   if [ "$MEMCLOCK" != "skip" ]; then
