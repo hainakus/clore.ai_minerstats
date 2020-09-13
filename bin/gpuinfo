@@ -240,7 +240,7 @@ if [[ $1 == "amd3" ]]; then
 
   RBC=$(cat /dev/shm/amdmeminfo.txt)
   # If read back also empty fallback to old method
-  if [ -z "$TEST" ]; then
+  if [ -z "$RBC" ]; then
     sudo timeout 15 /home/minerstat/minerstat-os/bin/gpuinfo amd2
     exit 1
   fi
