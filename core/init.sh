@@ -146,7 +146,7 @@ do
     echo "monitor logs"
 
     if [ "$MONITOR_TYPE" = "amd" ]; then
-      AMDINFO=$(sudo timeout 15 /home/minerstat/minerstat-os/bin/gpuinfo amd2)
+      AMDINFO=$(sudo timeout 15 /home/minerstat/minerstat-os/bin/gpuinfo amd3)
       QUERYPOWER=$(cd /home/minerstat/minerstat-os/bin/; sudo timeout 5 ./rocm-smi -P | grep 'Average Graphics Package Power:' | sed 's/.*://' | sed 's/W/''/g' | xargs)
       HWMEMORY=$(cd /home/minerstat/minerstat-os/bin/; cat amdmeminfo.txt)
       sudo chmod 777 /dev/shm/amdmeminfo.txt
