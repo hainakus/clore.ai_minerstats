@@ -238,6 +238,13 @@ if [[ $1 == "amd3" ]]; then
     sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
   fi
 
+  RBC=$(cat /dev/shm/amdmeminfo.txt)
+  # If read back also empty fallback to old method
+  if [ -z "$TEST" ]; then
+    sudo timeout 15 /home/minerstat/minerstat-os/bin/gpuinfo amd2
+    exit 1
+  fi
+
   NID=1
   SAMPLE='"0"'
   if [[ $AMDINFO_ORIGINAL == *"$SAMPLE"* ]]; then
