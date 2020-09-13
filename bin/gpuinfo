@@ -257,6 +257,22 @@ if [[ $1 == "amd3" ]]; then
     fi
     # Call script
     STRING=$(echo $AMDINFO_ORIGINAL | $JQ_PATH -r .[\"$i\"])
+
+    # Fallback
+    if [ "$STRING" = "null" ]; then
+      i=$((GPUID-1))
+      STRING=$(echo $AMDINFO_ORIGINAL | $JQ_PATH -r .[\"$i\"])
+      if [[ $STRING != *"$BUS"* ]]; then
+        STRING="null"
+      fi
+    fi
+
+    # Fallback 2
+    if [ "$STRING" = "null" ]; then
+      i=$((GPUID+1))
+      STRING=$(echo $AMDINFO_ORIGINAL | $JQ_PATH -r .[\"$i\"])
+    fi
+
     if [ "$STRING" != "null" ]; then
       AMD_NEW=$AMD_NEW'"'$i'":'
       currentCoreState=$(sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk 2>/dev/null | grep '*' | cut -f1 -d':' | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g'")
