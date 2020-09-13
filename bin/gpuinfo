@@ -238,6 +238,12 @@ if [[ $1 == "amd3" ]]; then
     sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
   fi
 
+  NID=1
+  SAMPLE='"0"'
+  if [[ $AMDINFO_ORIGINAL == *"$SAMPLE"* ]]; then
+    NID=0
+  fi
+
   input="/dev/shm/amdmeminfo.txt"
   while IFS= read -r line
   do
@@ -256,7 +262,7 @@ if [[ $1 == "amd3" ]]; then
       echo "Fetching BUS [$BUS -> $GPUBUS], Parsed to ID: $GPUID"
     fi
     # Call script
-    STRING=$(echo $AMDINFO_ORIGINAL | $JQ_PATH -r .[\"$i\"])
+    STRING=$(echo $AMDINFO_ORIGINAL | $JQ_PATH -r .[\"$NID\"])
 
     # Fallback
     if [ "$STRING" = "null" ]; then
@@ -353,11 +359,12 @@ if [[ $1 == "amd3" ]]; then
 
       NEWSTRING="$STRING, $currentVDDC, $currentMVDD, $VRAM_MB, $MEMTEMP"
       if [[ $2 == "debug" ]]; then
-        echo "Debug: $NEWSTRING | CORESTATE: $currentCoreState , MEMSTATE: $currentMemState, VDDC: $currentVDDC, MVDD: $currentMVDD, VRAM: $VRAM, GPUID: $GPUID, VID: $i"
+        echo "Debug: $NEWSTRING | CORESTATE: $currentCoreState , MEMSTATE: $currentMemState, VDDC: $currentVDDC, MVDD: $currentMVDD, VRAM: $VRAM, GPUID: $GPUID, VID: $NID"
       fi
       #echo $NEWSTRING
       I=$((i + 1))
-      TEST=$(echo $AMDINFO_ORIGINAL | $JQ_PATH -r .[\"$I\"])
+      NID=$((NID + 1))
+      TEST=$(echo $AMDINFO_ORIGINAL | $JQ_PATH -r .[\"$NID\"])
       if [[ $TEST == "null" ]]; then
         COMMA=""
       else
