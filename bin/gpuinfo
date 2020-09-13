@@ -252,6 +252,9 @@ if [[ $1 == "amd3" ]]; then
     recheckID=$(ls /sys/bus/pci/devices/*$GPUBUSINT":00.0"/drm | grep "card" | sed 's/[^0-9]*//g')
     GPUID=$recheckID
     i=$GPUID
+    if [[ $2 == "debug" ]]; then
+      echo "Fetching BUS [$BUS -> $GPUBUS], Parsed to ID: $GPUID"
+    fi
     # Call script
     STRING=$(echo $AMDINFO_ORIGINAL | $JQ_PATH -r .[\"$i\"])
     if [ "$STRING" != "null" ]; then
@@ -336,6 +339,9 @@ if [[ $1 == "amd3" ]]; then
       fi
 
       NEWSTRING="$STRING, $currentVDDC, $currentMVDD, $VRAM_MB, $MEMTEMP"
+      if [[ $2 == "debug" ]]; then
+        echo "Debug: $NEWSTRING"
+      fi
       #echo $NEWSTRING
       I=$((i + 1))
       TEST=$(echo $AMDINFO_ORIGINAL | $JQ_PATH -r .[\"$I\"])
