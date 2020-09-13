@@ -262,7 +262,9 @@ if [[ $1 == "amd3" ]]; then
     if [ "$STRING" = "null" ]; then
       i=$((GPUID-1))
       STRING=$(echo $AMDINFO_ORIGINAL | $JQ_PATH -r .[\"$i\"])
-      if [[ $STRING != *"$BUS"* ]]; then
+      if [[ $STRING == *"$BUS"* ]]; then
+        TEST="ok"
+      else
         STRING="null"
       fi
     fi
@@ -351,7 +353,7 @@ if [[ $1 == "amd3" ]]; then
 
       NEWSTRING="$STRING, $currentVDDC, $currentMVDD, $VRAM_MB, $MEMTEMP"
       if [[ $2 == "debug" ]]; then
-        echo "Debug: $NEWSTRING | CORESTATE: $currentCoreState , MEMSTATE: $currentMemState, VDDC: $currentVDDC, MVDD: $currentMVDD, VRAM: $VRAM, GPUID: $GPUID"
+        echo "Debug: $NEWSTRING | CORESTATE: $currentCoreState , MEMSTATE: $currentMemState, VDDC: $currentVDDC, MVDD: $currentMVDD, VRAM: $VRAM, GPUID: $GPUID, VID: $i"
       fi
       #echo $NEWSTRING
       I=$((i + 1))
