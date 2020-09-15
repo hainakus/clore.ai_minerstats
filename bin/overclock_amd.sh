@@ -274,9 +274,9 @@ if [ $1 ]; then
 
     # Apply
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
-      FanTable/TargetTemperature=$TT MaxODMemoryClock=230000 $cclk $pmclk $pvvdc $pmvdd $pvddci --write \
+      FanTable/TargetTemperature=$TT MaxODMemoryClock=230000 $cclk $pmclk $pvvdc $pmvdd $pvddci --write
 
-      sudo su -c "echo 'manual' > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
+    sudo su -c "echo 'manual' > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
     sudo su -c "echo 3 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
     sudo su -c "echo 5 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
     sudo su -c "echo 7 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
