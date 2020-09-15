@@ -215,12 +215,12 @@ fi
 timeout 5 sudo timedatectl set-ntp on &
 DATES=$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)
 if [[ ! -z "$DATES" ]]; then
+  sudo date -s "$(echo $DATES)Z"
+else
+  DATES=$(wget -qSO- --max-redirect=0 www.minerstat.com 2>&1 | grep Date: | cut -d' ' -f5-8)
+  if [[ ! -z "$DATES" ]]; then
     sudo date -s "$(echo $DATES)Z"
-    else
-    DATES=$(wget -qSO- --max-redirect=0 www.minerstat.com 2>&1 | grep Date: | cut -d' ' -f5-8)
-    if [[ ! -z "$DATES" ]]; then
-        sudo date -s "$(echo $DATES)Z"
-    fi
+  fi
 fi
 # NVIDIA
 timeout 5 sudo getent group nvidia-persistenced &>/dev/null || sudo groupadd -g 143 nvidia-persistenced &
@@ -279,6 +279,19 @@ if [ "$1" -gt 0 ] || [ "$AMDDEVICE" -gt 0 ]; then
   sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q | tac > /dev/shm/amdmeminfo.txt &
   sudo cp -rf /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
   sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
+  CHECKPY=$(dpkg -l | grep python3-pip)
+  if [[ -z $CHECKPY ]]; then
+    sudo apt-get update
+    sudo apt-get -y install python3-pip --fix-missing
+    sudo su minerstat -c "pip3 install upp"
+  fi
+  # Check UPP installed
+  FILE=/home/minerstat/.local/bin/upp
+  if [ -f "$FILE" ]; then
+    echo "UPP exists."
+  else
+    sudo su minerstat -c "pip3 install upp"
+  fi
 fi
 if [ -f "/etc/netplan/minerstat.yaml" ]; then
   if grep -q dhcp-identifier "/etc/netplan/minerstat.yaml"; then
