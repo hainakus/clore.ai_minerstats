@@ -93,6 +93,7 @@ if ping -q -c 1 -W 1 1.1.1.1 >/dev/null; then
   sudo iptables -A INPUT -p tcp --match multiport --dports 4200,22,7777,3333,42000,1880,4028,2222,5008,9090,9091,5777,20000 -s 68.183.74.40 -j ACCEPT
   sudo iptables -A INPUT -p tcp --match multiport --dports 4200,22,7777,3333,42000,1880,4028,2222,5008,9090,9091,5777,20000 -s 10.0.0.0/8 -j ACCEPT
   sudo iptables -A INPUT -p tcp --match multiport --dports 4200,22,7777,3333,42000,1880,4028,2222,5008,9090,9091,5777,20000 -s 192.168.0.0/16 -j ACCEPT
+  sudo iptables -A INPUT -p tcp --match multiport --dports 4200,22,7777,3333,42000,1880,4028,2222,5008,9090,9091,5777,20000 -s 192.168.0.0/8 -j ACCEPT
   sudo iptables -A INPUT -p tcp --match multiport --dports 4200,22,7777,3333,42000,1880,4028,2222,5008,9090,9091,5777,20000 -s 127.0.0.0/8 -j ACCEPT
   sudo iptables -A INPUT -p tcp --match multiport --dports 4200,22,7777,3333,42000,1880,4028,2222,5008,9090,9091,5777,20000 -j DROP
 
