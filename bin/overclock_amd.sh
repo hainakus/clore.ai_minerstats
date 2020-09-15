@@ -112,14 +112,6 @@ if [ $1 ]; then
   ## BULIDING QUERIES
   STR1="";
   STR2="";
-  STR3="";
-  STR4="";
-  STR5="";
-  STR6="";
-  OHGOD1="";
-  OHGOD2="";
-  OHGOD3="";
-  OHGOD4="";
   R9="";
 
   # Check this is older R, or RX Series
@@ -139,15 +131,6 @@ if [ $1 ]; then
   isThisVegaII=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
   isThisVegaVII=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g')
   isThisNavi=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep -E "5500|5550|5600|5650|5700|5750|5800|5850|5900|5950" | wc -l)
-
-  ##  echo "----"
-  ##  echo $GPUBUS
-  ##  echo $GPUBUSINT
-  ##  echo $GID
-  ##  echo $GPUID
-  ##  sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g'
-  ##  echo "----"
-
 
   ########## NAVI ##################
   if [ "$isThisNavi" -gt "0" ]; then
@@ -196,174 +179,110 @@ if [ $1 ]; then
     # Reset
     # sudo bash -c "echo r > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
-    ## Detect state's
-    maxMemState=$(sudo timeout 10 ./ohgodatool -i $GPUID --show-mem  | grep -E "Memory state ([0-9]+):" | tail -n 1 | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g')
-    #maxCoreState=$(sudo timeout 10 ./ohgodatool -i $GPUID --show-core | grep -E "DPM state ([0-9]+):"    | tail -n 1 | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g')
-    #currentCoreState=$(sudo su -c "timeout 10 cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk | grep '*' | cut -f1 -d':' | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g'")
-    #currentCoreState=5
-
     if [ "$R9" != "" ]; then
       sudo ./amdcovc $R9 | grep "Setting"
     fi
 
-    ## If $currentCoreState equals zero (undefined)
-    ## Use maxCoreState BUT IF ZERO means idle use the same
-
-    if [ -z $currentCoreState ]; then
-      echo "ERROR: No Current Core State found for GPU$GPUID"
-      currentCoreState=5
+    # Check Python3 PIP
+    CHECKPY=$(dpkg -l | grep python3-pip)
+    if [[ -z $CHECKPY ]]; then
+      sudo apt-get update
+      sudo apt-get -y install python3-pip --fix-missing
+      sudo su minerstat -c "pip3 install upp"
     fi
 
-    if [ "$currentCoreState" = 0 ]; then
-      echo "WARN: GPU$GPUID was idle, using default states (5) (Idle)"
-      currentCoreState=5
+    # Check UPP installed
+    FILE=/home/minerstat/.local/bin/upp
+    if [ -f "$FILE" ]; then
+      echo "UPP exists."
+    else
+      sudo su minerstat -c "pip3 install upp"
     fi
 
-    ## Memstate just for protection
-    if [ -z $maxMemState ]; then
-      echo "ERROR: No Current Mem State found for GPU$GPUID"
-      maxMemState=1; # 1 is exist on RX400 & RX500 too.
+    # Setting up limits
+    MCMIN=750  #minimum vddci
+    MCMAX=950  #max vddci
+    MVMIN=750 #minimum mvdd
+    MVMAX=1050 #max mvdd
+    VDMIN=750 #min vdd
+    VDMAX=1100 #max vdd
+
+    # Compare user input and apply min/max
+    if [[ ! -z $VDDCI && $VDDCI != "0" && $VDDCI != "skip" ]]; then
+      PARSED_VDDCI=$VDDCI
+      if [[ $VDDCI -gt $MCMAX ]]; then
+        PARSED_VDDCI=$MCMAX
+      fi
+      if [[ $VDDCI -lt $MCMIN ]]; then
+        PARSED_VDDCI=$MCMIN
+      fi
+      pvddci="MclkDependencyTable/entries/2/Vddci=$VDDCI "
     fi
 
-
-    # CURRENT Volt State for Undervolt
-    #voltStateLine=$(($currentCoreState + 1))
-    #currentVoltState=$(sudo timeout 10 ./ohgodatool -i $GPUID --show-core | grep -E "VDDC:" | sed -n $voltStateLine"p" | sed 's/^.*entry/entry/' | sed 's/[^0-9]*//g')
-
-    echo "DEBUG: C $currentCoreState / VL $voltStateLine / CVS $currentVoltState"
-    echo ""
+    if [[ ! -z $MVDD && $MVDD != "0" && $MVDD != "skip" ]]; then
+      PARSED_MVDD=$MVDD
+      if [[ $MVDD -gt $MVMAX ]]; then
+        PARSED_MVDD=$MVMAX
+      fi
+      if [[ $MVDD -lt $MVMIN ]]; then
+        PARSED_MVDD=$MVMIN
+      fi
+      pmvdd="MclkDependencyTable/entries/2/Mvdd=$MVDD "
+    fi
 
     if [ "$VDDC" != "skip" ] && [ "$VDDC" != "0" ]; then
-      echo "--- Setting up VDDC Voltage GPU$GPUID (VS: $currentVoltState) ---"
-      # set all voltage states from 1 upwards to xxx mV:
-      #if [ "$maxMemState" != "2" ]
-      #then
-      #	sudo ./ohgodatool -i $GPUID --volt-state $currentVoltState --vddc-table-set $VDDC
-      #else
-      #	for voltstate in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-      #		sudo ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
-      #	done
-      #fi
-      for voltstate in 1 2 3 4 5 6 7; do
-        sudo timeout 10 ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
-      done
-      for voltstate in 8 9 10 11 12 13 14 15; do
-        sudo timeout 10 ./ohgodatool -i $GPUID --volt-state $voltstate --vddc-table-set $VDDC
-      done
-    fi
-
-    # VDDCI
-    if [ "$VDDCI" != "" ] && [ "$VDDCI" != "0" ] && [ "$VDDCI" != "skip" ]; then
-      # VDDCI Voltages
-      # VDDC Voltage + 50
-      echo
-      echo "--- Setting up VDDCI Voltage GPU$GPUID ---"
-      echo
-      if [ "$VDDCI" -gt "1000" ]; then
-        echo "WARNING!!! HIGH VDDCI Voltage setting skipping to apply."
-      else
-        sudo timeout 10 ./ohgodatool -i $GPUID --mem-state $maxMemState --vddci $VDDCI
+      PARSED_VDD=$VDDC
+      if [[ $VDDC -gt $VDMAX ]]; then
+        PARSED_VDD=$VDMAX
       fi
-    fi
-
-    # MVDD
-    if [ "$MVDD" != "" ] && [ "$MVDD" != "0" ] && [ "$MVDD" != "skip" ]; then
-      echo
-      echo "--- Setting up MVDD Voltage GPU$GPUID ---"
-      echo
-      if [ "$MVDD" -lt "1000" ]; then
-        echo "WARNING!!! If you mining ETH keep memory voltages on 1000mv and try to reduce VDDC instead."
+      if [[ $VDDC -lt $VDMIN ]]; then
+        PARSED_VDD=$VDMIN
       fi
-      if [ "$MVDD" -lt "950" ]; then
-        #MVDD="950"
-        echo "WARNING!! You have set lower MVDD than 950"
-        echo "If mining not start 0H/s set MVDD back to 1000mV."
-      fi
-      sudo timeout 10 ./ohgodatool -i $GPUID --mem-state $maxMemState --mvdd $MVDD
+      pvvdc="VddcLookupTable/entries/1/Vdd=$VDDC VddcLookupTable/entries/2/Vdd=$VDDC VddcLookupTable/entries/3/Vdd=$VDDC VddcLookupTable/entries/4/Vdd=$VDDC VddcLookupTable/entries/5/Vdd=$VDDC VddcLookupTable/entries/6/Vdd=$VDDC VddcLookupTable/entries/7/Vdd=$VDDC "
+      pvvdc="$pvvdc VddcLookupTable/entries/8/Vdd=$VDDC VddcLookupTable/entries/9/Vdd=$VDDC VddcLookupTable/entries/10/Vdd=$VDDC VddcLookupTable/entries/11/Vdd=$VDDC VddcLookupTable/entries/12/Vdd=$VDDC VddcLookupTable/entries/13/Vdd=$VDDC VddcLookupTable/entries/14/Vdd=$VDDC VddcLookupTable/entries/15/Vdd=$VDDC "
+      pvvdc="$pvvdc VddgfxLookupTable/entries/1/Vdd=$VDDC VddgfxLookupTable/entries/2/Vdd=$VDDC VddgfxLookupTable/entries/3/Vdd=$VDDC VddgfxLookupTable/entries/4/Vdd=$VDDC VddgfxLookupTable/entries/5/Vdd=$VDDC VddgfxLookupTable/entries/6/Vdd=$VDDC VddgfxLookupTable/entries/7/Vdd=$VDDC "
     fi
-
-    #################################£
-    # SET MEMORY @ CORE CLOCKS
 
     if [ "$CORECLOCK" != "skip" ]; then
       if [ "$CORECLOCK" != "0" ]; then
-        # APPLY AT THE END
-        STR5="coreclk:$GPUID=$CORECLOCK"
-
-        if [ "$maxMemState" != "2" ]; then
-          #OHGOD1=" --core-state $currentCoreState --core-clock $CORECLOCK"
-          for corestate in 3 4 5 6 7 8; do
-            sudo timeout 10 ./ohgodatool -i $GPUID --core-state $corestate --core-clock $CORECLOCK
-          done
-        else
-          for corestate in 3 4 5 6 7 8; do
-            sudo timeout 10 ./ohgodatool -i $GPUID --core-state $corestate --core-clock $CORECLOCK
-          done
-        fi
-
+        CCLOCK=$((CORECLOCK*100))
+        cclk="SclkDependencyTable/entries/3/Sclk=$CCLOCK SclkDependencyTable/entries/4/Sclk=$CCLOCK SclkDependencyTable/entries/5/Sclk=$CCLOCK SclkDependencyTable/entries/6/Sclk=$CCLOCK SclkDependencyTable/entries/7/Sclk=$CCLOCK "
       fi
     fi
-
 
     if [ "$MEMCLOCK" != "skip" ]; then
       if [ "$MEMCLOCK" != "0" ]; then
-        # APPLY AT THE END
-        STR4="cmemclk:$GPUID=$MEMCLOCK"
-        OHGOD2=" --mem-state $maxMemState --mem-clock $MEMCLOCK"
+        MCLK=$((MEMCLOCK*100))
+        pmclk="MclkDependencyTable/entries/2/Mclk=$MCLK "
       fi
     fi
 
-    #################################£
-    # PROTECT FANS, JUST IN CASE
-    if [ "$FANSPEED" != 0 ]; then
-      OHGOD3=" --set-fanspeed $FANSPEED"
-      STR1="--set-fanspeed $FANSPEED"
-      STR2="fanspeed:$GPUID=$FANSPEED"
+    # Target temp
+    FILE=/media/storage/fans.txt
+    TT=59
+    if [ -f "$FILE" ]; then
+      TARGET=$(cat /media/storage/fans.txt | grep "TARGET_TEMP=" | xargs | sed 's/[^0-9]*//g')
+      if [[ ! -z "$TARGET" ]]; then
+        TT=$TARGET
+        echo "Fan Curve Target: $TT"
+      else
+        TT=59
+      fi
     else
-      OHGOD3=" --set-fanspeed 70"
-      STR1="--set-fanspeed 70"
-      STR2="fanspeed:$GPUID=70"
+      TT=59
     fi
 
-    if [ "$FANSPEED" = "skip" ]; then
-      OHGOD3=" --set-fanspeed 70"
-      STR1="--set-fanspeed 70"
-      STR2="fanspeed:$GPUID=70"
-    fi
+    # Apply
+    sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
+      FanTable/TargetTemperature=$TT MaxODMemoryClock=230000 $cclk $pmclk $pvvdc $pmvdd $pvddci --write \
 
-    #################################£
-    # Apply Changes
-    #sudo ./amdcovc memclk:$GPUID=$MEMCLOCK cmemclk:$GPUID=$MEMCLOCK coreclk:$GPUID=$CORECLOCK ccoreclk:$GPUID=$CORECLOCK $STR2 | grep "Setting"
-    #################################£
-    # Overwrite PowerPlay to manual
-    echo ""
-    echo "--- APPLY CURRENT_CLOCKS ---"
-    echo "- SET | GPU$GPUID Performance level: manual -"
-    echo "- SET | GPU$GPUID DPM state: $currentCoreState -"
-    echo "- SET | GPU$GPUID MEM state: $maxMemState -"
-    sudo timeout 10 ./ohgodatool -i $GPUID $OHGOD1 $OHGOD2 $OHGOD3
+      sudo su -c "echo 'manual' > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
+    sudo su -c "echo 3 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+    sudo su -c "echo 5 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+    sudo su -c "echo 7 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+    sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+    sudo su -c "echo 3 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
 
-    sudo su -c "echo 'manual' > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
-    sudo su -c "echo $currentCoreState > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-    sudo su -c "echo $maxMemState > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-    echo ""
-    echo "NOTICE: If below is empty try to use a 'Supported clock or flash your gpu bios' "
-    echo ""
-    sleep 0.2
-    sudo ./amdcovc $STR4 $STR5 $STR2 | grep "Setting"
-
-    ##################################
-    # CURRENT_Clock Protection
-    sudo ./amdcovc memclk:$GPUID=$MEMCLOCK | grep "Setting"
-    sudo ./amdcovc ccoreclk:$GPUID=$CORECLOCK | grep "Setting"
-
-    # Fans for security
-    #for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-    #  TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
-    #  if [ ! -z "$TEST" ]; then
-    #    MAXFAN=$TEST
-    #  fi
-    #done
     MAXFAN=255
 
     # FANS
@@ -380,28 +299,18 @@ if [ $1 ]; then
 
     sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
 
-    #for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-    #  sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_enable" 2>/dev/null
-    #  sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1" 2>/dev/null # 70%
-    #done
 
-    #echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
-    #sudo su -c "timeout 3 cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-    #echo "-÷-*-****** MEM  CLOCKS *****-*-*÷-"
-    #sudo su -c "timeout 3 cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-    #echo "-÷-*-******  PP_TABLE   *****-*-*÷-"
-    #sudo su -c "timeout 3 cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-
+    echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
+    sudo su -c "timeout 3 cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk" | grep "*"
+    echo "-÷-*-****** MEM  CLOCK *****-*-*÷-"
+    sudo su -c "timeout 3 cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk" | grep "*"
+    echo "-÷-*-******  VALIDATE RESULTS  *****-*-*÷-"
+    sudo su -c "timeout 3 cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+    echo "Keep in mind not all core and memory state listed upper. Only for feed back current values and ranges"
+    echo ""
     exit 0
 
   else
-
-    # R9 starts with 0 (zero)
-    # Need new FUNC if GPU ID 1, apply to 0 too
-    #if [ "$GPUID" = "1" ]; then
-    #  echo "-------- ID: 1 ---> Apply to ID: 0 also to make sure -----"
-    #  sudo sh overclock_amd.sh 0 $MEMCLOCK $CORECLOCK $FANSPEED $VDDC $VDDCI $MVDCC
-    #fi
 
     echo "== SETTING GPU$GPUID ==="
 
