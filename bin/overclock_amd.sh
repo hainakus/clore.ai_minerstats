@@ -290,6 +290,7 @@ if [ $1 ]; then
     # Apply
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set FanTable/TargetTemperature=$TT MaxODMemoryClock=230000 $cclk $pmclk $pvvdc $pmvdd $pvddci --write > /dev/shm/mclock_$GPUID.txt
     RBC=$(cat /dev/shm/mclock_$GPUID.txt)
+    echo "$RBC"
 
     SAFETY=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get MaxODMemoryClock)
     if [ -z "$SAFETY" ] || [ -z "$RBC" ]; then
