@@ -290,10 +290,11 @@ if [ $1 ]; then
     # Apply
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set FanTable/TargetTemperature=$TT MaxODMemoryClock=230000 $cclk $pmclk $pvvdc $pmvdd $pvddci --write > /dev/shm/mclock_$GPUID.txt
     RBC=$(cat /dev/shm/mclock_$GPUID.txt)
+    RBCE=$(cat /dev/shm/mclock_$GPUID.txt | grep -c "ERROR")
     echo "$RBC"
 
     SAFETY=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get MaxODMemoryClock)
-    if [ -z "$SAFETY" ] || [ -z "$RBC" ]; then
+    if [ -z "$SAFETY" ] || [ -z "$RBC" ] || [ "$RBCE" -gt 0 ]; then
       echo "UPP failed falling back to old method"
 
       maxMemState=$(sudo timeout 10 ./ohgodatool -i $GPUID --show-mem  | grep -E "Memory state ([0-9]+):" | tail -n 1 | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g')
@@ -363,8 +364,9 @@ if [ $1 ]; then
       fi
       sudo su -c "echo $currentCoreState > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
       sudo su -c "echo $maxMemState > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+    else
+      echo "OK"
     fi
-
 
     sudo su -c "echo 'manual' > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
     sudo su -c "echo 3 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
