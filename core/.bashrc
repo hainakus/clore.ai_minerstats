@@ -152,6 +152,7 @@ alias maintenance='sudo /home/minerstat/minerstat-os/core/maintenance'
 alias opencl='sudo /home/minerstat/minerstat-os/core/opencl'
 alias nvload='sudo /home/minerstat/minerstat-os/bin/nvload'
 alias nvunload='sudo /home/minerstat/minerstat-os/bin/nvunload'
+alias e1000-update='sudo /home/minerstat/minerstat-os/core/e1000'
 
 if grep -q experimental "/etc/lsb-release"; then
   alias amdmemtool='sudo /home/minerstat/minerstat-os/bin/amdmemorytweak'
