@@ -243,11 +243,11 @@ if [ $1 ]; then
 
       TESTMV=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get VddcLookupTable/entries/15/Vdd 2> /dev/null | grep -c "ERROR")
       if [[ "$TESTMV" -lt 1 ]]; then
-        pvvdc="$pvvdc VddcLookupTable/entries/15/Vdd=$VDDC =$VDDC"
+        pvvdc="$pvvdc VddcLookupTable/entries/15/Vdd=$VDDC "
       fi
       TESTMV=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get VddgfxLookupTable/entries/7/Vdd 2> /dev/null | grep -c "ERROR")
       if [[ "$TESTMV" -lt 1 ]]; then
-        pvvdc="$pvvdc VddgfxLookupTable/entries/7/Vdd"
+        pvvdc="$pvvdc VddgfxLookupTable/entries/7/Vdd=$VDDC"
       fi
 
       pvvdc="$pvvdc VddgfxLookupTable/entries/1/Vdd=$VDDC VddgfxLookupTable/entries/2/Vdd=$VDDC VddgfxLookupTable/entries/3/Vdd=$VDDC VddgfxLookupTable/entries/4/Vdd=$VDDC VddgfxLookupTable/entries/5/Vdd=$VDDC VddgfxLookupTable/entries/6/Vdd=$VDDC "
@@ -288,11 +288,11 @@ if [ $1 ]; then
     fi
 
     # Apply
-    sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
-      FanTable/TargetTemperature=$TT MaxODMemoryClock=230000 $cclk $pmclk $pvvdc $pmvdd $pvddci --write
+    sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set FanTable/TargetTemperature=$TT MaxODMemoryClock=230000 $cclk $pmclk $pvvdc $pmvdd $pvddci --write > /dev/shm/mclock_$GPUID.txt
+    RBC=$(cat /dev/shm/mclock_$GPUID.txt)
 
     SAFETY=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get MaxODMemoryClock)
-    if [ -z "$SAFETY" ]; then
+    if [ -z "$SAFETY" ] || [ -z "$RBC" ]; then
       echo "UPP failed falling back to old method"
 
       maxMemState=$(sudo timeout 10 ./ohgodatool -i $GPUID --show-mem  | grep -E "Memory state ([0-9]+):" | tail -n 1 | sed -r 's/.*([0-9]+).*/\1/' | sed 's/[^0-9]*//g')
