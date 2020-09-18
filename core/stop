@@ -9,7 +9,7 @@ sudo su -c "echo "" > /dev/shm/miner.log 2>&1 >/dev/null"
 
 echo ""
 echo "\e[1;38;5;69m============= MINERSTAT AGENT ============\e[39m"
-echo "\e[1;38;5;69m==\e[39m \e[38;5;221m[IDLE]\e[39m agent sucessfully stopped"
+echo "\e[1;38;5;69m==\e[39m \e[38;5;221m[IDLE]\e[39m agent successfully stopped"
 echo "\e[1;38;5;69m==\e[39m If you want to start mining, enter: \e[4mmstart\e[0m"
 echo "\e[1;38;5;69m==========================================\e[39m"
 echo ""
