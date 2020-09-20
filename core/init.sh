@@ -65,6 +65,30 @@ fi
 KERNEL_VERSION=$(timeout 5 uname -r)
 UBUNTU_VERSION=$(timeout 5 cat /etc/os-release | grep "PRETTY_NAME" | sed 's/PRETTY_NAME="//g' | sed 's/"//g' | xargs)
 
+# DETECT USB Drive version
+USBD=""
+DRIVE_VERSION=$(timeout 10 sudo lshw -c storage -c disk | grep -B 35 $DETECT | grep "driver=" | awk '{ print $2 }' | sed 's/......=//')
+if [[ -z "$DRIVE_VERSION" ]]; then
+  DRIVE_VERSION=""
+fi
+
+if [[ "$DRIVE_VERSION" = "uas" ]]; then
+  USBD="3.0"
+elif [[ "$DRIVE_VERSION" = "ehci" ]]; then
+  USBD="2.0"
+elif [[ "$DRIVE_VERSION" = "ohci" ]]; then
+  USBD="1.0"
+elif [[ "$DRIVE_VERSION" = "xhci" ]]; then
+  USBD="3.0"
+elif [[ "$DRIVE_VERSION" = "uhci" ]]; then
+  USBD="1.0"
+fi
+
+if [[ -z "$USBD" ]] && [[ ! -z "$DRIVE_VERSION" ]]; then
+  USBD="$DRIVE_VERSION"
+fi
+DISK_TYPE="$DISK_TYPE$USBD"
+
 while true
 do
 
