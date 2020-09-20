@@ -84,10 +84,12 @@ elif [[ "$DRIVE_VERSION" = "uhci" ]]; then
   USBD=" [USB 1.0]"
 elif [[ "$DRIVE_VERSION" = "ahci" ]]; then
   USBD=" [SATA]"
+elif [[ "$DRIVE_VERSION" = "usb-storage" ]]; then
+  USBD=" [USB 3.0]"
 fi
 
 if [[ -z "$USBD" ]] && [[ ! -z "$DRIVE_VERSION" ]]; then
-  USBD="$DRIVE_VERSION"
+  USBD=" $DRIVE_VERSION"
 fi
 DISK_TYPE="$DISK_TYPE$USBD"
 
