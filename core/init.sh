@@ -73,15 +73,15 @@ if [[ -z "$DRIVE_VERSION" ]]; then
 fi
 
 if [[ "$DRIVE_VERSION" = "uas" ]]; then
-  USBD="3.0"
+  USBD=" 3.0"
 elif [[ "$DRIVE_VERSION" = "ehci" ]]; then
-  USBD="2.0"
+  USBD=" 2.0"
 elif [[ "$DRIVE_VERSION" = "ohci" ]]; then
-  USBD="1.0"
+  USBD=" 1.0"
 elif [[ "$DRIVE_VERSION" = "xhci" ]]; then
-  USBD="3.0"
+  USBD=" 3.0"
 elif [[ "$DRIVE_VERSION" = "uhci" ]]; then
-  USBD="1.0"
+  USBD=" 1.0"
 fi
 
 if [[ -z "$USBD" ]] && [[ ! -z "$DRIVE_VERSION" ]]; then
