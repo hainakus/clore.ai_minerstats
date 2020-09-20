@@ -2,7 +2,7 @@
 #sudo su
 echo "*-*-*-- MINERSTAT OS RECOVERY --*-*-*"
 echo "*-*-*-- WAITING FOR CONNECTION --*-*-*"
-while ! ping minerstat.farm. -w 1 | grep "0%"; do
+while ! ping minerstat.farm -w 1 | grep "0%"; do
   sleep 1
 done
 sudo killall node
