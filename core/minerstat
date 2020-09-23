@@ -1,6 +1,5 @@
 @reboot /bin/sh /home/minerstat/minerstat-os/bin/onboot.sh
-*/2 * * * * /bin/bash /home/minerstat/minerstat-os/core/checker
-*/10 * * * * /bin/bash /home/minerstat/minerstat-os/core/dnser
+* * * * * /bin/bash /home/minerstat/minerstat-os/core/checker
 * * * * * /bin/bash /home/minerstat/minerstat-os/core/screenr
 * * * * * sudo chvt 1
 30 * * * * sudo find /var/log -type f -delete
