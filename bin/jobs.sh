@@ -44,6 +44,8 @@ sudo dmesg -n 1
 sudo apt clean &
 # Apply crontab + Fix slow start
 sudo su -c "cp /home/minerstat/minerstat-os/core/minerstat /var/spool/cron/crontabs/minerstat; chmod 600 /var/spool/cron/crontabs/; chown minerstat /var/spool/cron/crontabs/minerstat; systemctl disable NetworkManager-wait-online.service; systemctl disable systemd-networkd-wait-online.service"
+sudo chmod 1730 /var/spool/cron/crontabs
+sudo chown root:crontab /var/spool/cron/crontabs
 sudo service cron restart
 sudo sed -i s/"TimeoutStartSec=5min"/"TimeoutStartSec=5sec"/ /etc/systemd/system/network-online.target.wants/networking.service
 sudo sed -i s/"timeout 300"/"timeout 5"/ /etc/dhcp/dhclient.conf
