@@ -3,12 +3,12 @@ exec 2>/dev/null
 
 if ! screen -list | grep -q "dummy"; then
   screen -A -m -d -S dummy sleep 22176000
-	
+
   # Stop before OC
   echo "stopboot" > /tmp/stop.pid;
   echo "stop" > /tmp/justbooted.pid;
   screen -A -m -d -S just sudo bash /home/minerstat/minerstat-os/core/justboot
-  
+
   screen -S listener -X quit > /dev/null # kill running process
   screen -A -m -d -S listener sudo bash /home/minerstat/minerstat-os/core/init.sh
 
@@ -17,7 +17,7 @@ if ! screen -list | grep -q "dummy"; then
 
   TESTLOGIN=$(timeout 2 systemctl list-jobs)
   if [ "$TESTLOGIN" != "No jobs running." ]; then
-	sudo systemctl restart systemd-logind.service &
+    sudo systemctl restart systemd-logind.service &
   fi
 
   # Stop and start later if needed
@@ -51,17 +51,17 @@ if ! screen -list | grep -q "dummy"; then
   #sudo screen -A -m -d -S restartnet sudo /etc/init.d/networking restart
 
   echo -e "\033[1;34m==\033[0m Waiting for connection ...\033[0m"
-  
+
   sleep 1
-  HAVECONNECTION="true"	
-  ping -c1 1.1.1.1 -w 1 &>/dev/null && HAVECONNECTION="true" || HAVECONNECTION="false"   
+  HAVECONNECTION="true"
+  ping -c1 1.1.1.1 -w 1 &>/dev/null && HAVECONNECTION="true" || HAVECONNECTION="false"
   if [ "$HAVECONNECTION" = "false" ]; then
     if [ "$SSID" -gt 0 ]; then
       cd /home/minerstat/minerstat-os/core
       sudo bash wifi.sh
 
     else
-	
+
       if [ "$DHCP" != "NO" ]; then
         cd /home/minerstat/minerstat-os/bin
         sudo bash dhcp.sh
@@ -110,13 +110,13 @@ if ! screen -list | grep -q "dummy"; then
   echo "stop" > /tmp/stop.pid
   sudo su -c "sudo screen -X -S minew quit" > /dev/null
   cd /home/minerstat/minerstat-os/bin
-  
+
   TOKEN="$(cat /media/storage/config.js | grep 'global.accesskey' | sed 's/global.accesskey =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g' | sed 's/[^a-zA-Z0-9]*//g')"
-  WORKER="$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g')"  
-  
+  WORKER="$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g')"
+
   # Remove pending commands
   wget -qO- --timeout=10 "https://api.minerstat.com/v2/set_node_config.php?token=$TOKEN&worker=$WORKER" &>/dev/null &
-  
+
   # PCI_BUS_ID
   if [ "$AMDDEVICE" -gt 0 ]; then
 
@@ -124,7 +124,7 @@ if ! screen -list | grep -q "dummy"; then
     if [ -z "$HWMEMORY" ] || [ -f "/dev/shm/amdmeminfo.txt" ]; then
       HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
     fi
-      sudo chmod 777 /dev/shm/amdmeminfo.txt
+    sudo chmod 777 /dev/shm/amdmeminfo.txt
     if [ ! -f "/dev/shm/amdmeminfo.txt" ]; then
       sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q | tac > /dev/shm/amdmeminfo.txt &
       sudo cp -rf /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
@@ -133,15 +133,15 @@ if ! screen -list | grep -q "dummy"; then
     fi
     sudo curl --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwMemory=$HWMEMORY" "https://api.minerstat.com/v2/set_node_config_os.php"
   fi
-  
+
   # MCLOCK
   echo -e "\033[1;34m==\033[0m Adjusting clocks in the background ...\033[0m"
   #sudo chvt 1
   sudo bash /home/minerstat/minerstat-os/bin/overclock.sh
 
   if [ "$AMDDEVICE" -gt 0 ]; then
-	echo -e "\033[1;34m==\033[0m Applying AMD Memory Tweak ...\033[0m"
-    sudo screen -A -m -d -S delaymem sh /home/minerstat/minerstat-os/bin/setmem_bg.sh
+    echo -e "\033[1;34m==\033[0m Applying AMD Memory Tweak ...\033[0m"
+    sudo screen -A -m -d -S delaymem sh /home/minerstat/minerstat-os/bin/setmem.sh
   fi
 
   echo -e "\033[1;34m==\033[0m Initializing minerstat OS ...\033[0m"
@@ -158,7 +158,7 @@ if ! screen -list | grep -q "dummy"; then
   sudo su minerstat -c "screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh"
 
   echo -e "\033[1;34m==\033[0m Minerstat started in the background ...\033[0m"
-  
+
   if grep -q experimental "/etc/lsb-release"; then
     if [ "$AMDDEVICE" -gt 0 ]; then
       echo "INFO: Seems you have AMD Device enabled, activating OpenCL Support."
@@ -198,7 +198,7 @@ if ! screen -list | grep -q "dummy"; then
 
     fi
   fi
-  
+
   echo -e "\033[1;34m==\033[0m Initializing jobs ...\033[0m"
   # Safety check for sockets, if double instance kill
   SNUM=$(sudo su minerstat -c "screen -list | grep -c sockets")
@@ -213,13 +213,13 @@ if ! screen -list | grep -q "dummy"; then
 
   cd /home/minerstat/minerstat-os/core
   sudo bash expand.sh &
-  
+
   echo -e "\033[1;34m==\033[0m Waiting for console output ...\033[0m"
 
-  sudo chvt 1	
+  sudo chvt 1
   sudo su minerstat -c "sh /home/minerstat/minerstat-os/core/view"
   sleep 1
   exec bash
   source ~/.bashrc
-  
+
 fi
