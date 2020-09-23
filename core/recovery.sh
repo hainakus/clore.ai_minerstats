@@ -14,10 +14,10 @@ ls
 git clone http://labs.minerstat.farm/repo/minerstat-os.git/
 chmod 777 minerstat-os
 cd /home/minerstat/minerstat-os
-chmod -R 777 *
-npm update
-npm install
-chmod -R 777 *
+sudo chmod -R 777 *
+sudo npm update
+sudo npm install
+sudo chmod -R 777 *
 echo "Copy config from MSOS (NTFS) Partition"
 cp /media/storage/config.js /home/minerstat/minerstat-os
 echo ""
@@ -33,4 +33,3 @@ sudo bash /home/minerstat/minerstat-os/git.sh
 echo "You can start mining again with: mstart"
 echo ""
 echo "*-*-*-- MINERSTAT.COM--*-*-*"
-source ~/.bashrc
