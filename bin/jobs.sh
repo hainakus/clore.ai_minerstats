@@ -135,7 +135,7 @@ fi
 
 GET_GATEWAY=$(timeout 5 route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
 NSCHECK=$(cat /etc/resolv.conf | grep "nameserver 1.1.1.1" | xargs)
-RES_TEST=$(timeout 5 ping -c1 wikipedia.org > /dev/null && echo "ok" || echo "failed")
+RES_TEST=$(timeout 5 ping -c1 l.root-servers.net > /dev/null && echo "ok" || echo "failed")
 if [ "$NSCHECK" != "nameserver 1.1.1.1" ] || [ ! -z "$GET_GATEWAY" ] || [ "$RES_TEST" = "failed" ]; then
   #GCHECK=$(cat /etc/resolv.conf | grep "nameserver $GET_GATEWAY" | xargs)
   if [ ! -z "$GET_GATEWAY" ]; then

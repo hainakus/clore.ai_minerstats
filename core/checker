@@ -8,7 +8,7 @@ fi
 
 SNUM=$(sudo su minerstat -c "screen -list | grep -c sockets")
 if [ "$SNUM" != "1" ]; then
-sudo su minerstat -c "screen -ls | grep sockets | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe; sudo killall sockets; screen -A -m -d -S sockets sudo bash /home/minerstat/minerstat-os/core/sockets" > /dev/null
+  sudo su minerstat -c "screen -ls | grep sockets | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe; sudo killall sockets; screen -A -m -d -S sockets sudo bash /home/minerstat/minerstat-os/core/sockets" > /dev/null
 fi
 
 # Check lost
@@ -22,9 +22,9 @@ if [ "$STARTJS" = "0" ] || [ "$WORKSH" = "0" ]; then
   screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done
   sudo su minerstat -c "screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
   sudo killall node
-  sudo su -c "cd /tmp; 
-  wget https://labs.minerstat.farm/repo/minerstat-os/-/raw/master/core/recovery.sh; 
-  chmod 777 recovery.sh; 
+  sudo su -c "cd /tmp;
+  wget https://labs.minerstat.farm/repo/minerstat-os/-/raw/master/core/recovery.sh;
+  chmod 777 recovery.sh;
   sh recovery.sh"
   sudo sh /home/minerstat/minerstat-os/bin/overclock.sh &
   sleep 15
@@ -49,10 +49,10 @@ fi
 # Check "LISTENER"
 LCH=$(sudo su minerstat -c "screen -list | grep -c listener")
 if [ "$LCH" = "0" ]; then
-    # Restart listener, Maintenance Process, Also from now it can be updated in runtime (mupdate)
-    timeout 5 sudo su -c "screen -S listener -X quit" > /dev/null
-    timeout 5 sudo su minerstat -c "screen -S listener -X quit" > /dev/null
-    timeout 5 sudo su minerstat -c "screen -A -m -d -S listener sudo bash /home/minerstat/minerstat-os/core/init.sh"
+  # Restart listener, Maintenance Process, Also from now it can be updated in runtime (mupdate)
+  timeout 5 sudo su -c "screen -S listener -X quit" > /dev/null
+  timeout 5 sudo su minerstat -c "screen -S listener -X quit" > /dev/null
+  timeout 5 sudo su minerstat -c "screen -A -m -d -S listener sudo bash /home/minerstat/minerstat-os/core/init.sh"
 fi
 
 # Check manually stopped or not with "mstop"
@@ -73,8 +73,8 @@ if [ ! -f /tmp/stop.pid ]; then
     sudo su minerstat -c "screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh"
   fi
   # Check for bugged screens ?!
-    SNUM=$(sudo su minerstat -c "screen -list | grep -c minerstat-console")
-    if [ "$SNUM" -gt "1" ]; then
+  SNUM=$(sudo su minerstat -c "screen -list | grep -c minerstat-console")
+  if [ "$SNUM" -gt "1" ]; then
     echo "Kill duplicated screens"
     sudo su -c "sudo screen -X -S minew quit"
     sudo su -c "sudo screen -X -S fakescreen quit"
@@ -88,10 +88,10 @@ if [ ! -f /tmp/stop.pid ]; then
     sudo su minerstat -c "screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh"
     sleep 2
     sudo su minerstat -c "screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh"
-    fi
+  fi
 fi
 
-RES_TEST=$(timeout 5 ping -c1 wikipedia.org > /dev/null && echo "ok" || echo "failed")
+RES_TEST=$(timeout 5 ping -c1 l.root-servers.net > /dev/null && echo "ok" || echo "failed")
 if [ "$RES_TEST" = "failed" ]; then
-    timeout 20 sudo bash /home/minerstat/minerstat-os/core/dnser
+  timeout 20 sudo bash /home/minerstat/minerstat-os/core/dnser
 fi
