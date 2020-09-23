@@ -47,7 +47,8 @@ if [ "$SNUMD" = "0" ]; then
 fi
 
 # Check "LISTENER"
-if ! screen -list | grep -q "listener"; then
+LCH=$(sudo su minerstat -c "screen -list | grep -c listener")
+if [ "$LCH" = "0" ]; then
   screen -S listener -X quit # kill running process
   screen -A -m -d -S listener sudo bash /home/minerstat/minerstat-os/core/init.sh
 fi
