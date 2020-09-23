@@ -49,8 +49,10 @@ fi
 # Check "LISTENER"
 LCH=$(sudo su minerstat -c "screen -list | grep -c listener")
 if [ "$LCH" = "0" ]; then
-  screen -S listener -X quit # kill running process
-  screen -A -m -d -S listener sudo bash /home/minerstat/minerstat-os/core/init.sh
+    # Restart listener, Maintenance Process, Also from now it can be updated in runtime (mupdate)
+    timeout 5 sudo su -c "screen -S listener -X quit" > /dev/null
+    timeout 5 sudo su minerstat -c "screen -S listener -X quit" > /dev/null
+    timeout 5 sudo su minerstat -c "screen -A -m -d -S listener sudo bash /home/minerstat/minerstat-os/core/init.sh"
 fi
 
 # Check manually stopped or not with "mstop"
