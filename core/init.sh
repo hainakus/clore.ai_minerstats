@@ -67,13 +67,38 @@ UBUNTU_VERSION=$(timeout 5 cat /etc/os-release | grep "PRETTY_NAME" | sed 's/PRE
 
 # DETECT USB Drive version
 USBD=""
+USBCAP=""
 DRIVE_VERSION=$(timeout 10 sudo lshw -c storage -c disk | grep -B 35 $DETECT | grep "driver=" | awk '{ print $2 }' | sed 's/......=//')
+DRIVE_CAP=$(timeout 10 sudo lshw -c storage -c disk | grep -B 35 $DETECT | grep "capabilities:" | xargs)
+
 if [[ -z "$DRIVE_VERSION" ]]; then
   DRIVE_VERSION=""
 fi
 
+if [[ -z "$DRIVE_CAP" ]]; then
+  DRIVE_CAP=""
+fi
+
+# Check the USB/Drive Max Cap
+if [[ $DRIVE_CAP == *"usb-2"* ]]; then
+  USBCAP=" [USB 2.0]"
+elif [[ $DRIVE_CAP == *"usb-3"* ]]; then
+  USBCAP=" [USB 3.0]"
+elif [[ $DRIVE_CAP == *"usb-1"* ]]; then
+  USBCAP=" [USB 1.0]"
+elif [[ $DRIVE_CAP == *"ahci"* ]]; then
+  USBCAP=" [SATA]"
+elif [[ $DRIVE_CAP == *"ohci"* ]]; then
+  USBCAP=" [USB 1.0]"
+elif [[ $DRIVE_CAP == *"ehci"* ]]; then
+  USBCAP=" [USB 2.0]"
+elif [[ $DRIVE_CAP == *"xhci"* ]]; then
+  USBCAP=" [USB 3.0]"
+fi
+
+# Check USB/Drive Port TYPE
 if [[ "$DRIVE_VERSION" = "uas" ]]; then
-  USBD=" [SATA USB]"
+  USBD=" [USB 3.0]"
 elif [[ "$DRIVE_VERSION" = "ehci" ]]; then
   USBD=" [USB 2.0]"
 elif [[ "$DRIVE_VERSION" = "ohci" ]]; then
@@ -88,8 +113,16 @@ elif [[ "$DRIVE_VERSION" = "usb-storage" ]]; then
   USBD=" [USB 3.0]"
 fi
 
+# If empty
 if [[ -z "$USBD" ]] && [[ ! -z "$DRIVE_VERSION" ]]; then
   USBD=" $DRIVE_VERSION"
+else
+  # Check both port n cap
+  if [[ ! -z "$USBCAP" ]] && [[ ! -z "$DRIVE_CAP" ]]; then
+    if [[ "$USBCAP" != "$USBD" ]]; then
+      USBD="$USBCAP ->$USBD"
+    fi
+  fi
 fi
 DISK_TYPE="$DISK_TYPE$USBD"
 
