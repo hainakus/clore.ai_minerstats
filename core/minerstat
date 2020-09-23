@@ -1,5 +1,5 @@
 @reboot /bin/sh /home/minerstat/minerstat-os/bin/onboot.sh
-*/5 * * * * /bin/bash /home/minerstat/minerstat-os/core/checker
+*/2 * * * * /bin/bash /home/minerstat/minerstat-os/core/checker
 */10 * * * * /bin/bash /home/minerstat/minerstat-os/core/dnser
 * * * * * /bin/bash /home/minerstat/minerstat-os/core/screenr
 * * * * * sudo chvt 1
@@ -8,11 +8,7 @@
 0 * * * * sudo update-pciids
 0 */2 * * * sync
 0 */8 * * * sudo killall tmate
-#0 * * * * sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=28 --use-display-device="DFP-0" --connected-monitor="DFP-0" --enable-all-gpus
-#@reboot sudo systemctl stop systemd-udevd systemd-udevd-kernel.socket systemd-udevd-control.socket
 @reboot find '/home/minerstat/minerstat-os/clients' -name "*log.txt" -type f -delete
 @reboot /usr/sbin/netplan apply
 @reboot sudo systemctl restart systemd-logind.service
-#@reboot sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0"
 @reboot /bin/bash /home/minerstat/minerstat-os/core/dnser
-#@reboot screen -A -m -d -S sockets sudo bash /home/minerstat/minerstat-os/core/sockets
