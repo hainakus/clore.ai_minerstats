@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# If uptime < 4 minutes then exit
+UPTIME=$(awk '{print $1}' /proc/uptime | cut -f1 -d"." | xargs)
+if [ "$UPTIME" -lt "240" ]; then
+ exit 1
+fi
+
 # Check More "LISTENER"
 SNUM=$(sudo su minerstat -c "screen -list | grep -c listener")
 if [ "$SNUM" -gt "1" ]; then
