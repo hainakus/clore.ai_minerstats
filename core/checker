@@ -90,3 +90,8 @@ if [ ! -f /tmp/stop.pid ]; then
     sudo su minerstat -c "screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh"
     fi
 fi
+
+RES_TEST=$(timeout 5 ping -c1 wikipedia.org > /dev/null && echo "ok" || echo "failed")
+if [ "$RES_TEST" = "failed" ]; then
+    timeout 20 sudo bash /home/minerstat/minerstat-os/core/dnser
+fi
