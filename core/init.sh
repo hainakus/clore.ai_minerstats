@@ -207,7 +207,7 @@ do
     #SEND INFO
     #echo "wget done"
 
-    echo "monitor logs"
+    echo "monitor logs $MONITOR_TYPE"
 
     if [ "$MONITOR_TYPE" = "amd" ]; then
       AMDINFO=$(sudo timeout 15 /home/minerstat/minerstat-os/bin/gpuinfo amd3)
@@ -235,13 +235,13 @@ do
       QUERYNVIDIA=$(sudo timeout 15 /home/minerstat/minerstat-os/bin/gpuinfo nvidia)
       # NVIDIA DRIVER CRASH WATCHDOG
       TESTVIDIA=$(sudo timeout 10 nvidia-smi --query-gpu=count --format=csv,noheader | grep "lost")
-      RAMLOG="$RAMLOG $TESTVIDIA"
       if [[ $QUERYNVIDIA == *"failed"* ]]; then
         QUERYNVIDIA=""
       fi
       if [[ $TESTVIDIA == *"failed"* ]]; then
         TESTVIDIA=""
       fi
+      RAMLOG="$RAMLOG $TESTVIDIA"
       RESPONSE=$(sudo curl --insecure --connect-timeout 15 --max-time 25 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=nvidia" --data "hwData=$QUERYNVIDIA" --data "mineLog=$RAMLOG" --data "space=$STR1" --data "cpu=$STR2" --data "localip=$STR3" --data "freemem=$STR5" --data "teleid=$TELEID" --data "systime=$SYSTIME" --data "mobo=$MOBO_TYPE" --data "bios=$BIOS_VERSION" --data "msos=$MSOS_VERSION" --data "mac=$MAC_ADDRESS" --data "cputype=$CPU_TYPE" --data "cpu_usage=$CPU_USAGE" --data "cpu_temp=$CPU_TEMP" --data "disk_type=$DISK_TYPE" --data "nvidiad=$NVIDIA_DRIVER" --data "amdd=$AMD_DRIVER" --data "kernel=$KERNEL_VERSION" --data "ubuntu=$UBUNTU_VERSION" --data "uefi=$BOOTED" "https://api.minerstat.com:2053/v2/set_node_config_os2.php")
     fi
 
