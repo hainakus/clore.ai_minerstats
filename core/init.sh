@@ -34,6 +34,28 @@ if [ "$DETECTB" -gt "0" ]; then
   MONITOR_TYPE="amd"
 fi
 
+if [ "$MONITOR_TYPE" = "unknown" ]; then
+  TEST_NVIDIA=$(nvidia-smi -L)
+  NUM_AMD=$(sudo lshw -C display | grep AMD | wc -l)
+  if [ "$NUM_AMD" = "0" ]; then
+    NUM_AMD=$(sudo lshw -C display | grep amdgpu | wc -l)
+  fi
+  TEST_AMD=$NUM_AMD
+  if [[ $TEST_NVIDIA == *"GPU 0"* ]]; then
+    NVIDIA_FAN_NUM=$(sudo nvidia-settings -c :0 -q fans | grep "fan:" | wc -l)
+  fi
+  # recheck
+  if [[ $NUM_AMD -gt 0 ]]; then
+    echo "Hardware Monitor: AMD GPU found"
+    MONITOR_TYPE="amd"
+  fi
+
+  if [[ $TEST_NVIDIA == *"GPU 0"* ]]; then
+    echo "Hardware Monitor: Nvidia GPU found"
+    MONITOR_TYPE="nvidia"
+  fi
+fi
+
 # UEFI / LEGACY
 [ -d /sys/firmware/efi ] && BOOTED="UEFI" || BOOTED="LEGACY"
 
@@ -248,6 +270,12 @@ do
       RESPONSE=$(sudo curl --insecure --connect-timeout 15 --max-time 25 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=nvidia" --data "hwData=$QUERYNVIDIA" --data "mineLog=$RAMLOG" --data "space=$STR1" --data "cpu=$STR2" --data "localip=$STR3" --data "freemem=$STR5" --data "teleid=$TELEID" --data "systime=$SYSTIME" --data "mobo=$MOBO_TYPE" --data "bios=$BIOS_VERSION" --data "msos=$MSOS_VERSION" --data "mac=$MAC_ADDRESS" --data "cputype=$CPU_TYPE" --data "cpu_usage=$CPU_USAGE" --data "cpu_temp=$CPU_TEMP" --data "disk_type=$DISK_TYPE" --data "nvidiad=$NVIDIA_DRIVER" --data "amdd=$AMD_DRIVER" --data "kernel=$KERNEL_VERSION" --data "ubuntu=$UBUNTU_VERSION" --data "uefi=$BOOTED" "https://api.minerstat.com:2053/v2/set_node_config_os2.php")
     fi
 
+    if [ "$MONITOR_TYPE" = "unknown" ]; then
+      QUERYNVIDIA=""
+      RAMLOG=$(echo $RAMLOG | tr -d "'")
+      RESPONSE=$(sudo curl --insecure --connect-timeout 15 --max-time 25 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=nvidia" --data "hwData=$QUERYNVIDIA" --data "mineLog=$RAMLOG" --data "space=$STR1" --data "cpu=$STR2" --data "localip=$STR3" --data "freemem=$STR5" --data "teleid=$TELEID" --data "systime=$SYSTIME" --data "mobo=$MOBO_TYPE" --data "bios=$BIOS_VERSION" --data "msos=$MSOS_VERSION" --data "mac=$MAC_ADDRESS" --data "cputype=$CPU_TYPE" --data "cpu_usage=$CPU_USAGE" --data "cpu_temp=$CPU_TEMP" --data "disk_type=$DISK_TYPE" --data "nvidiad=$NVIDIA_DRIVER" --data "amdd=$AMD_DRIVER" --data "kernel=$KERNEL_VERSION" --data "ubuntu=$UBUNTU_VERSION" --data "uefi=$BOOTED" "https://api.minerstat.com:2053/v2/set_node_config_os2.php")
+    fi
+
     echo "-*- MINERSTAT LISTENER -*-"
 
     echo "RESPONSE: $RESPONSE"
@@ -360,7 +388,7 @@ do
     screen -A -m -d -S diag sudo /home/minerstat/minerstat-os/core/diag
     echo "-------------------------------------------"
   fi
-  
+
   if [ $RESPONSE = "UPDATE" ]; then
     echo "-------------------------------------------"
     sudo bash /home/minerstat/minerstat-os/git.sh
