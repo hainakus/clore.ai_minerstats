@@ -351,6 +351,12 @@ do
     screen -A -m -d -S diag sudo /home/minerstat/minerstat-os/core/diag
     echo "-------------------------------------------"
   fi
+  
+  if [ $RESPONSE = "UPDATE" ]; then
+    echo "-------------------------------------------"
+    sudo bash /home/minerstat/minerstat-os/git.sh
+    echo "-------------------------------------------"
+  fi
 
   if [ $RESPONSE = "CONSOLE" ]; then
     sudo killall tmate
