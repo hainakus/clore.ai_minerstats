@@ -4,6 +4,7 @@
 FANMIN=$(cat /media/storage/fans.txt | grep "FANMIN=" | xargs | sed 's/[^0-9]*//g')
 FANMAX=$(cat /media/storage/fans.txt | grep "FANMAX=" | xargs | sed 's/[^0-9]*//g')
 TARGET=$(cat /media/storage/fans.txt | grep "TARGET_TEMP=" | xargs | sed 's/[^0-9]*//g')
+TARGET_MEM=$(cat /media/storage/fans.txt | grep "TARGET_MEM=" | xargs | sed 's/[^0-9]*//g')
 
 # Override on static
 FANSTATIC=0
@@ -19,7 +20,7 @@ fi
 
 # If no settings
 if [ -z "$FANMIN" ]; then
-  FANMIN=70
+  FANMIN=60
   echo "FANMIN has no value [Set to $FANMIN]"
 fi
 
@@ -29,11 +30,16 @@ if [ -z "$FANMAX" ]; then
 fi
 
 if [ -z "$TARGET" ]; then
-  TARGET=60
+  TARGET=56
   echo "TARGET_TEMP has no value [Set to $TARGET]"
 fi
 
-if [ "$FANMIN" = "$FANMAX" ]; then 
+if [ -z "$TARGET_MEM" ]; then
+  TARGET_MEM=80
+  echo "TARGET_MEM has no value [Set to $TARGET_MEM]"
+fi
+
+if [ "$FANMIN" = "$FANMAX" ]; then
   SLEEP=75
   FANSTATIC=1
 else
@@ -56,20 +62,20 @@ fi
 loop() {
   echo "---------------"
   if [ $NUM_AMD -gt 0 ]; then
-    
-   #FANMIN n MAX
-   FANMIN2=$(echo $FANMIN | cut -f1 -d".")
-   FANMIN2=$((FANMIN2 * 255 / 100))
-   FANMIN2=$(echo $FANMIN2 | cut -f1 -d".")
-   FANMIN2=$(printf "%.0f\n" $FANMIN2)
-              
-   FANMAX2=$(echo $FANMAX | cut -f1 -d".")              
-   FANMAX2=$((FANMAX2 * 255 / 100))
-   FANMAX2=$(echo $FANMAX2 | cut -f1 -d".")
-   FANMAX2=$(printf "%.0f\n" $FANMAX2)
-   
-   echo "Debug: FANMIN: $FANMIN2 | FANMAX: $FANMAX2"
-  
+
+    #FANMIN n MAX
+    FANMIN2=$(echo $FANMIN | cut -f1 -d".")
+    FANMIN2=$((FANMIN2 * 255 / 100))
+    FANMIN2=$(echo $FANMIN2 | cut -f1 -d".")
+    FANMIN2=$(printf "%.0f\n" $FANMIN2)
+
+    FANMAX2=$(echo $FANMAX | cut -f1 -d".")
+    FANMAX2=$((FANMAX2 * 255 / 100))
+    FANMAX2=$(echo $FANMAX2 | cut -f1 -d".")
+    FANMAX2=$(printf "%.0f\n" $FANMAX2)
+
+    echo "Debug: FANMIN: $FANMIN2 | FANMAX: $FANMAX2"
+
     QUERY=$(sudo /home/minerstat/minerstat-os/bin/amdinfo)
     TEST_AMD=$NUM_AMD
     if [ ! -z "$QUERY" ]; then
@@ -91,6 +97,16 @@ loop() {
         fi
         TEMP=$(echo $QUERY | /home/minerstat/minerstat-os/bin/jq -r .[\"$x\"] | awk '{print $1}' | sed 's/[^0-9.]*//g' | cut -d. -f1 | xargs)
         FAN=$(echo $QUERY | /home/minerstat/minerstat-os/bin/jq -r .[\"$x\"] | awk '{print $2}' | sed 's/[^0-9.]*//g' | cut -d. -f1 | xargs)
+        # Trick for memtemp
+        MEMTEMP=$(cat /sys/class/drm/card$y/device/hwmon/hwmon*/temp3_input | sed 's|[^0-9]||g' | xargs)
+        if [[ ! -z "$MEMTEMP" ]]; then
+          MEMTEMP=$((MEMTEMP/1000))
+          echo "memtemp found for $y, val: $MEMTEMP"
+          if [[ "$MEMTEMP" -gt "$TARGET_MEM" ]]; then
+            echo "memtemp is higher, masking current temp to memtemp to cool down"
+            TEMP=$MEMTEMP
+          fi
+        fi
         if [ ! -z "$TEMP" ]; then
           DIFF=$((TARGET-TEMP))
           MSG="COLD >$DIFF C!"
@@ -139,10 +155,10 @@ loop() {
             MSG="ON TARGET"
           fi
           if [ $NEWFAN -lt $FANMIN ]; then
-              NEWFAN=$FANMIN
+            NEWFAN=$FANMIN
           fi
           if [ $NEWFAN -gt $FANMAX ]; then
-              NEWFAN=$FANMAX
+            NEWFAN=$FANMAX
           fi
           if [ "$MSG" != "ON TARGET" ]; then
             if [ $NEWFAN -gt 100 ]; then
@@ -159,11 +175,11 @@ loop() {
             if [ "$MSG" != "ON TARGET" ]; then
               #MAXFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon?/fan1_max)
               #if [ -z "$MAXFAN" ]; then
-                MAXFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1_max)
+              MAXFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1_max)
               #fi
               CURRFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1)
               #if [ -z "$MAXFAN" ]; then
-                #MAXFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon??/fan1_max)
+              #MAXFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon??/fan1_max)
               #fi
               if [ -z "$MAXFAN" ]; then
                 MAXFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon??/pwm1_max)
@@ -236,11 +252,11 @@ loop() {
     x="0"
     z="0"
     if [ -z "$NVIDIA_NUM" ]; then
-     #sudo nvidia-smi --query-gpu=count --format=csv,noheader | grep "lost"
-     echo "SEEMS NVIDIA DRIVER CRASHED - REBOOT REQUIRED !!"
-     NVIDIA_NUM=0
-     else
-     echo "FAN NUM: $NVIDIA_FAN_NUM"
+      #sudo nvidia-smi --query-gpu=count --format=csv,noheader | grep "lost"
+      echo "SEEMS NVIDIA DRIVER CRASHED - REBOOT REQUIRED !!"
+      NVIDIA_NUM=0
+    else
+      echo "FAN NUM: $NVIDIA_FAN_NUM"
     fi
     until [ $NVIDIA_NUM == "$x" ]; do
       TEMP=$(nvidia-smi -i $x --query-gpu=temperature.gpu --format=csv,noheader | tail -n1 | xargs | sed 's/[^0-9]*//g')
@@ -306,27 +322,27 @@ loop() {
             NEWFAN=$FANMAX
           fi
           if [ ! $FAN -eq $NEWFAN ]; then
-              sudo /home/minerstat/minerstat-os/core/nv_fanid $x
-              ID1=$(cat /dev/shm/id1.txt | xargs) 
-              ID2=$(cat /dev/shm/id2.txt | xargs)
-              
-              if [ -z "$ID1" ] && [ -z "$ID2" ]; then
-                PARAM="$PARAM -a [gpu:$x]/GPUFanControlState=1"
-                PARAMS="$PARAMS -a [fan:"$z"]/GPUTargetFanSpeed="$NEWFAN""
-                if [ "$NVIDIA_FAN_NUM" -gt "$NVIDIA_NUM" ]; then
-                  edit=$((z+1))
-                  PARAMSAFETY="$PARAMSAFETY -a [fan:"$edit"]/GPUTargetFanSpeed="$NEWFAN""
-                fi   
-              else
-                PARAM="$PARAM -a [gpu:$x]/GPUFanControlState=1"
-                PARAMS="$PARAMS -a [fan:"$ID1"]/GPUTargetFanSpeed="$NEWFAN""
-                #PARAMSAFETY=""
-                 if [ ! -z "$ID2" ]; then
-                 PARAM="$PARAM -a [gpu:$x]/GPUFanControlState=1"
-                 PARAMS="$PARAMS -a [fan:"$ID2"]/GPUTargetFanSpeed="$NEWFAN""
-                 #PARAMSAFETY=""
-                fi  
+            sudo /home/minerstat/minerstat-os/core/nv_fanid $x
+            ID1=$(cat /dev/shm/id1.txt | xargs)
+            ID2=$(cat /dev/shm/id2.txt | xargs)
+
+            if [ -z "$ID1" ] && [ -z "$ID2" ]; then
+              PARAM="$PARAM -a [gpu:$x]/GPUFanControlState=1"
+              PARAMS="$PARAMS -a [fan:"$z"]/GPUTargetFanSpeed="$NEWFAN""
+              if [ "$NVIDIA_FAN_NUM" -gt "$NVIDIA_NUM" ]; then
+                edit=$((z+1))
+                PARAMSAFETY="$PARAMSAFETY -a [fan:"$edit"]/GPUTargetFanSpeed="$NEWFAN""
               fi
+            else
+              PARAM="$PARAM -a [gpu:$x]/GPUFanControlState=1"
+              PARAMS="$PARAMS -a [fan:"$ID1"]/GPUTargetFanSpeed="$NEWFAN""
+              #PARAMSAFETY=""
+              if [ ! -z "$ID2" ]; then
+                PARAM="$PARAM -a [gpu:$x]/GPUFanControlState=1"
+                PARAMS="$PARAMS -a [fan:"$ID2"]/GPUTargetFanSpeed="$NEWFAN""
+                #PARAMSAFETY=""
+              fi
+            fi
             MSG="$MSG,NEWFAN: $NEWFAN%"
           fi
         fi
@@ -339,9 +355,9 @@ loop() {
       fi
       z=$((z+1))
     done
-     if [ ! -z "$PARAM" ]; then
+    if [ ! -z "$PARAM" ]; then
       sudo su -c "nvidia-settings -c :0 $PARAM $PARAMS $PARAMSAFETY"
-     fi
+    fi
   fi
 
   sleep $SLEEP
