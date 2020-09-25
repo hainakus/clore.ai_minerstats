@@ -90,8 +90,8 @@ UBUNTU_VERSION=$(timeout 5 cat /etc/os-release | grep "PRETTY_NAME" | sed 's/PRE
 # DETECT USB Drive version
 USBD=""
 USBCAP=""
-DRIVE_VERSION=$(timeout 10 sudo lshw -c storage -c disk | grep -B 35 $DETECT | grep "driver=" | awk '{ print $2 }' | sed 's/......=//')
-DRIVE_CAP=$(timeout 10 sudo lshw -c storage -c disk | grep -B 35 $DETECT | grep "capabilities:" | xargs)
+DRIVE_VERSION=$(timeout 10 sudo lshw -c storage -c disk | grep -B 35 $DETECT | grep "driver=" | awk '{ print $2 }' | sed 's/......=//' | head -n 1)
+DRIVE_CAP=$(timeout 10 sudo lshw -c storage -c disk | grep -B 35 $DETECT | grep "capabilities:" | head -n 1 | xargs)
 
 if [[ -z "$DRIVE_VERSION" ]]; then
   DRIVE_VERSION=""
