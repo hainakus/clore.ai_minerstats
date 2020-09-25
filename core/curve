@@ -64,7 +64,7 @@ fi
 loop() {
   echo "---------------"
   if [ $NUM_AMD -gt 0 ]; then
-  
+
     # restore
     TARGET=$TARGETM
 
@@ -123,10 +123,10 @@ loop() {
               CHANGE=5
             fi
             if [ $DIFF -gt 5 ]; then
-              CHANGE=6
+              CHANGE=10
             fi
             if [ $DIFF -gt 10 ]; then
-              CHANGE=10
+              CHANGE=15
             fi
             if [ $DIFF -gt 20 ]; then
               CHANGE=20
@@ -143,10 +143,10 @@ loop() {
               CHANGE=5
             fi
             if [ $DIFF -lt -5 ]; then
-              CHANGE=6
+              CHANGE=10
             fi
             if [ $DIFF -lt -10 ]; then
-              CHANGE=10
+              CHANGE=15
             fi
             if [ $DIFF -lt -20 ]; then
               CHANGE=20
@@ -179,20 +179,9 @@ loop() {
           if [ ! -z "$PARAM" ]; then
             #sudo nvidia-settings -c :0 $PARAM &> /dev/null
             if [ "$MSG" != "ON TARGET" ]; then
-              #MAXFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon?/fan1_max)
-              #if [ -z "$MAXFAN" ]; then
-              MAXFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1_max)
-              #fi
-              CURRFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1)
-              #if [ -z "$MAXFAN" ]; then
-              #MAXFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon??/fan1_max)
-              #fi
-              if [ -z "$MAXFAN" ]; then
-                MAXFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon??/pwm1_max)
-              fi
-              if [ -z "$CURRFAN" ]; then
-                CURRFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon??/pwm1)
-              fi
+              MAXFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_max)
+              CURRFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1)
+
               CURRFANFIVE=$((CURRFAN-5))
               echo "MAXFAN FOR $x $y : $MAXFAN"
               FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $NEWFAN}" | cut -f1 -d".")
@@ -204,23 +193,18 @@ loop() {
               fi
               if [ $FANSTATIC -gt 0 ]; then
                 FANVALUE=$FANMAX2
+                echo "Change skipped because static"
               fi
               #if [ "$CURRFAN" != "$FANVALUE" ]; then
               if [ "$CURRFAN" != "$FANVALUE" ] && [ "$CURRFANFIVE" != "$FANVALUE" ]; then
                 if [ "$PWM" = "1" ]; then
-                  sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1_enable"
-                  sudo su -c "echo $FANVALUE > /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1"
-                  sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon??/pwm1_enable" >/dev/null 2>&1
-                  sudo su -c "echo $FANVALUE > /sys/class/drm/card$y/device/hwmon/hwmon??/pwm1" >/dev/null 2>&1
-                  #sudo /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $y &
-                  #sudo /home/minerstat/minerstat-os/bin/rocm-smi -d $y --setfan $FANVALUE
+                  sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable"
+                  sudo su -c "echo $FANVALUE > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1"
+
                 else
-                  sudo su -c "echo 2 > /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1_enable"
-                  sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1_enable"
-                  sudo su -c "echo 255 > /sys/class/drm/card$y/device/hwmon/hwmon?/pwm1"
-                  sudo su -c "echo 2 > /sys/class/drm/card$y/device/hwmon/hwmon??/pwm1_enable" >/dev/null 2>&1
-                  sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon??/pwm1_enable" >/dev/null 2>&1
-                  sudo su -c "echo 255 > /sys/class/drm/card$y/device/hwmon/hwmon??/pwm1" >/dev/null 2>&1
+                  sudo su -c "echo 2 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable"
+                  sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable"
+                  sudo su -c "echo 255 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1"
                 fi
               fi
             fi
