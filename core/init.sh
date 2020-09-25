@@ -131,6 +131,8 @@ elif [[ "$DRIVE_VERSION" = "uhci" ]]; then
   USBD=" [USB 1.0]"
 elif [[ "$DRIVE_VERSION" = "ahci" ]]; then
   USBD=" [SATA]"
+elif [[ "$DRIVE_VERSION" = "480Mbit" ]]; then
+  USBD=" [USB 2.0]"
 elif [[ "$DRIVE_VERSION" = "usb-storage" ]]; then
   USBD=" [USB 3.0]"
 fi
