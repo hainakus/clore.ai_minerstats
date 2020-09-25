@@ -4,6 +4,7 @@
 FANMIN=$(cat /media/storage/fans.txt | grep "FANMIN=" | xargs | sed 's/[^0-9]*//g')
 FANMAX=$(cat /media/storage/fans.txt | grep "FANMAX=" | xargs | sed 's/[^0-9]*//g')
 TARGET=$(cat /media/storage/fans.txt | grep "TARGET_TEMP=" | xargs | sed 's/[^0-9]*//g')
+TARGETM="$TARGET"
 TARGET_MEM=$(cat /media/storage/fans.txt | grep "TARGET_MEM=" | xargs | sed 's/[^0-9]*//g')
 
 # Override on static
@@ -62,6 +63,9 @@ fi
 loop() {
   echo "---------------"
   if [ $NUM_AMD -gt 0 ]; then
+  
+    # restore
+    TARGET=$TARGETM
 
     #FANMIN n MAX
     FANMIN2=$(echo $FANMIN | cut -f1 -d".")
@@ -105,6 +109,7 @@ loop() {
           if [[ "$MEMTEMP" -gt "$TARGET_MEM" ]]; then
             echo "memtemp is higher, masking current temp to memtemp to cool down"
             TEMP=$MEMTEMP
+            TARGET=$TARGET_MEM
           fi
         fi
         if [ ! -z "$TEMP" ]; then
