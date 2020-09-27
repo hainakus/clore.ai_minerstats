@@ -237,6 +237,14 @@ SNUM=$(sudo su minerstat -c "screen -list | grep -c usbdog")
 if [ "$SNUM" != "1" ]; then
   sudo su minerstat -c "screen -ls | grep usbdog | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe; sudo killall usbdog; sleep 0.5; sudo killall usbdog; screen -A -m -d -S usbdog sudo bash /home/minerstat/minerstat-os/watchdog" > /dev/null
 fi
+# TCP segmentation offload
+TSOT=$(timeout 5 ethtool -k eth0 | grep tcp-segmentation-offload | xargs)
+if [[ -z "$TSOT" ]] && [[ $TSOT != *"off"* ]]; then
+  TETH=$(which ethtool)
+  if [[ -z "$TETH" ]]; then
+    timeout 5 sudo ethtool -K eth0 tso off
+  fi
+fi
 # Check XSERVER
 NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
 SNUMD=$(sudo su minerstat -c "screen -list | grep -c display2")
