@@ -1,8 +1,15 @@
 #!/bin/bash
 
 sudo dkms install -m nvidia -v $(ls /usr/src | grep nvidia | sed 's/[nvidia][nvidia}]*//' | sed 's/[-][-}]*//')
-sudo su -c "cd /tmp; wget https://labs.minerstat.farm/repo/minerstat-os/-/raw/master/core/recovery.sh; chmod 777 recovery.sh; sh recovery.sh"
 
+# recovery
+cd /home/minerstat
+sudo rm /home/minerstat/recovery.sh
+wget https://labs.minerstat.farm/repo/minerstat-os/-/raw/master/core/recovery.sh
+sudo chmod 777 /home/minerstat/recovery.sh
+sudo bash /home/minerstat/recovery.sh
+
+# sync to disk
 sync
 
 echo
