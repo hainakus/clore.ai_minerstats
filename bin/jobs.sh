@@ -177,6 +177,13 @@ fi
 # Tmate config
 sudo cp /home/minerstat/minerstat-os/core/.tmate.conf /home/minerstat
 echo "" | ssh-keygen -N "" &> /dev/null
+# ssh no pam
+sudo chmod -R 600 /etc/ssh
+TESTPAM=$(sudo cat /etc/ssh/sshd_config | grep UsePAM)
+if [[ -z "$TESTPAM" ]] && [[ $TESTPAM == *"yes"* ]]; then
+    sudo sed -i 's/UsePAM yes/UsePAM no/' /etc/ssh/sshd_config 
+    sudo service sshd restart > /dev/null
+fi
 #sudo killall tmate
 #/home/minerstat/minerstat-os/bin/tmate -S /tmp/tmate.sock new-session -d
 # Update profile
