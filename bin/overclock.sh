@@ -4,29 +4,29 @@ echo "*-*-* Overclocking in progress *-*-*"
 
 NVIDIADEVICE=$(sudo lshw -C display | grep "driver=nvidia" | wc -l)
 if [ "$NVIDIADEVICE" = "0" ]; then
-    NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)    
+  NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
 fi
 NVIDIA="$(nvidia-smi -L)"
 
 if [ "$NVIDIADEVICE" != "0" ]; then
   #if echo "$NVIDIA" | grep -iq "^GPU 0:" ;then
-    DONVIDIA="YES"
-    # Check XSERVER
-    SNUM=$(sudo su minerstat -c "screen -list | grep -c display2")
-    if [ "$SNUM" != "1" ]; then
-        sudo su -c "timeout 10 sudo screen -X -S display quit" > /dev/null 
-        timeout 10 screen -X -S display quit > /dev/null
-        timeout 10 screen -X -S display2 quit > /dev/null
-        sudo timeout 10 killall X > /dev/null
-        sudo timeout 10 killall Xorg > /dev/null
-        sudo timeout 5 kill -9 $(sudo pidof Xorg) > /dev/null
-        sudo timeout 5 rm /tmp/.X0-lock > /dev/null
-        sudo timeout 10 nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" > /dev/null 
-        sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf > /dev/null
-        sudo su minerstat -c "screen -A -m -d -S display2 sudo X :0" > /dev/null
-        sleep 20
-    fi
- #fi
+  DONVIDIA="YES"
+  # Check XSERVER
+  SNUM=$(sudo su minerstat -c "screen -list | grep -c display2")
+  if [ "$SNUM" != "1" ]; then
+    sudo su -c "timeout 10 sudo screen -X -S display quit" > /dev/null
+    timeout 10 screen -X -S display quit > /dev/null
+    timeout 10 screen -X -S display2 quit > /dev/null
+    sudo timeout 10 killall X > /dev/null
+    sudo timeout 10 killall Xorg > /dev/null
+    sudo timeout 5 kill -9 $(sudo pidof Xorg) > /dev/null
+    sudo timeout 5 rm /tmp/.X0-lock > /dev/null
+    sudo timeout 10 nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" > /dev/null
+    sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf > /dev/null
+    sudo su minerstat -c "screen -A -m -d -S display2 sudo X :0" > /dev/null
+    sleep 20
+  fi
+  #fi
 fi
 
 INSTANT=$1
@@ -93,7 +93,7 @@ if [ ! -z "$DOAMD" ]; then
   fi
   sudo chmod 777 /dev/shm/amdmeminfo.txt
   if [ ! -f "/dev/shm/amdmeminfo.txt" ]; then
-    sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q | tac > /dev/shm/amdmeminfo.txt &
+    sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -q > /dev/shm/amdmeminfo.txt &
     sudo cp -rf /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
     sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
     HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
@@ -159,7 +159,7 @@ if [ ! -z "$DOAMD" ]; then
   HWMEMORY=$(cd /home/minerstat/minerstat-os/bin/; cat amdmeminfo.txt)
   sudo chmod 777 /dev/shm/amdmeminfo.txt
   if [ ! -f "/dev/shm/amdmeminfo.txt" ]; then
-    sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q | tac > /dev/shm/amdmeminfo.txt &
+    sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -q > /dev/shm/amdmeminfo.txt &
     sudo cp -rf /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
     sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
     HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)

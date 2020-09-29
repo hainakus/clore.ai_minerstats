@@ -181,8 +181,8 @@ echo "" | ssh-keygen -N "" &> /dev/null
 sudo chmod -R 600 /etc/ssh
 TESTPAM=$(sudo cat /etc/ssh/sshd_config | grep UsePAM)
 if [[ ! -z "$TESTPAM" ]] && [[ $TESTPAM == *"no"* ]]; then
-    sudo sed -i 's/UsePAM no/UsePAM yes/' /etc/ssh/sshd_config 
-    sudo service sshd restart > /dev/null
+  sudo sed -i 's/UsePAM no/UsePAM yes/' /etc/ssh/sshd_config
+  sudo service sshd restart > /dev/null
 fi
 #sudo killall tmate
 #/home/minerstat/minerstat-os/bin/tmate -S /tmp/tmate.sock new-session -d
@@ -293,7 +293,7 @@ fi
 if [ "$1" -gt 0 ] || [ "$AMDDEVICE" -gt 0 ]; then
   #sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q > /home/minerstat/minerstat-os/bin/amdmeminfo.txt &
   sudo chmod 777 /dev/shm/amdmeminfo.txt
-  sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q | tac > /dev/shm/amdmeminfo.txt &
+  sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -q > /dev/shm/amdmeminfo.txt &
   sudo cp -rf /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
   sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
   CHECKPY=$(dpkg -l | grep python3-pip)
