@@ -74,7 +74,7 @@ install () {
   if [[ ! -z "$FULL" ]]; then
     echo
     echo "================="
-    echo "Valid version provided.. Attempting to download and install Nvidia $SELECTED_VERSION .."
+    echo "Valid version provided.. Attempting to download and install amdgpu-pro $SELECTED_VERSION .."
     echo "================="
     # Stop And Maintenance mode
     echo
