@@ -5,21 +5,6 @@ VERSION="0.3-002"
 
 echo "VERSION: $VERSION"
 
-if grep -q minerstat "/etc/lsb-release"; then
-  if [ -d "/home/minerstat/minerstat-os/bin" ]; then
-    if [ -d "/media/storage" ]; then
-      CHECK="YES"
-    fi
-  fi
-fi
-
-if [ "$CHECK" = "NO" ]; then
-  echo
-  echo "This script is only works on minerstat OS. Download now: https://minerstat.com/software/mining-os"
-  echo
-  exit 69
-fi
-
 AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
 if [ "$AMDDEVICE" = "0" ]; then
   AMDDEVICE=$(sudo lshw -C display | grep driver=amdgpu | wc -l)
@@ -61,7 +46,7 @@ if [ "$SNUM" -lt "1" ]; then
         MODEL="VEGA56"
         #EXTRA_STRAP="--CL 17 --RAS 26 --RP 10 --RC 36 --RFC 248 --RRDS 3 --RRDL 3 --RCDRD 12 --RCDWR 5 --FAW 13 --RTP 4"
       elif [[ $MODEL == *"VII"* ]]; then
-        MODEL="VII"
+        MODEL="NoSupport" # to avoid pp_table crash Failed to send message 0x15, response 0x0           
       else
         MODEL="NoSupport"
       fi
