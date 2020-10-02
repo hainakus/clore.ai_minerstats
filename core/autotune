@@ -68,14 +68,14 @@ if [ "$SNUM" -lt "1" ]; then
         else
           echo "Something went wrong. Please, try again in few minutes.."
         fi
-        if [[ $MODEL == *"VII"* ]]; then
-          if [ "$CURR_REF" -gt "1000" ]; then
-            NEWREF="7000"
-          fi
-          GPUID=$recheckID
-          sudo su -c "echo manual > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
-          sudo su -c "echo 4 > /sys/class/drm/card$GPUID/device/pp_power_profile_mode"
-        fi
+        #if [[ $MODEL == *"VII"* ]]; then
+        #  if [ "$CURR_REF" -gt "1000" ]; then
+        #    NEWREF="7000"
+        #  fi
+        #  GPUID=$recheckID
+        #  sudo su -c "echo manual > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
+        #  sudo su -c "echo 4 > /sys/class/drm/card$GPUID/device/pp_power_profile_mode"
+        #fi
         if [[ $MODEL == *"VEGA"* ]]; then
           GPUID=$recheckID
           if [ "$CURR_REF" -gt "1000" ]; then
