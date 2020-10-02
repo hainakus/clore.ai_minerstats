@@ -29,12 +29,12 @@ if [ -z "$FANMAX" ]; then
   echo "FANMAX has no value [Set to $FANMAX]"
 fi
 
-if [ -z "$TARGET" ]; then
+if [ -z "$TARGET" ] || [ "$TARGET" = "0" ]; then
   TARGET=56
   echo "TARGET_TEMP has no value [Set to $TARGET]"
 fi
 
-if [ -z "$TARGET_MEM" ]; then
+if [ -z "$TARGET_MEM" ] || [ "$TARGET_MEM" = "0" ]; then
   TARGET_MEM=80
   echo "TARGET_MEM has no value [Set to $TARGET_MEM]"
 fi
