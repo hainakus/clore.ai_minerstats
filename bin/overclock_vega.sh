@@ -126,7 +126,7 @@ if [ $1 ]; then
       #sudo su -c "echo '0' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
       #sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
 
-      sudo su -c "echo $COREINDEX > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+      sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
       sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
     fi
@@ -185,7 +185,7 @@ if [ $1 ]; then
   # Apply
   sudo ./rocm-smi -d $GPUID --setsclk $COREINDEX
   #sudo ./rocm-smi -d $GPUID --setmclk 3
-  sudo su -c "echo '$COREINDEX' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+  sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
   #sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk" # fix 167Mhz
   #sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   # Check current states
