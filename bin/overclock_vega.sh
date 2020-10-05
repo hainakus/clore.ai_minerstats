@@ -109,22 +109,16 @@ if [ $1 ]; then
     if [ "$CORECLOCK" != "skip" ]; then
       echo "INFO: SETTING CORECLOCK : $CORECLOCK Mhz (STATE: $COREINDEX) @ $VDDC mV"
 
-      #sudo su -c "echo 's 0 852 $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 1 $((CORECLOCK-60)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 's 1 $((CORECLOCK-10)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 's 2 $COREINDEX $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 3 $((CORECLOCK-40)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 4 $((CORECLOCK-30)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 5 $((CORECLOCK-20)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 6 $((CORECLOCK-10)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 7 $((CORECLOCK-5)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's $COREINDEX $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      #timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --core-state $COREINDEX --core-clock $CORECLOCK
+      sudo su -c "echo 's 3 $((CORECLOCK+20)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 's 4 $((CORECLOCK+30)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 's 5 $((CORECLOCK+40)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 's 6 $((CORECLOCK+50)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 's 7 $((CORECLOCK+60)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
       sudo su -c "echo 'vc 2 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-
-      #sudo su -c "echo '0' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
-      #sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
 
       sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
       sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
@@ -136,16 +130,9 @@ if [ $1 ]; then
 
   if [ "$MEMCLOCK" != "skip" ]; then
     echo "INFO: SETTING MEMCLOCK : $MEMCLOCK Mhz"
-    #sudo su -c "echo 'm 1 $MEMCLOCK 1000' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
-    #sudo su -c "echo 'm 2 $MEMCLOCK 1050' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
     sudo su -c "echo 'm 2 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
     sudo su -c "echo 'm 3 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
-    #timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --mem-state 3 --mem-clock $MEMCLOCK
     sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-    #sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
-    #sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_mclk_od"
-    #sudo ./rocm-smi -d $GPUID --setmclk 3
-    #timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --mem-state 3 --core-state $COREINDEX --mem-clock $MEMCLOCK --core-clock $CORECLOCK
   fi
 
   # FANS (for safety) from Radeon VII solution
@@ -184,10 +171,7 @@ if [ $1 ]; then
 
   # Apply
   sudo ./rocm-smi -d $GPUID --setsclk $COREINDEX
-  #sudo ./rocm-smi -d $GPUID --setmclk 3
   sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-  #sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk" # fix 167Mhz
-  #sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   # Check current states
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
   #sudo cat /sys/kernel/debug/dri/0/amdgpu_pm_info
@@ -206,8 +190,6 @@ if [ $1 ]; then
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
   echo "-÷-*-****** MEM  CLOCKS *****-*-*÷-"
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-  #sudo su -c "echo '$COREINDEX' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-
 
   #screen -A -m -D -S soctimer sudo bash /home/minerstat/minerstat-os/bin/soctimer $GPUID &
 
