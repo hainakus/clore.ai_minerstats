@@ -87,9 +87,12 @@ if [ $1 ]; then
     fi
     if [[ $VDDCI -lt $MCMIN ]]; then
       PARSED_VDDCI=$MCMIN
+      # Ignore if set below limit
+      echo "VDDCI value ignored as below $MCMIN mV limit"
+    else
+      AVDDCI=$((PARSED_VDDCI * 4)) #actual
+      pvddci="smc_pptable/MemVddciVoltage/2=$AVDDCI smc_pptable/MemVddciVoltage/3=$AVDDCI"
     fi
-    AVDDCI=$((PARSED_VDDCI * 4)) #actual
-    pvddci="smc_pptable/MemVddciVoltage/2=$AVDDCI smc_pptable/MemVddciVoltage/3=$AVDDCI"
   fi
 
   if [[ ! -z $MVDD && $MVDD != "0" && $MVDD != "skip" ]]; then
@@ -99,9 +102,12 @@ if [ $1 ]; then
     fi
     if [[ $MVDD -lt $MVMIN ]]; then
       PARSED_MVDD=$MVMIN
+      # Ignore if set below limit
+      echo "MVDD value ignored as below $MVMIN mV limit"
+    else
+      AMVDD=$((PARSED_MVDD * 4)) #actual
+      pmvdd="smc_pptable/MemMvddVoltage/2=$AMVDD smc_pptable/MemMvddVoltage/3=$AMVDD"
     fi
-    AMVDD=$((PARSED_MVDD * 4)) #actual
-    pmvdd="smc_pptable/MemMvddVoltage/2=$AMVDD smc_pptable/MemMvddVoltage/3=$AMVDD"
   fi
 
   if [ "$version" = "1.5.4" ]; then
@@ -164,16 +170,10 @@ if [ $1 ]; then
       echo "!! MEMORY CLOCK CONVERTED TO LINUX FORMAT [WINDOWS_MEMCLOCK/2]"
       MEMCLOCK=$((MEMCLOCK/2))
     fi
-    if [ "$version" = "1.5.4" ]; then
-      sudo su -c "echo 'm 1 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 'm 2 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 'm 3 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-    else
-      sudo su -c "echo 'm 1 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 'm 2 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 'm 3 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-    fi
-    # sudo su -c "echo 'm 1 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+
+    sudo su -c "echo 'm 1 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+    sudo su -c "echo 'm 2 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+    sudo su -c "echo 'm 3 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
     echo "GPU$GPUID : MEMCLOCK => $MEMCLOCK Mhz"
 
@@ -202,17 +202,13 @@ if [ $1 ]; then
         fi
       fi
       sudo su -c "echo 's 1 $CORECLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      #sudo su -c "echo 'vc 1 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      #sudo su -c "echo 'vc 1 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 'vc 2 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      #sudo su -c "echo 'vc 3 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
       echo "GPU$GPUID : CORECLOCK => $CORECLOCK Mhz ($VDDC mV, state: $COREINDEX)"
 
       sudo su -c "echo '0' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
       sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
 
-      #sudo su -c "echo $COREINDEX > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
       sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
       sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
 
