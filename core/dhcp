@@ -28,7 +28,7 @@ fi
 sleep 3
 
 # CHECK DNS
-TEST="$(ping api.minerstat.com. -w 1 | grep '1 packets transmitted')"
+TEST="$(ping api.minerstat.com -w 1 | grep '1 packets transmitted')"
 if echo "$TEST" | grep "0%" ;then
   echo ""
   echo "Success! You have active internet connection."
