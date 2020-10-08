@@ -245,6 +245,11 @@ if [[ $1 == "amd3" ]]; then
     exit 1
   fi
 
+  # fix issue with meminfo file
+  if [[ $RBC == *"libamdocl"* ]]; then
+    sed -i '/libamdocl/d' /dev/shm/amdmeminfo.txt
+  fi
+
   NID=1
   SAMPLE='"0"'
   if [[ $AMDINFO_ORIGINAL == *"$SAMPLE"* ]]; then
