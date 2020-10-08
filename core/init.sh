@@ -60,9 +60,17 @@ fi
 [ -d /sys/firmware/efi ] && BOOTED="UEFI" || BOOTED="LEGACY"
 
 # Extended Query without loop
+# Internet
+NET_DRIVER=""
+NET_IFACE=$(timeout 2 route | grep '^default' | grep -o '[^ ]*$' | xargs)
+if [[ ! -z "$NET_IFACE" ]]; then
+  NET_DRIVER=$(timeout 2 sudo ethtool -i $NET_IFACE | grep driver | grep -oP "^driver:\K.*" | xargs)
+fi
+
 MOBO_TYPE=$(sudo timeout 5 dmidecode --string baseboard-product-name)
+MOBO_TYPE="$MOBO_TYPE [$NET_DRIVER]"
 if [ "$MOBO_TYPE" = "Default string" ]; then
-  MOBO_TYPE="Unbranded"
+  MOBO_TYPE="Unbranded [$NET_DRIVER]"
 fi
 BIOS_VERSION=$(sudo timeout 5 dmidecode --string bios-version)
 MSOS_VERSION=$(cat /etc/lsb-release | grep DISTRIB_RELEASE= | head -n1 | sed 's/DISTRIB_RELEASE=//g')
