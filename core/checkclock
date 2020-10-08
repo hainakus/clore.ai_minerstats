@@ -10,5 +10,12 @@ if [ -f "$FILE" ]; then
     echo "pid found"
 else 
     echo "pid not found"
+    sudo echo "stopboot" > /tmp/stop.pid;
+    ping -c1 api.minerstat.com -w 1 &>/dev/null && HAVECONNECTION="true" || HAVECONNECTION="false"
+    while [[ "$HAVECONNECTION" != "true" ]]; do
+        ping -c1 api.minerstat.com -w 1 &>/dev/null && HAVECONNECTION="true" || HAVECONNECTION="false"
+        sleep 2
+    done
     sudo bash /home/minerstat/minerstat-os/bin/overclock.sh
+    sudo rm /tmp/stop.pid
 fi
