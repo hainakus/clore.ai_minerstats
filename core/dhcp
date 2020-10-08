@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# remove wifi
+echo "wifi dactivated"
+sudo sed -i '/WIFISSID/d' /media/storage/network.txt
+sudo sed -i '/WIFIPASS/d' /media/storage/network.txt
+
 # MODIFY NETWORK.TXT
 sudo sed -i '/IPADDRESS/d' /media/storage/network.txt
 sudo sed -i '/NETMASK/d' /media/storage/network.txt
