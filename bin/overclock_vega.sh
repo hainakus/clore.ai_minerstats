@@ -115,12 +115,13 @@ if [ $1 ]; then
       sudo su -c "echo 's 4 $((CORECLOCK+30)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 's 5 $((CORECLOCK+40)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 's 6 $((CORECLOCK+50)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 7 $((CORECLOCK+60)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo su -c "echo 's 7 $((CORECLOCK+1)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
       sudo su -c "echo 'vc 2 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
       sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
       sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+      sudo su -c "echo 7 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
       sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
     fi
@@ -172,6 +173,7 @@ if [ $1 ]; then
   # Apply
   sudo ./rocm-smi -d $GPUID --setsclk $COREINDEX
   sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+  sudo su -c "echo '7' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
   # Check current states
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
   #sudo cat /sys/kernel/debug/dri/0/amdgpu_pm_info
