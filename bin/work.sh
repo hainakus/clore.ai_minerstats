@@ -129,6 +129,11 @@ if ! screen -list | grep -q "dummy"; then
       sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -q > /dev/shm/amdmeminfo.txt &
       sudo cp -rf /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
       sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
+      # fix issue with meminfo file
+      RBC=$(cat /dev/shm/amdmeminfo.txt)
+      if [[ $RBC == *"libamdocl"* ]]; then
+        sed -i '/libamdocl/d' /dev/shm/amdmeminfo.txt
+      fi
       HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
     fi
     sudo curl --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwMemory=$HWMEMORY" "https://api.minerstat.com/v2/set_node_config_os.php"

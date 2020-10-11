@@ -76,9 +76,6 @@ if [ $1 ]; then
 
   echo "--**--**-- GPU $1 : NAVI --**--**--"
 
-  # Reset
-  #sudo bash -c "echo r > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-
   # Compare user input and apply min/max
   if [[ ! -z $VDDCI && $VDDCI != "0" && $VDDCI != "skip" ]]; then
     PARSED_VDDCI=$VDDCI
@@ -171,18 +168,18 @@ if [ $1 ]; then
       MEMCLOCK=$((MEMCLOCK/2))
     fi
 
-    sudo su -c "echo 'm 1 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-    sudo su -c "echo 'm 2 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-    sudo su -c "echo 'm 3 $MEMCLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-
     echo "GPU$GPUID : MEMCLOCK => $MEMCLOCK Mhz"
+
+    sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "m 1 $MEMCLOCK"
+    sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "m 2 $MEMCLOCK"
+    sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "m 3 $MEMCLOCK"
 
     sudo su -c "echo '0' > /sys/class/drm/card$GPUID/device/pp_mclk_od"
     sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_mclk_od"
 
     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-    sudo su -c "echo 'c'> /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+    sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "c"
 
   fi
 
@@ -201,10 +198,11 @@ if [ $1 ]; then
           VDDC=800
         fi
       fi
-      sudo su -c "echo 's 1 $CORECLOCK' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 'vc 2 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
       echo "GPU$GPUID : CORECLOCK => $CORECLOCK Mhz ($VDDC mV, state: $COREINDEX)"
+
+      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 1 $CORECLOCK"
+      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "vc 2 $CORECLOCK $VDDC"
 
       sudo su -c "echo '0' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
       sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
@@ -230,13 +228,7 @@ if [ $1 ]; then
   sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-  sudo su -c "echo 'c'> /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-
-  # ECHO Changes
-  echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
-  sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-  echo "-÷-*-****** MEM  CLOCKS *****-*-*÷-"
-  sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+  sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "c"
 
   # FANS
   if [ "$FANSPEED" != 0 ]; then
@@ -252,7 +244,7 @@ if [ $1 ]; then
 
   TESTD=$(timeout 5 dpkg -l | grep opencl-amdgpu-pro-icd | head -n1 | awk '{print $3}' | xargs | cut -f1 -d"-")
 
-  if [ "$TESTD" != "20.30" ]; then
+  if [ "$TESTD" != "20.30" || "$TESTD" != "20.40" ]; then
     echo "2" > /dev/shm/fantype.txt
     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1_enable" 2>/dev/null
@@ -277,11 +269,17 @@ if [ $1 ]; then
     sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1" 2>/dev/null # 70%
     sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1" 2>/dev/null # 70%
   fi
-  
+
   sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   sleep 0.25
   sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+
+  # ECHO Changes
+  echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
+  sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+  echo "-÷-*-****** MEM  CLOCKS *****-*-*÷-"
+  sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
 
   exit 1
 

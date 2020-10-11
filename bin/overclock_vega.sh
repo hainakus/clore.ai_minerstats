@@ -41,7 +41,7 @@ if [ $1 ]; then
   echo "--**--**-- GPU $1 : VEGA 56/64 --**--**--"
 
   # Reset
-  sudo bash -c "echo r > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+  #sudo bash -c "echo r > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
   # Requirements
   sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon0/pwm1_enable"
@@ -109,20 +109,20 @@ if [ $1 ]; then
     if [ "$CORECLOCK" != "skip" ]; then
       echo "INFO: SETTING CORECLOCK : $CORECLOCK Mhz (STATE: $COREINDEX) @ $VDDC mV"
 
-      sudo su -c "echo 's 1 $((CORECLOCK-10)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 2 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 3 $((CORECLOCK+20)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 4 $((CORECLOCK+30)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 5 $((CORECLOCK+40)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 6 $((CORECLOCK+50)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 's 7 $((CORECLOCK+1)) $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 1 $((CORECLOCK-10)) $VDDC"
+      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 2 $CORECLOCK $VDDC"
+      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 3 $((CORECLOCK+20)) $VDDC"
+      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 4 $((CORECLOCK+30)) $VDDC"
+      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 5 $((CORECLOCK+40)) $VDDC"
+      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 6 $((CORECLOCK+50)) $VDDC"
+      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 7 $((CORECLOCK+1)) $VDDC"
 
-      sudo su -c "echo 'vc 2 $CORECLOCK $VDDC' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-      sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "vc 2 $CORECLOCK $VDDC"
+      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "c"
 
       sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
       sudo su -c "echo 7 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-      sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "c"
 
     fi
   fi
@@ -131,9 +131,9 @@ if [ $1 ]; then
 
   if [ "$MEMCLOCK" != "skip" ]; then
     echo "INFO: SETTING MEMCLOCK : $MEMCLOCK Mhz"
-    sudo su -c "echo 'm 2 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
-    sudo su -c "echo 'm 3 $MEMCLOCK $MVDD' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" # @ 1100 mV default
-    sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+    sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "m 2 $MEMCLOCK $MVDD"
+    sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "m 3 $MEMCLOCK $MVDD"
+    sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "c"
   fi
 
   # FANS (for safety) from Radeon VII solution
@@ -166,8 +166,8 @@ if [ $1 ]; then
     sudo ./rocm-smi -d $GPUID --setfan 70%
   fi
 
-  # comit
-  sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
+  # commit
+  sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "c"
   sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
 
   # Apply

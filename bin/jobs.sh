@@ -106,13 +106,17 @@ if [ "$DNSA" = "success" ]; then
 fi
 
 # Change hostname
-WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
-sudo su -c "echo '$WNAME' > /etc/hostname"
-sudo hostname -F /etc/hostname
-
+# /etc/hosts
 HCHECK=$(cat /etc/hosts | grep "$SERVERC minerstat.com" | xargs)
 WCHECK=$(cat /etc/hosts | grep "127.0.1.1 $WNAME" | xargs)
-if [ "$HCHECK" != "$SERVERC minerstat.com" ] || [ "$WCHECK" != "127.0.1.1 $WNAME" ]; then
+
+CURRENT_DATE=$(date +'%Y-%m-%d')
+CCHECK=$(cat /home/minerstat/cache_date 2>/dev/null)
+
+WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
+if [ "$HCHECK" != "$SERVERC minerstat.com" ] || [ "$WCHECK" != "127.0.1.1 $WNAME" ] || [ "$CCHECK" != "$CURRENT_DATE" ]; then
+  sudo su -c "echo '$WNAME' > /etc/hostname"
+  sudo hostname -F /etc/hostname
   sudo echo "
 127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1     ip6-localhost ip6-loopback
@@ -131,6 +135,21 @@ $SERVERC api.minerstat.com
 162.159.200.1 ntp.ubuntu.com
 104.24.99.231 labs.minerstat.farm
   " > /etc/hosts
+  # Manage CACHE
+  sudo rm /home/minerstat/mining-pool-whitelist.txt 2>/dev/null
+  wget https://minerstat.com/mining-pool-whitelist.txt -O /home/minerstat/mining-pool-whitelist.txt
+  if [ $? -ne 0 ]; then
+    echo "Cache wget failed. Trying next time"
+  else
+    TEST=$(sudo wc -c /home/minerstat/mining-pool-whitelist.txt | awk '{print $1}')
+    TEST2=$(cat /home/minerstat/mining-pool-whitelist.txt | grep -c "ethermine")
+    if [[ "$TEST" -gt 1000 ]] && [[ "$TEST2" -gt 0 ]]; then
+      echo "Cache valid"
+      sudo cat /home/minerstat/mining-pool-whitelist.txt >> /etc/hosts
+      sudo echo "$CURRENT_DATE" > /home/minerstat/cache_date
+      sync &
+    fi
+  fi
 fi
 
 GET_GATEWAY=$(timeout 5 route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
@@ -296,6 +315,11 @@ if [ "$1" -gt 0 ] || [ "$AMDDEVICE" -gt 0 ]; then
   sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -q > /dev/shm/amdmeminfo.txt &
   sudo cp -rf /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
   sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
+  # fix issue with meminfo file
+  RBC=$(cat /dev/shm/amdmeminfo.txt)
+  if [[ $RBC == *"libamdocl"* ]]; then
+    sed -i '/libamdocl/d' /dev/shm/amdmeminfo.txt
+  fi
   CHECKPY=$(dpkg -l | grep python3-pip)
   if [[ -z $CHECKPY ]]; then
     sudo apt-get update
