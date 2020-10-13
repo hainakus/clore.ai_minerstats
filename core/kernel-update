@@ -5,25 +5,38 @@ CURRENT_KERNEL=$(uname -r)
 
 if [[ $CURRENT_KERNEL == *"5.0.21"* ]]; then
 
+  echo
   echo "Updating to 5.4.0 from 5.0.21 ..."
   echo "If the installation asks for user input select ok/yes in every case."
+  echo
 
   sleep 5
 
-  export DEBIAN_FRONTEND=noninteractive DEBIAN_FRONTEND=noninteractive
-  apt-get \
+  # Stop And Maintenance mode
+  echo
+  echo "================="
+  echo "Stopping miner/agent and entering into maintenance mode.."
+  echo "================="
+  echo
+  sudo /home/minerstat/minerstat-os/core/stop >/dev/null 2>&1
+  sudo /home/minerstat/minerstat-os/core/maintenance >/dev/null 2>&1
+  sudo killall X sudo killall Xorg sudo killall Xorg >/dev/null 2>&1
+
+  export DEBIAN_FRONTEND=noninteractive 
+  sudo apt-get \
     -o Dpkg::Options::=--force-confold \
     -o Dpkg::Options::=--force-confdef \
-    -y --allow-downgrades --allow-remove-essential --allow-change-held-packages linux-image-5.4.0-48-generic linux-headers-5.4.0-48-generic  linux-modules-extra-5.4.0-48-generic 
-  apt-get \
-    -o Dpkg::Options::=--force-confold \
-    -o Dpkg::Options::=--force-confdef \
-    -y --allow-downgrades --allow-remove-essential --allow-change-held-packages *5.0.21*
-   sudo rm -rf /lib/modules/5.0.21-050021-generic
-   sudo update-grub2
-   sudo update-initramfs -u
-   sync
+    -y --allow-downgrades --allow-remove-essential --allow-change-held-packages install linux-image-5.4.0-48-generic linux-headers-5.4.0-48-generic linux-modules-extra-5.4.0-48-generic 
+
+  sudo apt-get -y --allow-downgrades --allow-remove-essential --allow-change-held-packages purge *5.0.21*
+
+  sudo rm -rf /lib/modules/5.0.21-050021-generic
+  sudo update-grub2
+  sudo update-initramfs -u
+  sync
 
 else
+  echo
   echo "Already Updated / No update available"
+  echo
 fi
