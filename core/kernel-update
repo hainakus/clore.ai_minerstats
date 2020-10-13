@@ -26,13 +26,14 @@ if [[ $CURRENT_KERNEL == *"5.0.21"* ]]; then
   echo
   sudo /home/minerstat/minerstat-os/core/stop >/dev/null 2>&1
   sudo /home/minerstat/minerstat-os/core/maintenance >/dev/null 2>&1
-  sudo killall X sudo killall Xorg sudo killall Xorg >/dev/null 2>&1
+  sudo killall X >/dev/null 2>&1
+  sudo killall Xorg >/dev/null 2>&1
+  sudo killall Xorg >/dev/null 2>&1
 
-  export DEBIAN_FRONTEND=noninteractive 
+  export DEBIAN_FRONTEND=noninteractive
   sudo apt-get update
   sudo apt-get --fix-broken install
-  sudo apt-get -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef -y --allow-downgrades --allow-remove-essential --allow-change-held-packages install linux-image-5.4.0-48-generic linux-headers-5.4.0-48-generic linux-modules-extra-5.4.0-48-generic 
-
+  sudo apt-get -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef -y --allow-downgrades --allow-remove-essential --allow-change-held-packages install linux-image-5.4.0-48-generic linux-headers-5.4.0-48-generic linux-modules-extra-5.4.0-48-generic
   sleep 1
 
   echo
