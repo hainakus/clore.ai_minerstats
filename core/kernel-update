@@ -64,7 +64,7 @@ if [[ $CURRENT_KERNEL == *"5.0.21"* ]]; then
   if [[ "$TEST" == *"installed"* ]] && [[ "$TEST2" -gt 0 ]] && [[ "$TEST3" = "0" ]]; then
     echo
     echo "================="
-    echo "Driver successfully installed. Reboot with: forcereboot"
+    echo "Kernel successfully updated. Reboot with: forcereboot"
     echo "================="
     echo
   else
