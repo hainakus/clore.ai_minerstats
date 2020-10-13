@@ -49,9 +49,15 @@ if [[ $CURRENT_KERNEL == *"5.0.21"* ]]; then
   # to make sure amd will load on next boot
   sudo apt-get install --reinstall amdgpu-dkms amdgpu-dkms-firmware
 
+  # Missing firmware
+  sudo wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/tree/rtl_nic/rtl8125a-3.fw -P /lib/firmware/rtl_nic/
+  sudo wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/tree/rtl_nic/rtl8168fp-3.fw -P /lib/firmware/rtl_nic/
+
+  # grub, initramfs
   sudo update-grub2
   sudo update-initramfs -u
 
+  # validate installation
   TEST=$(dkms status | grep amdgpu)
   TEST2=$(dpkg -l | grep -c 5.4.0-48)
   TEST3=$(dpkg -l | grep -c 5.0.21)
