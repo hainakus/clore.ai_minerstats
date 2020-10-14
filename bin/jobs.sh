@@ -282,7 +282,10 @@ if [ "$SNUMD" = "0" ]; then
   sudo kill -9 $(sudo pidof Xorg) > /dev/null
   sudo rm /tmp/.X0-lock > /dev/null
   if [ "$NVIDIADEVICE" -gt 0 ]; then
-    timeout 5 sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" > /dev/null
+    if [[ "$NVIDIADEVICE" -gt 1 ]]; then
+      ADDON="--enable-all-gpus"
+    fi
+    sudo timeout 10 nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" $ADDON > /dev/null
   fi
   sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf > /dev/null
   sudo su minerstat -c "screen -A -m -d -S display2 sudo X" > /dev/null

@@ -147,7 +147,14 @@ install () {
       sudo timeout 10 killall Xorg >/dev/null 2>&1
       sudo timeout 5 kill -9 $(sudo pidof Xorg) >/dev/null 2>&1
       sudo timeout 5 rm /tmp/.X0-lock >/dev/null 2>&1
-      sudo timeout 10 nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0"
+      NVIDIADEVICE=$(sudo lshw -C display | grep "driver=nvidia" | wc -l)
+      if [ "$NVIDIADEVICE" = "0" ]; then
+        NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
+      fi
+      if [[ "$NVIDIADEVICE" -gt 1 ]]; then
+        ADDON="--enable-all-gpus"
+      fi
+      sudo timeout 10 nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" $ADDON > /dev/null
       sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf >/dev/null 2>&1
       sudo su minerstat -c "screen -A -m -d -S display2 sudo X :0" >/dev/null 2>&1
       sleep 20

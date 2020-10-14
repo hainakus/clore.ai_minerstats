@@ -3,7 +3,7 @@
 # If uptime < 4 minutes then exit
 UPTIME=$(awk '{print $1}' /proc/uptime | cut -f1 -d"." | xargs)
 if [ "$UPTIME" -lt "240" ]; then
- exit 1
+  exit 1
 fi
 
 # Check More "LISTENER"
@@ -49,6 +49,15 @@ if [ "$SNUMD" = "0" ]; then
   sudo killall Xorg
   sudo kill -9 $(sudo pidof Xorg)
   sudo rm /tmp/.X0-lock
+  NVIDIADEVICE=$(sudo lshw -C display | grep "driver=nvidia" | wc -l)
+  if [ "$NVIDIADEVICE" = "0" ]; then
+    NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
+  fi
+  ADDON=""
+  if [[ "$NVIDIADEVICE" -gt 1 ]]; then
+    ADDON="--enable-all-gpus"
+  fi
+  sudo timeout 10 nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" $ADDON > /dev/null
   sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0"
   sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf
   sudo su minerstat -c "screen -A -m -d -S display2 sudo X"
