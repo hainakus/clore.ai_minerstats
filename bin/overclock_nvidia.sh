@@ -91,6 +91,8 @@ if [ $1 ]; then
   echo "--- GPU $GPUID: $QUERY ---";
 
   # DEFAULT IS 3 some card requires only different
+  # This is obsolete method, just adding in case older driver versions
+  # Since 400 series drivers, defining performance levels opciional
   PLEVEL=3
 
   if echo "$QUERY" | grep "1050" ;then PLEVEL=2
@@ -100,6 +102,7 @@ if [ $1 ]; then
   elif echo "$QUERY" | grep "P104-100" ;then PLEVEL=1
   elif echo "$QUERY" | grep "P106-090" ;then PLEVEL=1
   elif echo "$QUERY" | grep "1660 SUPER" ;then PLEVEL=4
+  elif echo "$QUERY" | grep "1650 SUPER" ;then PLEVEL=4
   elif echo "$QUERY" | grep "1660 Ti" ;then PLEVEL=4
   elif echo "$QUERY" | grep "RTX" ;then PLEVEL=4
   elif echo "$QUERY" | grep "1660" ;then PLEVEL=2
@@ -108,7 +111,7 @@ if [ $1 ]; then
 
 
   echo "--- PERFORMANCE LEVEL: $PLEVEL ---";
-  
+
   sudo nvidia-smi -pm 1
 
   #################################£
@@ -135,7 +138,7 @@ if [ $1 ]; then
   then
     #STR1="-a GPUFanControlState=1 -a GPUTargetFanSpeed="$FANSPEED""
     sudo /home/minerstat/minerstat-os/core/nv_fanid $GPUID
-    ID1=$(cat /dev/shm/id1.txt | xargs) 
+    ID1=$(cat /dev/shm/id1.txt | xargs)
     ID2=$(cat /dev/shm/id2.txt | xargs)
     if [ -z "$ID1" ] && [ -z "$ID2" ]; then
       STR1="-a [gpu:"$GPUID"]/GPUFanControlState=1 -a [fan:"$GPUID"]/GPUTargetFanSpeed="$FANSPEED""

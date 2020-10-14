@@ -12,17 +12,10 @@ if ! screen -list | grep -q "dummy"; then
   screen -S listener -X quit > /dev/null # kill running process
   screen -A -m -d -S listener sudo bash /home/minerstat/minerstat-os/core/init.sh
 
-  #sudo systemctl stop thermald &
-  #sudo systemctl disable thermald &
-
   TESTLOGIN=$(timeout 2 systemctl list-jobs)
   if [ "$TESTLOGIN" != "No jobs running." ]; then
     sudo systemctl restart systemd-logind.service &
   fi
-
-  # Stop and start later if needed
-  #sudo systemctl stop NetworkManager &
-  #sudo systemctl disable NetworkManager &
 
   # validate OC
   screen -A -m -d -S checkclock sudo bash /home/minerstat/minerstat-os/core/checkclock
@@ -37,6 +30,12 @@ if ! screen -list | grep -q "dummy"; then
   #  AMDDEVICE=$(sudo lshw -C display | grep driver=amdgpu | wc -l)
   #fi
   NVIDIADEVICE=$(lsmod | grep nvidia | wc -l)
+  #if [ "$NVIDIADEVICE" = "0" ]; then
+  #  NVIDIADEVICE=$(sudo lshw -C display | grep "driver=nvidia" | wc -l)
+  #fi
+  #if [ "$NVIDIADEVICE" = "0" ]; then
+  #  NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
+  #fi
 
   #echo ""
   #echo "\033[1;34m================= GPUs =================\033[0m"
@@ -64,7 +63,7 @@ if ! screen -list | grep -q "dummy"; then
 
       if [ "$DHCP" != "NO" ]; then
         cd /home/minerstat/minerstat-os/bin
-        sudo bash dhcp.sh
+        sudo bash /home/minerstat/minerstat-os/core/dhcp
         #sudo dhclient -v -r
       else
         cd /home/minerstat/minerstat-os/bin
