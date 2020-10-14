@@ -251,6 +251,8 @@ else
     sudo date -s "$(echo $DATES)Z"
   fi
 fi
+# Copy PCIIDS
+yes | sudo cp -rf /home/minerstat/minerstat-os/core/pci.ids /usr/share/misc
 # NVIDIA
 timeout 5 sudo getent group nvidia-persistenced &>/dev/null || sudo groupadd -g 143 nvidia-persistenced &
 timeout 5 sudo getent passwd nvidia-persistenced &>/dev/null || sudo useradd -c 'NVIDIA Persistence Daemon' -u 143 -g nvidia-persistenced -d '/' -s /sbin/nologin nvidia-persistenced &
