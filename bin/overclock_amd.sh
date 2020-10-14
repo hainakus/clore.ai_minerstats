@@ -391,6 +391,12 @@ if [ $1 ]; then
 
     sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
 
+    # attempt to lock core state again
+    sudo su -c "echo 3 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+    sleep 0.1
+    sudo su -c "echo 5 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+    sleep 0.1
+    sudo su -c "echo 7 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
 
     echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
     sudo su -c "timeout 3 cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk" | grep "*"
