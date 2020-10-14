@@ -43,7 +43,6 @@ WORKER="$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.wo
 AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
 if [ "$AMDDEVICE" = "0" ]; then
   AMDDEVICE=$(sudo lshw -C display | grep driver=amdgpu | wc -l)
-  timeout 5 sudo update-pciids
 fi
 
 if [ "$AMDDEVICE" -gt "0" ]; then
@@ -92,6 +91,9 @@ fi
 
 if [ ! -z "$DOAMD" ]; then
 
+  # PCI ID DB Update
+  timeout 5 sudo update-pciids
+  
   HWMEMORY=$(cd /home/minerstat/minerstat-os/bin/; cat amdmeminfo.txt)
   if [ -z "$HWMEMORY" ] || [ -f "/dev/shm/amdmeminfo.txt" ]; then
     HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
