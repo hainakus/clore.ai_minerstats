@@ -216,7 +216,14 @@ if [ $1 ]; then
       if [[ $VDDCI -lt $MCMIN ]]; then
         PARSED_VDDCI=$MCMIN
       fi
-      pvddci="MclkDependencyTable/entries/2/Vddci=$VDDCI "
+
+      # fix
+      TESTMD=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get MclkDependencyTable/entries/2/Vddci 2> /dev/null | grep -c "ERROR")
+      if [[ "$TESTMD" -lt 1 ]]; then
+        pvddci="MclkDependencyTable/entries/2/Vddci=$VDDCI "
+      else
+        pvddci="MclkDependencyTable/entries/1/Vddci=$VDDCI "
+      fi
     fi
 
     if [[ ! -z $MVDD && $MVDD != "0" && $MVDD != "skip" ]]; then
@@ -227,12 +234,12 @@ if [ $1 ]; then
       if [[ $MVDD -lt $MVMIN ]]; then
         PARSED_MVDD=$MVMIN
       fi
-      
+
       # fix mvdd
       TESTMD=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get MclkDependencyTable/entries/2/Mvdd 2> /dev/null | grep -c "ERROR")
       if [[ "$TESTMD" -lt 1 ]]; then
         pmvdd="MclkDependencyTable/entries/2/Mvdd=$MVDD "
-        else
+      else
         pmvdd="MclkDependencyTable/entries/1/Mvdd=$MVDD "
       fi
     fi
@@ -245,7 +252,7 @@ if [ $1 ]; then
       if [[ $VDDC -lt $VDMIN ]]; then
         PARSED_VDD=$VDMIN
       fi
-      pvvdc="VddcLookupTable/entries/0/Vdd=$VDDC VddcLookupTable/entries/1/Vdd=$VDDC VddcLookupTable/entries/2/Vdd=$VDDC VddcLookupTable/entries/3/Vdd=$VDDC VddcLookupTable/entries/4/Vdd=$VDDC VddcLookupTable/entries/5/Vdd=$VDDC VddcLookupTable/entries/6/Vdd=$VDDC VddcLookupTable/entries/7/Vdd=$VDDC "
+      pvvdc="VddcLookupTable/entries/1/Vdd=$VDDC VddcLookupTable/entries/2/Vdd=$VDDC VddcLookupTable/entries/3/Vdd=$VDDC VddcLookupTable/entries/4/Vdd=$VDDC VddcLookupTable/entries/5/Vdd=$VDDC VddcLookupTable/entries/6/Vdd=$VDDC VddcLookupTable/entries/7/Vdd=$VDDC "
       pvvdc="$pvvdc VddcLookupTable/entries/8/Vdd=$VDDC VddcLookupTable/entries/9/Vdd=$VDDC VddcLookupTable/entries/10/Vdd=$VDDC VddcLookupTable/entries/11/Vdd=$VDDC VddcLookupTable/entries/12/Vdd=$VDDC VddcLookupTable/entries/13/Vdd=$VDDC VddcLookupTable/entries/14/Vdd=$VDDC "
 
       TESTMV=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get VddcLookupTable/entries/15/Vdd 2> /dev/null | grep -c "ERROR")
@@ -257,13 +264,15 @@ if [ $1 ]; then
         pvvdc="$pvvdc VddgfxLookupTable/entries/7/Vdd=$VDDC"
       fi
 
-      pvvdc="$pvvdc VddgfxLookupTable/entries/0/Vdd=$VDDC VddgfxLookupTable/entries/1/Vdd=$VDDC VddgfxLookupTable/entries/2/Vdd=$VDDC VddgfxLookupTable/entries/3/Vdd=$VDDC VddgfxLookupTable/entries/4/Vdd=$VDDC VddgfxLookupTable/entries/5/Vdd=$VDDC VddgfxLookupTable/entries/6/Vdd=$VDDC "
+      pvvdc="$pvvdc VddgfxLookupTable/entries/1/Vdd=$VDDC VddgfxLookupTable/entries/2/Vdd=$VDDC VddgfxLookupTable/entries/3/Vdd=$VDDC VddgfxLookupTable/entries/4/Vdd=$VDDC VddgfxLookupTable/entries/5/Vdd=$VDDC VddgfxLookupTable/entries/6/Vdd=$VDDC "
     fi
 
     if [ "$CORECLOCK" != "skip" ]; then
       if [ "$CORECLOCK" != "0" ]; then
         CCLOCK=$((CORECLOCK*100))
         cclk="SclkDependencyTable/entries/2/Sclk=$CCLOCK SclkDependencyTable/entries/3/Sclk=$CCLOCK SclkDependencyTable/entries/4/Sclk=$CCLOCK SclkDependencyTable/entries/5/Sclk=$CCLOCK SclkDependencyTable/entries/6/Sclk=$CCLOCK SclkDependencyTable/entries/7/Sclk=$CCLOCK "
+        cclk="$cclk SclkDependencyTable/entries/2/VddcOffset=0 SclkDependencyTable/entries/3/VddcOffset=0 SclkDependencyTable/entries/4/VddcOffset=0 SclkDependencyTable/entries/5/VddcOffset=0 SclkDependencyTable/entries/6/VddcOffset=0 SclkDependencyTable/entries/7/VddcOffset=0"
+        cclk="$cclk SclkDependencyTable/entries/2/VddInd=7 SclkDependencyTable/entries/3/VddInd=7 SclkDependencyTable/entries/4/VddInd=7 SclkDependencyTable/entries/5/VddInd=7 SclkDependencyTable/entries/6/VddInd=7 SclkDependencyTable/entries/7/VddInd=7"
       fi
     fi
 
