@@ -238,7 +238,7 @@ if [ $1 ]; then
       if [[ $VDDC -lt $VDMIN ]]; then
         PARSED_VDD=$VDMIN
       fi
-      pvvdc="VddcLookupTable/entries/1/Vdd=$VDDC VddcLookupTable/entries/2/Vdd=$VDDC VddcLookupTable/entries/3/Vdd=$VDDC VddcLookupTable/entries/4/Vdd=$VDDC VddcLookupTable/entries/5/Vdd=$VDDC VddcLookupTable/entries/6/Vdd=$VDDC VddcLookupTable/entries/7/Vdd=$VDDC "
+      pvvdc="VddcLookupTable/entries/0/Vdd=$VDDC VddcLookupTable/entries/1/Vdd=$VDDC VddcLookupTable/entries/2/Vdd=$VDDC VddcLookupTable/entries/3/Vdd=$VDDC VddcLookupTable/entries/4/Vdd=$VDDC VddcLookupTable/entries/5/Vdd=$VDDC VddcLookupTable/entries/6/Vdd=$VDDC VddcLookupTable/entries/7/Vdd=$VDDC "
       pvvdc="$pvvdc VddcLookupTable/entries/8/Vdd=$VDDC VddcLookupTable/entries/9/Vdd=$VDDC VddcLookupTable/entries/10/Vdd=$VDDC VddcLookupTable/entries/11/Vdd=$VDDC VddcLookupTable/entries/12/Vdd=$VDDC VddcLookupTable/entries/13/Vdd=$VDDC VddcLookupTable/entries/14/Vdd=$VDDC "
 
       TESTMV=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get VddcLookupTable/entries/15/Vdd 2> /dev/null | grep -c "ERROR")
@@ -250,13 +250,13 @@ if [ $1 ]; then
         pvvdc="$pvvdc VddgfxLookupTable/entries/7/Vdd=$VDDC"
       fi
 
-      pvvdc="$pvvdc VddgfxLookupTable/entries/1/Vdd=$VDDC VddgfxLookupTable/entries/2/Vdd=$VDDC VddgfxLookupTable/entries/3/Vdd=$VDDC VddgfxLookupTable/entries/4/Vdd=$VDDC VddgfxLookupTable/entries/5/Vdd=$VDDC VddgfxLookupTable/entries/6/Vdd=$VDDC "
+      pvvdc="$pvvdc VddgfxLookupTable/entries/0/Vdd=$VDDC VddgfxLookupTable/entries/1/Vdd=$VDDC VddgfxLookupTable/entries/2/Vdd=$VDDC VddgfxLookupTable/entries/3/Vdd=$VDDC VddgfxLookupTable/entries/4/Vdd=$VDDC VddgfxLookupTable/entries/5/Vdd=$VDDC VddgfxLookupTable/entries/6/Vdd=$VDDC "
     fi
 
     if [ "$CORECLOCK" != "skip" ]; then
       if [ "$CORECLOCK" != "0" ]; then
         CCLOCK=$((CORECLOCK*100))
-        cclk="SclkDependencyTable/entries/3/Sclk=$CCLOCK SclkDependencyTable/entries/4/Sclk=$CCLOCK SclkDependencyTable/entries/5/Sclk=$CCLOCK SclkDependencyTable/entries/6/Sclk=$CCLOCK SclkDependencyTable/entries/7/Sclk=$CCLOCK "
+        cclk="SclkDependencyTable/entries/2/Sclk=$CCLOCK SclkDependencyTable/entries/3/Sclk=$CCLOCK SclkDependencyTable/entries/4/Sclk=$CCLOCK SclkDependencyTable/entries/5/Sclk=$CCLOCK SclkDependencyTable/entries/6/Sclk=$CCLOCK SclkDependencyTable/entries/7/Sclk=$CCLOCK "
       fi
     fi
 
@@ -390,13 +390,6 @@ if [ $1 ]; then
     fi
 
     sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
-
-    # attempt to lock core state again
-    sudo su -c "echo 3 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-    sleep 0.1
-    sudo su -c "echo 5 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-    sleep 0.1
-    sudo su -c "echo 7 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
 
     echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
     sudo su -c "timeout 3 cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk" | grep "*"
