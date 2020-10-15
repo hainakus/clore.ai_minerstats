@@ -406,6 +406,12 @@ if [ $1 ]; then
     fi
 
     sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
+    if [[ "$CORECLOCK" != "skip" ]] && [[ "$CORECLOCK" != "skip" ]]; then
+      sudo /home/minerstat/minerstat-os/bin/amdcovc coreclk:$GPUID=$CORECLOCK | grep "Setting"
+    fi
+    if [[ "$MEMCLOCK" != "skip" ]] && [[ "$MEMCLOCK" != "skip" ]]; then
+      sudo /home/minerstat/minerstat-os/bin/amdcovc memclk:$GPUID=$MEMCLOCK | grep "Setting"
+    fi
 
     echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
     sudo su -c "timeout 3 cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk" | grep "*"
