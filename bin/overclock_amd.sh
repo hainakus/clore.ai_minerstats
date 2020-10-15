@@ -227,7 +227,14 @@ if [ $1 ]; then
       if [[ $MVDD -lt $MVMIN ]]; then
         PARSED_MVDD=$MVMIN
       fi
-      pmvdd="MclkDependencyTable/entries/2/Mvdd=$MVDD "
+      
+      # fix mvdd
+      TESTMD=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get MclkDependencyTable/entries/2/Mvdd 2> /dev/null | grep -c "ERROR")
+      if [[ "$TESTMD" -lt 1 ]]; then
+        pmvdd="MclkDependencyTable/entries/2/Mvdd=$MVDD "
+        else
+        pmvdd="MclkDependencyTable/entries/1/Mvdd=$MVDD "
+      fi
     fi
 
     if [ "$VDDC" != "skip" ] && [ "$VDDC" != "0" ]; then
@@ -238,7 +245,7 @@ if [ $1 ]; then
       if [[ $VDDC -lt $VDMIN ]]; then
         PARSED_VDD=$VDMIN
       fi
-      pvvdc="VddcLookupTable/entries/0/Vdd=$VDDC VddcLookupTable/entries/1/Vdd=$VDDC VddcLookupTable/entries/2/Vdd=$VDDC VddcLookupTable/entries/3/Vdd=$VDDC VddcLookupTable/entries/4/Vdd=$VDDC VddcLookupTable/entries/5/Vdd=$VDDC VddcLookupTable/entries/6/Vdd=$VDDC VddcLookupTable/entries/7/Vdd=$VDDC "
+      pvvdc="VddcLookupTable/entries/1/Vdd=$VDDC VddcLookupTable/entries/2/Vdd=$VDDC VddcLookupTable/entries/3/Vdd=$VDDC VddcLookupTable/entries/4/Vdd=$VDDC VddcLookupTable/entries/5/Vdd=$VDDC VddcLookupTable/entries/6/Vdd=$VDDC VddcLookupTable/entries/7/Vdd=$VDDC "
       pvvdc="$pvvdc VddcLookupTable/entries/8/Vdd=$VDDC VddcLookupTable/entries/9/Vdd=$VDDC VddcLookupTable/entries/10/Vdd=$VDDC VddcLookupTable/entries/11/Vdd=$VDDC VddcLookupTable/entries/12/Vdd=$VDDC VddcLookupTable/entries/13/Vdd=$VDDC VddcLookupTable/entries/14/Vdd=$VDDC "
 
       TESTMV=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get VddcLookupTable/entries/15/Vdd 2> /dev/null | grep -c "ERROR")
@@ -250,7 +257,7 @@ if [ $1 ]; then
         pvvdc="$pvvdc VddgfxLookupTable/entries/7/Vdd=$VDDC"
       fi
 
-      pvvdc="$pvvdc VddgfxLookupTable/entries/0/Vdd=$VDDC VddgfxLookupTable/entries/1/Vdd=$VDDC VddgfxLookupTable/entries/2/Vdd=$VDDC VddgfxLookupTable/entries/3/Vdd=$VDDC VddgfxLookupTable/entries/4/Vdd=$VDDC VddgfxLookupTable/entries/5/Vdd=$VDDC VddgfxLookupTable/entries/6/Vdd=$VDDC "
+      pvvdc="$pvvdc VddgfxLookupTable/entries/1/Vdd=$VDDC VddgfxLookupTable/entries/2/Vdd=$VDDC VddgfxLookupTable/entries/3/Vdd=$VDDC VddgfxLookupTable/entries/4/Vdd=$VDDC VddgfxLookupTable/entries/5/Vdd=$VDDC VddgfxLookupTable/entries/6/Vdd=$VDDC "
     fi
 
     if [ "$CORECLOCK" != "skip" ]; then
