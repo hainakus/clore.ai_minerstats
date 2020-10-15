@@ -186,6 +186,8 @@ if [ ! -z "$DOAMD" ]; then
   HWSTRAPS=$(cd /home/minerstat/minerstat-os/bin/; sudo ./"$STRAPFILENAME" --current-minerstat)
   sudo curl --insecure --connect-timeout 15 --max-time 25 --retry 1 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=amd" --data "hwData=$AMDINFO" --data "hwPower=$QUERYPOWER" --data "hwMemory=$HWMEMORY" --data "hwStrap=$HWSTRAPS" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os2.php"
 
+  echo -e "\033[1;34m==\033[0m Applying AMD Memory Tweak ...\033[0m"
+  sudo screen -A -m -d -S delaymem sh /home/minerstat/minerstat-os/bin/setmem.sh
 
   sync
   sudo chvt 1
