@@ -145,7 +145,7 @@ if ! screen -list | grep -q "dummy"; then
 
   if [ "$AMDDEVICE" -gt 0 ]; then
     echo -e "\033[1;34m==\033[0m Applying AMD Memory Tweak ...\033[0m"
-    sudo screen -A -m -d -S delaymem sh /home/minerstat/minerstat-os/bin/setmem.sh
+    sudo screen -A -m -d -S delaymem bash /home/minerstat/minerstat-os/bin/setmem.sh
   fi
 
   echo -e "\033[1;34m==\033[0m Initializing minerstat OS ...\033[0m"
