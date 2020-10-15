@@ -204,7 +204,7 @@ if [ $1 ]; then
     MCMAX=950  #max vddci
     MVMIN=750 #minimum mvdd
     MVMAX=1050 #max mvdd
-    VDMIN=750 #min vdd
+    VDMIN=700 #min vdd
     VDMAX=1100 #max vdd
 
     # Compare user input and apply min/max
