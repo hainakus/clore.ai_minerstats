@@ -118,6 +118,8 @@ elif [[ $DRIVE_CAP == *"usb-1"* ]]; then
   USBCAP=" [USB 1.0]"
 elif [[ $DRIVE_CAP == *"ahci"* ]]; then
   USBCAP=" [SATA]"
+elif [[ $DRIVE_CAP == *"pata_via"* ]]; then
+  USBCAP=" [PATA]"
 elif [[ $DRIVE_CAP == *"ohci"* ]]; then
   USBCAP=" [USB 1.0]"
 elif [[ $DRIVE_CAP == *"ehci"* ]]; then
