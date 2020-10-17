@@ -95,6 +95,8 @@ if [ ! -z "$DOAMD" ]; then
   # Cache this and update every few months
   # timeout 15 sudo update-pciids &
 
+  echo "#!/bin/bash" > /home/minerstat/clock_cache
+
   HWMEMORY=$(cd /home/minerstat/minerstat-os/bin/; cat amdmeminfo.txt)
   if [ -z "$HWMEMORY" ] || [ -f "/dev/shm/amdmeminfo.txt" ]; then
     HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
