@@ -310,6 +310,7 @@ if [ $1 ]; then
     echo "$RBC"
 
     SAFETY=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get MaxODMemoryClock)
+    sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
     if [ -z "$SAFETY" ] || [ -z "$RBC" ] || [ "$RBCE" -gt 0 ]; then
       echo "UPP failed falling back to old method"
 

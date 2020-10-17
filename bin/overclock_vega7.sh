@@ -49,6 +49,18 @@ if [ $1 ]; then
     fi
   done
 
+  # FANS
+  if [ "$FANSPEED" != 0 ]; then
+    FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $FANSPEED}" | cut -f1 -d".")
+    FANVALUE=$(printf "%.0f\n" $FANVALUE)
+    FANVALUE=$(awk -v n="$FANVALUE" 'BEGIN{print int((n+5)/10) * 10}')
+    echo "GPU$GPUID : FANSPEED => $FANSPEED% ($FANVALUE)"
+  else
+    FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * 70}" | cut -f1 -d".")
+    FANVALUE=$(printf "%.0f\n" $FANVALUE)
+    echo "GPU$GPUID : FANSPEED => 70% ($FANVALUE)"
+  fi
+
   # Requirements
   sudo su -c "echo manual > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
   sudo su -c "echo 6 > /sys/class/drm/card$GPUID/device/pp_power_profile_mode"
@@ -102,22 +114,10 @@ if [ $1 ]; then
   # Check current states
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
-  # FANS
-  if [ "$FANSPEED" != 0 ]; then
-    FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $FANSPEED}" | cut -f1 -d".")
-    FANVALUE=$(printf "%.0f\n" $FANVALUE)
-    FANVALUE=$(awk -v n="$FANVALUE" 'BEGIN{print int((n+5)/10) * 10}')
-    echo "GPU$GPUID : FANSPEED => $FANSPEED% ($FANVALUE)"
-  else
-    FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * 70}" | cut -f1 -d".")
-    FANVALUE=$(printf "%.0f\n" $FANVALUE)
-    echo "GPU$GPUID : FANSPEED => 70% ($FANVALUE)"
-  fi
-
-  for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_enable" 2>/dev/null
-    sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1" 2>/dev/null # 70%
-  done
+  #for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+  sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+  sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
+  #done
 
   exit 1
 

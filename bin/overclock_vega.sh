@@ -38,6 +38,29 @@ if [ $1 ]; then
     COREINDEX="7"
   fi
 
+  # FANS (for safety) from Radeon VII solution
+  for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+    TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
+    if [ ! -z "$TEST" ]; then
+      MAXFAN=$TEST
+    fi
+  done
+
+  if [ "$FANSPEED" != 0 ]; then
+    FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $FANSPEED}" | cut -f1 -d".")
+    FANVALUE=$(printf "%.0f\n" $FANVALUE)
+    echo "GPU$GPUID : FANSPEED => $FANSPEED% ($FANVALUE)"
+  else
+    FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * 70}" | cut -f1 -d".")
+    FANVALUE=$(printf "%.0f\n" $FANVALUE)
+    echo "GPU$GPUID : FANSPEED => 70% ($FANVALUE)"
+  fi
+
+  for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_enable" 2>/dev/null
+    sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1" 2>/dev/null # 70%
+  done
+
   echo "--**--**-- GPU $1 : VEGA 56/64 --**--**--"
 
   # Reset
@@ -91,12 +114,6 @@ if [ $1 ]; then
     mvdd="VddmemLookupTable/entries/0=$MVDD"
   fi
 
-  timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 1 --vddc-table-set $VDDC
-  timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 2 --vddc-table-set $VDDC
-  timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 3 --vddc-table-set $VDDC
-  timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 4 --vddc-table-set $VDDC
-  timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 5 --vddc-table-set $VDDC
-  timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 6 --vddc-table-set $VDDC
   timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 7 --vddc-table-set $VDDC
 
   sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
@@ -104,6 +121,13 @@ if [ $1 ]; then
     MclkDependencyTable/entries/3/VddInd=4 $mclk $mvdd $gfx \
     StateArray/states/0/MemClockIndexLow=3 StateArray/states/0/MemClockIndexHigh=3 StateArray/states/1/MemClockIndexLow=3 StateArray/states/1/MemClockIndexHigh=3 StateArray/states/1/GfxClockIndexLow=7 \
     --write
+
+  # FANS
+  if [ "$FANSPEED" != 0 ]; then
+    sudo ./rocm-smi -d $GPUID --setfan $FANSPEED"%"
+  else
+    sudo ./rocm-smi -d $GPUID --setfan 70%
+  fi
 
   if [ "$VDDC" != "skip" ]; then
     if [ "$CORECLOCK" != "skip" ]; then
@@ -134,36 +158,6 @@ if [ $1 ]; then
     sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "m 2 $MEMCLOCK $MVDD"
     sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "m 3 $MEMCLOCK $MVDD"
     sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "c"
-  fi
-
-  # FANS (for safety) from Radeon VII solution
-  for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-    TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
-    if [ ! -z "$TEST" ]; then
-      MAXFAN=$TEST
-    fi
-  done
-
-  if [ "$FANSPEED" != 0 ]; then
-    FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $FANSPEED}" | cut -f1 -d".")
-    FANVALUE=$(printf "%.0f\n" $FANVALUE)
-    echo "GPU$GPUID : FANSPEED => $FANSPEED% ($FANVALUE)"
-  else
-    FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * 70}" | cut -f1 -d".")
-    FANVALUE=$(printf "%.0f\n" $FANVALUE)
-    echo "GPU$GPUID : FANSPEED => 70% ($FANVALUE)"
-  fi
-
-  for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_enable" 2>/dev/null
-    sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1" 2>/dev/null # 70%
-  done
-
-  # FANS
-  if [ "$FANSPEED" != 0 ]; then
-    sudo ./rocm-smi -d $GPUID --setfan $FANSPEED"%"
-  else
-    sudo ./rocm-smi -d $GPUID --setfan 70%
   fi
 
   # commit

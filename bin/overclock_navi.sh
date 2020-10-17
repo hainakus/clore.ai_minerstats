@@ -74,6 +74,25 @@ if [ $1 ]; then
     fi
   fi
 
+  # FANS
+  if [ "$FANSPEED" != 0 ]; then
+    FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $FANSPEED}" | cut -f1 -d".")
+    FANVALUE=$(printf "%.0f\n" $FANVALUE)
+    FANVALUE=$(awk -v n="$FANVALUE" 'BEGIN{print int((n+5)/10) * 10}')
+    echo "GPU$GPUID : FANSPEED => $FANSPEED% ($FANVALUE)"
+  else
+    FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * 70}" | cut -f1 -d".")
+    FANVALUE=$(printf "%.0f\n" $FANVALUE)
+    echo "GPU$GPUID : FANSPEED => 70% ($FANVALUE)"
+  fi
+
+  for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+    TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
+    if [ ! -z "$TEST" ]; then
+      MAXFAN=$TEST
+    fi
+  done
+
   echo "--**--**-- GPU $1 : NAVI --**--**--"
 
   # Compare user input and apply min/max
@@ -133,12 +152,25 @@ if [ $1 ]; then
   fi
 
 
-  for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-    TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
-    if [ ! -z "$TEST" ]; then
-      MAXFAN=$TEST
-    fi
-  done
+  TESTD=$(timeout 5 dpkg -l | grep opencl-amdgpu-pro-icd | head -n1 | awk '{print $3}' | xargs | cut -f1 -d"-")
+
+  if [ "$TESTD" != "20.30" || "$TESTD" != "20.40" ]; then
+    echo "2" > /dev/shm/fantype.txt
+    sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
+    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
+    sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1" 2>/dev/null # 70%
+  else
+    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+    sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
+    sudo rm /dev/shm/fantype.txt 2>/dev/null
+  fi
+
+  if [ "$FANSPEED" = "100" ]; then
+    echo "2" > /dev/shm/fantype.txt
+    sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+    sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
+  fi
 
   # Requirements
   sudo su -c "echo manual > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
@@ -230,45 +262,6 @@ if [ $1 ]; then
   sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "c"
 
-  # FANS
-  if [ "$FANSPEED" != 0 ]; then
-    FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $FANSPEED}" | cut -f1 -d".")
-    FANVALUE=$(printf "%.0f\n" $FANVALUE)
-    FANVALUE=$(awk -v n="$FANVALUE" 'BEGIN{print int((n+5)/10) * 10}')
-    echo "GPU$GPUID : FANSPEED => $FANSPEED% ($FANVALUE)"
-  else
-    FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * 70}" | cut -f1 -d".")
-    FANVALUE=$(printf "%.0f\n" $FANVALUE)
-    echo "GPU$GPUID : FANSPEED => 70% ($FANVALUE)"
-  fi
-
-  TESTD=$(timeout 5 dpkg -l | grep opencl-amdgpu-pro-icd | head -n1 | awk '{print $3}' | xargs | cut -f1 -d"-")
-
-  if [ "$TESTD" != "20.30" || "$TESTD" != "20.40" ]; then
-    echo "2" > /dev/shm/fantype.txt
-    sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
-    sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1_enable" 2>/dev/null
-    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
-    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1_enable" 2>/dev/null
-    sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1" 2>/dev/null # 70%
-    sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1" 2>/dev/null # 70%
-  else
-    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
-    sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1" 2>/dev/null # 70%
-    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1_enable" 2>/dev/null
-    sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1" 2>/dev/null # 70%
-    sudo rm /dev/shm/fantype.txt 2>/dev/null
-  fi
-
-  if [ "$FANSPEED" = "100" ]; then
-    echo "2" > /dev/shm/fantype.txt
-    sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
-    sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1_enable" 2>/dev/null
-    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1_enable" 2>/dev/null
-    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1_enable" 2>/dev/null
-    sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon?/pwm1" 2>/dev/null # 70%
-    sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon??/pwm1" 2>/dev/null # 70%
-  fi
 
   sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
