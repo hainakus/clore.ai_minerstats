@@ -4,6 +4,11 @@ TEST=$(sudo screen -list | grep -wc soctimer)
 
 if [ "$TEST" = "1" ]; then
 
+  UPTIME=$(awk '{print $1}' /proc/uptime | cut -f1 -d"." | xargs)
+  if [ "$UPTIME" -gt "240" ]; then
+    exit 1
+  fi
+
   echo "Waiting 20..."
   sleep 10
   echo "Waiting 10..."
