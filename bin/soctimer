@@ -13,14 +13,14 @@ if [ "$TEST" = "1" ]; then
 
   until [ $TEST = 1 ]
   do
-  TEST=$(sudo screen -list | grep -wc minew)
-  echo "Waiting miner to reclock.. (VEGA)"
-  sleep 1
+    TEST=$(sudo screen -list | grep -wc minew)
+    echo "Waiting miner to reclock.. (VEGA)"
+    sleep 1
   done
   # Miner up and running
   echo "Miner started, wait 10 sec then apply clocks"
   sleep 50
-  sudo bash /home/minerstat/minerstat-os/bin/overclock.sh
+  sudo bash /home/minerstat/clock_cache
 else
   exit 0
 fi
