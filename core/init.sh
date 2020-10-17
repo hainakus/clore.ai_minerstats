@@ -324,13 +324,13 @@ do
   fi
 
   if [ $RESPONSE = "FORCEREBOOT" ]; then
-    sudo telinit 6
-    sleep 0.5
     echo 1 | sudo tee /proc/sys/kernel/sysrq
     echo b | sudo tee /proc/sysrq-trigger
     sleep 0.5
     sudo su -c "echo 1 > /proc/sys/kernel/sysrq"
     sudo su -c "echo b > /proc/sysrq-trigger"
+    sleep 0.5
+    sudo telinit 6
     sleep 0.5
     sudo reboot -f
   fi
