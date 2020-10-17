@@ -133,13 +133,13 @@ if [ $1 ]; then
     if [ "$CORECLOCK" != "skip" ]; then
       echo "INFO: SETTING CORECLOCK : $CORECLOCK Mhz (STATE: $COREINDEX) @ $VDDC mV"
 
-      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 1 $((CORECLOCK-10)) $VDDC"
+      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 1 $CORECLOCK $VDDC"
       sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 2 $CORECLOCK $VDDC"
-      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 3 $((CORECLOCK+20)) $VDDC"
-      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 4 $((CORECLOCK+30)) $VDDC"
-      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 5 $((CORECLOCK+40)) $VDDC"
-      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 6 $((CORECLOCK+50)) $VDDC"
-      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 7 $((CORECLOCK+1)) $VDDC"
+      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 3 $CORECLOCK $VDDC"
+      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 4 $CORECLOCK $VDDC"
+      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 5 $CORECLOCK $VDDC"
+      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 6 $CORECLOCK $VDDC"
+      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 7 $CORECLOCK $VDDC"
 
       sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "vc 2 $CORECLOCK $VDDC"
       sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "c"
