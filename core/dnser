@@ -15,7 +15,7 @@ fi
 HCHECK=$(cat /etc/hosts | grep "$SERVERC minerstat.com" | xargs)
 WCHECK=$(cat /etc/hosts | grep "127.0.1.1 $WNAME" | xargs)
 
-CURRENT_DATE=$(date +'%Y-%m-%d')
+CURRENT_DATE=$(date +'%Y-%m-%d %H:00')
 CCHECK=$(cat /home/minerstat/cache_date 2>/dev/null)
 
 WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
