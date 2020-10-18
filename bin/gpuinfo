@@ -233,7 +233,7 @@ if [[ $1 == "amd3" ]]; then
     timeout 5 sudo rm /home/minerstat/minerstat-os/bin/amdmeminfo.txt
     timeout 5 sudo rm /dev/shm/amdmeminfo.txt
     sudo chmod 777 /dev/shm/amdmeminfo.txt
-    sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -q > /dev/shm/amdmeminfo.txt &
+    timeout 30 sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -q > /dev/shm/amdmeminfo.txt &
     sudo cp -rf /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
     sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
   fi

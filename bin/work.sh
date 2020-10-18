@@ -125,7 +125,7 @@ if ! screen -list | grep -q "dummy"; then
     fi
     sudo chmod 777 /dev/shm/amdmeminfo.txt
     if [ ! -f "/dev/shm/amdmeminfo.txt" ]; then
-      sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -q > /dev/shm/amdmeminfo.txt &
+      timeout 30 sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -q > /dev/shm/amdmeminfo.txt &
       sudo cp -rf /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
       sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
       # fix issue with meminfo file

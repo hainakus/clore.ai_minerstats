@@ -145,7 +145,9 @@ $SERVERC api.minerstat.com
   else
     TEST=$(sudo wc -c /home/minerstat/mining-pool-whitelist.txt | awk '{print $1}')
     TEST2=$(cat /home/minerstat/mining-pool-whitelist.txt | grep -c "ethermine")
-    if [[ "$TEST" -gt 1000 ]] && [[ "$TEST2" -gt 0 ]]; then
+    TEST3=$(cat /home/minerstat/mining-pool-whitelist.txt | grep -c "2miners")
+    TEST4=$(cat /home/minerstat/mining-pool-whitelist.txt | grep -c "nanopool")
+    if [[ "$TEST" -gt 1000 ]] && [[ "$TEST2" -gt 0 ]] && [[ "$TEST3" -gt 0 ]] && [[ "$TEST4" -gt 0 ]]; then
       echo "Cache valid"
       sudo cat /home/minerstat/mining-pool-whitelist.txt >> /etc/hosts
       sudo echo "$CURRENT_DATE" > /home/minerstat/cache_date
@@ -174,8 +176,6 @@ fi
 
 # Memory Info
 timeout 5 sudo chmod -R 777 * /home/minerstat/minerstat-os
-timeout 5 sudo rm /home/minerstat/minerstat-os/bin/amdmeminfo.txt
-timeout 5 sudo rm /dev/shm/amdmeminfo.txt
 
 if [ -z "$1" ]; then
   AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
@@ -318,14 +318,20 @@ if [ "$CHECKAPTXN" -gt "0" ]; then
 fi
 if [ "$1" -gt 0 ] || [ "$AMDDEVICE" -gt 0 ]; then
   #sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q > /home/minerstat/minerstat-os/bin/amdmeminfo.txt &
-  sudo chmod 777 /dev/shm/amdmeminfo.txt
-  sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -q > /dev/shm/amdmeminfo.txt &
-  sudo cp -rf /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
-  sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
-  # fix issue with meminfo file
-  RBC=$(cat /dev/shm/amdmeminfo.txt)
-  if [[ $RBC == *"libamdocl"* ]]; then
-    sed -i '/libamdocl/d' /dev/shm/amdmeminfo.txt
+  TEST=$(cat /dev/shm/amdmeminfo.txt)
+  if [ -z "$TEST" ]; then
+    timeout 5 sudo rm /home/minerstat/minerstat-os/bin/amdmeminfo.txt
+    timeout 5 sudo rm /dev/shm/amdmeminfo.txt
+    sudo chmod 777 /dev/shm/amdmeminfo.txt
+    timeout 30 sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -q > /dev/shm/amdmeminfo.txt &
+    sudo chmod 777 /dev/shm/amdmeminfo.txt
+    # fix issue with meminfo file
+    RBC=$(cat /dev/shm/amdmeminfo.txt)
+    if [[ $RBC == *"libamdocl"* ]]; then
+      sed -i '/libamdocl/d' /dev/shm/amdmeminfo.txt
+    fi
+    sudo cp -rf /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
+    sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
   fi
   CHECKPY=$(dpkg -l | grep python3-pip)
   if [[ -z $CHECKPY ]]; then

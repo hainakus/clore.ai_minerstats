@@ -46,7 +46,7 @@ if [ "$SNUM" -lt "1" ]; then
         MODEL="VEGA56"
         #EXTRA_STRAP="--CL 17 --RAS 26 --RP 10 --RC 36 --RFC 248 --RRDS 3 --RRDL 3 --RCDRD 12 --RCDWR 5 --FAW 13 --RTP 4"
       elif [[ $MODEL == *"VII"* ]]; then
-        MODEL="NoSupport" # to avoid pp_table crash Failed to send message 0x15, response 0x0           
+        MODEL="NoSupport" # to avoid pp_table crash Failed to send message 0x15, response 0x0
       else
         MODEL="NoSupport"
       fi
