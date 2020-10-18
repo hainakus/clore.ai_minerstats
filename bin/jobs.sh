@@ -112,6 +112,7 @@ WCHECK=$(cat /etc/hosts | grep "127.0.1.1 $WNAME" | xargs)
 
 CURRENT_DATE=$(date +'%Y-%m-%d %H:00')
 CCHECK=$(cat /home/minerstat/cache_date 2>/dev/null)
+echo "#!/bin/bash" > /home/minerstat/clock_cache
 
 WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
 if [ "$HCHECK" != "$SERVERC minerstat.com" ] || [ "$WCHECK" != "127.0.1.1 $WNAME" ] || [ "$CCHECK" != "$CURRENT_DATE" ]; then
