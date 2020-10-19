@@ -49,6 +49,8 @@ sudo chown root:crontab /var/spool/cron/crontabs
 sudo service cron restart
 sudo sed -i s/"TimeoutStartSec=5min"/"TimeoutStartSec=5sec"/ /etc/systemd/system/network-online.target.wants/networking.service
 sudo sed -i s/"timeout 300"/"timeout 5"/ /etc/dhcp/dhclient.conf
+# remove wget logs 
+timeotu 3 sudo rm -rf /home/minerstat/minerstat-os/wget-log*
 # Nvidia PCI_BUS_ID
 sudo rm /etc/environment
 sudo cp /home/minerstat/minerstat-os/core/environment /etc/environment
