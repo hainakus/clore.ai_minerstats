@@ -386,7 +386,7 @@ if [ $1 ]; then
     fi
 
     sudo su -c "echo 'manual' > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
-    sudo su -c "echo 3 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+    sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
     sudo su -c "echo 5 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
     sudo su -c "echo 7 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
@@ -413,6 +413,9 @@ if [ $1 ]; then
     if [[ "$MEMCLOCK" != "0" ]] && [[ "$MEMCLOCK" != "skip" ]]; then
       sudo timeout 5 /home/minerstat/minerstat-os/bin/amdcovc memclk:$GPUID=$MEMCLOCK | grep "Setting"
     fi
+    
+    # force 7th state
+    sudo su -c "echo 7 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
 
     echo "-÷-*-****** CORE CLOCK *****-*-*÷-"
     sudo su -c "timeout 3 cat /sys/class/drm/card$GPUID/device/pp_dpm_sclk" | grep "*"
