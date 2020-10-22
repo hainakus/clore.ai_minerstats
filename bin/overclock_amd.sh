@@ -40,7 +40,7 @@ if [ $1 ]; then
   # core state
   GPUINDEX=${10}
 
-  if [ "$INSTANT" = "instant" ]; then
+  if [ "$INSTANT" = "instantoc" ]; then
     echo "INSTANT OVERRIDE"
     echo "BUS => $8"
     if [ -f "/dev/shm/oc_old_$8.txt" ]; then
