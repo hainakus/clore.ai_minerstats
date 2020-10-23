@@ -113,8 +113,13 @@ if [ $1 ]; then
   if [ "$CORECLOCK" != "skip" ]; then
     TESTCL=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get GfxclkDependencyTable/entries/7/Clk 2> /dev/null | grep -c "ERROR")
     if [[ "$TESTCL" -lt 1 ]]; then
-      CCLK=$(($CORECLOCK*100))
-      cclk="GfxclkDependencyTable/entries/7/Clk=$CCLK GfxclkDependencyTable/entries/6/Clk=$CCLK GfxclkDependencyTable/entries/5/Clk=$CCLK GfxclkDependencyTable/entries/4/Clk=$CCLK GfxclkDependencyTable/entries/3/Clk=$CCLK GfxclkDependencyTable/entries/2/Clk=$CCLK"
+      CCLK1=$((($CORECLOCK-5)*100))
+      CCLK2=$((($CORECLOCK-4)*100))
+      CCLK3=$((($CORECLOCK-3)*100))
+      CCLK4=$((($CORECLOCK-2)*100))
+      CCLK5=$((($CORECLOCK-1)*100))
+      CCLK6=$((($CORECLOCK)*100))
+      cclk="GfxclkDependencyTable/entries/7/Clk=$CCLK6 GfxclkDependencyTable/entries/6/Clk=$CCLK5 GfxclkDependencyTable/entries/5/Clk=$CCLK4 GfxclkDependencyTable/entries/4/Clk=$CCLK3 GfxclkDependencyTable/entries/3/Clk=$CCLK2 GfxclkDependencyTable/entries/2/Clk=$CCLK1"
     fi
   fi
 
