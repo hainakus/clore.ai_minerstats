@@ -145,7 +145,7 @@ if [ $1 ]; then
   if [ "$isThisVega" = "Vega" ]; then
     echo "--**--**-- VEGA --**--**--"
     echo "Loading VEGA OC Script.."
-    sudo ./overclock_vega.sh $GPUID $2 $3 $4 $5 $7 ${10}
+    sudo ./overclock_vega.sh $GPUID $2 $3 $4 $5 $7 ${10} $6
     exit 1
   fi
   ################################
@@ -413,7 +413,7 @@ if [ $1 ]; then
     if [[ "$MEMCLOCK" != "0" ]] && [[ "$MEMCLOCK" != "skip" ]]; then
       sudo timeout 5 /home/minerstat/minerstat-os/bin/amdcovc memclk:$GPUID=$MEMCLOCK | grep "Setting"
     fi
-    
+
     # force 7th state
     sudo su -c "echo 7 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
 

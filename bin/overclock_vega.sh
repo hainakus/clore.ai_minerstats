@@ -28,6 +28,7 @@ if [ $1 ]; then
   VDDC=$5
   MVDD=$6
   COREINDEX=$7
+  VDDCI=$8
   version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
 
   if [ -z "$COREINDEX" ]; then
@@ -109,11 +110,23 @@ if [ $1 ]; then
     mvdd="VddmemLookupTable/entries/0=$MVDD"
   fi
 
+  if [ "$CORECLOCK" != "skip" ]; then
+    TESTCL=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get GfxclkDependencyTable/entries/7/Clk 2> /dev/null | grep -c "ERROR")
+    if [[ "$TESTCL" -lt 1 ]]; then
+      CCLK=$(($CORECLOCK*100))
+      cclk="GfxclkDependencyTable/entries/7/Clk=$CCLK GfxclkDependencyTable/entries/6/Clk=$CCLK GfxclkDependencyTable/entries/5/Clk=$CCLK GfxclkDependencyTable/entries/4/Clk=$CCLK GfxclkDependencyTable/entries/3/Clk=$CCLK GfxclkDependencyTable/entries/2/Clk=$CCLK"
+    fi
+  fi
+
+  if [[ "$VDDCI" != "skip" ]] && [[ "$VDDCI" != "0" ]] && [[ "$VDDCI" != "" ]] && [ -z "$VDDCI" ]; then
+    vddci="VddciLookupTable/entries/0/Vdd=$VDDCI"
+  fi
+
   timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 7 --vddc-table-set $VDDC
 
   sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
     VddcLookupTable/entries/0=$VDDC VddcLookupTable/entries/1=$VDDC VddcLookupTable/entries/2=$VDDC VddcLookupTable/entries/3=$VDDC VddcLookupTable/entries/4=$VDDC VddcLookupTable/entries/5=$VDDC VddcLookupTable/entries/6=$VDDC VddcLookupTable/entries/7=$VDDC \
-    MclkDependencyTable/entries/3/VddInd=4 $mclk $mvdd $gfx \
+    MclkDependencyTable/entries/3/VddInd=4 $vddci $cclk $mclk $mvdd $gfx \
     StateArray/states/0/MemClockIndexLow=3 StateArray/states/0/MemClockIndexHigh=3 StateArray/states/1/MemClockIndexLow=3 StateArray/states/1/MemClockIndexHigh=3 StateArray/states/1/GfxClockIndexLow=7 \
     --write
 
