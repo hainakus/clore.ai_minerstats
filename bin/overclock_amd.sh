@@ -116,21 +116,40 @@ if [ $1 ]; then
 
   # Check this is older R, or RX Series
 
+  DETECTED="NO"
+  isThisR9=""
+  isThisVega=""
+  isThisVegaII=""
+  isThisVegaVII=""
+  isThisNavi=""
+
   if [ ! -z $GPUBUS ]; then
     GID=$GPUBUS
     recheckID=$(ls /sys/bus/pci/devices/*$GPUBUSINT":00.0"/drm | grep "card" | sed 's/[^0-9]*//g')
     GPUID=$recheckID
+    if [ -f "/dev/shm/amdmeminfo.txt" ]; then
+      echo "cache found, detecting $GPUBUS"
+      FETCH=$(cat /dev/shm/amdmeminfo.txt | grep $GPUBUS)
+      isThisVegaVII=$(echo $FETCH | grep -E "VII" | wc -l)
+      isThisNavi=$(echo $FETCH | grep -E "5500|5550|5600|5650|5700|5750|5800|5850|5900|5950|6600|6700|6800|6900" | wc -l)
+      if [[ "$isThisVegaVII" -gt 0 ]] && [[ "$isThisNavi" -gt 0 ]]; then
+        DETECTED="YES"
+        echo "detected $GPUBUS"
+      fi
+    fi
   else
     GID=""
   fi
 
   echo "Checking GPU type.."
 
-  isThisR9=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "R9"| sed 's/^.*R9/R9/' | cut -f1 -d' ' | sed 's/[^A-Z0-9]*//g')
-  isThisVega=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
-  isThisVegaII=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
-  isThisVegaVII=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g')
-  isThisNavi=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep -E "5500|5550|5600|5650|5700|5750|5800|5850|5900|5950|6600|6700|6800|6900" | wc -l)
+  if [[ "$DETECTED" = "NO" ]]; then
+    isThisR9=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "R9"| sed 's/^.*R9/R9/' | cut -f1 -d' ' | sed 's/[^A-Z0-9]*//g')
+    isThisVega=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
+    isThisVegaII=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
+    isThisVegaVII=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g')
+    isThisNavi=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep -E "5500|5550|5600|5650|5700|5750|5800|5850|5900|5950|6600|6700|6800|6900" | wc -l)
+  fi
 
   ########## NAVI ##################
   if [ "$isThisNavi" -gt "0" ]; then
@@ -163,7 +182,7 @@ if [ $1 ]; then
   if [ "$isThisVegaII" = "VegaFrontierEdition" ]; then
     echo "--**--**-- VEGA FRONTIER --**--**--"
     echo "Loading VEGA OC Script.."
-    sudo ./overclock_vega.sh $GPUID $2 $3 $4 $5 $7 ${10}
+    sudo ./overclock_vega.sh $GPUID $2 $3 $4 $5 $7 ${10} $6
     exit 1
   fi
   ################################
