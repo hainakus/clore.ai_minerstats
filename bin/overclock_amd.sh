@@ -139,6 +139,16 @@ if [ $1 ]; then
     fi
   else
     GID=""
+    if [ -f "/dev/shm/amdmeminfo.txt" ]; then
+      echo "no bus id but cache found, detecting $GPUID"
+      FETCH=$(cat /dev/shm/amdmeminfo.txt | grep "GPU$GPUID")
+      isThisVegaVII=$(echo $FETCH | grep -E "VII" | wc -l)
+      isThisNavi=$(echo $FETCH | grep -E "5500|5550|5600|5650|5700|5750|5800|5850|5900|5950|6600|6700|6800|6900" | wc -l)
+      if [[ "$isThisVegaVII" -gt 0 ]] && [[ "$isThisNavi" -gt 0 ]]; then
+        DETECTED="YES"
+        echo "detected $GPUBUS"
+      fi
+    fi
   fi
 
   echo "Checking GPU type.."
