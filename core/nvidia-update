@@ -106,6 +106,8 @@ install () {
     echo
     sudo apt-get -y --fix-broken install
     sudo apt-get purge -y nvidia*
+    sudo apt-get purge -y nvidia-430*
+    sudo apt-get purge -y nvidia-440*
     sudo apt-get purge -y nvidia-driver*
     sudo /usr/bin/nvidia-uninstall --accept-license --no-questions --ui=none
     # Download
@@ -222,7 +224,7 @@ cuda () {
   echo
   echo "Installed driver major version number: $SELECTED_VERSION_CUT"
   if [[ "$SELECTED_VERSION_CUT" -ge 455 ]]; then
-    CUDA="11.0" # Update this later to CUDA v11.1
+    CUDA="11.1"
   elif [[ "$SELECTED_VERSION_CUT" -ge 450 ]]; then
     CUDA="11.0"
   elif [[ "$SELECTED_VERSION_CUT" -ge 440 ]]; then
