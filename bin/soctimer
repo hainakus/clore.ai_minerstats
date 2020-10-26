@@ -23,9 +23,14 @@ if [ "$TEST" = "1" ]; then
     sleep 1
   done
   # Miner up and running
-  echo "Miner started, wait 10 sec then apply clocks"
+  echo "Miner started, wait 50 sec then apply clocks"
   sleep 50
-  sudo bash /home/minerstat/clock_cache
+  sudo chmod 777 /home/minerstat/clock_cache
+  sudo awk '!a[$0]++' /home/minerstat/clock_cache > /home/minerstat/clock_cache_run
+  sudo chmod 777 /home/minerstat/clock_cache_run
+  sudo bash /home/minerstat/clock_cache_run
+  sudo rm /home/minerstat/clock_cache
+  sudo rm /home/minerstat/clock_cache_run
 else
   exit 0
 fi

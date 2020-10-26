@@ -315,26 +315,11 @@ do
   fi
 
   if [ $RESPONSE = "REBOOT" ]; then
-    timeout 9 sync
-    #sudo reboot -f
-    echo 1 | sudo tee /proc/sys/kernel/sysrq
-    echo b | sudo tee /proc/sysrq-trigger
-    sudo su -c "echo 1 > /proc/sys/kernel/sysrq"
-    sudo su -c "echo b > /proc/sysrq-trigger"
-    #sleep 2
-    sudo reboot -f
+    sudo bash /home/minerstat/minerstat-os/bin/reboot.sh
   fi
 
   if [ $RESPONSE = "FORCEREBOOT" ]; then
-    echo 1 | sudo tee /proc/sys/kernel/sysrq
-    echo b | sudo tee /proc/sysrq-trigger
-    sleep 0.5
-    sudo su -c "echo 1 > /proc/sys/kernel/sysrq"
-    sudo su -c "echo b > /proc/sysrq-trigger"
-    sleep 0.5
-    sudo telinit 6
-    sleep 0.5
-    sudo reboot -f
+    sudo bash /home/minerstat/minerstat-os/bin/reboot.sh
   fi
 
   if [ $RESPONSE = "SHUTDOWN" ]; then
