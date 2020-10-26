@@ -154,6 +154,7 @@ if [ $1 ]; then
   echo "Checking GPU type.."
 
   if [[ "$DETECTED" = "NO" ]]; then
+    echo "checking with legacy method"
     isThisR9=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "R9"| sed 's/^.*R9/R9/' | cut -f1 -d' ' | sed 's/[^A-Z0-9]*//g')
     isThisVega=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
     isThisVegaII=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
@@ -217,6 +218,7 @@ if [ $1 ]; then
     if [[ -z $CHECKPY ]]; then
       sudo apt-get update
       sudo apt-get -y install python3-pip --fix-missing
+      sudo su minerstat -c "pip3 install setuptools"
       sudo su minerstat -c "pip3 install upp"
     fi
 
@@ -225,6 +227,7 @@ if [ $1 ]; then
     if [ -f "$FILE" ]; then
       echo "UPP exists."
     else
+      sudo su minerstat -c "pip3 install setuptools"
       sudo su minerstat -c "pip3 install upp"
     fi
 

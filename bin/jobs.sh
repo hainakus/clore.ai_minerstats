@@ -49,7 +49,7 @@ sudo chown root:crontab /var/spool/cron/crontabs
 sudo service cron restart
 sudo sed -i s/"TimeoutStartSec=5min"/"TimeoutStartSec=5sec"/ /etc/systemd/system/network-online.target.wants/networking.service
 sudo sed -i s/"timeout 300"/"timeout 5"/ /etc/dhcp/dhclient.conf
-# remove wget logs 
+# remove wget logs
 timeout 3 sudo rm -rf /home/minerstat/minerstat-os/wget-log*
 # Nvidia PCI_BUS_ID
 sudo rm /etc/environment
@@ -339,6 +339,7 @@ if [ "$1" -gt 0 ] || [ "$AMDDEVICE" -gt 0 ]; then
   if [[ -z $CHECKPY ]]; then
     sudo apt-get update
     sudo apt-get -y install python3-pip --fix-missing
+    sudo su minerstat -c "pip3 install setuptools"
     sudo su minerstat -c "pip3 install upp"
   fi
   # Check UPP installed
@@ -346,6 +347,7 @@ if [ "$1" -gt 0 ] || [ "$AMDDEVICE" -gt 0 ]; then
   if [ -f "$FILE" ]; then
     echo "UPP exists."
   else
+    sudo su minerstat -c "pip3 install setuptools"
     sudo su minerstat -c "pip3 install upp"
   fi
 fi
