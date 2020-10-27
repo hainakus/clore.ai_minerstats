@@ -342,6 +342,16 @@ if [ $1 ]; then
     echo "$RBC"
 
     SAFETY=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get MaxODMemoryClock)
+
+    # Reinstall upp if error
+    if [[ $SAFETY == *"has no attribute"* ]]; then
+      sudo su minerstat -c "yes | sudo pip3 uninstall setuptools"
+      sudo su minerstat -c "yes | sudo pip3 uninstall click"
+      sudo su minerstat -c "yes | sudo pip3 uninstall upp"
+      sudo su minerstat -c "pip3 install setuptools"
+      sudo su minerstat -c "pip3 install upp"
+    fi
+
     sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
     if [ -z "$SAFETY" ] || [ -z "$RBC" ] || [ "$RBCE" -gt 0 ]; then
       echo "UPP failed falling back to old method"

@@ -131,6 +131,15 @@ if [ $1 ]; then
 
   timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 7 --vddc-table-set $VDDC
 
+  SAFETY=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get StateArray/states/0/MemClockIndexLow)
+  if [[ $SAFETY == *"has no attribute"* ]]; then
+    sudo su minerstat -c "yes | sudo pip3 uninstall setuptools"
+    sudo su minerstat -c "yes | sudo pip3 uninstall click"
+    sudo su minerstat -c "yes | sudo pip3 uninstall upp"
+    sudo su minerstat -c "pip3 install setuptools"
+    sudo su minerstat -c "pip3 install upp"
+  fi
+
   sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
     VddcLookupTable/entries/0=$VDDC VddcLookupTable/entries/1=$VDDC VddcLookupTable/entries/2=$VDDC VddcLookupTable/entries/3=$VDDC VddcLookupTable/entries/4=$VDDC VddcLookupTable/entries/5=$VDDC VddcLookupTable/entries/6=$VDDC VddcLookupTable/entries/7=$VDDC \
     MclkDependencyTable/entries/3/VddInd=4 $vddci $cclk $mclk $mvdd $gfx \

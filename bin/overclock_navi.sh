@@ -147,6 +147,15 @@ if [ $1 ]; then
       TT=50
     fi
 
+    SAFETY=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get smc_pptable/MinVoltageGfx)
+    if [[ $SAFETY == *"has no attribute"* ]]; then
+      sudo su minerstat -c "yes | sudo pip3 uninstall setuptools"
+      sudo su minerstat -c "yes | sudo pip3 uninstall click"
+      sudo su minerstat -c "yes | sudo pip3 uninstall upp"
+      sudo su minerstat -c "pip3 install setuptools"
+      sudo su minerstat -c "pip3 install upp"
+    fi
+
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
       overdrive_table/max/8=960 overdrive_table/min/3=700 overdrive_table/min/5=700 overdrive_table/min/7=700 smc_pptable/MinVoltageGfx=2800 \
       smc_pptable/FanTargetTemperature=$TT smc_pptable/FanThrottlingRpm=3000 $pmvdd $pvddci \
