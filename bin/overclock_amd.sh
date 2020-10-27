@@ -405,15 +405,9 @@ if [ $1 ]; then
       if [ "$CORECLOCK" != "skip" ]; then
         if [ "$CORECLOCK" != "0" ]; then
           STR5="coreclk:$GPUID=$CORECLOCK"
-          if [ "$maxMemState" != "2" ]; then
-            for corestate in 3 4 5 6 7 8; do
-              sudo timeout 10 ./ohgodatool -i $GPUID --core-state $corestate --core-clock $CORECLOCK
-            done
-          else
-            for corestate in 3 4 5 6 7 8; do
-              sudo timeout 10 ./ohgodatool -i $GPUID --core-state $corestate --core-clock $CORECLOCK
-            done
-          fi
+          for corestate in 2 3 4 5 6 7; do
+            sudo timeout 10 ./ohgodatool -i $GPUID --core-state $corestate --core-clock $CORECLOCK
+          done
         fi
       fi
       if [ "$MEMCLOCK" != "skip" ]; then
