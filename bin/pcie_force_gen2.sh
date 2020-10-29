@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Original file
+# Published in open licence CC Attribution-Share Alike 4.0 International
+# https://alexforencich.com/wiki/en/pcie/force-gen2
+
 dev=$1
 
 if [ -z "$dev" ]; then

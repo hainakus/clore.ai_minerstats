@@ -131,7 +131,7 @@ if [ $1 ]; then
       echo "cache found, detecting $8"
       FETCH=$(cat /dev/shm/amdmeminfo.txt | grep $8)
       isThisVegaVII=$(echo $FETCH | grep -E "VII" | wc -l)
-      isThisNavi=$(echo $FETCH | grep -E "5500|5550|5600|5650|5700|5750|5800|5850|5900|5950|6600|6700|6800|6900" | wc -l)
+      isThisNavi=$(echo $FETCH | grep -E "5000|5500|5550|5600|5650|5700|5750|5800|5850|5900|5950|6000|6600|6700|6800|6900" | wc -l)
       if [[ "$isThisVegaVII" -gt 0 ]] && [[ "$isThisNavi" -gt 0 ]]; then
         DETECTED="YES"
         echo "detected $GPUBUS"
@@ -143,7 +143,7 @@ if [ $1 ]; then
       echo "no bus id but cache found, detecting $GPUID"
       FETCH=$(cat /dev/shm/amdmeminfo.txt | grep "GPU$GPUID:")
       isThisVegaVII=$(echo $FETCH | grep -E "VII" | wc -l)
-      isThisNavi=$(echo $FETCH | grep -E "5500|5550|5600|5650|5700|5750|5800|5850|5900|5950|6600|6700|6800|6900" | wc -l)
+      isThisNavi=$(echo $FETCH | grep -E "5000|5500|5550|5600|5650|5700|5750|5800|5850|5900|5950|6000|6600|6700|6800|6900" | wc -l)
       if [[ "$isThisVegaVII" -gt 0 ]] && [[ "$isThisNavi" -gt 0 ]]; then
         DETECTED="YES"
         echo "detected $GPUBUS"
@@ -162,7 +162,7 @@ if [ $1 ]; then
     isThisVega=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
     isThisVegaII=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
     isThisVegaVII=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g')
-    isThisNavi=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep -E "5500|5550|5600|5650|5700|5750|5800|5850|5900|5950|6600|6700|6800|6900" | wc -l)
+    isThisNavi=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep -E "5000|5500|5550|5600|5650|5700|5750|5800|5850|5900|5950|6000|6600|6700|6800|6900" | wc -l)
   fi
 
   ########## NAVI ##################
