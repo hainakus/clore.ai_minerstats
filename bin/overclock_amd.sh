@@ -151,6 +151,9 @@ if [ $1 ]; then
     fi
   fi
 
+  # Set GEN2
+  sudo bash /home/minerstat/minerstat-os/bin/pcie_force_gen2.sh $GPUBUSINT:00.0
+
   echo "Checking GPU type.."
 
   if [[ "$DETECTED" = "NO" ]]; then
