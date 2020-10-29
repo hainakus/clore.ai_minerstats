@@ -239,6 +239,20 @@ if [ $1 ]; then
     VDMIN=700 #min vdd
     VDMAX=1100 #max vdd
 
+    MAXFAN=255
+
+    # FANS
+    if [ "$FANSPEED" != 0 ]; then
+      FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $FANSPEED}" | cut -f1 -d".")
+      FANVALUE=$(printf "%.0f\n" $FANVALUE)
+      echo "GPU$GPUID : FANSPEED => $FANSPEED% ($FANVALUE)"
+    else
+      FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * 70}" | cut -f1 -d".")
+      FANVALUE=$(printf "%.0f\n" $FANVALUE)
+      FANSPEED="70"
+      echo "GPU$GPUID : FANSPEED => 70% ($FANVALUE)"
+    fi
+
     # Compare user input and apply min/max
     if [[ ! -z $VDDCI && $VDDCI != "0" && $VDDCI != "skip" ]]; then
       PARSED_VDDCI=$VDDCI
@@ -427,20 +441,6 @@ if [ $1 ]; then
     sudo su -c "echo 7 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
     sudo su -c "echo 3 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-
-    MAXFAN=255
-
-    # FANS
-    if [ "$FANSPEED" != 0 ]; then
-      FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $FANSPEED}" | cut -f1 -d".")
-      FANVALUE=$(printf "%.0f\n" $FANVALUE)
-      echo "GPU$GPUID : FANSPEED => $FANSPEED% ($FANVALUE)"
-    else
-      FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * 70}" | cut -f1 -d".")
-      FANVALUE=$(printf "%.0f\n" $FANVALUE)
-      FANSPEED="70"
-      echo "GPU$GPUID : FANSPEED => 70% ($FANVALUE)"
-    fi
 
     sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
     if [[ "$CORECLOCK" != "0" ]] && [[ "$CORECLOCK" != "skip" ]]; then
