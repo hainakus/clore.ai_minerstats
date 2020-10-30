@@ -308,14 +308,18 @@ if [[ $1 == "amd3" ]]; then
       #fi
 
       if [ -z "$currentVDDC" ]; then
-        currentVDDC=$(sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" 2>/dev/null | sed '/OD_VDDC_CURVE/,$!d' | grep "$currentMemState:" | awk '{ print $3 }' | sed 's/[^0-9]*//g' | cut -d ' ' -f 1 | xargs 2>/dev/null | cut -d ' ' -f 1)
+        currentVDDC=$(sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" 2>/dev/null | sed '/OD_VDDC_CURVE/,$!d' | grep "$currentCoreState:" | awk '{ print $3 }' | sed 's/[^0-9]*//g' | cut -d ' ' -f 1 | xargs 2>/dev/null | cut -d ' ' -f 1)
       fi
 
-      currentMVDD=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/ohgodatool --show-mem -i $GPUID | grep -A 5 "$currentMemState:" | grep "MVDD" | sed 's/[^0-9]*//g' | cut -d ' ' -f 1 | xargs 2>/dev/null | cut -d ' ' -f 1)
-
-      if [ -z "$currentMVDD" ]; then
-        currentMVDD=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/vegavolt --show-mem -i $GPUID | grep -A 5 "$currentMemState:" | grep "MVDD" | sed 's/[^0-9]*//g' | cut -d ' ' -f 1 | xargs 2>/dev/null | cut -d ' ' -f 1)
+      if [ -z "$currentVDDC" ]; then
+        currentVDDC=$(sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" 2>/dev/null | sed '/OD_VDDC_CURVE/,$!d' | grep "$currentCoreState:" | awk '{ print $4 }' | sed 's/[^0-9]*//g' | cut -d ' ' -f 1 | xargs 2>/dev/null | cut -d ' ' -f 1)
       fi
+
+      currentMVDD=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/vegavolt --show-mem -i $GPUID | grep -A 5 "$currentMemState:" | grep "MVDD" | sed 's/[^0-9]*//g' | cut -d ' ' -f 1 | xargs 2>/dev/null | cut -d ' ' -f 1)
+
+      #if [ -z "$currentMVDD" ]; then
+      #  currentMVDD=$(sudo timeout 10 /home/minerstat/minerstat-os/bin/vegavolt --show-mem -i $GPUID | grep -A 5 "$currentMemState:" | grep "MVDD" | sed 's/[^0-9]*//g' | cut -d ' ' -f 1 | xargs 2>/dev/null | cut -d ' ' -f 1)
+      #fi
 
       if [ -z "$currentMVDD" ]; then
         currentMVDD=$(sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage" 2>/dev/null | sed '/OD_MCLK/,$!d' | grep "$currentMemState:" | awk '{ print $3 }' | sed 's/[^0-9]*//g' | cut -d ' ' -f 1 | xargs 2>/dev/null | cut -d ' ' -f 1)
