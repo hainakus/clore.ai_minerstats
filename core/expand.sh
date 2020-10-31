@@ -2,6 +2,7 @@
 
 DRIVE_NUMBER=$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | sed 's/[0-9]*//g' | head -n1 | xargs)
 DRIVE_PARTITION=$DRIVE_NUMBER"1"
+DRIVE_PARTITION2=$DRIVE_NUMBER"4"
 DRIVE_EFI=$DRIVE_NUMBER"3"
 if [ "$DRIVE_NUMBER" = "nvmenp" ]; then
     echo "Changeing header, NVM drive detected.."
@@ -55,9 +56,20 @@ else
     echo   # Last sector (Accept default: varies)
     echo w # Write changes
   ) | sudo fdisk /dev/$DRIVE_NUMBER | grep "Created a new partition"
+  (
+    echo d # Delete partition
+    echo   # Delete first
+    echo n # New partition
+    echo   # 1 Partition
+    echo   # First sector (Accept default: 1)
+    echo   # Last sector (Accept default: varies)
+    echo w # Write changes
+  ) | sudo fdisk /dev/$DRIVE_NUMBER | grep "Created a new partition"
   sudo growpart "/dev/$DRIVE_NUMBER" 1
+  sudo growpart "/dev/$DRIVE_NUMBER" 4
   echo ""
   sudo resize2fs /dev/$DRIVE_PARTITION
+  sudo resize2fs /dev/$DRIVE_PARTITION2
   echo ""
   CURRENT_FREE_SPACE_IN_MB="$(df -hm | grep $DRIVE_PARTITION | awk '{print $4}')"
   echo "Free Space on the Disk: $CURRENT_FREE_SPACE_IN_MB MB"
