@@ -157,6 +157,7 @@ alias amd-update='sudo /home/minerstat/minerstat-os/bin/amd-update'
 alias amdmemorytweak='sudo /home/minerstat/minerstat-os/bin/amdmemorytweak'
 alias amdmemtweak='sudo /home/minerstat/minerstat-os/bin/amdmemorytweak'
 alias kernel-update='sudo /home/minerstat/minerstat-os/core/kernel-update'
+alias force-gen2='sudo /home/minerstat/minerstat-os/core/mgen'
 
 if grep -q experimental "/etc/lsb-release"; then
   alias amdmemtool='sudo /home/minerstat/minerstat-os/bin/amdmemorytweak'

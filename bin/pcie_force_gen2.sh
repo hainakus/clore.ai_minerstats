@@ -35,6 +35,12 @@ echo "Original link control 2:" $lc2
 olt=$(("0x$lc2" & 0xF))
 echo "Original link target speed:" $olt
 
+STATUS=$(cat /media/storage/settings.txt | grep "PCIE_GEN=" | sed 's/[^=]*\(=.*\)/\1/' | tr --delete = | xargs)
+if [ "$STATUS" = "ON" ]; then
+  olt="3"
+  echo "!!! PCI GEN2 FORCE ENABLED. YOU CAN TURN OFF WITH COMMAND: mgen"
+fi
+
 if [[ "$olt" = "3" ]] || [[ "$olt" = "4" ]]; then
 
   lc2n=$(printf "%08x" $((("0x$lc2" & 0xFFFFFFF0) | 0x2)))
