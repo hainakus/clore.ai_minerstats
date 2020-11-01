@@ -10,7 +10,11 @@ if [ -z "$STATUS" ]; then
   echo "# PCIE GEN2 FORCE: ON/OFF" >> /media/storage/settings.txt
   echo "" >> /media/storage/settings.txt
   echo "PCIE_GEN=ON" >> /media/storage/settings.txt
-
+  echo
+  echo "PCI GEN2 Forcing enabled, You can turn off by running force-gen2 command again."
+  echo "It will be activated upon next boot or enter: mclock."
+  echo "Notice: It currently works for AMD GPUs only."
+  echo
 fi
 
 if [ "$STATUS" = "OFF" ]; then
