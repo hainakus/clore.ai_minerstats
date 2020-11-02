@@ -70,11 +70,11 @@ fi
 # List
 install () {
   echo
-  FULL=$(cat $VLIST_FILE | grep $SELECTED_VERSION | xargs | xargs)
+  FULL=$(cat $VLIST_FILE | grep $SELECTED_VERSION | xargs | xargs | cut -f1 -d" ")
   if [[ ! -z "$FULL" ]]; then
     echo
     echo "================="
-    echo "Valid version provided.. Attempting to download and install amdgpu-pro $SELECTED_VERSION .."
+    echo "Valid version provided.. [$FULL] Attempting to download and install amdgpu-pro $SELECTED_VERSION .."
     echo "================="
     # Stop And Maintenance mode
     echo
