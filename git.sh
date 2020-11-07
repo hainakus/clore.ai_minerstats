@@ -33,19 +33,27 @@ then
 # Check lost
 STARTJS=$(wc -c < /home/minerstat/minerstat-os/start.js)
 WORKSH=$(wc -c < /home/minerstat/minerstat-os/bin/work.sh)
-  if [ "$STARTJS" = "0" ] || [ "$WORKSH" = "0" ]; then
-    sudo su -c "sudo screen -X -S minew quit"
-    sudo su -c "sudo screen -X -S fakescreen quit"
-    sudo su -c "screen -ls minew | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
-    sudo su minerstat -c "screen -X -S fakescreen quit"
-    screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done
-    sudo su minerstat -c "screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
-    sudo killall node
-    sudo su -c "cd /tmp; 
-    wget https://labs.minerstat.farm/repo/minerstat-os/-/raw/master/core/recovery.sh; 
-    chmod 777 recovery.sh; 
-    sh recovery.sh"
-  fi
+JOBSSH=$(wc -c < /home/minerstat/minerstat-os/bin/jobs.sh)
+if [ "$STARTJS" = "0" ] || [ "$WORKSH" = "0" ] || [ "$JOBSSH" = "0" ]; then
+  sudo su -c "sudo screen -X -S minew quit"
+  sudo su -c "sudo screen -X -S fakescreen quit"
+  sudo su -c "screen -ls minew | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
+  sudo su minerstat -c "screen -X -S fakescreen quit"
+  screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done
+  sudo su minerstat -c "screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
+  sudo killall node
+  sleep 0.25
+  cd /home/minerstat
+  sudo rm /home/minerstat/recovery.sh
+  wget https://labs.minerstat.farm/repo/minerstat-os/-/raw/master/core/recovery.sh
+  sudo chmod 777 /home/minerstat/recovery.sh
+  sudo bash /home/minerstat/recovery.sh
+  sudo sh /home/minerstat/minerstat-os/bin/overclock.sh &
+  sleep 15
+  sudo su minerstat -c "screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh"
+  sleep 2
+  sudo su minerstat -c "screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh"
+fi
 fi
 
 sudo rm /home/minerstat/debug.txt
