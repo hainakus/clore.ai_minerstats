@@ -20,7 +20,8 @@ fi
 # Check lost
 STARTJS=$(wc -c < /home/minerstat/minerstat-os/start.js)
 WORKSH=$(wc -c < /home/minerstat/minerstat-os/bin/work.sh)
-if [ "$STARTJS" = "0" ] || [ "$WORKSH" = "0" ]; then
+JOBSSH=$(wc -c < /home/minerstat/minerstat-os/bin/jobs.sh)
+if [ "$STARTJS" = "0" ] || [ "$WORKSH" = "0" ] || [ "$JOBSSH" = "0" ]; then
   sudo su -c "sudo screen -X -S minew quit"
   sudo su -c "sudo screen -X -S fakescreen quit"
   sudo su -c "screen -ls minew | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
