@@ -377,10 +377,10 @@ if [ $1 ]; then
     if [[ ! -z "$POWERLIMIT" ]] && [[ "$POWERLIMIT" != "skip" ]] && [[ $POWERLIMIT == *"pwr"* ]]; then
       POWERLIMIT=$(echo $POWERLIMIT | sed 's/[^0-9]*//g')
       # Polaris limits
-      PW_MIN=$(50 * 1000000)
-      PW_MAX=$(200 * 1000000)
+      PW_MIN=$((50 * 1000000))
+      PW_MAX=$((200 * 1000000))
       # CONVERT
-      CNV=$($POWERLIMIT * 1000000)
+      CNV=$(($POWERLIMIT * 1000000))
       if [[ $CNV -lt $PW_MIN ]]; then
         echo "ERROR: New power limit not set, because less than allowed minimum $PW_MIN"
       else

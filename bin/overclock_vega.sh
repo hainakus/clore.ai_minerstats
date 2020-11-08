@@ -145,10 +145,10 @@ if [ $1 ]; then
   if [[ ! -z "$POWERLIMIT" ]] && [[ "$POWERLIMIT" != "skip" ]] && [[ $POWERLIMIT == *"pwr"* ]]; then
     POWERLIMIT=$(echo $POWERLIMIT | sed 's/[^0-9]*//g')
     # Vega limits
-    PW_MIN=$(85 * 1000000)
-    PW_MAX=$(350 * 1000000)
+    PW_MIN=$((85 * 1000000))
+    PW_MAX=$((350 * 1000000))
     # CONVERT
-    CNV=$($POWERLIMIT * 1000000)
+    CNV=$(($POWERLIMIT * 1000000))
     if [[ $CNV -lt $PW_MIN ]]; then
       echo "ERROR: New power limit not set, because less than allowed minimum $PW_MIN"
     else
