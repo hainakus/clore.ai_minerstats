@@ -186,7 +186,15 @@ if [[ $1 == "amd2" ]]; then
         MEMTEMP=0
       fi
 
-      NEWSTRING="$STRING, $currentVDDC, $currentMVDD, $VRAM_MB, $MEMTEMP"
+      # Current POWERCAP
+      POWERCAP=0
+      POWERF=$(sudo cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/power1_cap)
+      if [[ ! -z "$POWERF" ]]; then
+        POWERF=$((POWERF / 1000000))
+        POWERCAP=$POWERF
+      fi
+
+      NEWSTRING="$STRING, $currentVDDC, $currentMVDD, $VRAM_MB, $MEMTEMP, $POWERCAP"
       #echo $NEWSTRING
       I=$((i + 1))
       TEST=$(echo $AMDINFO_ORIGINAL | $JQ_PATH -r .[\"$I\"])
@@ -357,7 +365,15 @@ if [[ $1 == "amd3" ]]; then
         MEMTEMP=0
       fi
 
-      NEWSTRING="$STRING, $currentVDDC, $currentMVDD, $VRAM_MB, $MEMTEMP"
+      # Current POWERCAP
+      POWERCAP=0
+      POWERF=$(sudo cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/power1_cap)
+      if [[ ! -z "$POWERF" ]]; then
+        POWERF=$((POWERF / 1000000))
+        POWERCAP=$POWERF
+      fi
+
+      NEWSTRING="$STRING, $currentVDDC, $currentMVDD, $VRAM_MB, $MEMTEMP, $POWERCAP"
       if [[ $2 == "debug" ]]; then
         echo "Debug: $NEWSTRING | CORESTATE: $currentCoreState , MEMSTATE: $currentMemState, VDDC: $currentVDDC, MVDD: $currentMVDD, VRAM: $VRAM, GPUID: $GPUID, VID: $NID"
       fi

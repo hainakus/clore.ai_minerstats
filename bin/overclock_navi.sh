@@ -166,16 +166,16 @@ if [ $1 ]; then
   # Apply powerlimit
   if [[ ! -z "$POWERLIMIT" ]] && [[ "$POWERLIMIT" != "skip" ]] && [[ $POWERLIMIT == *"pwr"* ]]; then
     POWERLIMIT=$(echo $POWERLIMIT | sed 's/[^0-9]*//g')
-    # Navi limits
-    PW_MIN=$(85 * 1000000)
-    PW_MAX=$(300 * 1000000)
+    # Navi limits (default 180)
+    PW_MIN=$(80 * 1000000)
+    PW_MAX=$(220 * 1000000)
     # CONVERT
     CNV=$($POWERLIMIT * 1000000)
     if [[ $CNV -lt $PW_MIN ]]; then
       echo "ERROR: New power limit not set, because less than allowed minimum $PW_MIN"
     else
       if [[ $CNV -lt $PW_MAX ]]; then
-        sudo echo $CNV > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/power1_cap
+        sudo su -c "echo $CNV > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/power1_cap"
       else
         echo "ERROR: New power limit not set, because more than allowed maximum $PW_MAX"
       fi
