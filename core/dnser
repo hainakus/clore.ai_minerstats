@@ -33,13 +33,13 @@ ff02::2 ip6-allrouters
 $SERVERC minerstat.com
 $SERVERC www.minerstat.com
 $SERVERC api.minerstat.com
-172.67.70.62 static-ssl.minerstat.farm
+104.26.1.235 static-ssl.minerstat.farm
 68.183.74.40 eu.pool.ms
 167.71.240.6 us.pool.ms
 68.183.74.40 eu.sandbox.pool.ms
 167.71.240.6 us.sandbox.pool.ms
 162.159.200.1 ntp.ubuntu.com
-104.24.99.231 labs.minerstat.farm
+104.26.1.235 labs.minerstat.farm
   " > /etc/hosts
   # Manage CACHE
   sudo rm /home/minerstat/mining-pool-whitelist.txt 2>/dev/null
