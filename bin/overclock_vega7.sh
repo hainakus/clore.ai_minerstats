@@ -108,7 +108,7 @@ if [ $1 ]; then
   sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
 
   # Apply powerlimit
-  if [[ ! -z "$POWERLIMIT" ]] && [[ "$POWERLIMIT" != "skip" ]] && [[ $POWERLIMIT == *"pwr"* ]]; then
+  if [[ ! -z "$POWERLIMIT" ]] && [[ "$POWERLIMIT" != "skip" ]] && [[ "$POWERLIMIT" != "pwrskip" ]] && [[ $POWERLIMIT == *"pwr"* ]]; then
     POWERLIMIT=$(echo $POWERLIMIT | sed 's/[^0-9]*//g')
     # VII limits
     PW_MIN=$((150 * 1000000))

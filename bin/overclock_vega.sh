@@ -126,7 +126,7 @@ if [ $1 ]; then
     fi
   fi
 
-  if [[ "$VDDCI" != "skip" ]] && [[ "$VDDCI" != "0" ]] && [[ "$VDDCI" != "" ]] && [ ! -z "$VDDCI" ]; then
+  if [[ "$VDDCI" != "skip" ]] && [[ "$VDDCI" != "0" ]] && [[ "$POWERLIMIT" != "pwrskip" ]] && [[ "$VDDCI" != "" ]] && [ ! -z "$VDDCI" ]; then
     vddci="VddciLookupTable/entries/0/Vdd=$VDDCI"
   fi
 

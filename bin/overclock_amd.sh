@@ -374,7 +374,7 @@ if [ $1 ]; then
     sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
 
     # Apply powerlimit
-    if [[ ! -z "$POWERLIMIT" ]] && [[ "$POWERLIMIT" != "skip" ]] && [[ $POWERLIMIT == *"pwr"* ]]; then
+    if [[ ! -z "$POWERLIMIT" ]] && [[ "$POWERLIMIT" != "skip" ]] && [[ "$POWERLIMIT" != "pwrskip" ]] && [[ $POWERLIMIT == *"pwr"* ]]; then
       POWERLIMIT=$(echo $POWERLIMIT | sed 's/[^0-9]*//g')
       # Polaris limits
       PW_MIN=$((50 * 1000000))
