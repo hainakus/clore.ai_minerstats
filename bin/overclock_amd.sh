@@ -39,6 +39,8 @@ if [ $1 ]; then
   INSTANT=$9
   # core state
   GPUINDEX=${10}
+  # powlim
+  POWERLIMIT=${11}
 
   if [ "$INSTANT" = "instantoc" ]; then
     echo "INSTANT OVERRIDE"
@@ -169,7 +171,7 @@ if [ $1 ]; then
   if [ "$isThisNavi" -gt "0" ]; then
     echo "--**--**-- NAVI --**--**--"
     echo "Loading NAVI OC Script.."
-    sudo ./overclock_navi.sh $GPUID $2 $3 $4 $5 $7 ${10} $6
+    sudo ./overclock_navi.sh $GPUID $2 $3 $4 $5 $7 ${10} $6 ${11}
     exit 1
   fi
   ################################
@@ -178,7 +180,7 @@ if [ $1 ]; then
   if [ "$isThisVega" = "Vega" ]; then
     echo "--**--**-- VEGA --**--**--"
     echo "Loading VEGA OC Script.."
-    sudo ./overclock_vega.sh $GPUID $2 $3 $4 $5 $7 ${10} $6
+    sudo ./overclock_vega.sh $GPUID $2 $3 $4 $5 $7 ${10} $6 ${11}
     exit 1
   fi
   ################################
@@ -187,7 +189,7 @@ if [ $1 ]; then
   if [ "$isThisVegaVII" = "VII" ]; then
     echo "--**--**-- VII --**--**--"
     echo "Loading VEGA VII OC Script.."
-    sudo ./overclock_vega7.sh $GPUID $2 $3 $4 $5 $7 ${10}
+    sudo ./overclock_vega7.sh $GPUID $2 $3 $4 $5 $7 ${10} ${11}
     exit 1
   fi
   ################################
@@ -196,7 +198,7 @@ if [ $1 ]; then
   if [ "$isThisVegaII" = "VegaFrontierEdition" ]; then
     echo "--**--**-- VEGA FRONTIER --**--**--"
     echo "Loading VEGA OC Script.."
-    sudo ./overclock_vega.sh $GPUID $2 $3 $4 $5 $7 ${10} $6
+    sudo ./overclock_vega.sh $GPUID $2 $3 $4 $5 $7 ${10} $6 ${11}
     exit 1
   fi
   ################################
@@ -370,6 +372,26 @@ if [ $1 ]; then
     fi
 
     sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
+
+    # Apply powerlimit
+    if [[ ! -z "$POWERLIMIT" ]] && [[ "$POWERLIMIT" != "skip" ]] && [[ $POWERLIMIT == *"pwr"* ]]; then
+      POWERLIMIT=$(echo $POWERLIMIT | sed 's/[^0-9]*//g')
+      # Polaris limits
+      PW_MIN=$(50 * 1000000)
+      PW_MAX=$(200 * 1000000)
+      # CONVERT
+      CNV=$($POWERLIMIT * 1000000)
+      if [[ $CNV -lt $PW_MIN ]]; then
+        echo "ERROR: New power limit not set, because less than allowed minimum $PW_MIN"
+      else
+        if [[ $CNV -lt $PW_MAX ]]; then
+          sudo echo $CNV > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/power1_cap
+        else
+          echo "ERROR: New power limit not set, because more than allowed maximum $PW_MAX"
+        fi
+      fi
+    fi
+
     if [ -z "$SAFETY" ] || [ -z "$RBC" ] || [ "$RBCE" -gt 0 ]; then
       echo "UPP failed falling back to old method"
 

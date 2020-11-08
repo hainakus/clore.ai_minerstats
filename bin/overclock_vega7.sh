@@ -28,6 +28,7 @@ if [ $1 ]; then
   VDDC=$5
   MVDD=$6
   COREINDEX=$7
+  POWERLIMIT=$8
 
   if [ -z "$COREINDEX" ]; then
     COREINDEX="7"
@@ -105,6 +106,25 @@ if [ $1 ]; then
   # comit
   sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "c"
   sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
+
+  # Apply powerlimit
+  if [[ ! -z "$POWERLIMIT" ]] && [[ "$POWERLIMIT" != "skip" ]] && [[ $POWERLIMIT == *"pwr"* ]]; then
+    POWERLIMIT=$(echo $POWERLIMIT | sed 's/[^0-9]*//g')
+    # VII limits
+    PW_MIN=$(150 * 1000000)
+    PW_MAX=$(350 * 1000000)
+    # CONVERT
+    CNV=$($POWERLIMIT * 1000000)
+    if [[ $CNV -lt $PW_MIN ]]; then
+      echo "ERROR: New power limit not set, because less than allowed minimum $PW_MIN"
+    else
+      if [[ $CNV -lt $PW_MAX ]]; then
+        sudo echo $CNV > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/power1_cap
+      else
+        echo "ERROR: New power limit not set, because more than allowed maximum $PW_MAX"
+      fi
+    fi
+  fi
 
   # Apply
   sudo ./rocm-smi -d $GPUID --setsclk 7

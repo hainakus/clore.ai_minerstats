@@ -29,6 +29,7 @@ if [ $1 ]; then
   MVDD=$6
   COREINDEX=$7
   VDDCI=$8
+  POWERLIMIT=$9
   version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
 
   if [ -z "$COREINDEX" ]; then
@@ -138,6 +139,25 @@ if [ $1 ]; then
     sudo su minerstat -c "yes | sudo pip3 uninstall upp"
     sudo su minerstat -c "pip3 install setuptools"
     sudo su minerstat -c "pip3 install upp"
+  fi
+
+  # Apply powerlimit
+  if [[ ! -z "$POWERLIMIT" ]] && [[ "$POWERLIMIT" != "skip" ]] && [[ $POWERLIMIT == *"pwr"* ]]; then
+    POWERLIMIT=$(echo $POWERLIMIT | sed 's/[^0-9]*//g')
+    # Vega limits
+    PW_MIN=$(85 * 1000000)
+    PW_MAX=$(350 * 1000000)
+    # CONVERT
+    CNV=$($POWERLIMIT * 1000000)
+    if [[ $CNV -lt $PW_MIN ]]; then
+      echo "ERROR: New power limit not set, because less than allowed minimum $PW_MIN"
+    else
+      if [[ $CNV -lt $PW_MAX ]]; then
+        sudo echo $CNV > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/power1_cap
+      else
+        echo "ERROR: New power limit not set, because more than allowed maximum $PW_MAX"
+      fi
+    fi
   fi
 
   sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \

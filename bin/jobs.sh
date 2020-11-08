@@ -131,7 +131,7 @@ ff02::2 ip6-allrouters
 $SERVERC minerstat.com
 $SERVERC www.minerstat.com
 $SERVERC api.minerstat.com
-104.24.98.231 static-ssl.minerstat.farm
+172.67.70.62 static-ssl.minerstat.farm
 68.183.74.40 eu.pool.ms
 167.71.240.6 us.pool.ms
 68.183.74.40 eu.sandbox.pool.ms
@@ -283,28 +283,28 @@ if [ "$NVIDIADEVICE" = "0" ]; then
   NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
 fi
 if [ "$NVIDIADEVICE" != "0" ]; then
-#if echo "$NVIDIA" | grep -iq "^GPU 0:" ;then
-DONVIDIA="YES"
-# Check XSERVER
-XORG=$(timeout 5 nvidia-smi | grep -c Xorg)
-SNUM=$(sudo su minerstat -c "screen -list | grep -c display2")
-if [[ "$SNUM" != "1" ]] || [[ "$XORG" -lt 1 ]] || [[ "$XORG" -lt $NVIDIADEVICE ]]; then
-  sudo su -c "timeout 10 sudo screen -X -S display quit" > /dev/null
-  timeout 10 screen -X -S display quit > /dev/null
-  timeout 10 screen -X -S display2 quit > /dev/null
-  sudo timeout 10 killall X > /dev/null
-  sudo timeout 10 killall Xorg > /dev/null
-  sudo timeout 5 kill -9 $(sudo pidof Xorg) > /dev/null
-  sudo timeout 5 rm /tmp/.X0-lock > /dev/null
-  echo "device num: $NVIDIADEVICE"
-  if [[ "$NVIDIADEVICE" -gt 1 ]]; then
-    sudo timeout 10 nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" --custom-edid="DFP-0:/home/minerstat/minerstat-os/bin/edid.bin" --preserve-driver-name --enable-all-gpus
-  else
-    sudo timeout 10 nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" --custom-edid="DFP-0:/home/minerstat/minerstat-os/bin/edid.bin" --preserve-driver-name
+  #if echo "$NVIDIA" | grep -iq "^GPU 0:" ;then
+  DONVIDIA="YES"
+  # Check XSERVER
+  XORG=$(timeout 5 nvidia-smi | grep -c Xorg)
+  SNUM=$(sudo su minerstat -c "screen -list | grep -c display2")
+  if [[ "$SNUM" != "1" ]] || [[ "$XORG" -lt 1 ]] || [[ "$XORG" -lt $NVIDIADEVICE ]]; then
+    sudo su -c "timeout 10 sudo screen -X -S display quit" > /dev/null
+    timeout 10 screen -X -S display quit > /dev/null
+    timeout 10 screen -X -S display2 quit > /dev/null
+    sudo timeout 10 killall X > /dev/null
+    sudo timeout 10 killall Xorg > /dev/null
+    sudo timeout 5 kill -9 $(sudo pidof Xorg) > /dev/null
+    sudo timeout 5 rm /tmp/.X0-lock > /dev/null
+    echo "device num: $NVIDIADEVICE"
+    if [[ "$NVIDIADEVICE" -gt 1 ]]; then
+      sudo timeout 10 nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" --custom-edid="DFP-0:/home/minerstat/minerstat-os/bin/edid.bin" --preserve-driver-name --enable-all-gpus
+    else
+      sudo timeout 10 nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" --custom-edid="DFP-0:/home/minerstat/minerstat-os/bin/edid.bin" --preserve-driver-name
+    fi
+    sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf > /dev/null
+    sudo su minerstat -c "screen -A -m -d -S display2 sudo X :0" > /dev/null
   fi
-  sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf > /dev/null
-  sudo su minerstat -c "screen -A -m -d -S display2 sudo X :0" > /dev/null
-fi
 fi
 # Check CURL is installed
 ISCURL=$(dpkg -l curl | grep curl | wc -l | sed 's/[^0-9]*//g')
