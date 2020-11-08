@@ -168,7 +168,7 @@ if [ $1 ]; then
     POWERLIMIT=$(echo $POWERLIMIT | sed 's/[^0-9]*//g')
     # Navi limits (default 180)
     PW_MIN=$((80 * 1000000))
-    PW_MAX=$((220 * 1000000))
+    PW_MAX=$((250 * 1000000))
     # CONVERT
     CNV=$(($POWERLIMIT * 1000000))
     if [[ $CNV -lt $PW_MIN ]]; then
