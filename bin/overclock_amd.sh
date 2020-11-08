@@ -385,6 +385,8 @@ if [ $1 ]; then
         echo "ERROR: New power limit not set, because less than allowed minimum $PW_MIN"
       else
         if [[ $CNV -lt $PW_MAX ]]; then
+          FROM=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/power1_cap)
+          echo "Changing power limit from $FROM W to $CNV W"
           sudo su -c "echo $CNV > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/power1_cap"
         else
           echo "ERROR: New power limit not set, because more than allowed maximum $PW_MAX"
