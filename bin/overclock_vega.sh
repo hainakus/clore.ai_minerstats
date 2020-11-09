@@ -126,7 +126,7 @@ if [ $1 ]; then
     fi
   fi
 
-  if [[ "$VDDCI" != "skip" ]] && [[ "$VDDCI" != "0" ]] && [[ "$POWERLIMIT" != "pwrskip" ]] && [[ "$VDDCI" != "" ]] && [ ! -z "$VDDCI" ]; then
+  if [[ "$VDDCI" != "skip" ]] && [[ "$VDDCI" != "0" ]] && [[ "$VDDCI" != "" ]] && [ ! -z "$VDDCI" ]; then
     vddci="VddciLookupTable/entries/0/Vdd=$VDDCI"
   fi
 
@@ -142,22 +142,24 @@ if [ $1 ]; then
   fi
 
   # Apply powerlimit
-  if [[ ! -z "$POWERLIMIT" ]] && [[ "$POWERLIMIT" != "skip" ]] && [[ $POWERLIMIT == *"pwr"* ]]; then
+  if [[ ! -z "$POWERLIMIT" ]] && [[ "$POWERLIMIT" != "skip" ]] && [[ "$POWERLIMIT" != "pwrskip" ]] && [[ "$POWERLIMIT" != "pwrSkip" ]] && [[ $POWERLIMIT == *"pwr"* ]]; then
     POWERLIMIT=$(echo $POWERLIMIT | sed 's/[^0-9]*//g')
-    # Vega limits
-    PW_MIN=$((85 * 1000000))
-    PW_MAX=$((350 * 1000000))
-    # CONVERT
-    CNV=$(($POWERLIMIT * 1000000))
-    if [[ $CNV -lt $PW_MIN ]]; then
-      echo "ERROR: New power limit not set, because less than allowed minimum $PW_MIN"
-    else
-      if [[ $CNV -lt $PW_MAX ]]; then
-        FROM=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/power1_cap)
-        echo "Changing power limit from $FROM W to $CNV W"
-        sudo su -c "echo $CNV > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/power1_cap"
+    if [[ ! -z "$POWERLIMIT" ]] && [[ "$POWERLIMIT" != "0" ]]; then
+      # Vega limits
+      PW_MIN=$((85 * 1000000))
+      PW_MAX=$((350 * 1000000))
+      # CONVERT
+      CNV=$(($POWERLIMIT * 1000000))
+      if [[ $CNV -lt $PW_MIN ]]; then
+        echo "ERROR: New power limit not set, because less than allowed minimum $PW_MIN"
       else
-        echo "ERROR: New power limit not set, because more than allowed maximum $PW_MAX"
+        if [[ $CNV -lt $PW_MAX ]]; then
+          FROM=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/power1_cap)
+          echo "Changing power limit from $FROM W to $CNV W"
+          sudo su -c "echo $CNV > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/power1_cap"
+        else
+          echo "ERROR: New power limit not set, because more than allowed maximum $PW_MAX"
+        fi
       fi
     fi
   fi

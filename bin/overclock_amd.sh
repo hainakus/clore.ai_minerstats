@@ -374,22 +374,24 @@ if [ $1 ]; then
     sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
 
     # Apply powerlimit
-    if [[ ! -z "$POWERLIMIT" ]] && [[ "$POWERLIMIT" != "skip" ]] && [[ "$POWERLIMIT" != "pwrskip" ]] && [[ $POWERLIMIT == *"pwr"* ]]; then
+    if [[ ! -z "$POWERLIMIT" ]] && [[ "$POWERLIMIT" != "skip" ]] && [[ "$POWERLIMIT" != "pwrskip" ]] && [[ "$POWERLIMIT" != "pwrSkip" ]] && [[ $POWERLIMIT == *"pwr"* ]]; then
       POWERLIMIT=$(echo $POWERLIMIT | sed 's/[^0-9]*//g')
-      # Polaris limits
-      PW_MIN=$((50 * 1000000))
-      PW_MAX=$((200 * 1000000))
-      # CONVERT
-      CNV=$(($POWERLIMIT * 1000000))
-      if [[ $CNV -lt $PW_MIN ]]; then
-        echo "ERROR: New power limit not set, because less than allowed minimum $PW_MIN"
-      else
-        if [[ $CNV -lt $PW_MAX ]]; then
-          FROM=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/power1_cap)
-          echo "Changing power limit from $FROM W to $CNV W"
-          sudo su -c "echo $CNV > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/power1_cap"
+      if [[ ! -z "$POWERLIMIT" ]] && [[ "$POWERLIMIT" != "0" ]]; then
+        # Polaris limits
+        PW_MIN=$((50 * 1000000))
+        PW_MAX=$((200 * 1000000))
+        # CONVERT
+        CNV=$(($POWERLIMIT * 1000000))
+        if [[ $CNV -lt $PW_MIN ]]; then
+          echo "ERROR: New power limit not set, because less than allowed minimum $PW_MIN"
         else
-          echo "ERROR: New power limit not set, because more than allowed maximum $PW_MAX"
+          if [[ $CNV -lt $PW_MAX ]]; then
+            FROM=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/power1_cap)
+            echo "Changing power limit from $FROM W to $CNV W"
+            sudo su -c "echo $CNV > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/power1_cap"
+          else
+            echo "ERROR: New power limit not set, because more than allowed maximum $PW_MAX"
+          fi
         fi
       fi
     fi
