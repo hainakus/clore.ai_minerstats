@@ -107,7 +107,7 @@ apply_tables() {
 
 }
 
-if [ "$AMDDEVICE" = "0" ]; then
+if [[ "$AMDDEVICE" = "0" ]]; then
   echo
   echo "No AMD Devices found to tweak.."
   echo
