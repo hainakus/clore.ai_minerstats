@@ -324,11 +324,14 @@ do
 
   if [ $RESPONSE = "SHUTDOWN" ]; then
     #sudo shutdown -h now
-    echo 1 | sudo tee /proc/sys/kernel/sysrq
-    echo o | sudo tee /proc/sysrq-trigger
+    sudo echo 1 > /proc/sys/kernel/sysrq #enable
+    sudo echo s > /proc/sysrq-trigger #(*S*nc) Sync all cached disk operations to disk
+    sudo echo u > /proc/sysrq-trigger #(*U*mount) Umounts all mounted partitions
+    sleep 1
+    sudo echo o > /proc/sysrq-trigger # shutdown the system
     sudo su -c "echo 1 > /proc/sys/kernel/sysrq"
+    sleep 1
     sudo su -c "echo o > /proc/sysrq-trigger"
-    sleep 2
     sudo shutdown -h now
   fi
 
