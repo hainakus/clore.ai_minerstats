@@ -25,10 +25,10 @@ if [ ! $1 ]; then
   echo "FOUND AMD    :  $AMDDEVICE"
   echo "FOUND NVIDIA :  $NVIDIADEVICE"
   echo ""
-  
+
   if [ ! -z "$NVIDIA" ]; then
     if echo "$NVIDIA" | grep -iq "^GPU 0:" ;then
-      wget -qO dofans.sh "https://api.minerstat.com/v2/getfans.php?type=nvidia&token=$TOKEN&worker=$WORKER&nums=$NVIDIADEVICE"
+      wget -o /dev/null -qO dofans.sh "https://api.minerstat.com/v2/getfans.php?type=nvidia&token=$TOKEN&worker=$WORKER&nums=$NVIDIADEVICE"
       sleep 1
       sudo chmod 777 dofans.sh
       sleep 0.5
@@ -61,14 +61,14 @@ if [ ! $1 ]; then
       echo "Integrated Graphics ID: "$SKIP
     fi
 
-    wget -qO dofans.sh "https://api.minerstat.com/v2/getfans.php?type=amd&token=$TOKEN&worker=$WORKER&nums=$AMDDEVICE&starts=$STARTS&skip=$SKIP"
+    wget -o /dev/null -qO dofans.sh "https://api.minerstat.com/v2/getfans.php?type=amd&token=$TOKEN&worker=$WORKER&nums=$AMDDEVICE&starts=$STARTS&skip=$SKIP"
     sleep 1.5
     sudo chmod 777 dofans.sh
     sleep 0.5
     sudo sh dofans.sh
   fi
-  
-    FNUM=$(sudo su -c "screen -list | grep -c curve")
+
+  FNUM=$(sudo su -c "screen -list | grep -c curve")
   if [ "$FNUM" -gt "0" ]; then
     echo "Fan curve detected.. restarting"
     sudo killall curve

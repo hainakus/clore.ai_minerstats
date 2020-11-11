@@ -43,7 +43,7 @@ $SERVERC api.minerstat.com
   " > /etc/hosts
   # Manage CACHE
   sudo rm /home/minerstat/mining-pool-whitelist.txt 2>/dev/null
-  wget https://minerstat.com/mining-pool-whitelist.txt -O /home/minerstat/mining-pool-whitelist.txt
+  wget -o /dev/null https://minerstat.com/mining-pool-whitelist.txt -O /home/minerstat/mining-pool-whitelist.txt
   if [ $? -ne 0 ]; then
     echo "Cache wget failed. Trying next time"
   else

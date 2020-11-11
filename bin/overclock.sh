@@ -71,7 +71,7 @@ sleep 1
 
 if [ ! -z "$DONVIDIA" ]; then
   sudo nvidia-smi -pm 1
-  wget -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=nvidia&token=$TOKEN&worker=$WORKER&nums=$NVIDIADEVICE&instant=$INSTANT"
+  wget -o /dev/null -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=nvidia&token=$TOKEN&worker=$WORKER&nums=$NVIDIADEVICE&instant=$INSTANT"
   sleep 3
   sudo bash doclock.sh
 
@@ -166,7 +166,7 @@ if [ ! -z "$DOAMD" ]; then
   #sudo /home/minerstat/minerstat-os/core/autotune
   #fi
 
-  wget -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=amd&token=$TOKEN&worker=$WORKER&nums=$AMDDEVICE&instant=$INSTANT&starts=$STARTS"
+  wget -o /dev/null -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=amd&token=$TOKEN&worker=$WORKER&nums=$AMDDEVICE&instant=$INSTANT&starts=$STARTS"
 
   sleep 1.5
   sudo bash doclock.sh

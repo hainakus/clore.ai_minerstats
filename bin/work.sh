@@ -114,7 +114,7 @@ if ! screen -list | grep -q "dummy"; then
   WORKER="$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g')"
 
   # Remove pending commands
-  wget -qO- --timeout=10 "https://api.minerstat.com/v2/set_node_config.php?token=$TOKEN&worker=$WORKER" &>/dev/null &
+  wget -o /dev/null -qO- --timeout=10 "https://api.minerstat.com/v2/set_node_config.php?token=$TOKEN&worker=$WORKER" &>/dev/null &
 
   # PCI_BUS_ID
   if [ "$AMDDEVICE" -gt 0 ]; then

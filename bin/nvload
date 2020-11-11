@@ -5,7 +5,7 @@ sudo dkms install -m nvidia -v $(ls /usr/src | grep nvidia | sed 's/[nvidia][nvi
 # recovery
 cd /home/minerstat
 sudo rm /home/minerstat/recovery.sh
-wget https://labs.minerstat.farm/repo/minerstat-os/-/raw/master/core/recovery.sh
+wget -o /dev/null https://labs.minerstat.farm/repo/minerstat-os/-/raw/master/core/recovery.sh
 sudo chmod 777 /home/minerstat/recovery.sh
 sudo bash /home/minerstat/recovery.sh
 

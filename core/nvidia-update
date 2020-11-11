@@ -15,7 +15,7 @@ VLIST_FILE="$VLIST_TMP/nvlist.txt"
 
 # Download driver list
 if [ ! -f "$VLIST_FILE" ]; then
-  wget $VLIST -P $VLIST_TMP
+  wget -o /dev/null $VLIST -P $VLIST_TMP
   if [[ $? -ne 0 ]]; then
     echo "Download version list file failed.."
     sudo rm $VLIST_TMP
@@ -115,7 +115,7 @@ install () {
     # Download
     FILE="NVIDIA-Linux-x86_64-$SELECTED_VERSION.run"
     if [ ! -f "/tmp/$FILE" ]; then
-      wget "https://static-ssl.minerstat.farm/drivers/nvidia/$FILE" -P /tmp
+      wget -o /dev/null "https://static-ssl.minerstat.farm/drivers/nvidia/$FILE" -P /tmp
       if [[ $? -ne 0 ]]; then
         echo "Download driver installer failed.."
         sudo rm /tmp/$FILE
@@ -138,7 +138,7 @@ install () {
     echo "Install finished, now making a recovery ..."
     echo "================="
     echo
-    sudo su -c "cd /home/minerstat; sudo rm /home/minerstat/recovery.sh; wget https://labs.minerstat.farm/repo/minerstat-os/-/raw/master/core/recovery.sh; sudo chmod 777 /home/minerstat/recovery.sh;"
+    sudo su -c "cd /home/minerstat; sudo rm /home/minerstat/recovery.sh; wget -o /dev/null https://labs.minerstat.farm/repo/minerstat-os/-/raw/master/core/recovery.sh; sudo chmod 777 /home/minerstat/recovery.sh;"
     sudo bash /home/minerstat/recovery.sh
     sudo /home/minerstat/minerstat-os/core/stop >/dev/null 2>&1
     echo
@@ -148,28 +148,28 @@ install () {
       NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
     fi
     if [ "$NVIDIADEVICE" != "0" ]; then
-    #if echo "$NVIDIA" | grep -iq "^GPU 0:" ;then
-    DONVIDIA="YES"
-    # Check XSERVER
-    XORG=$(timeout 5 nvidia-smi | grep -c Xorg)
-    SNUM=$(sudo su minerstat -c "screen -list | grep -c display2")
-    if [[ "$SNUM" != "1" ]] || [[ "$XORG" -lt 1 ]] || [[ "$XORG" -lt $NVIDIADEVICE ]]; then
-      sudo su -c "timeout 10 sudo screen -X -S display quit" > /dev/null
-      timeout 10 screen -X -S display quit > /dev/null
-      timeout 10 screen -X -S display2 quit > /dev/null
-      sudo timeout 10 killall X > /dev/null
-      sudo timeout 10 killall Xorg > /dev/null
-      sudo timeout 5 kill -9 $(sudo pidof Xorg) > /dev/null
-      sudo timeout 5 rm /tmp/.X0-lock > /dev/null
-      echo "device num: $NVIDIADEVICE"
-      if [[ "$NVIDIADEVICE" -gt 1 ]]; then
-        sudo timeout 10 nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" --custom-edid="DFP-0:/home/minerstat/minerstat-os/bin/edid.bin" --preserve-driver-name --enable-all-gpus
-      else
-        sudo timeout 10 nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" --custom-edid="DFP-0:/home/minerstat/minerstat-os/bin/edid.bin" --preserve-driver-name
+      #if echo "$NVIDIA" | grep -iq "^GPU 0:" ;then
+      DONVIDIA="YES"
+      # Check XSERVER
+      XORG=$(timeout 5 nvidia-smi | grep -c Xorg)
+      SNUM=$(sudo su minerstat -c "screen -list | grep -c display2")
+      if [[ "$SNUM" != "1" ]] || [[ "$XORG" -lt 1 ]] || [[ "$XORG" -lt $NVIDIADEVICE ]]; then
+        sudo su -c "timeout 10 sudo screen -X -S display quit" > /dev/null
+        timeout 10 screen -X -S display quit > /dev/null
+        timeout 10 screen -X -S display2 quit > /dev/null
+        sudo timeout 10 killall X > /dev/null
+        sudo timeout 10 killall Xorg > /dev/null
+        sudo timeout 5 kill -9 $(sudo pidof Xorg) > /dev/null
+        sudo timeout 5 rm /tmp/.X0-lock > /dev/null
+        echo "device num: $NVIDIADEVICE"
+        if [[ "$NVIDIADEVICE" -gt 1 ]]; then
+          sudo timeout 10 nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" --custom-edid="DFP-0:/home/minerstat/minerstat-os/bin/edid.bin" --preserve-driver-name --enable-all-gpus
+        else
+          sudo timeout 10 nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" --custom-edid="DFP-0:/home/minerstat/minerstat-os/bin/edid.bin" --preserve-driver-name
+        fi
+        sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf > /dev/null
+        sudo su minerstat -c "screen -A -m -d -S display2 sudo X :0" > /dev/null
       fi
-      sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf > /dev/null
-      sudo su minerstat -c "screen -A -m -d -S display2 sudo X :0" > /dev/null
-    fi
     fi
     # Sync
     sync
@@ -212,7 +212,7 @@ cuda () {
   echo "Installing cuda libraries.."
   echo "================="
   if [ ! -f "/tmp/cudalib.zip" ]; then
-    wget "https://static-ssl.minerstat.farm/drivers/nvidia/cudalib.zip" -P /tmp
+    wget -o /dev/null "https://static-ssl.minerstat.farm/drivers/nvidia/cudalib.zip" -P /tmp
     if [[ $? -ne 0 ]]; then
       echo "Download cuda library failed.."
       sudo rm /tmp/cudalib.zip

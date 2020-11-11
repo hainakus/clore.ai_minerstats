@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cd /home/minerstat
-wget https://downloadmirror.intel.com/15817/eng/e1000e-3.8.4.tar.gz
+wget -o /dev/null https://downloadmirror.intel.com/15817/eng/e1000e-3.8.4.tar.gz
 tar -xvf e1000e-3.8.4.tar.gz
 cd e1000e-3.8.4/src
 sed -i 's/#if UTS_UBUNTU_RELEASE_ABI > 255/#if UTS_UBUNTU_RELEASE_ABI > 99255/' /home/minerstat/e1000e-3.8.4/src/kcompat.h

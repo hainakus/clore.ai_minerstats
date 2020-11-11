@@ -585,7 +585,7 @@ module.exports = {
       console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;33mDownloading (" + fullFileName + ")\x1b[0m");
 
       const execa = require('execa');
-      execa.shell("cd /home/minerstat/minerstat-os/; sudo rm -rf clients/" + miner + "; sudo rm " + fullFileName + "; sudo mkdir clients/" + miner + "; sudo chmod 777 clients/" + miner + "; wget " + dlURL, {
+      execa.shell("cd /home/minerstat/minerstat-os/; sudo rm -rf clients/" + miner + "; sudo rm " + fullFileName + "; sudo mkdir clients/" + miner + "; sudo chmod 777 clients/" + miner + "; wget -o /dev/null  " + dlURL, {
         cwd: process.cwd(),
         detached: false,
         stdio: "inherit"

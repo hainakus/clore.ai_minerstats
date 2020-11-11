@@ -101,7 +101,7 @@ if [ $RESPONSE = "CONSOLE" ]; then
   sleep 3
   TELEID=$(sudo /home/minerstat/minerstat-os/bin/tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}' | cut -f1 -d"@" | sed 's/.* //')
   echo "TeleID: $TELEID"
-  wget -qO- "https://api.minerstat.com:2053/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&teleid=$TELEID" ; echo
+  wget -o /dev/null -qO- "https://api.minerstat.com:2053/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&teleid=$TELEID" ; echo
 fi
 
 if [ $RESPONSE = "RESTART" ] || [ $RESPONSE = "START" ] || [ $RESPONSE = "NODERESTART" ] || [ $RESPONSE = "RESTARTNODE" ]; then

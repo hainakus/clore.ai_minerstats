@@ -50,8 +50,8 @@ if [[ $CURRENT_KERNEL == *"5.0.21"* ]]; then
   sudo apt-get install --reinstall amdgpu-dkms amdgpu-dkms-firmware
 
   # Missing firmware
-  sudo wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/tree/rtl_nic/rtl8125a-3.fw -P /lib/firmware/rtl_nic/
-  sudo wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/tree/rtl_nic/rtl8168fp-3.fw -P /lib/firmware/rtl_nic/
+  sudo wget -o /dev/null https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/tree/rtl_nic/rtl8125a-3.fw -P /lib/firmware/rtl_nic/
+  sudo wget -o /dev/null https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/tree/rtl_nic/rtl8168fp-3.fw -P /lib/firmware/rtl_nic/
 
   # grub, initramfs
   sudo update-grub2

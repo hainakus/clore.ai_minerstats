@@ -19,7 +19,7 @@ sudo apt-get --yes --force-yes purge snapd ubuntu-core-launcher squashfs-tools
 sudo apt-get --yes --force-yes update
 
 cd /tmp
-wget --referer http://support.amd.com/ https://www2.ati.com/drivers/linux/ubuntu/amdgpu-pro-17.50-511655.tar.xz
+wget -o /dev/null --referer http://support.amd.com/ https://www2.ati.com/drivers/linux/ubuntu/amdgpu-pro-17.50-511655.tar.xz
 tar xvf amdgpu-pro-17.50-511655.tar.xz
 cd amdgpu-pro-17.50-511655/
 sudo ./amdgpu-pro-install -y --compute

@@ -141,7 +141,7 @@ $SERVERC api.minerstat.com
   " > /etc/hosts
   # Manage CACHE
   sudo rm /home/minerstat/mining-pool-whitelist.txt 2>/dev/null
-  wget https://minerstat.com/mining-pool-whitelist.txt -O /home/minerstat/mining-pool-whitelist.txt
+  wget -o /dev/null https://minerstat.com/mining-pool-whitelist.txt -O /home/minerstat/mining-pool-whitelist.txt
   if [ $? -ne 0 ]; then
     echo "Cache wget failed. Trying next time"
   else
@@ -245,11 +245,11 @@ if [ -f "$CURVE_FILE" ]; then
 fi
 # Time Date SYNC
 timeout 5 sudo timedatectl set-ntp on &
-DATES=$(timeout 3 wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)
+DATES=$(timeout 3 wget -o /dev/null -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)
 if [[ ! -z "$DATES" ]]; then
   sudo date -s "$(echo $DATES)Z"
 else
-  DATES=$(timeout 3 wget -qSO- --max-redirect=0 www.minerstat.com 2>&1 | grep Date: | cut -d' ' -f5-8)
+  DATES=$(timeout 3 wget -o /dev/null -qSO- --max-redirect=0 www.minerstat.com 2>&1 | grep Date: | cut -d' ' -f5-8)
   if [[ ! -z "$DATES" ]]; then
     sudo date -s "$(echo $DATES)Z"
   fi
@@ -391,7 +391,7 @@ if [ "$version" = "1.2" ]; then
   else
     echo "FW needs update"
     echo "Updating firmware.."
-    cd /tmp; mkdir firmware; cd firmware; wget https://static-ssl.minerstat.farm/miners/linux-firmware.tar.gz; tar -xvf linux-firmware.tar.gz; rm linux-firmware.tar.gz; sudo cp -va * /lib/firmware/amdgpu; sudo update-initramfs -u; sync;
+    cd /tmp; mkdir firmware; cd firmware; wget -o /dev/null https://static-ssl.minerstat.farm/miners/linux-firmware.tar.gz; tar -xvf linux-firmware.tar.gz; rm linux-firmware.tar.gz; sudo cp -va * /lib/firmware/amdgpu; sudo update-initramfs -u; sync;
     sudo su -c "echo '1' > /media/storage/fw.txt"
   fi
 fi

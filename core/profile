@@ -46,7 +46,7 @@ if [ "$SNUM" -lt "1" ]; then
       if [ $PROTECT = $HEADCAPB ]; then
         echo "Attempt to recover OS from from the network."
         cd /tmp
-        sudo su -c "cd /home/minerstat; sudo rm /home/minerstat/recovery.sh; wget https://labs.minerstat.farm/repo/minerstat-os/-/raw/master/core/recovery.sh; sudo chmod 777 /home/minerstat/recovery.sh;"; sudo bash /home/minerstat/recovery.sh
+        sudo su -c "cd /home/minerstat; sudo rm /home/minerstat/recovery.sh; wget -o /dev/null https://labs.minerstat.farm/repo/minerstat-os/-/raw/master/core/recovery.sh; sudo chmod 777 /home/minerstat/recovery.sh;"; sudo bash /home/minerstat/recovery.sh
         sudo su minerstat -c "/bin/sh /home/minerstat/minerstat-os/bin/onboot.sh"
       fi
       sleep 1

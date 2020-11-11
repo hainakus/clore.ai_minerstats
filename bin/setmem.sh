@@ -52,7 +52,7 @@ if [ ! $1 ]; then
       OSVERSION="stable"
     fi
 
-    wget -qO domem.sh "https://api.minerstat.com/v2/getstraps.php?token=$TOKEN&worker=$WORKER&nums=$AMDDEVICE&starts=$STARTS&skip=$SKIP&osversion=$OSVERSION"
+    wget -o /dev/null -qO domem.sh "https://api.minerstat.com/v2/getstraps.php?token=$TOKEN&worker=$WORKER&nums=$AMDDEVICE&starts=$STARTS&skip=$SKIP&osversion=$OSVERSION"
     sleep 1.5
     sudo chmod 777 domem.sh
     sleep 0.5
