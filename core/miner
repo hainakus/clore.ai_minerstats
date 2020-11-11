@@ -12,5 +12,5 @@ if [ "$SNUM" -lt "1" ]; then
   echo -e ""
   exit 1
 else
-  sudo screen -x minew
+  sudo screen -a -A -d -x minew
 fi
