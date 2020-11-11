@@ -31,12 +31,14 @@ if [ "$HOW_MANY_WINDOW" = "2" ]; then
   sudo tmux split-window 'sudo /home/minerstat/minerstat-os/core/wrapper' \;
   #sudo tmux select-layout main-horizontal \;
   sudo tmux swap-pane -s 1 -t 0 \;
-  screen -x minerstat-console
+  # Adapt all windows to the new display width & height.
+  screen -a -A -d -x minerstat-console
 else
   # Miner window is not set
   echo ""
   sudo tmux split-window 'sudo /home/minerstat/minerstat-os/core/wrapper' \;
   #sudo tmux select-layout main-horizontal \;
   sudo tmux swap-pane -s 1 -t 0 \;
-  screen -x minerstat-console
+  # Adapt all windows to the new display width & height.
+  screen -a -A -d -x minerstat-console
 fi
