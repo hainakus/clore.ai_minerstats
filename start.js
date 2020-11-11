@@ -236,14 +236,16 @@ module.exports = {
 
     try {
       var getCUDA = require('child_process').exec,
-        getCUDAProc = getCUDA("nvidia-settings --help | grep version | head -n1 | sed 's/[^.0-9]*//g'", function(error, stdout, stderr) {
+        getCUDAProc = getCUDA("nvidia-settings --help | grep version | head -n1 | sed 's/[^.0-9]*//g' | xargs | xargs", function(error, stdout, stderr) {
           var driverversion = stdout;
           console.log("\x1b[1;94m== \x1b[0mNVIDIA driver version: \x1b[1;32m" + driverversion + "\x1b[0m");
           // NVIDIA-Linux-x86_64-455.23.04.run
           // NVIDIA-Linux-x86_64-455.38.run
-          if (driverversion == "455.23.04" || driverversion == "455.38") {
+          if (driverversion.includes("455.23.04") || driverversion.includes("455.38")) {
             global.cuda = "11";
+            //console.log("set");
           }
+          //console.log(driverversion);
         });
     } catch (getCUDAError) {}
 
@@ -480,6 +482,9 @@ module.exports = {
           if (cudaerror != "null" && global.osversion == "experimental") {
             var parseData = JSON.parse(cudabody);
             var cudaVersion = parseData[gpuMiner.toLowerCase().replace("_10", "").replace("_11", "")];
+
+            //console.log("miner cuda: " + cudaVersion)
+            //console.log("global cuda: " + global.cuda)
 
             // If CUDA 11
             if (cudaVersion == "11" || cudaVersion == 11) {
