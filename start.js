@@ -165,12 +165,12 @@ module.exports = {
           if (cpuSync.toString() === "true") {
             console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32m" + global.worker + " (" + global.cpuDefault.toLowerCase() + ") synced\x1b[0m");
           } else {
-	    console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31m" + global.worker + " (" + global.cpuDefault.toLowerCase() + ") not hashing\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31m" + global.worker + " (" + global.cpuDefault.toLowerCase() + ") not hashing\x1b[0m");
             //console.log("\x1b[1;94m== \x1b[0m[" + global.minerType + "] \x1b " + hwdatas.replace(/(\r\n|\n|\r)/gm, ""));
           }
         }
       } else {
-	console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31m" + global.worker + " lost connection (" + error + ")\x1b[0m");
+        console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31m" + global.worker + " lost connection (" + error + ")\x1b[0m");
         //console.log("\x1b[1;94m== \x1b[0m[" + global.minerType + "] \x1b " + hwdatas.replace(/(\r\n|\n|\r)/gm, ""));
         sleep.sleep(10);
         console.log('\x1Bc');
@@ -230,6 +230,23 @@ module.exports = {
       }
       console.log("\x1b[1;94m== \x1b[0mOS Version: " + global.osversion);
     });
+
+    // CUDA
+    global.cuda = "10";
+
+    try {
+      var getCUDA = require('child_process').exec,
+        getCUDAProc = getCUDA("nvidia-settings --help | grep version | head -n1 | sed 's/[^.0-9]*//g'", function(error, stdout, stderr) {
+          var driverversion = stdout;
+          console.log("\x1b[1;94m== \x1b[0mNVIDIA driver version: \x1b[1;32m" + driverversion + "\x1b[0m");
+          // NVIDIA-Linux-x86_64-455.23.04.run
+          // NVIDIA-Linux-x86_64-455.38.run
+          if (driverversion == "455.23.04" || driverversion == "455.38") {
+            global.cuda = "11";
+          }
+        });
+    } catch (getCUDAError) {}
+
 
     // Memory location
     // df -h | grep tmpfs | grep /dev | awk '{print $6}' | xargs
@@ -434,14 +451,14 @@ module.exports = {
       var chmodQuery = require('child_process').exec;
       try {
         var setChmod = chmodQuery("cd /home/minerstat/minerstat-os/; sudo chmod -R 777 *", function(error, stdout, stderr) {
-          //console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;32mPermissions applied (" + minerName.replace("_10", "") + ")\x1b[0m");
-          dlconf(minerName.replace("_10", ""), minerType);
+          //console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;32mPermissions applied (" + minerName.replace("_10", "").replace("_11", "") + ")\x1b[0m");
+          dlconf(minerName.replace("_10", "").replace("_11", ""), minerType);
         });
       } catch (error) {
         console.error(error);
         var setChmod = chmodQuery("sync; cd /home/minerstat/minerstat-os/; sudo chmod -R 777 *", function(error, stdout, stderr) {
-          //console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;32mPermissions applied (" + minerName.replace("_10", "") + ")\x1b[0m");
-          dlconf(minerName.replace("_10", ""), minerType);
+          //console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;32mPermissions applied (" + minerName.replace("_10", "").replace("_11", "") + ")\x1b[0m");
+          dlconf(minerName.replace("_10", "").replace("_11", ""), minerType);
         });
       }
     }
@@ -458,15 +475,24 @@ module.exports = {
           timeout: 15000,
         }, function(cudaerror, cudaresponse, cudabody) {
 
-          var minerNameWithCuda = gpuMiner.toLowerCase().replace("_10", "");
+          var minerNameWithCuda = gpuMiner.toLowerCase().replace("_10", "").replace("_11", "");
 
           if (cudaerror != "null" && global.osversion == "experimental") {
             var parseData = JSON.parse(cudabody);
-            var cudaVersion = parseData[gpuMiner.toLowerCase().replace("_10", "")];
+            var cudaVersion = parseData[gpuMiner.toLowerCase().replace("_10", "").replace("_11", "")];
 
+            // If CUDA 11
+            if (cudaVersion == "11" || cudaVersion == 11) {
+              if (global.cuda == "11") {
+                minerNameWithCuda = gpuMiner.toLowerCase().replace("_10", "").replace("_11", "") + "_11";
+              } else {
+                minerNameWithCuda = gpuMiner.toLowerCase().replace("_10", "").replace("_11", "") + "_10";
+              }
+            }
+
+            // If miner having no Cuda 11 version, but having version 10 (without version using cuda 9)
             if (cudaVersion == "10" || cudaVersion == 10) {
-              minerNameWithCuda = gpuMiner.toLowerCase().replace("_10", "") + "_10";
-
+              minerNameWithCuda = gpuMiner.toLowerCase().replace("_10", "").replace("_11", "") + "_10";
             }
 
           }
@@ -477,7 +503,7 @@ module.exports = {
                 var copyXmrConfigs = xmrConfigQuery("cp /home/minerstat/minerstat-os/clients/xmr-stak/amd.txt /tmp; cp /home/minerstat/minerstat-os/clients/xmr-stak/nvidia.txt /tmp; cp /home/minerstat/minerstat-os/clients/xmr-stak/cpu.txt /tmp; cp /home/minerstat/minerstat-os/clients/xmr-stak/config.txt /tmp;", function(error, stdout, stderr) {
                   console.log("XMR-STAK Config Protected");
                   sleep.sleep(1);
-                  deleteFolder('clients/' + gpuMiner.toLowerCase().replace("_10", "") + '/');
+                  deleteFolder('clients/' + gpuMiner.toLowerCase().replace("_10", "").replace("_11", "") + '/');
                   sleep.sleep(2);
                   downloadCore(minerNameWithCuda, "gpu", gpuServerVersion);
                 });
@@ -487,7 +513,7 @@ module.exports = {
                 var copyXmrConfigs = xmrConfigQuery("cp /home/minerstat/minerstat-os/clients/xmr-stak-randomx/amd.txt /tmp; cp /home/minerstat/minerstat-os/clients/xmr-stak-randomx/nvidia.txt /tmp; cp /home/minerstat/minerstat-os/clients/xmr-stak-randomx/cpu.txt /tmp; cp /home/minerstat/minerstat-os/clients/xmr-stak-randomx/config.txt /tmp;", function(error, stdout, stderr) {
                   console.log("XMR-STAK-RANDOMX Config Protected");
                   sleep.sleep(1);
-                  deleteFolder('clients/' + gpuMiner.toLowerCase().replace("_10", "") + '/');
+                  deleteFolder('clients/' + gpuMiner.toLowerCase().replace("_10", "").replace("_11", "") + '/');
                   sleep.sleep(2);
                   downloadCore(minerNameWithCuda, "gpu", gpuServerVersion);
                 });
@@ -495,12 +521,12 @@ module.exports = {
             } catch (copyError) {}
             if (gpuMiner != "xmr-stak" && gpuMiner != "xmr-stak-randomx") {
               sleep.sleep(1);
-              deleteFolder('clients/' + gpuMiner.toLowerCase().replace("_10", "") + '/');
+              deleteFolder('clients/' + gpuMiner.toLowerCase().replace("_10", "").replace("_11", "") + '/');
               sleep.sleep(2);
               downloadCore(minerNameWithCuda, "gpu", gpuServerVersion);
             }
           } else {
-            applyChmod(gpuMiner.toLowerCase().replace("_10", ""), "gpu");
+            applyChmod(gpuMiner.toLowerCase().replace("_10", "").replace("_11", ""), "gpu");
           }
 
         })
@@ -568,38 +594,38 @@ module.exports = {
 
         if (dlURL_type == "zip") {
           console.log("zip detected extract");
-          decompress(fullFileName, global.path + '/clients/' + miner.replace("_10", "")).then(files => {
+          decompress(fullFileName, global.path + '/clients/' + miner.replace("_10", "").replace("_11", "")).then(files => {
             console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;32mDecompressing complete (" + miner + ")\x1b[0m");
             // Remove .zip
             deleteFile(fullFileName);
             // Store version
             try {
-              fs.writeFile('clients/' + miner.replace("_10", "") + '/msVersion.txt', '' + serverVersion.trim(), function(err) {});
+              fs.writeFile('clients/' + miner.replace("_10", "").replace("_11", "") + '/msVersion.txt', '' + serverVersion.trim(), function(err) {});
             } catch (error) {}
             if (miner == "xmr-stak" || miner == "xmr-stak_10") {
               var xmrConfigQueryStak = require('child_process').exec;
               var copyXmrConfigsStak = xmrConfigQueryStak("cp /tmp/amd.txt /home/minerstat/minerstat-os/clients/xmr-stak/; cp /tmp/cpu.txt /home/minerstat/minerstat-os/clients/xmr-stak/; cp /tmp/nvidia.txt /home/minerstat/minerstat-os/clients/xmr-stak/; cp /tmp/config.txt /home/minerstat/minerstat-os/clients/xmr-stak/;", function(error, stdout, stderr) {
                 console.log("XMR-STAK Config Restored");
-                applyChmod(miner.replace("_10", ""), clientType);
+                applyChmod(miner.replace("_10", "").replace("_11", ""), clientType);
               });
             }
             if (miner == "xmr-stak-randomx") {
               var xmrConfigQueryStak = require('child_process').exec;
               var copyXmrConfigsStak = xmrConfigQueryStak("cp /tmp/amd.txt /home/minerstat/minerstat-os/clients/xmr-stak-randomx/; cp /tmp/cpu.txt /home/minerstat/minerstat-os/clients/xmr-stak-randomx/; cp /tmp/nvidia.txt /home/minerstat/minerstat-os/clients/xmr-stak-randomx/; cp /tmp/config.txt /home/minerstat/minerstat-os/clients/xmr-stak-randomx/;", function(error, stdout, stderr) {
                 console.log("XMR-STAK-RANDOMX Config Restored");
-                applyChmod(miner.replace("_10", ""), clientType);
+                applyChmod(miner.replace("_10", "").replace("_11", ""), clientType);
               });
             }
             // Start miner
             if (miner != "xmr-stak" && miner != "xmr-stak-randomx") {
-              applyChmod(miner.replace("_10", ""), clientType);
+              applyChmod(miner.replace("_10", "").replace("_11", ""), clientType);
             }
           });
         }
         if (dlURL_type == "tar") {
           console.log("tar.gz detected extract");
 
-          execa.shell("cd /home/minerstat/minerstat-os/; mkdir clients; mkdir clients/" + miner.replace("_10", "") + "; tar -C /home/minerstat/minerstat-os/clients/" + miner.replace("_10", "") + " -xvf " + fullFileName, {
+          execa.shell("cd /home/minerstat/minerstat-os/; mkdir clients; mkdir clients/" + miner.replace("_10", "").replace("_11", "") + "; tar -C /home/minerstat/minerstat-os/clients/" + miner.replace("_10", "").replace("_11", "") + " -xvf " + fullFileName, {
             cwd: process.cwd(),
             detached: false,
             stdio: "inherit"
@@ -609,25 +635,25 @@ module.exports = {
             deleteFile(fullFileName);
             // Store version
             try {
-              fs.writeFile('clients/' + miner.replace("_10", "") + '/msVersion.txt', '' + serverVersion.trim(), function(err) {});
+              fs.writeFile('clients/' + miner.replace("_10", "").replace("_11", "") + '/msVersion.txt', '' + serverVersion.trim(), function(err) {});
             } catch (error) {}
             if (miner == "xmr-stak" || miner == "xmr-stak_10") {
               var xmrConfigQueryStak = require('child_process').exec;
               var copyXmrConfigsStak = xmrConfigQueryStak("cp /tmp/amd.txt /home/minerstat/minerstat-os/clients/xmr-stak/; cp /tmp/cpu.txt /home/minerstat/minerstat-os/clients/xmr-stak/; cp /tmp/nvidia.txt /home/minerstat/minerstat-os/clients/xmr-stak/; cp /tmp/config.txt /home/minerstat/minerstat-os/clients/xmr-stak/;", function(error, stdout, stderr) {
                 console.log("XMR-STAK Config Restored");
-                applyChmod(miner.replace("_10", ""), clientType);
+                applyChmod(miner.replace("_10", "").replace("_11", ""), clientType);
               });
             }
             if (miner == "xmr-stak-randomx") {
               var xmrConfigQueryStak = require('child_process').exec;
               var copyXmrConfigsStak = xmrConfigQueryStak("cp /tmp/amd.txt /home/minerstat/minerstat-os/clients/xmr-stak-randomx/; cp /tmp/cpu.txt /home/minerstat/minerstat-os/clients/xmr-stak-randomx/; cp /tmp/nvidia.txt /home/minerstat/minerstat-os/clients/xmr-stak-randomx/; cp /tmp/config.txt /home/minerstat/minerstat-os/clients/xmr-stak-randomx/;", function(error, stdout, stderr) {
                 console.log("XMR-STAK-RANDOMX Config Restored");
-                applyChmod(miner.replace("_10", ""), clientType);
+                applyChmod(miner.replace("_10", "").replace("_11", ""), clientType);
               });
             }
             // Start miner
             if (miner != "xmr-stak" && miner != "xmr-stak-randomx") {
-              applyChmod(miner.replace("_10", ""), clientType);
+              applyChmod(miner.replace("_10", "").replace("_11", ""), clientType);
             }
           });
         }
@@ -657,7 +683,7 @@ module.exports = {
         "claymore-zec": "config.txt",
         "cryptodredge": "start.bash",
         "ethminer": "start.bash",
-	"kawpowminer": "start.bash",
+        "kawpowminer": "start.bash",
         "ewbf-zec": "start.bash",
         "ewbf-zhash": "start.bash",
         "lolminer": "user_config.json",
@@ -694,18 +720,18 @@ module.exports = {
       };
 
       try {
-        global.file = "clients/" + miner.replace("_10", "") + "/" + MINER_CONFIG_FILE[miner.replace("_10", "")];
+        global.file = "clients/" + miner.replace("_10", "").replace("_11", "") + "/" + MINER_CONFIG_FILE[miner.replace("_10", "").replace("_11", "")];
       } catch (globalFile) {}
 
       if (global.PrivateMiner == "True") {
         if (global.PrivateMinerConfigFile != "" && clientType != "cpu") {
-          global.file = "clients/" + miner.replace("_10", "") + "/" + global.PrivateMinerConfigFile;
+          global.file = "clients/" + miner.replace("_10", "").replace("_11", "") + "/" + global.PrivateMinerConfigFile;
         } else {
-          global.file = "clients/" + miner.replace("_10", "") + "/start.bash";
+          global.file = "clients/" + miner.replace("_10", "").replace("_11", "") + "/start.bash";
         }
       }
 
-      needle.get('https://api.minerstat.com/v2/conf/gpu/' + global.accesskey + '/' + global.worker + '/' + miner.toLowerCase().replace("_10", ""), {
+      needle.get('https://api.minerstat.com/v2/conf/gpu/' + global.accesskey + '/' + global.worker + '/' + miner.toLowerCase().replace("_10", "").replace("_11", ""), {
         "timeout": 15000
       }, function(error, response) {
         if (error === null) {
@@ -718,14 +744,14 @@ module.exports = {
           if (global.benchmark.toString() == "true" && clientType != "cpu") {
             str = global.B_CONFIG;
           }
-          miner = miner.replace("_10", "");
+          miner = miner.replace("_10", "").replace("_11", "");
           //if (miner != "ewbf-zec" && miner != "cast-xmr" && miner != "gminer" && miner != "wildrig-multi" && miner != "zjazz-x22i" && miner != "mkxminer" && miner != "teamredminer" && miner != "progpowminer" && miner != "bminer" && miner != "xmrig-amd" && miner != "ewbf-zhash" && miner != "ethminer" && miner != "zm-zec" && miner != "z-enemy" && miner != "cryptodredge" && miner.indexOf("ccminer") === -1 && miner.indexOf("cpu") === 1) {
           if (MINER_CONFIG_FILE[miner.toLowerCase()] != "start.bash") {
 
-            var saveFileLocation = "clients/" + miner.replace("_10", "") + "/" + MINER_CONFIG_FILE[miner.toLowerCase()];
+            var saveFileLocation = "clients/" + miner.replace("_10", "").replace("_11", "") + "/" + MINER_CONFIG_FILE[miner.toLowerCase()];
             console.log("\x1b[1;94m== \x1b[0mClient Status (" + miner + "): \x1b[1;32mSaving config\x1b[0m");
             if (global.PrivateMinerConfigFile != "" && clientType != "cpu") {
-              saveFileLocation = "clients/" + miner.replace("_10", "") + "/" + global.PrivateMinerConfigFile;
+              saveFileLocation = "clients/" + miner.replace("_10", "").replace("_11", "") + "/" + global.PrivateMinerConfigFile;
             }
             var writeStream = fs.createWriteStream(global.path + "/" + saveFileLocation);
 
