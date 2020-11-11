@@ -37,7 +37,7 @@ function runMiner(miner, execFile, args, plus) {
           detached: false,
           stdio: "inherit"
         }).then(result => {
-		  console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mCPU client closed\x1b[0m");
+          console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mCPU client closed\x1b[0m");
           global.minerRunning = false;
         });
       }
@@ -75,7 +75,7 @@ function restartNode() {
       clearInterval(global.timeout);
       clearInterval(global.hwmonitor);
       var exec = require('child_process').exec;
-      var queryBoot = exec("sudo su -c 'sudo reboot -f';", function(error, stdout, stderr) {
+      var queryBoot = exec("sudo bash /home/minerstat/minerstat-os/bin/reboot.sh", function(error, stdout, stderr) {
         console.log(stdout + " " + stderr);
       });
     }
@@ -481,11 +481,11 @@ module.exports = {
           str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + "-opencl " + args + "" + logInFile + "; sleep 20";
         }
       } else {
-          if (miner == "srbminer-multi") {
-            str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; sudo ./" + execFile + " " + args + "" + logInFile + "; sleep 20";
-          } else {
-            str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + " " + args + "" + logInFile + "; sleep 20";   
-          }
+        if (miner == "srbminer-multi") {
+          str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; sudo ./" + execFile + " " + args + "" + logInFile + "; sleep 20";
+        } else {
+          str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + " " + args + "" + logInFile + "; sleep 20";
+        }
       }
     }
     //console.log("Starting command: " + str);
@@ -776,11 +776,11 @@ module.exports = {
           break;
         case 'REBOOT':
           console.log("\x1b[1;94m== \x1b[0mRebooting ...");
-          var queryBoot = exec("sudo su -c 'sudo reboot -f'", function(error, stdout, stderr) {});
+          var queryBoot = exec("sudo bash /home/minerstat/minerstat-os/bin/reboot.sh", function(error, stdout, stderr) {});
           break;
         case 'FORCEREBOOT':
           console.log("\x1b[1;94m== \x1b[0mRebooting ...");
-          var queryBoot = exec("sudo su -c 'echo 1 > /proc/sys/kernel/sysrq'; sudo su -c 'echo b > /proc/sysrq-trigger';", function(error, stdout, stderr) {});
+          var queryBoot = exec("sudo bash /home/minerstat/minerstat-os/bin/reboot.sh", function(error, stdout, stderr) {});
           break;
         default:
           console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;31mError (Unknown remote command: " + command + ")\x1b[0m");
@@ -918,9 +918,9 @@ module.exports = {
           if (global.watchnum > 1) {
             console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
             console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + err.message + ")\x1b[0m");
-              console.log("\x1b[1;94m== \x1b[0mMiner not hashing, Possible reasons:\x1b[0m");
-              console.log("\x1b[1;94m== \x1b[0m- Bad ClockTune Profile\x1b[0m");
-              console.log("\x1b[1;94m== \x1b[0m- Invalid miner configuration on Config Editor\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0mMiner not hashing, Possible reasons:\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m- Bad ClockTune Profile\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m- Invalid miner configuration on Config Editor\x1b[0m");
           }
         });
       }
