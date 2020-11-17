@@ -20,7 +20,7 @@ if [ "$NVIDIADEVICE" != "0" ]; then
     FANMAX=70
   fi
   timeout 10 sudo rm /dev/shm/nverr.txt &> /dev/null
-  CHECK_ERR=$(timeout 10 sudo nvidia-settings -c :0 -a GPUFanControlState=1 -a GPUTargetFanSpeed="$FANMAX" &> /dev/shm/nverr.txt)
+  CHECK_ERR=$(timeout 10 sudo nvidia-settings --verbose -c :0 -a GPUFanControlState=1 -a GPUTargetFanSpeed="$FANMAX" &> /dev/shm/nverr.txt)
   CHECK_ERR=$(cat /dev/shm/nverr.txt | grep -c "Unknown Error")
   if [[ "$SNUM" != "1" ]] || [[ "$XORG" -lt 1 ]] || [[ "$XORG" -lt $NVIDIADEVICE ]] || [[ "$CHECK_ERR" -gt 0 ]]; then
     sudo su -c "timeout 10 sudo screen -X -S display quit" > /dev/null

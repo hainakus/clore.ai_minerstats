@@ -161,11 +161,11 @@ if [ $1 ]; then
 
   #################################£
   # APPLY THIS GPU SETTINGS AT ONCE
-  echo "nvidia-settings -c :0 $STR1 $STR2 $STR3 $STR5"
+  echo "nvidia-settings --verbose -c :0 $STR1 $STR2 $STR3 $STR5"
   STR5="-a GPUPowerMizerMode=1"
   DISPLAY=:0
   export DISPLAY=:0
-  sudo su minerstat -c "DISPLAY=:0 nvidia-settings -c :0 $STR1 $STR2 $STR3 $STR5"
+  sudo su minerstat -c "DISPLAY=:0 nvidia-settings --verbose -c :0 $STR1 $STR2 $STR3 $STR5"
 
   sleep 2
   sudo chvt 1
