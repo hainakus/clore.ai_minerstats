@@ -115,6 +115,15 @@ if [ $1 ]; then
     # P2
     E1="-a [gpu:"$GPUID"]/GPUMemoryTransferRateOffset[2]="$MEMORYOFFSET""
     E2="-a [gpu:"$GPUID"]/GPUGraphicsClockOffset[2]="$COREOFFSET""
+    # GDDR6 fix
+    MHZ=$((MEMORYOFFSET/2))
+    EFF_MHZ=$(awk -v n=$MHZ 'BEGIN{print int((n+5)/10) * 10}')
+    if [[ $MEMORYOFFSET -gt $EFF_MHZ ]]; then
+      echo "Adjustment applied for memory clock"
+      echo "Old memory offset $MEMORYOFFSET Mhz"
+      MEMORYOFFSET=$((EFF_MHZ*2))
+      echo "New memory offset $MEMORYOFFSET Mhz"
+    fi
   fi
 
   echo "--- PERFORMANCE LEVEL: $PLEVEL ---";
