@@ -110,9 +110,6 @@ if [ $1 ]; then
   E1=""
   E2=""
   if [[ $QUERY == *"3070"* ]] || [[ $QUERY == *"3080"* ]] || [[ $QUERY == *"3090"* ]]; then
-    # P2
-    E1="-a [gpu:"$GPUID"]/GPUMemoryTransferRateOffset[2]="$MEMORYOFFSET""
-    E2="-a [gpu:"$GPUID"]/GPUGraphicsClockOffset[2]="$COREOFFSET""
     # GDDR6 fix
     MHZ=$((MEMORYOFFSET/2))
     EFF_MHZ=$(awk -v n=$MHZ 'BEGIN{print int((n+5)/10) * 10}')
@@ -122,6 +119,9 @@ if [ $1 ]; then
       MEMORYOFFSET=$((EFF_MHZ*2))
       echo "New memory offset $MEMORYOFFSET Mhz"
     fi
+    # P2
+    E1="-a [gpu:"$GPUID"]/GPUMemoryTransferRateOffset[2]="$MEMORYOFFSET""
+    E2="-a [gpu:"$GPUID"]/GPUGraphicsClockOffset[2]="$COREOFFSET""
   fi
 
 
