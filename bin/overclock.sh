@@ -14,6 +14,10 @@ if [ "$NVIDIADEVICE" != "0" ]; then
   # Check XSERVER
   XORG=$(timeout 5 nvidia-smi | grep -c Xorg)
   SNUM=$(sudo su minerstat -c "screen -list | grep -c display2")
+  # pm
+  timeout 5 sudo nvidia-smi -pm 1
+  # force compute mode where available
+  timeout 5 sudo nvidia-smi --gom=COMPUTE &> /dev/null
   # Unknown Error
   FANMAX=$(cat /media/storage/fans.txt 2>/dev/null | grep "FANMAX=" | xargs | sed 's/[^0-9]*//g')
   if [ -z "$FANMAX" ]; then

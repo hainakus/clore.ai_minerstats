@@ -107,10 +107,16 @@ if [ $1 ]; then
   elif echo "$QUERY" | grep "1650" ;then PLEVEL=2
   fi
 
+  E1=""
+  E2=""
+  if [[ $QUERY == *"3070"* ]] || [[ $QUERY == *"3080"* ]] || [[ $QUERY == *"3090"* ]]; then
+    # P2
+    E1="-a [gpu:"$GPUID"]/GPUMemoryTransferRateOffset[2]="$MEMORYOFFSET""
+    E2="-a [gpu:"$GPUID"]/GPUGraphicsClockOffset[2]="$COREOFFSET""
+  fi
+
 
   echo "--- PERFORMANCE LEVEL: $PLEVEL ---";
-
-  sudo nvidia-smi -pm 1
 
   #################################£
   # POWER LIMIT
@@ -146,7 +152,7 @@ if [ $1 ]; then
   then
     if [ "$MEMORYOFFSET" != "0" ]
     then
-      STR2="-a GPUMemoryTransferRateOffset["$PLEVEL"]="$MEMORYOFFSET" -a GPUMemoryTransferRateOffsetAllPerformanceLevels="$MEMORYOFFSET""
+      STR2="-a GPUMemoryTransferRateOffset["$PLEVEL"]="$MEMORYOFFSET" -a GPUMemoryTransferRateOffsetAllPerformanceLevels="$MEMORYOFFSET" $E1"
     fi
   fi
 
@@ -154,7 +160,7 @@ if [ $1 ]; then
   then
     if [ "$COREOFFSET" != "0" ]
     then
-      STR3="-a GPUGraphicsClockOffset["$PLEVEL"]="$COREOFFSET" -a GPUGraphicsClockOffsetAllPerformanceLevels="$COREOFFSET""
+      STR3="-a GPUGraphicsClockOffset["$PLEVEL"]="$COREOFFSET" -a GPUGraphicsClockOffsetAllPerformanceLevels="$COREOFFSET" $E2"
     fi
   fi
 
