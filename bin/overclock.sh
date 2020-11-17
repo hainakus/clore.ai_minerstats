@@ -82,7 +82,7 @@ sudo rm /dev/shm/nvid_cache.txt > /dev/null
 sleep 1
 
 if [ ! -z "$DONVIDIA" ]; then
-  sudo nvidia-smi -pm 1
+  #sudo nvidia-smi -pm 1
   wget -o /dev/null -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=nvidia&token=$TOKEN&worker=$WORKER&nums=$NVIDIADEVICE&instant=$INSTANT"
   sleep 3
   sudo bash doclock.sh
