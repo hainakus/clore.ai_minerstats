@@ -141,29 +141,6 @@ if [ $1 ]; then
     sudo su minerstat -c "pip3 install upp"
   fi
 
-  # Apply powerlimit
-  if [[ ! -z "$POWERLIMIT" ]] && [[ "$POWERLIMIT" != "skip" ]] && [[ "$POWERLIMIT" != "pwrskip" ]] && [[ "$POWERLIMIT" != "pwrSkip" ]] && [[ $POWERLIMIT == *"pwr"* ]]; then
-    POWERLIMIT=$(echo $POWERLIMIT | sed 's/[^0-9]*//g')
-    if [[ ! -z "$POWERLIMIT" ]] && [[ "$POWERLIMIT" != "0" ]]; then
-      # Vega limits
-      PW_MIN=$((85 * 1000000))
-      PW_MAX=$((350 * 1000000))
-      # CONVERT
-      CNV=$(($POWERLIMIT * 1000000))
-      if [[ $CNV -lt $PW_MIN ]]; then
-        echo "ERROR: New power limit not set, because less than allowed minimum $PW_MIN"
-      else
-        if [[ $CNV -lt $PW_MAX ]]; then
-          FROM=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/power1_cap)
-          echo "Changing power limit from $FROM W to $CNV W"
-          sudo su -c "echo $CNV > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/power1_cap"
-        else
-          echo "ERROR: New power limit not set, because more than allowed maximum $PW_MAX"
-        fi
-      fi
-    fi
-  fi
-
   sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
     VddcLookupTable/entries/0=$VDDC VddcLookupTable/entries/1=$VDDC VddcLookupTable/entries/2=$VDDC VddcLookupTable/entries/3=$VDDC VddcLookupTable/entries/4=$VDDC VddcLookupTable/entries/5=$VDDC VddcLookupTable/entries/6=$VDDC VddcLookupTable/entries/7=$VDDC \
     MclkDependencyTable/entries/3/VddInd=4 $vddci $cclk $mclk $mvdd $gfx \
@@ -243,6 +220,29 @@ if [ $1 ]; then
   # fan
   sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
   sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
+  
+  # Apply powerlimit
+  if [[ ! -z "$POWERLIMIT" ]] && [[ "$POWERLIMIT" != "skip" ]] && [[ "$POWERLIMIT" != "pwrskip" ]] && [[ "$POWERLIMIT" != "pwrSkip" ]] && [[ $POWERLIMIT == *"pwr"* ]]; then
+    POWERLIMIT=$(echo $POWERLIMIT | sed 's/[^0-9]*//g')
+    if [[ ! -z "$POWERLIMIT" ]] && [[ "$POWERLIMIT" != "0" ]]; then
+      # Vega limits
+      PW_MIN=$((85 * 1000000))
+      PW_MAX=$((350 * 1000000))
+      # CONVERT
+      CNV=$(($POWERLIMIT * 1000000))
+      if [[ $CNV -lt $PW_MIN ]]; then
+        echo "ERROR: New power limit not set, because less than allowed minimum $PW_MIN"
+      else
+        if [[ $CNV -lt $PW_MAX ]]; then
+          FROM=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/power1_cap)
+          echo "Changing power limit from $FROM W to $CNV W"
+          sudo su -c "echo $CNV > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/power1_cap"
+        else
+          echo "ERROR: New power limit not set, because more than allowed maximum $PW_MAX"
+        fi
+      fi
+    fi
+  fi
 
   TEST=$(screen -list | grep -wc soctimer)
   if [ "$TEST" = "0" ]; then
