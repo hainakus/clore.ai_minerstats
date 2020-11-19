@@ -278,6 +278,8 @@ if [[ -z "$TSOT" ]] && [[ $TSOT != *"off"* ]]; then
   fi
 fi
 # Check XSERVER
+# If uptime < 4 minutes then exit
+UPTIME=$(awk '{print $1}' /proc/uptime | cut -f1 -d"." | xargs)
 NVIDIADEVICE=$(sudo lshw -C display | grep "driver=nvidia" | wc -l)
 if [ "$NVIDIADEVICE" = "0" ]; then
   NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
@@ -288,14 +290,18 @@ if [ "$NVIDIADEVICE" != "0" ]; then
   # Check XSERVER
   XORG=$(timeout 5 nvidia-smi | grep -c Xorg)
   SNUM=$(sudo su minerstat -c "screen -list | grep -c display2")
-  # Unknown Error
-  FANMAX=$(cat /media/storage/fans.txt 2>/dev/null | grep "FANMAX=" | xargs | sed 's/[^0-9]*//g')
-  if [ -z "$FANMAX" ]; then
-    FANMAX=70
+  # Only check during boot
+  CHECK_ERR=0
+  if [ "$UPTIME" -lt "240" ]; then
+    # Unknown Error
+    FANMAX=$(cat /media/storage/fans.txt 2>/dev/null | grep "FANMAX=" | xargs | sed 's/[^0-9]*//g')
+    if [ -z "$FANMAX" ]; then
+      FANMAX=70
+    fi
+    timeout 10 sudo rm /dev/shm/nverr.txt &> /dev/null
+    CHECK_ERR=$(timeout 10 sudo nvidia-settings --verbose -c :0 -a GPUFanControlState=1 -a GPUTargetFanSpeed="$FANMAX" &> /dev/shm/nverr.txt)
+    CHECK_ERR=$(cat /dev/shm/nverr.txt | grep -c "Unknown Error")
   fi
-  timeout 10 sudo rm /dev/shm/nverr.txt &> /dev/null
-  CHECK_ERR=$(timeout 10 sudo nvidia-settings --verbose -c :0 -a GPUFanControlState=1 -a GPUTargetFanSpeed="$FANMAX" &> /dev/shm/nverr.txt)
-  CHECK_ERR=$(cat /dev/shm/nverr.txt | grep -c "Unknown Error")
   if [[ "$SNUM" != "1" ]] || [[ "$XORG" -lt 1 ]] || [[ "$XORG" -lt $NVIDIADEVICE ]] || [[ "$CHECK_ERR" -gt 0 ]]; then
     sudo su -c "timeout 10 sudo screen -X -S display quit" > /dev/null
     timeout 10 screen -X -S display quit > /dev/null
