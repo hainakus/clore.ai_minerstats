@@ -188,6 +188,10 @@ if [ $1 ]; then
 
   TESTD=$(timeout 5 dpkg -l | grep opencl-amdgpu-pro-icd | head -n1 | awk '{print $3}' | xargs | cut -f1 -d"-")
 
+  if [ -z "$TESTD" ]; then
+    TESTD=$(timeout 5 dpkg -l | grep amdgpu-pro-rocr-opencl | head -n1 | awk '{print $3}' | xargs | cut -f1 -d"-")
+  fi
+
   if [ "$TESTD" != "20.30" ] || [ "$TESTD" != "20.40" ] || [ "$TESTD" != "20.45" ]; then
     echo "2" > /dev/shm/fantype.txt
     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null

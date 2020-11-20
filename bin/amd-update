@@ -28,6 +28,10 @@ fi
 
 # Global vars
 CURRENT_DRIVER=$(timeout 5 dpkg -l | grep opencl-amdgpu-pro-icd | head -n1 | awk '{print $3}' | xargs)
+if [ -z "$CURRENT_DRIVER" ]; then
+  CURRENT_DRIVER=$(timeout 5 dpkg -l | grep amdgpu-pro-rocr-opencl | head -n1 | awk '{print $3}' | xargs | cut -f1 -d"-")
+fi
+
 SELECTED_VERSION=""
 VLIST="https://static-ssl.minerstat.farm/drivers/amd/$S_DIR/amdlist.txt"
 VLIST_TMP="/dev/shm"
