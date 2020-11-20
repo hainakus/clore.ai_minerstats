@@ -27,6 +27,9 @@ if [ "$version" = "1.5" ] || [ "$version" = "1.6" ] || [ "$version" = "1.7" ] ||
   if [ -d "/opt/rocm-3.7.0" ]; then
     FOLDER='rocm-3.7.0'
   fi
+  if [ -d "/opt/rocm-3.9.0" ]; then
+    FOLDER='rocm-3.9.0'
+  fi
 
   FILE=/media/storage/opencl.txt
 
