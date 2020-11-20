@@ -110,7 +110,7 @@ if [ $1 ]; then
       echo "VDDCI value ignored as below $MCMIN mV limit"
     else
       AVDDCI=$((PARSED_VDDCI * 4)) #actual
-      pvddci="smc_pptable/MemVddciVoltage/1=$AVDDCI smc_pptable/MemVddciVoltage/2=$AVDDCI smc_pptable/MemVddciVoltage/3=$AVDDCI"
+      pvddci="smc_pptable/MemVddciVoltage/2=$AVDDCI smc_pptable/MemVddciVoltage/3=$AVDDCI"
     fi
   fi
 
@@ -125,7 +125,7 @@ if [ $1 ]; then
       echo "MVDD value ignored as below $MVMIN mV limit"
     else
       AMVDD=$((PARSED_MVDD * 4)) #actual
-      pmvdd="smc_pptable/MemMvddVoltage/1=$AMVDD smc_pptable/MemMvddVoltage/2=$AMVDD smc_pptable/MemMvddVoltage/3=$AMVDD"
+      pmvdd="smc_pptable/MemMvddVoltage/2=$AMVDD smc_pptable/MemMvddVoltage/3=$AMVDD"
     fi
   fi
 
