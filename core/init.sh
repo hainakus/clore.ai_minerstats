@@ -88,9 +88,12 @@ fi
 if [ -z "$NVIDIA_DRIVER" ]; then
   NVIDIA_DRIVER=$(timeout 5 dpkg -l | grep nvidia-driver | grep ii | awk '{print $3}' | xargs | cut -d '-' -f 1)
 fi
-AMD_DRIVER=$(timeout 5 dpkg -l | grep vulkan-amdgpu-pro | head -n1 | awk '{print $3}' | xargs)
+AMD_DRIVER=$(timeout 5 dpkg -l | grep opencl-amdgpu-pro-icd | head -n1 | awk '{print $3}' | xargs)
 if [ -z "$AMD_DRIVER" ]; then
-  AMD_DRIVER=$(timeout 5 dpkg -l | grep opencl-amdgpu-pro-icd | head -n1 | awk '{print $3}' | xargs)
+  AMD_DRIVER=$(timeout 5 dpkg -l | grep amdgpu-pro-rocr-opencl | head -n1 | awk '{print $3}' | xargs | cut -f1 -d"-")
+fi
+if [ -z "$AMD_DRIVER" ]; then
+  AMD_DRIVER=$(timeout 5 dpkg -l | grep vulkan-amdgpu-pro | head -n1 | awk '{print $3}' | xargs)
 fi
 KERNEL_VERSION=$(timeout 5 uname -r)
 UBUNTU_VERSION=$(timeout 5 cat /etc/os-release | grep "PRETTY_NAME" | sed 's/PRETTY_NAME="//g' | sed 's/"//g' | xargs)
