@@ -192,15 +192,15 @@ if [ $1 ]; then
     TESTD=$(timeout 5 dpkg -l | grep amdgpu-pro-rocr-opencl | head -n1 | awk '{print $3}' | xargs | cut -f1 -d"-")
   fi
 
-  if [ "$TESTD" != "20.30" ] || [ "$TESTD" != "20.40" ] || [ "$TESTD" != "20.45" ]; then
+  if [ "$TESTD" = "20.30" ] || [ "$TESTD" = "20.40" ] || [ "$TESTD" = "20.45" ]; then
+    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+    sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
+    sudo rm /dev/shm/fantype.txt 2>/dev/null
+  else
     echo "2" > /dev/shm/fantype.txt
     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
     sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
-  else
-    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
-    sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
-    sudo rm /dev/shm/fantype.txt 2>/dev/null
   fi
 
   if [ "$FANSPEED" = "100" ]; then
