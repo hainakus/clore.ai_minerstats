@@ -7,11 +7,29 @@ echo "Disclaimer: Use at your own risk. If rig not booting after process, you wi
 echo "Hint: 8GB RAM recommended for sucessfull DKMS build."
 echo
 
+# Ubuntu version
+U_VER=$(cat /etc/lsb-release)
+S_DIR="1804"
+
+if [[ $U_VER == *"16.04"* ]]; then
+  S_DIR="1604"
+elif [[ $U_VER == *"18.04"* ]]; then
+  S_DIR="1804"
+elif [[ $U_VER == *"20.04"* ]]; then
+  S_DIR="2004"
+fi
+
+echo "Ubuntu version: $S_DIR"
+
+if [[ "$S_DIR" = "1604" ]]; then
+  echo "This OS version no longer supported. Consider upgrading to a newer msOS package."
+  exit 1
+fi
 
 # Global vars
 CURRENT_DRIVER=$(timeout 5 dpkg -l | grep opencl-amdgpu-pro-icd | head -n1 | awk '{print $3}' | xargs)
 SELECTED_VERSION=""
-VLIST="https://static-ssl.minerstat.farm/drivers/amd/1804/amdlist.txt"
+VLIST="https://static-ssl.minerstat.farm/drivers/amd/$S_DIR/amdlist.txt"
 VLIST_TMP="/dev/shm"
 VLIST_FILE="$VLIST_TMP/amdlist.txt"
 
@@ -94,7 +112,7 @@ install () {
     sudo /usr/bin/amdgpu-pro-uninstall -y
     # Download
     if [ ! -f "/tmp/$FULL" ]; then
-      wget "https://static-ssl.minerstat.farm/drivers/amd/1804/$FULL" -P /tmp
+      wget "https://static-ssl.minerstat.farm/drivers/amd/$S_DIR/$FULL" -P /tmp
       if [[ $? -ne 0 ]]; then
         echo "Download driver installer failed.."
         sudo rm /tmp/$FILE
