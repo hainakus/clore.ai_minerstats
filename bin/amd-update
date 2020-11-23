@@ -72,7 +72,11 @@ list () {
   echo "==== Available Versions ====="
   while read ver; do
     vers=$(echo $ver | sed -e 's#^amdgpu-pro-##;' | cut -f1 -d"-")
-    echo $vers
+    add=""
+    if [[ "$vers" = "20.45" ]] || [[ "$vers" = "20.40" ]]; then
+      add="[Unstable - DO NOT UPGRADE]"
+    fi
+  echo "$vers $add"
   done < $VLIST_FILE
   echo
   echo "======= Current version: v$CURRENT_DRIVER =========="
