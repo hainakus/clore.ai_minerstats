@@ -41,6 +41,7 @@ if [ $1 ]; then
   GPUINDEX=${10}
   # powlim
   POWERLIMIT=${11}
+  SOC=${12}
 
   if [ "$INSTANT" = "instantoc" ]; then
     echo "INSTANT OVERRIDE"
@@ -171,7 +172,7 @@ if [ $1 ]; then
   if [ "$isThisNavi" -gt "0" ]; then
     echo "--**--**-- NAVI --**--**--"
     echo "Loading NAVI OC Script.."
-    sudo ./overclock_navi.sh $GPUID $2 $3 $4 $5 $7 ${10} $6 ${11}
+    sudo ./overclock_navi.sh $GPUID $2 $3 $4 $5 $7 ${10} $6 ${11} ${12}
     exit 1
   fi
   ################################
@@ -180,7 +181,7 @@ if [ $1 ]; then
   if [ "$isThisVega" = "Vega" ]; then
     echo "--**--**-- VEGA --**--**--"
     echo "Loading VEGA OC Script.."
-    sudo ./overclock_vega.sh $GPUID $2 $3 $4 $5 $7 ${10} $6 ${11}
+    sudo ./overclock_vega.sh $GPUID $2 $3 $4 $5 $7 ${10} $6 ${11} ${12}
     exit 1
   fi
   ################################
@@ -198,7 +199,7 @@ if [ $1 ]; then
   if [ "$isThisVegaII" = "VegaFrontierEdition" ]; then
     echo "--**--**-- VEGA FRONTIER --**--**--"
     echo "Loading VEGA OC Script.."
-    sudo ./overclock_vega.sh $GPUID $2 $3 $4 $5 $7 ${10} $6 ${11}
+    sudo ./overclock_vega.sh $GPUID $2 $3 $4 $5 $7 ${10} $6 ${11} ${12}
     exit 1
   fi
   ################################
@@ -359,16 +360,19 @@ if [ $1 ]; then
     RBC=$(cat /dev/shm/mclock_$GPUID.txt)
     RBCE=$(cat /dev/shm/mclock_$GPUID.txt | grep -c "ERROR")
     echo "$RBC"
-
-    SAFETY=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get MaxODMemoryClock)
-
+    
+    sudo rm /dev/shm/safetycheck.txt &> /dev/null
+    sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get MaxODMemoryClock &> /dev/shm/safetycheck.txt
     # Reinstall upp if error
-    if [[ $SAFETY == *"has no attribute"* ]]; then
+    SAFETY=$(cat /dev/shm/safetycheck.txt)
+    if [[ $SAFETY == *"has no attribute"* ]] || [[ $SAFETY == *"ModuleNotFoundError"* ]]; then
       sudo su minerstat -c "yes | sudo pip3 uninstall setuptools"
       sudo su minerstat -c "yes | sudo pip3 uninstall click"
       sudo su minerstat -c "yes | sudo pip3 uninstall upp"
+      sudo su -c "yes | sudo pip3 uninstall upp"
       sudo su minerstat -c "pip3 install setuptools"
       sudo su minerstat -c "pip3 install upp"
+      sudo su -c "pip3 install upp"
     fi
 
     sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID

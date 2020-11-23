@@ -31,6 +31,7 @@ if [ $1 ]; then
   COREINDEX=$7
   VDDCI=$8
   POWERLIMIT=$9
+  SOC=${10}
   version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
 
   # Setting up limits
@@ -40,6 +41,8 @@ if [ $1 ]; then
   MVMAX=1350 #max mvdd
   #MCDEF=820  #default vddci
   #MVDEF=1300 #default mvdd
+  SOCMIN=507
+  SOCMAX=1267
 
   # Check Python3 PIP
   CHECKPY=$(dpkg -l | grep python3-pip)
@@ -128,6 +131,20 @@ if [ $1 ]; then
       pmvdd="smc_pptable/MemMvddVoltage/1=$AMVDD smc_pptable/MemMvddVoltage/2=$AMVDD smc_pptable/MemMvddVoltage/3=$AMVDD"
     fi
   fi
+  
+  if [[ ! -z $SOC && $SOC != "0" && $SOC != "skip" ]]; then
+    PARSED_SOC=$SOC
+    if [[ $SOC -gt $SOCMAX ]]; then
+      PARSED_SOC=$SOCMAX
+    fi
+    if [[ $SOC -lt $SOCMIN ]]; then
+      PARSED_SOC=$SOCMIN
+      # Ignore if set below limit
+      echo "SOCCLK value ignored as below $SOCMIN Mhz limit"
+    else
+      psoc="smc_pptable/FreqTableSocclk/2=$PARSED_SOC smc_pptable/FreqTableSocclk/3=$PARSED_SOC smc_pptable/FreqTableSocclk/4=$PARSED_SOC smc_pptable/FreqTableSocclk/5=$PARSED_SOC smc_pptable/FreqTableSocclk/6=$PARSED_SOC smc_pptable/FreqTableSocclk/7=$PARSED_SOC"
+    fi
+  fi
 
   if [ "$version" = "1.5.4" ]; then
     echo "To enable PP_Table unlock flash to v1.6 or higher"
@@ -148,18 +165,23 @@ if [ $1 ]; then
       TT=50
     fi
 
-    SAFETY=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get smc_pptable/MinVoltageGfx)
-    if [[ $SAFETY == *"has no attribute"* ]]; then
+    sudo rm /dev/shm/safetycheck.txt &> /dev/null
+    sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get smc_pptable/MinVoltageGfx &> /dev/shm/safetycheck.txt
+    # Reinstall upp if error
+    SAFETY=$(cat /dev/shm/safetycheck.txt)
+    if [[ $SAFETY == *"has no attribute"* ]] || [[ $SAFETY == *"ModuleNotFoundError"* ]]; then
       sudo su minerstat -c "yes | sudo pip3 uninstall setuptools"
       sudo su minerstat -c "yes | sudo pip3 uninstall click"
       sudo su minerstat -c "yes | sudo pip3 uninstall upp"
+      sudo su -c "yes | sudo pip3 uninstall upp"
       sudo su minerstat -c "pip3 install setuptools"
       sudo su minerstat -c "pip3 install upp"
+      sudo su -c "pip3 install upp"
     fi
 
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
       overdrive_table/max/8=960 overdrive_table/min/3=700 overdrive_table/min/5=700 overdrive_table/min/7=700 smc_pptable/MinVoltageGfx=2800 \
-      smc_pptable/FanTargetTemperature=$TT smc_pptable/FanThrottlingRpm=3000 $pmvdd $pvddci \
+      smc_pptable/FanTargetTemperature=$TT smc_pptable/FanThrottlingRpm=3000 $pmvdd $pvddci $psoc \
       smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=0 smc_pptable/FanZeroRpmEnable=0 --write
   fi
 

@@ -30,6 +30,7 @@ if [ $1 ]; then
   COREINDEX=$7
   VDDCI=$8
   POWERLIMIT=$9
+  SOC=${10}
   version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
 
   if [ -z "$COREINDEX" ]; then
@@ -78,6 +79,10 @@ if [ $1 ]; then
   if [ "$MVDD" = "0" ] || [ "$MVDD" = "skip" ] || [ -z "$MVDD" ]; then
     MVDD="1070"
   fi
+  
+  # SoC Clock
+  SOCMIN=600
+  SOCMAX=1240
 
 
   # PP_TABLE MOD
@@ -103,9 +108,9 @@ if [ $1 ]; then
     mclk="MclkDependencyTable/entries/3/MemClk=$((MEMCLOCK*100))"
   fi
 
-  TESTGFX=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get GfxclkDependencyTable/entries/7 2> /dev/null | grep -c "ERROR")
+  TESTGFX=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get GfxclkDependencyTable/entries/7/Clk 2> /dev/null | grep -c "ERROR")
   if [ "$TESTGFX" -lt 1 ]; then
-    gfx="GfxclkDependencyTable/entries/7=$VDDC GfxclkDependencyTable/entries/6=$VDDC GfxclkDependencyTable/entries/4=$VDDC"
+    gfx="GfxclkDependencyTable/entries/7/Clk=$VDDC GfxclkDependencyTable/entries/6/Clk=$VDDC GfxclkDependencyTable/entries/4/Clk=$VDDC"
   fi
 
   TESTMV=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get VddmemLookupTable/entries/0 2> /dev/null | grep -c "ERROR")
@@ -129,24 +134,43 @@ if [ $1 ]; then
   if [[ "$VDDCI" != "skip" ]] && [[ "$VDDCI" != "0" ]] && [[ "$VDDCI" != "" ]] && [ ! -z "$VDDCI" ]; then
     vddci="VddciLookupTable/entries/0/Vdd=$VDDCI"
   fi
+  
+  if [[ ! -z $SOC && $SOC != "0" && $SOC != "skip" ]]; then
+  PARSED_SOC=$SOC
+  if [[ $SOC -gt $SOCMAX ]]; then
+    PARSED_SOC=$SOCMAX
+  fi
+  if [[ $SOC -lt $SOCMIN ]]; then
+    PARSED_SOC=$SOCMIN
+    # Ignore if set below limit
+    echo "SOCCLK value ignored as below $SOCMIN Mhz limit"
+  else
+    PARSED_SOC=$((($PARSED_SOC)*100))
+    psoc="SocclkDependencyTable/entries/2/Clk=$PARSED_SOC SocclkDependencyTable/entries/3/Clk=$PARSED_SOC SocclkDependencyTable/entries/4/Clk=$PARSED_SOC SocclkDependencyTable/entries/5/Clk=$PARSED_SOC SocclkDependencyTable/entries/6/Clk=$PARSED_SOC SocclkDependencyTable/entries/7/Clk=$PARSED_SOC StateArray/states/1/SocClockIndexHigh=7"
+  fi
+fi
 
   timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 7 --vddc-table-set $VDDC
 
-  SAFETY=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get StateArray/states/0/MemClockIndexLow)
-  if [[ $SAFETY == *"has no attribute"* ]]; then
+  sudo rm /dev/shm/safetycheck.txt &> /dev/null
+  sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get StateArray/states/0/MemClockIndexLow &> /dev/shm/safetycheck.txt
+  SAFETY=$(cat /dev/shm/safetycheck.txt)
+  if [[ $SAFETY == *"has no attribute"* ]] || [[ $SAFETY == *"ModuleNotFoundError"* ]]; then
     sudo su minerstat -c "yes | sudo pip3 uninstall setuptools"
     sudo su minerstat -c "yes | sudo pip3 uninstall click"
     sudo su minerstat -c "yes | sudo pip3 uninstall upp"
+    sudo su -c "yes | sudo pip3 uninstall upp"
     sudo su minerstat -c "pip3 install setuptools"
     sudo su minerstat -c "pip3 install upp"
+    sudo su -c "pip3 install upp"
   fi
-
+  
   sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
     VddcLookupTable/entries/0=$VDDC VddcLookupTable/entries/1=$VDDC VddcLookupTable/entries/2=$VDDC VddcLookupTable/entries/3=$VDDC VddcLookupTable/entries/4=$VDDC VddcLookupTable/entries/5=$VDDC VddcLookupTable/entries/6=$VDDC VddcLookupTable/entries/7=$VDDC \
-    MclkDependencyTable/entries/3/VddInd=4 $vddci $cclk $mclk $mvdd $gfx \
+    MclkDependencyTable/entries/3/VddInd=4 $vddci $cclk $mclk $mvdd $gfx $psoc \
     StateArray/states/0/MemClockIndexLow=3 StateArray/states/0/MemClockIndexHigh=3 StateArray/states/1/MemClockIndexLow=3 StateArray/states/1/MemClockIndexHigh=3 StateArray/states/1/GfxClockIndexLow=7 \
     --write
-
+    
   #for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
   sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
   sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
