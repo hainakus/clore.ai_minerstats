@@ -138,7 +138,8 @@ if [ $1 ]; then
   if [[ ! -z $SOC && $SOC != "0" && $SOC != "skip" ]]; then
   PARSED_SOC=$SOC
   if [[ $SOC -gt $SOCMAX ]]; then
-    PARSED_SOC=$SOCMAX
+    PARSED_SOC=980
+    echo "SoC can't be higher than $SOCMAX using safe value 980"
   fi
   if [[ $SOC -lt $SOCMIN ]]; then
     PARSED_SOC=$SOCMIN
