@@ -184,7 +184,7 @@ if [ $1 ]; then
   ########## BIG NAVI #############
   if [ "$isThisSienna" -gt "0" ]; then
     echo "--**--**-- NAVI --**--**--"
-    echo "Loading NAVI OC Script.."
+    echo "Loading SIENNA OC Script.."
     #sudo ./overclock_navi.sh $GPUID $2 $3 $4 $5 $7 ${10} $6 ${11} ${12}
     # move this to other file to make better adjustments
     sudo ./overclock_sienna.sh $GPUID $2 $3 $4 $5 $7 ${10} $6 ${11} ${12}
