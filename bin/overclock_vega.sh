@@ -108,10 +108,10 @@ if [ $1 ]; then
     mclk="MclkDependencyTable/entries/3/MemClk=$((MEMCLOCK*100))"
   fi
 
-  TESTGFX=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get GfxclkDependencyTable/entries/7/Clk 2> /dev/null | grep -c "ERROR")
-  if [ "$TESTGFX" -lt 1 ]; then
-    gfx="GfxclkDependencyTable/entries/7/Clk=$VDDC GfxclkDependencyTable/entries/6/Clk=$VDDC GfxclkDependencyTable/entries/4/Clk=$VDDC"
-  fi
+  #TESTGFX=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get GfxclkDependencyTable/entries/7/Clk 2> /dev/null | grep -c "ERROR")
+  #if [ "$TESTGFX" -lt 1 ]; then
+  #  gfx="GfxclkDependencyTable/entries/7/Clk=$VDDC GfxclkDependencyTable/entries/6/Clk=$VDDC GfxclkDependencyTable/entries/4/Clk=$VDDC"
+  #fi
 
   TESTMV=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get VddmemLookupTable/entries/0 2> /dev/null | grep -c "ERROR")
   if [[ "$TESTMV" -lt 1 ]]; then
