@@ -182,10 +182,8 @@ if [ $1 ]; then
       sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
     fi
 
-    # overdrive_table/max/6=1100 overdrive_table/max/7=1100 overdrive_table/min/6=650 overdrive_table/min/7=650 
-
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
-      smc_pptable/MinVoltageGfx=2800 \
+      overdrive_table/max/6=1100 overdrive_table/max/7=1100 overdrive_table/min/6=650 overdrive_table/min/7=650 smc_pptable/MinVoltageGfx=2800 \
       smc_pptable/FanTargetTemperature=$TT smc_pptable/FanThrottlingRpm=3000 $pmvdd $pvddci $psoc \
       smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=0 smc_pptable/FanZeroRpmEnable=0 --write
   fi
