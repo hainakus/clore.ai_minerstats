@@ -168,24 +168,24 @@ if [ $1 ]; then
       TT=50
     fi
 
-    sudo rm /dev/shm/safetycheck.txt &> /dev/null
-    sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get smc_pptable/MinVoltageGfx &> /dev/shm/safetycheck.txt
+    #sudo rm /dev/shm/safetycheck.txt &> /dev/null
+    #sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get smc_pptable/MinVoltageGfx &> /dev/shm/safetycheck.txt
     # Reinstall upp if error
-    SAFETY=$(cat /dev/shm/safetycheck.txt)
-    if [[ $SAFETY == *"has no attribute"* ]] || [[ $SAFETY == *"ModuleNotFoundError"* ]] || [[ $SAFETY == *"table version"* ]]; then
-      sudo su minerstat -c "yes | sudo pip3 uninstall setuptools"
-      sudo su minerstat -c "yes | sudo pip3 uninstall click"
-      sudo su minerstat -c "yes | sudo pip3 uninstall upp"
-      sudo su -c "yes | sudo pip3 uninstall upp"
-      sudo su minerstat -c "pip3 install setuptools"
-      sudo su minerstat -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
-      sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
-    fi
+    #SAFETY=$(cat /dev/shm/safetycheck.txt)
+    #if [[ $SAFETY == *"has no attribute"* ]] || [[ $SAFETY == *"ModuleNotFoundError"* ]] || [[ $SAFETY == *"table version"* ]]; then
+    #  sudo su minerstat -c "yes | sudo pip3 uninstall setuptools"
+    #  sudo su minerstat -c "yes | sudo pip3 uninstall click"
+    #  sudo su minerstat -c "yes | sudo pip3 uninstall upp"
+    #  sudo su -c "yes | sudo pip3 uninstall upp"
+    #  sudo su minerstat -c "pip3 install setuptools"
+    #  sudo su minerstat -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
+    #  sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
+    #fi
 
-    sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
-      overdrive_table/max/6=1100 overdrive_table/max/7=1100 overdrive_table/min/6=650 overdrive_table/min/7=650 smc_pptable/MinVoltageGfx=2800 \
-      smc_pptable/FanTargetTemperature=$TT smc_pptable/FanThrottlingRpm=3000 $pmvdd $pvddci $psoc \
-      smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=0 smc_pptable/FanZeroRpmEnable=0 --write
+    #sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
+    #  overdrive_table/max/6=1100 overdrive_table/max/7=1100 overdrive_table/min/6=650 overdrive_table/min/7=650 smc_pptable/MinVoltageGfx=2800 \
+    #  smc_pptable/FanTargetTemperature=$TT smc_pptable/FanThrottlingRpm=3000 $pmvdd $pvddci $psoc \
+    #  smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=0 smc_pptable/FanZeroRpmEnable=0 --write
   fi
 
   # Apply powerlimit
