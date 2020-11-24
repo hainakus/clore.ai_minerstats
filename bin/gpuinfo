@@ -395,6 +395,7 @@ if [[ $1 == "amd3" ]]; then
     AMD_NEW="$AMDINFO_ORIGINAL"
   fi
 
+  AMD_NEW=$(echo $AMD_NEW | sed "s/,}/}/")
   echo $AMD_NEW
 
 fi
