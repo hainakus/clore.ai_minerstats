@@ -92,7 +92,8 @@ if [ $1 ]; then
     sudo apt-get update
     sudo apt-get -y install python3-pip --fix-missing
     sudo su minerstat -c "pip3 install setuptools"
-    sudo su minerstat -c "pip3 install upp"
+    sudo su minerstat -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
+    sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
   fi
 
   # Check UPP installed
@@ -101,7 +102,8 @@ if [ $1 ]; then
     echo "UPP exists."
   else
     sudo su minerstat -c "pip3 install setuptools"
-    sudo su minerstat -c "pip3 install upp"
+    sudo su minerstat -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
+    sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
   fi
 
   if [ "$MEMCLOCK" != "skip" ]; then
