@@ -147,7 +147,7 @@ if [ $1 ]; then
     echo "SOCCLK value ignored as below $SOCMIN Mhz limit"
   else
     PARSED_SOC=$((($PARSED_SOC)*100))
-    psoc="SocclkDependencyTable/entries/2/Clk=$PARSED_SOC SocclkDependencyTable/entries/3/Clk=$PARSED_SOC SocclkDependencyTable/entries/4/Clk=$PARSED_SOC SocclkDependencyTable/entries/5/Clk=$PARSED_SOC SocclkDependencyTable/entries/6/Clk=$PARSED_SOC SocclkDependencyTable/entries/7/Clk=$PARSED_SOC StateArray/states/1/SocClockIndexHigh=7"
+    psoc="SocclkDependencyTable/entries/0/Clk=$PARSED_SOC SocclkDependencyTable/entries/1/Clk=$PARSED_SOC SocclkDependencyTable/entries/2/Clk=$PARSED_SOC SocclkDependencyTable/entries/3/Clk=$PARSED_SOC SocclkDependencyTable/entries/4/Clk=$PARSED_SOC SocclkDependencyTable/entries/5/Clk=$PARSED_SOC SocclkDependencyTable/entries/6/Clk=$PARSED_SOC SocclkDependencyTable/entries/7/Clk=$PARSED_SOC StateArray/states/1/SocClockIndexHigh=7"
   fi
 fi
 

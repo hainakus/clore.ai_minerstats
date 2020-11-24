@@ -143,7 +143,7 @@ if [ $1 ]; then
       # Ignore if set below limit
       echo "SOCCLK value ignored as below $SOCMIN Mhz limit"
     else
-      psoc="smc_pptable/FreqTableSocclk/2=$PARSED_SOC smc_pptable/FreqTableSocclk/3=$PARSED_SOC smc_pptable/FreqTableSocclk/4=$PARSED_SOC smc_pptable/FreqTableSocclk/5=$PARSED_SOC smc_pptable/FreqTableSocclk/6=$PARSED_SOC smc_pptable/FreqTableSocclk/7=$PARSED_SOC"
+      psoc="smc_pptable/FreqTableSocclk/0=$PARSED_SOC smc_pptable/FreqTableSocclk/1=$PARSED_SOC smc_pptable/FreqTableSocclk/2=$PARSED_SOC smc_pptable/FreqTableSocclk/3=$PARSED_SOC smc_pptable/FreqTableSocclk/4=$PARSED_SOC smc_pptable/FreqTableSocclk/5=$PARSED_SOC smc_pptable/FreqTableSocclk/6=$PARSED_SOC smc_pptable/FreqTableSocclk/7=$PARSED_SOC"
     fi
   fi
 
