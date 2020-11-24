@@ -365,7 +365,8 @@ if [ "$1" -gt 0 ] || [ "$AMDDEVICE" -gt 0 ]; then
     sudo apt-get update
     sudo apt-get -y install python3-pip --fix-missing
     sudo su minerstat -c "pip3 install setuptools"
-    sudo su minerstat -c "pip3 install upp"
+    sudo su minerstat -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
+    sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
   fi
   # Check UPP installed
   FILE=/home/minerstat/.local/bin/upp
@@ -373,7 +374,8 @@ if [ "$1" -gt 0 ] || [ "$AMDDEVICE" -gt 0 ]; then
     echo "UPP exists."
   else
     sudo su minerstat -c "pip3 install setuptools"
-    sudo su minerstat -c "pip3 install upp"
+    sudo su minerstat -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
+    sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
   fi
 fi
 if [ -f "/etc/netplan/minerstat.yaml" ]; then

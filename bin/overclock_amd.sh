@@ -365,14 +365,14 @@ if [ $1 ]; then
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get MaxODMemoryClock &> /dev/shm/safetycheck.txt
     # Reinstall upp if error
     SAFETY=$(cat /dev/shm/safetycheck.txt)
-    if [[ $SAFETY == *"has no attribute"* ]] || [[ $SAFETY == *"ModuleNotFoundError"* ]]; then
+    if [[ $SAFETY == *"has no attribute"* ]] || [[ $SAFETY == *"ModuleNotFoundError"* ]] || [[ $SAFETY == *"table version"* ]]; then
       sudo su minerstat -c "yes | sudo pip3 uninstall setuptools"
       sudo su minerstat -c "yes | sudo pip3 uninstall click"
       sudo su minerstat -c "yes | sudo pip3 uninstall upp"
       sudo su -c "yes | sudo pip3 uninstall upp"
       sudo su minerstat -c "pip3 install setuptools"
-      sudo su minerstat -c "pip3 install upp"
-      sudo su -c "pip3 install upp"
+      sudo su minerstat -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
+      sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
     fi
 
     sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
