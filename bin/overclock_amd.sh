@@ -164,12 +164,12 @@ if [ $1 ]; then
 
   if [[ "$DETECTED" = "NO" ]]; then
     echo "checking with legacy method"
-    isThisR9=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "R9"| sed 's/^.*R9/R9/' | cut -f1 -d' ' | sed 's/[^A-Z0-9]*//g')
-    isThisVega=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
-    isThisVegaII=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
-    isThisVegaVII=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g')
-    isThisNavi=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep -E "5000|5500|5550|5600|5650|5700|5750|5800|5850|5900|5950" | wc -l)
-    isThisSienna=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep -E "6000|6600|6700|6800|6900|SIENNA" | wc -l)
+    isThisR9=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID:" | grep "R9"| sed 's/^.*R9/R9/' | cut -f1 -d' ' | sed 's/[^A-Z0-9]*//g')
+    isThisVega=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID:" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
+    isThisVegaII=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID:" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
+    isThisVegaVII=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID:" | grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g')
+    isThisNavi=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID:" | grep -E "5000|5500|5550|5600|5650|5700|5750|5800|5850|5900|5950" | wc -l)
+    isThisSienna=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID:" | grep -E "6000|6600|6700|6800|6900|SIENNA" | wc -l)
   fi
 
   ########## NAVI ##################
