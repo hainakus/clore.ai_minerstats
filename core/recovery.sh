@@ -2,7 +2,12 @@
 #sudo su
 echo "*-*-*-- MINERSTAT OS RECOVERY --*-*-*"
 echo "*-*-*-- WAITING FOR CONNECTION --*-*-*"
-while ! ping minerstat.farm -w 1 | grep "0%"; do
+echo "Connecting to recovery server..."
+while ! ping labs.minerstat.farm -w 1 | grep "0%"; do
+  sleep 1
+done
+echo "Connecting to API ..."
+while ! ping api.minerstat.com -w 1 | grep "0%"; do
   sleep 1
 done
 sudo killall node
