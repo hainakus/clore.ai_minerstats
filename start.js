@@ -33,6 +33,7 @@ global.osversion;
 global.memoryloc;
 global.minerVersion;
 global.cpuVersion;
+global.logPath;
 var colors = require('colors'),
   exec = require('child_process').exec,
   fs = require('fs'),
@@ -217,6 +218,9 @@ module.exports = {
     global.dlGpuFinished = false;
     global.dlCpuFinished = false;
     global.minerRunning = false;
+    // Logs
+    global.logPath = "/dev/null";
+
 
     // OS Version
     global.osversion = "stable";
@@ -313,6 +317,24 @@ module.exports = {
           } catch (PrivateMinerReadError) {
             global.PrivateMiner = "False";
           }
+          // Logs
+          global.logPath = "/dev/null";
+
+          try {
+            var getLOG = require('child_process').exec,
+              getLOGProc = getLOG("cat /media/storage/logs.txt 2> /dev/null", function(error, stdout, stderr) {
+                var logOUT = stdout;
+                if (logOUT.includes("storage")) {
+                  var today = new Date();
+                  var date = today.getFullYear() + '' + (today.getMonth() + 1) + '' + today.getDate();
+                  var time = today.getHours() + "" + today.getMinutes() + "" + today.getSeconds();
+                  var dateTime = date + '' + time;
+                  var genpath = global.client + "-" + dateTime;
+                  global.logPath = "/home/minerstat/logs/" + genpath + ".txt";
+                  console.log("\x1b[1;94m== \x1b[0mCustom log path: \x1b[1;32m" + global.logPath + "\x1b[0m");
+                }
+              });
+          } catch (getLOGError) {}
           // Download miner if needed
           downloadMiners(global.client, response.body.cpu, response.body.cpuDefault);
           // Poke server

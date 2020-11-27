@@ -1,0 +1,34 @@
+#!/bin/bash
+
+sudo mkdir /home/minerstat/logs > /dev/null 2>&1
+
+STATUS=$(sudo cat /media/storage/logs.txt 2> /dev/null)
+
+if [ -z "$STATUS" ]; then
+  STATUS_ORIGIN="OFF"
+  STATUS_NEW="ON"
+  sudo echo "storage" > /media/storage/logs.txt
+fi
+
+if [[ "$STATUS" == *"storage"* ]]; then
+  STATUS_ORIGIN="ON"
+  STATUS_NEW="OFF"
+  sudo echo "ram" > /media/storage/logs.txt
+fi
+
+#if [ "$STATUS" = "10" ]; then
+if [[ "$STATUS" == *"ram"* ]]; then
+  STATUS_ORIGIN="OFF"
+  STATUS_NEW="ON"
+  sudo echo "storage" > /media/storage/logs.txt
+fi
+
+# ECHO
+echo
+echo
+echo "Previous Log: $STATUS_ORIGIN"
+echo "Current  Log: $STATUS_NEW"
+STORAGE=$(sudo cat /media/storage/logs.txt)
+echo "Now saving to: $STORAGE"
+echo
+echo

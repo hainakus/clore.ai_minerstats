@@ -461,7 +461,11 @@ module.exports = {
     // Extra check for Private miner
     // private miners skip write logs to memory.
     if (global.PrivateMiner != "True" && miner != "xmrig" && miner != "cpuminer-opt") {
-      logInFile = " | tee /dev/shm/miner.log";
+      if (global.logPath != "/dev/null") {
+        logInFile = " | tee /dev/shm/miner.log | tee " + global.logPath;
+      } else {
+        logInFile = " | tee /dev/shm/miner.log";
+      }
     }
 
     // FOR SAFE RUNNING MINER NEED TO CREATE START.BASH
