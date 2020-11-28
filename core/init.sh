@@ -345,6 +345,10 @@ do
     sudo shutdown -h now
   fi
 
+  if [ $RESPONSE = "FLASH" ]; then
+    sudo bash /home/minerstat/minerstat-os/bin/getflash.sh
+  fi
+
   if [[ $RESPONSE == *"WORKERNAME"* ]]; then
     echo "-------------------------------------------"
     BL=""
