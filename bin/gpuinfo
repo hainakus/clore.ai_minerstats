@@ -254,6 +254,10 @@ if [[ $1 == "amd3" ]]; then
     NID=0
   fi
 
+  if [[ $2 == "debug" ]]; then
+    echo "NID: $NID"
+  fi
+
   input="/dev/shm/amdmeminfo.txt"
   while IFS= read -r line
   do
@@ -274,6 +278,10 @@ if [[ $1 == "amd3" ]]; then
     # Call script
     STRING=$(echo $AMDINFO_ORIGINAL | $JQ_PATH -r .[\"$NID\"])
 
+    if [[ $2 == "debug" ]]; then
+      echo "STRING: $STRING $NID"
+    fi
+
     # Fallback
     if [ "$STRING" = "null" ]; then
       i=$((GPUID-1))
@@ -283,12 +291,18 @@ if [[ $1 == "amd3" ]]; then
       else
         STRING="null"
       fi
+      if [[ $2 == "debug" ]]; then
+        echo "FALLBACK STRING2: $STRING"
+      fi
     fi
 
     # Fallback 2
     if [ "$STRING" = "null" ]; then
       i=$((GPUID+1))
       STRING=$(echo $AMDINFO_ORIGINAL | $JQ_PATH -r .[\"$i\"])
+      if [[ $2 == "debug" ]]; then
+        echo "FALLBACK2 STRING3: $STRING"
+      fi
     fi
 
     if [ "$STRING" != "null" ]; then
