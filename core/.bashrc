@@ -160,6 +160,7 @@ alias kernel-update='sudo /home/minerstat/minerstat-os/core/kernel-update'
 alias force-gen2='sudo /home/minerstat/minerstat-os/core/mgen'
 alias netcheck='sudo /home/minerstat/minerstat-os/core/netcheck'
 alias logs='sudo /home/minerstat/minerstat-os/core/logs'
+alias watchdog-reboot='sudo /home/minerstat/minerstat-os/core/watchdog-reboot'
 
 if grep -q experimental "/etc/lsb-release"; then
   alias amdmemtool='sudo /home/minerstat/minerstat-os/bin/amdmemorytweak'
