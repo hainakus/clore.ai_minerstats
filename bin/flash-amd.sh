@@ -62,10 +62,12 @@ if [[ ! -z "$PN" ]] && [[ ! -z "$PROD" ]] && [[ ! -z "$DID" ]]; then
   # Stop mining, maintenance mode etc..
   echo "Going to Idle mode"
   sudo /home/minerstat/minerstat-os/core/stop >/dev/null 2>&1
-  echo "Entering maintanance mode"
+  echo "Entering maintenance mode"
   sudo /home/minerstat/minerstat-os/core/maintenance >/dev/null 2>&1
   echo "Killing Xorg"
-  sudo killall X sudo killall Xorg sudo killall Xorg >/dev/null 2>&1
+  sudo killall X sudo >/dev/null 2>&1
+  sudo killall Xorg >/dev/null 2>&1
+   sudo killall Xorg >/dev/null 2>&1
   # Loop GPU List
   for bus in $GPUS; do
     echo
@@ -129,7 +131,7 @@ if [[ ! -z "$PN" ]] && [[ ! -z "$PROD" ]] && [[ ! -z "$DID" ]]; then
         # Send status
         curl --insecure --connect-timeout 20 --max-time 25 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=$bus" --data "id=$SID" --data "status=$STATUS" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
       else
-        echo "Something went wrong during making a backup of current .rom, not flashing new one without backup"
+        echo "Something went wrong during making a backup of current .rom, not flashing a new one without backup"
       fi
     else
       echo "Error: $bus not listed within flasher"
@@ -141,6 +143,9 @@ if [[ ! -z "$PN" ]] && [[ ! -z "$PROD" ]] && [[ ! -z "$DID" ]]; then
   ## Sync to disk
   curl --insecure --connect-timeout 20 --max-time 25 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=" --data "id=$SID" --data "status=done" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
   sync
+
+  ## Turn off maintenance
+  sudo rm /dev/shm/maintenance.pid
 
   if [[ "$REBOOT" = "1" ]]; then
     echo "Reboot was requested, validating"
