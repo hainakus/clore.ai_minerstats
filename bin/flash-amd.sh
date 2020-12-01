@@ -153,22 +153,21 @@ fi
 # Turn off maintenance
 sudo rm /dev/shm/maintenance.pid
 
-# Done
-curl --insecure --connect-timeout 20 --max-time 25 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=" --data "id=$SID" --data "status=done" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
-
 ## Sync to disk
 sync
 
 # Reboot if all good and was requested
-
 if [[ "$REBOOT" = "1" ]]; then
   echo "Reboot was requested, validating"
   if [[ "$FAILED" = 0 ]]; then
     echo "Everything went fine, rebooting"
+    curl --insecure --connect-timeout 20 --max-time 25 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=" --data "id=$SID" --data "status=done-reboot" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
     sudo bash /home/minerstat/minerstat-os/bin/reboot.sh
   else
+    curl --insecure --connect-timeout 20 --max-time 25 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=" --data "id=$SID" --data "status=done" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
     echo "Something went wrong during flash, reboot not allowed"
   fi
 else
   echo "Reboot was not requested, skipping"
+  curl --insecure --connect-timeout 20 --max-time 25 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=" --data "id=$SID" --data "status=done" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
 fi
