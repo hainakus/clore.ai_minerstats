@@ -115,7 +115,8 @@ install () {
     # Download
     FILE="NVIDIA-Linux-x86_64-$SELECTED_VERSION.run"
     if [ ! -f "/tmp/$FILE" ]; then
-      wget -o /dev/null "https://static-ssl.minerstat.farm/drivers/nvidia/$FILE" -P /tmp
+      echo "Downloading driver package.."
+      wget "https://static-ssl.minerstat.farm/drivers/nvidia/$FILE" -P /tmp
       if [[ $? -ne 0 ]]; then
         echo "Download driver installer failed.."
         sudo rm /tmp/$FILE
@@ -216,7 +217,7 @@ cuda () {
   echo "Installing cuda libraries.."
   echo "================="
   if [ ! -f "/tmp/cudalib.zip" ]; then
-    wget -o /dev/null "https://static-ssl.minerstat.farm/drivers/nvidia/cudalib.zip" -P /tmp
+    wget "https://static-ssl.minerstat.farm/drivers/nvidia/cudalib.zip" -P /tmp
     if [[ $? -ne 0 ]]; then
       echo "Download cuda library failed.."
       sudo rm /tmp/cudalib.zip
