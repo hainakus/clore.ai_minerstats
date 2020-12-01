@@ -132,12 +132,12 @@ if [[ ! -z "$PN" ]] && [[ ! -z "$PROD" ]] && [[ ! -z "$DID" ]]; then
         curl --insecure --connect-timeout 20 --max-time 25 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=$bus" --data "id=$SID" --data "status=$STATUS" --data "log=$FLASHLOG" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
       else
         echo "Something went wrong during making a backup of current .rom, not flashing a new one without backup"
-        # Send status
+        FAILED=$((FAILED+1))
         curl --insecure --connect-timeout 20 --max-time 25 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=$bus" --data "id=$SID" --data "status=error" --data "log=backup failed" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
       fi
     else
       echo "Error: $bus not listed within flasher"
-      # Send status
+      FAILED=$((FAILED+1))
       curl --insecure --connect-timeout 20 --max-time 25 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=$bus" --data "id=$SID" --data "status=error" --data "log=not found within the flasher" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
     fi
     echo "============================="
@@ -146,7 +146,7 @@ if [[ ! -z "$PN" ]] && [[ ! -z "$PROD" ]] && [[ ! -z "$DID" ]]; then
 
 else
   echo "Bios invalid, flashing skipped"
-  # Send status
+  FAILED=$((FAILED+1))
   curl --insecure --connect-timeout 20 --max-time 25 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=$bus" --data "id=$SID" --data "status=error" --data "log=unable to verify bios, flashing skipped" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
 fi
 
