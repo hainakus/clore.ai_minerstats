@@ -40,9 +40,9 @@ echo -n "$ROM" | sudo /usr/bin/base64 --decode > $PATHS
 sleep 0.5
 
 # Validate
-PN=$(sudo /home/minerstat/minerstat-os/bin/$FLASHER -biosfileinfo /home/minerstat/bios/flashed/20201128211914-bios.rom | tr -d '\040\011\015' | grep "P/N" | sed 's/.*://g')
-PROD=$(sudo /home/minerstat/minerstat-os/bin/$FLASHER -biosfileinfo /home/minerstat/bios/flashed/20201128211914-bios.rom | tr -d '\040\011\015' | grep "Product" | sed 's/.*://g')
-DID=$(sudo /home/minerstat/minerstat-os/bin/$FLASHER -biosfileinfo /home/minerstat/bios/flashed/20201128211914-bios.rom | tr -d '\040\011\015' | grep "DeviceID" | sed 's/.*://g')
+PN=$(sudo /home/minerstat/minerstat-os/bin/$FLASHER -biosfileinfo $PATHS | tr -d '\040\011\015' | grep "P/N" | sed 's/.*://g')
+PROD=$(sudo /home/minerstat/minerstat-os/bin/$FLASHER -biosfileinfo $PATHS | tr -d '\040\011\015' | grep "Product" | sed 's/.*://g')
+DID=$(sudo /home/minerstat/minerstat-os/bin/$FLASHER -biosfileinfo $PATHS | tr -d '\040\011\015' | grep "DeviceID" | sed 's/.*://g')
 
 echo
 echo "============================="
@@ -129,35 +129,46 @@ if [[ ! -z "$PN" ]] && [[ ! -z "$PROD" ]] && [[ ! -z "$DID" ]]; then
           fi
         fi
         # Send status
-        curl --insecure --connect-timeout 20 --max-time 25 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=$bus" --data "id=$SID" --data "status=$STATUS" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
+        curl --insecure --connect-timeout 20 --max-time 25 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=$bus" --data "id=$SID" --data "status=$STATUS" --data "log=$FLASHLOG" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
       else
         echo "Something went wrong during making a backup of current .rom, not flashing a new one without backup"
+        # Send status
+        curl --insecure --connect-timeout 20 --max-time 25 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=$bus" --data "id=$SID" --data "status=error" --data "log=backup failed" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
       fi
     else
       echo "Error: $bus not listed within flasher"
+      # Send status
+      curl --insecure --connect-timeout 20 --max-time 25 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=$bus" --data "id=$SID" --data "status=error" --data "log=not found within the flasher" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
     fi
     echo "============================="
     echo
   done
 
-  ## Sync to disk
-  curl --insecure --connect-timeout 20 --max-time 25 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=" --data "id=$SID" --data "status=done" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
-  sync
-
-  ## Turn off maintenance
-  sudo rm /dev/shm/maintenance.pid
-
-  if [[ "$REBOOT" = "1" ]]; then
-    echo "Reboot was requested, validating"
-    if [[ "$FAILED" = 0 ]]; then
-      echo "Everything went fine, rebooting"
-      sudo bash /home/minerstat/minerstat-os/bin/reboot.sh
-    else
-      echo "Something went wrong during flash, reboot not allowed"
-    fi
-  else
-    echo "Reboot was not requested, skipping"
-  fi
 else
   echo "Bios invalid, flashing skipped"
+  # Send status
+  curl --insecure --connect-timeout 20 --max-time 25 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=$bus" --data "id=$SID" --data "status=error" --data "log=unable to verify bios, flashing skipped" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
+fi
+
+# Turn off maintenance
+sudo rm /dev/shm/maintenance.pid
+
+# Done
+curl --insecure --connect-timeout 20 --max-time 25 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=" --data "id=$SID" --data "status=done" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
+
+## Sync to disk
+sync
+
+# Reboot if all good and was requested
+
+if [[ "$REBOOT" = "1" ]]; then
+  echo "Reboot was requested, validating"
+  if [[ "$FAILED" = 0 ]]; then
+    echo "Everything went fine, rebooting"
+    sudo bash /home/minerstat/minerstat-os/bin/reboot.sh
+  else
+    echo "Something went wrong during flash, reboot not allowed"
+  fi
+else
+  echo "Reboot was not requested, skipping"
 fi
