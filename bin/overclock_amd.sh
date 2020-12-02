@@ -43,7 +43,7 @@ if [ $1 ]; then
   POWERLIMIT=${11}
   SOC=${12}
 
-  if [ "$INSTANT" = "instantoc" ]; then
+  if [ "$INSTANT" = "instantoc5" ]; then
     echo "INSTANT OVERRIDE"
     echo "BUS => $8"
     if [ -f "/dev/shm/oc_old_$8.txt" ]; then
@@ -180,7 +180,7 @@ if [ $1 ]; then
     exit 1
   fi
   ################################
-  
+
   ########## BIG NAVI #############
   if [ "$isThisSienna" -gt "0" ]; then
     echo "--**--**-- NAVI --**--**--"
@@ -375,7 +375,7 @@ if [ $1 ]; then
     RBC=$(cat /dev/shm/mclock_$GPUID.txt)
     RBCE=$(cat /dev/shm/mclock_$GPUID.txt | grep -c "ERROR")
     echo "$RBC"
-    
+
     sudo rm /dev/shm/safetycheck.txt &> /dev/null
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get MaxODMemoryClock &> /dev/shm/safetycheck.txt
     # Reinstall upp if error
