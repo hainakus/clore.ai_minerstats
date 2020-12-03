@@ -6,10 +6,17 @@ if [[ "$1" != "nosync" ]]; then
 fi
 
 echo ""
-echo "Sending reboot signal.."
+echo "Sending reboot signal"
+echo -e "  [i] If the computer not rebooting after this command watchdog not supported or not properly installed into the motherboard reset slot \r"
 echo ""
 
 # attempt to reboot rig with watchdog
 sudo su -c "printf '\xFF\x55' >/dev/ttyUSB*"
 sudo su -c "printf '\xFF\x55' >/dev/hidraw*"
 sudo su -c "echo -n '~T1' >/dev/ttyACM*"
+
+# echo lsusb
+echo "Listing detected USB devices"
+echo -e "  [i] Check below your USB recognised or not \r"
+
+sudo lsusb
