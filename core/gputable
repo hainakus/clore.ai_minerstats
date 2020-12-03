@@ -117,7 +117,7 @@ if [[ ! -z "$INF_NV" ]]; then
   do
     IFS=',' read -r -a array <<< "$line"
     NAME=${array[0]}
-    NAME=$(echo $Green$NAME$Reset | xargs)
+    #NAME=$(echo $Green$NAME$Reset | xargs)
     TEMP=${array[1]}" C"
     TEMP=$(echo $TEMP | xargs)
     FAN=${array[2]}
@@ -156,7 +156,7 @@ if [[ ! -z "$INF_AMD" ]]; then
     EXT=$(sed -n $NUM'p' < /dev/shm/amdmeminfo.txt)
     IFS=':' read -r -a arrays <<< "$EXT"
     NAME=${arrays[2]}
-    NAME=$(echo $Red$NAME$Reset | xargs | xargs)
+    #NAME=$(echo $Red$NAME$Reset | xargs | xargs)
     echo "$BUS,$NAME,$TEMP,$FAN,$CORECLK,$MEMCLK" >> /dev/shm/gpudata.txt
     NUM=$((NUM+1))
   done < "/dev/shm/amdcache.txt"
@@ -165,4 +165,4 @@ fi
 cat /dev/shm/gpudata.txt | sort  > /dev/shm/gpudata_sort.txt
 sed  -i "1i bus,$Reset name,temp,fan,coreclk,memclk" /dev/shm/gpudata_sort.txt
 
-printTable ',' "$(cat /dev/shm/gpudata_sort.txt)"
+#printTable ',' "$(cat /dev/shm/gpudata_sort.txt)"
