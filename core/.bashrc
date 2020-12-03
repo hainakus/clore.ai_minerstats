@@ -162,6 +162,7 @@ alias netcheck='sudo /home/minerstat/minerstat-os/core/netcheck'
 alias logs='sudo /home/minerstat/minerstat-os/core/logs'
 alias watchdog-reboot='sudo /home/minerstat/minerstat-os/bin/watchdog-reboot.sh'
 alias motd='sudo bash /home/minerstat/minerstat-os/core/10-help-text'
+alias mgpu='sudo bash /home/minerstat/minerstat-os/core/gputable'
 
 if grep -q experimental "/etc/lsb-release"; then
   alias amdmemtool='sudo /home/minerstat/minerstat-os/bin/amdmemorytweak'
