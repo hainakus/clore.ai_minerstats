@@ -7,9 +7,16 @@ echo "Disclaimer: Use at your own risk. If rig not booting after process, you wi
 echo "Hint: 8GB RAM recommended for sucessfull DKMS build."
 echo
 
+# Global
+SILENT="no"
+REBOOT="no"
+
 # Ubuntu version
 U_VER=$(cat /etc/lsb-release)
 S_DIR="1804"
+
+# Total Memory
+MEM_MB=$(free -m | grep "Mem:" | awk '{print $2}')
 
 if [[ $U_VER == *"16.04"* ]]; then
   S_DIR="1604"
@@ -54,6 +61,8 @@ help () {
   echo "-h  | --help         : Printing this menu"
   echo "-l  | --list         : Listing all available driver version to install"
   echo "-i  | --install      : Install selected version"
+  echo "-s  | --silent       : Silent mode, no questions asked"
+  echo "-r  | --reboot       : Reboot after successful install"
   echo
   echo
   echo "======= Current version: v$CURRENT_DRIVER =========="
@@ -76,7 +85,7 @@ list () {
     if [[ "$vers" = "20.45" ]] || [[ "$vers" = "20.40" ]]; then
       add="[Unstable - DO NOT UPGRADE]"
     fi
-  echo "$vers $add"
+    echo "$vers $add"
   done < $VLIST_FILE
   echo
   echo "======= Current version: v$CURRENT_DRIVER =========="
@@ -96,6 +105,20 @@ fi
 # List
 install () {
   echo
+  if [[ "$MEM_MB" -lt 7701 ]]; then
+    echo
+    echo "To update AMD driver requring at least 8GB of installed RAM. (Total Memory: $MEM_MB Mb)"
+    if [[ "$SILENT" == "yes" ]]; then
+      echo "-s | --silent, No questions asked, installing anyway.."
+    else
+      read -p "Are you sure you want to attempt to install? (y/n): " CONT
+      if [ "$CONT" = "y" ]; then
+        echo "All right, if installation failes you will need to reflash";
+      else
+        exit 2
+      fi
+    fi
+  fi
   FULL=$(cat $VLIST_FILE | grep $SELECTED_VERSION | xargs | xargs | cut -f1 -d" ")
   if [[ ! -z "$FULL" ]]; then
     echo
@@ -148,6 +171,11 @@ install () {
       echo "Driver successfully installed. Reboot with: forcereboot"
       echo "================="
       echo
+      if [[ "$REBOOT" == "yes" ]]; then
+        echo "Everything went fine, rebooting"
+        sleep 1
+        sudo bash /home/minerstat/minerstat-os/bin/reboot.sh
+      fi
     else
       echo
       echo "================="
@@ -172,12 +200,13 @@ install () {
 
 # Arg parser
 PARAMS=""
+INSTALL="no"
 while (( "$#" )); do
   case "$1" in
     -i|--install)
       if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
         SELECTED_VERSION=$2
-        install
+        INSTALL="yes"
         shift 2
       else
         echo
@@ -190,6 +219,16 @@ while (( "$#" )); do
       ;;
     -h|--help)
       help
+      shift
+      ;;
+    -s|--silent)
+      echo -e "  [i] Silent mode \r"
+      SILENT="yes"
+      shift
+      ;;
+    -r|--reboot)
+      echo -e "  [i] Reboot after valid install \r"
+      REBOOT="yes"
       shift
       ;;
     -l|--list)
@@ -208,6 +247,9 @@ while (( "$#" )); do
       ;;
   esac
 done
+if [[ "$INSTALL" = "yes" ]]; then
+  install
+fi
 # set positional arguments in their proper place
 eval set -- "$PARAMS"
 echo
