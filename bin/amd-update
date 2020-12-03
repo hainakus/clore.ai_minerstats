@@ -173,6 +173,7 @@ install () {
       echo
       if [[ "$REBOOT" == "yes" ]]; then
         echo "Everything went fine, rebooting"
+        sync
         sleep 1
         sudo bash /home/minerstat/minerstat-os/bin/reboot.sh
       fi

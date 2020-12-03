@@ -31,6 +31,7 @@ help () {
   echo "-l  | --list         : Listing all available driver version to install"
   echo "-c  | --cuda         : Update cuda libraries"
   echo "-i  | --install      : Install selected version"
+  echo "-r  | --reboot       : Reboot after successful install"
   echo
   echo
   echo "======= Current version: v$CURRENT_DRIVER =========="
@@ -188,6 +189,12 @@ install () {
       echo "================="
       echo
       sudo /usr/bin/nvidia-smi
+      if [[ "$REBOOT" == "yes" ]]; then
+        echo "Everything went fine, rebooting"
+        sync
+        sleep 1
+        sudo bash /home/minerstat/minerstat-os/bin/reboot.sh
+      fi
     else
       echo
       echo "================="
@@ -277,12 +284,13 @@ cuda () {
 
 # Arg parser
 PARAMS=""
+INSTALL="no"
 while (( "$#" )); do
   case "$1" in
     -i|--install)
       if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
         SELECTED_VERSION=$2
-        install
+        INSTALL="yes"
         shift 2
       else
         echo
@@ -305,6 +313,11 @@ while (( "$#" )); do
       cuda
       shift
       ;;
+    -r|--reboot)
+      echo -e "  [i] Reboot after valid install \r"
+      REBOOT="yes"
+      shift
+      ;;
     -*|--*=) # unsupported flags
       echo "================="
       echo "Error: Unsupported flag $1" >&2
@@ -317,6 +330,9 @@ while (( "$#" )); do
       ;;
   esac
 done
+if [[ "$INSTALL" = "yes" ]]; then
+  install
+fi
 # set positional arguments in their proper place
 eval set -- "$PARAMS"
 echo
