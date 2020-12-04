@@ -30,6 +30,12 @@ REBOOT="no"
 # Free Space in MB
 FREE_IN_MB=$(df -hm --no-sync "."  | awk 'NR==2{print $4}')
 
+# Check for watchdogs
+SNUM=$(sudo su minerstat -c "screen -list | grep -c usbdog")
+if [ "$SNUM" != "1" ]; then
+  sudo su minerstat -c "screen -ls | grep usbdog | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe; sudo killall usbdog; sleep 0.5; sudo killall usbdog; screen -A -m -d -S usbdog sudo bash /home/minerstat/minerstat-os/watchdog" > /dev/null
+fi
+
 # Help
 help () {
   echo
