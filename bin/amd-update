@@ -18,6 +18,9 @@ S_DIR="1804"
 # Total Memory
 MEM_MB=$(free -m | grep "Mem:" | awk '{print $2}')
 
+# Free Space in MB
+FREE_IN_MB=$(df -hm --no-sync "."  | awk 'NR==2{print $4}')
+
 if [[ $U_VER == *"16.04"* ]]; then
   S_DIR="1604"
 elif [[ $U_VER == *"18.04"* ]]; then
@@ -105,9 +108,25 @@ fi
 # List
 install () {
   echo
+  # RAM Check for DKMS build
   if [[ "$MEM_MB" -lt 7701 ]]; then
     echo
     echo "To update AMD driver requring at least 8GB of installed RAM. (Total Memory: $MEM_MB Mb)"
+    if [[ "$SILENT" == "yes" ]]; then
+      echo "-s | --silent, No questions asked, installing anyway.."
+    else
+      read -p "Are you sure you want to attempt to install? (y/n): " CONT
+      if [ "$CONT" = "y" ]; then
+        echo "All right, if installation failes you will need to reflash";
+      else
+        exit 2
+      fi
+    fi
+  fi
+  # FREE SPACE CHECK
+  if [[ "$FREE_IN_MB" -lt 2001 ]]; then
+    echo
+    echo "To update AMD driver recommended to have at least 2GB of Free Space. (Total free space: $FREE_IN_MB Mb)"
     if [[ "$SILENT" == "yes" ]]; then
       echo "-s | --silent, No questions asked, installing anyway.."
     else
@@ -141,6 +160,12 @@ install () {
     echo "================="
     echo
     sudo /usr/bin/amdgpu-pro-uninstall -y
+    sleep 2
+    # make sure it is removed
+    sudo /usr/bin/amdgpu-pro-uninstall -y >/dev/null 2>&1
+    # apt-get update
+    sudo apt-get update
+    sleep 1
     # Download
     if [ ! -f "/tmp/$FULL" ]; then
       wget "https://static-ssl.minerstat.farm/drivers/amd/$S_DIR/$FULL" -P /tmp

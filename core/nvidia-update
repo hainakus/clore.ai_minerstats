@@ -23,6 +23,13 @@ if [ ! -f "$VLIST_FILE" ]; then
   fi
 fi
 
+# Global
+SILENT="no"
+REBOOT="no"
+
+# Free Space in MB
+FREE_IN_MB=$(df -hm --no-sync "."  | awk 'NR==2{print $4}')
+
 # Help
 help () {
   echo
@@ -31,6 +38,7 @@ help () {
   echo "-l  | --list         : Listing all available driver version to install"
   echo "-c  | --cuda         : Update cuda libraries"
   echo "-i  | --install      : Install selected version"
+  echo "-s  | --silent       : Silent mode, no questions asked"
   echo "-r  | --reboot       : Reboot after successful install"
   echo
   echo
@@ -80,6 +88,21 @@ install () {
   done < $VLIST_FILE
   # Check for validity
   if [[ "$EXISTS" = "1" ]]; then
+    # FREE SPACE CHECK
+    if [[ "$FREE_IN_MB" -lt 1501 ]]; then
+      echo
+      echo "To update Nvidia driver recommended to have at least 1.5GB of Free Space. (Total free space: $FREE_IN_MB Mb)"
+      if [[ "$SILENT" == "yes" ]]; then
+        echo "-s | --silent, No questions asked, installing anyway.."
+      else
+        read -p "Are you sure you want to attempt to install? (y/n): " CONT
+        if [ "$CONT" = "y" ]; then
+          echo "All right, if installation failes you will need to reflash";
+        else
+          exit 2
+        fi
+      fi
+    fi
     echo
     echo "================="
     echo "Valid version provided.. Attempting to download and install Nvidia $SELECTED_VERSION .."
@@ -311,6 +334,11 @@ while (( "$#" )); do
       ;;
     -c|--cuda)
       cuda
+      shift
+      ;;
+    -s|--silent)
+      echo -e "  [i] Silent mode \r"
+      SILENT="yes"
       shift
       ;;
     -r|--reboot)
