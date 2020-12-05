@@ -111,7 +111,7 @@ if [ $1 ]; then
 
   E1=""
   E2=""
-  if [[ $QUERY == *"3070"* ]] || [[ $QUERY == *"3080"* ]] || [[ $QUERY == *"3090"* ]]; then
+  if [[ $QUERY == *"3070"* ]] || [[ $QUERY == *"3080"* ]] || [[ $QUERY == *"3090"* ]] || [[ $QUERY == *"3060"* ]]; then
     # GDDR6 fix
     MHZ=$((MEMORYOFFSET/2))
     EFF_MHZ=$(awk -v n=$MHZ 'BEGIN{print int((n+5)/10) * 10}')
