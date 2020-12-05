@@ -19,7 +19,7 @@ echo "New AccessKey: $1"
 echo "New Worker Name: $2"
 
 echo
-echo "stop" > /tmp/stop.pid;
+sudo su -c "echo 'stop' > /tmp/stop.pid"
 sudo node /home/minerstat/minerstat-os/stop.js
 sudo su minerstat -c "screen -X -S minerstat-console quit";
 sudo su -c "sudo screen -X -S minew quit"

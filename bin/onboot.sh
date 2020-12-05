@@ -2,7 +2,8 @@
 
 FILE=/dev/shm/boot.pid
 if [ ! -f "$FILE" ]; then
-  sudo rm /tmp/stop.pid > /dev/null 2>&1
+  #sudo rm /tmp/stop.pid > /dev/null 2>&1
+  sudo su -c "sudo rm /tmp/stop.pid"
   sudo su -c "echo '1' > /dev/shm/boot.pid"
   file=/home/minerstat/minerstat-os/bin/random.txt
   if [ -e "$file" ]; then

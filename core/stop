@@ -5,7 +5,7 @@ exec 2>/dev/null
 cd /home/minerstat/minerstat-os/
 sudo node stop > /dev/null
 sudo su minerstat -c "screen -X -S minerstat-console quit" 2>&1 >/dev/null
-sudo echo "stop" > /tmp/stop.pid 2>&1 >/dev/null
+sudo su -c "echo 'stop' > /tmp/stop.pid"
 sudo su -c "sudo screen -X -S minew quit >/dev/null" 2>&1 >/dev/null
 sudo su -c "echo "" > /dev/shm/miner.log >/dev/null" 2>&1 >/dev/null
 

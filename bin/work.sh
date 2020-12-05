@@ -5,7 +5,7 @@ if ! screen -list | grep -q "dummy"; then
   screen -A -m -d -S dummy sleep 22176000
 
   # Stop before OC
-  echo "stopboot" > /tmp/stop.pid;
+  sudo su -c "echo 'stopboot' > /tmp/stop.pid"
   echo "stop" > /tmp/justbooted.pid;
   screen -A -m -d -S just sudo bash /home/minerstat/minerstat-os/core/justboot
 
@@ -106,7 +106,7 @@ if ! screen -list | grep -q "dummy"; then
   cd /home/minerstat/minerstat-os/
   sudo node stop > /dev/null
   sudo su minerstat -c "screen -X -S minerstat-console quit" > /dev/null
-  echo "stop" > /tmp/stop.pid
+  sudo su -c "echo 'stopboot' > /tmp/stop.pid"
   sudo su -c "sudo screen -X -S minew quit" > /dev/null
   cd /home/minerstat/minerstat-os/bin
 
@@ -157,7 +157,7 @@ if ! screen -list | grep -q "dummy"; then
   screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done
   sudo su minerstat -c "screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
   sudo su minerstat -c "screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh"
-  sudo rm /tmp/stop.pid > /dev/null
+  sudo su -c "sudo rm /tmp/stop.pid"
   sleep 2
   sudo su minerstat -c "screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh"
 
