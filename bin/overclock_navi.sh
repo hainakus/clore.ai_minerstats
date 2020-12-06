@@ -252,7 +252,7 @@ if [ $1 ]; then
   if [ "$MEMCLOCK" != "skip" ]; then
     # Auto fix Windows Clocks to linux ones
     # Windows is memclock * 2
-    if [[ $MEMCLOCK -gt "1600" ]]; then
+    if [[ $MEMCLOCK -gt "1001" ]]; then
       echo "!! MEMORY CLOCK CONVERTED TO LINUX FORMAT [WINDOWS_MEMCLOCK/2]"
       MEMCLOCK=$((MEMCLOCK/2))
     fi
