@@ -260,7 +260,7 @@ if [ $1 ]; then
       echo "!! Invalid memory clock detected, auto fixing.."
       echo "Maximum recommended clock atm 950Mhz (Windows: 950*2 = 1900Mhz)"
       echo "You have set $MEMCLOCK Mhz reducing back to 950Mhz"
-      MEMCLOCK=1000
+      MEMCLOCK=950
     fi
     echo "GPU$GPUID : MEMCLOCK => $MEMCLOCK Mhz"
     sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "m 1 $MEMCLOCK"
