@@ -183,7 +183,7 @@ if [ $1 ]; then
     fi
 
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
-      overdrive_table/max/8=1000 overdrive_table/min/3=700 overdrive_table/min/5=700 overdrive_table/min/7=700 smc_pptable/MinVoltageGfx=2800 \
+      overdrive_table/max/8=960 overdrive_table/min/3=700 overdrive_table/min/5=700 overdrive_table/min/7=700 smc_pptable/MinVoltageGfx=2800 \
       smc_pptable/FanTargetTemperature=$TT smc_pptable/FanThrottlingRpm=3000 $pmvdd $pvddci $psoc \
       smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=0 smc_pptable/FanZeroRpmEnable=0 --write
   fi
@@ -252,15 +252,15 @@ if [ $1 ]; then
   if [ "$MEMCLOCK" != "skip" ]; then
     # Auto fix Windows Clocks to linux ones
     # Windows is memclock * 2
-    if [[ $MEMCLOCK -gt "1700" ]]; then
+    if [[ $MEMCLOCK -gt "1600" ]]; then
       echo "!! MEMORY CLOCK CONVERTED TO LINUX FORMAT [WINDOWS_MEMCLOCK/2]"
       MEMCLOCK=$((MEMCLOCK/2))
     fi
-    if [[ $MEMCLOCK -gt "1000" ]]; then
+    if [[ $MEMCLOCK -gt "960" ]]; then
       echo "!! Invalid memory clock detected, auto fixing.."
       echo "Maximum recommended clock atm 950Mhz (Windows: 950*2 = 1900Mhz)"
       echo "You have set $MEMCLOCK Mhz reducing back to 950Mhz"
-      MEMCLOCK=950
+      MEMCLOCK=940
     fi
     echo "GPU$GPUID : MEMCLOCK => $MEMCLOCK Mhz"
     sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "m 1 $MEMCLOCK"
