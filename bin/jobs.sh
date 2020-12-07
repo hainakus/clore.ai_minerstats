@@ -98,6 +98,11 @@ export LC_ALL=en_US.UTF-8
 export OpenCL_ROOT=/opt/amdgpu-pro/lib/x86_64-linux-gnu
 # FSCK
 sudo sed -i s/"#FSCKFIX=no"/"FSCKFIX=yes"/ /etc/default/rcS
+# Intel Energy-Efficient Ethernet
+sudo ethtool --set-eee eth0 eee off 2>/dev/null
+if [ ! -f "/etc/modprobe.d/e1000e.conf" ]; then
+  echo "options e1000e EEE=0" | sudo tee /etc/modprobe.d/e1000e.conf
+fi
 # check cloudflare ips
 SERVERA="104.26.9.16"
 SERVERB="104.26.8.16"
