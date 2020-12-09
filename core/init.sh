@@ -349,6 +349,10 @@ do
     sudo bash /home/minerstat/minerstat-os/bin/getflash.sh
   fi
 
+  if [ $RESPONSE = "GETBIOS" ]; then
+    sudo bash /home/minerstat/minerstat-os/bin/getbios.sh
+  fi
+
   if [[ $RESPONSE == *"WORKERNAME"* ]]; then
     echo "-------------------------------------------"
     BL=""
