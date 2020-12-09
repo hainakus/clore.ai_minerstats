@@ -97,13 +97,15 @@ if [ "$SFAN" = "2" ]; then
   if [[ $FAN_CACHE == *"fan:$ID1"* ]]; then
     sudo echo $ID1 > /dev/shm/id1.txt
   else
+    ID1=""
     sudo echo "" > /dev/shm/id1.txt
   fi
   ID2=$((SUM - 1))
   if [[ $FAN_CACHE == *"fan:$ID2"* ]]; then
-    sudo echo $ID1 > /dev/shm/id2.txt
+    sudo echo $ID2 > /dev/shm/id2.txt
   else
     sudo echo "" > /dev/shm/id2.txt
+    ID2=""
   fi
   echo "Fan1 ID: $ID1 , Fan2 ID: $ID2"
 else
