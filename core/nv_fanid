@@ -7,9 +7,16 @@
 FAN_CACHE=""
 CACHEFILE="/dev/shm/nvfan_cache.txt"
 if [ ! -f "$CACHEFILE" ]; then
+  sudo rm $CACHEFILE > /dev/null 2>&1
   FAN_CACHE=$(nvidia-settings -q gpus -q fans -c :0 > $CACHEFILE 2>&1)
 fi
 FAN_CACHE=$(cat $CACHEFILE)
+# handle xorg here
+if [[ $FAN_CACHE == *"ERROR"* ]]; then
+  #ERROR: Unable to find display on any available system
+  FAN_CACHE=$(nvidia-settings -q gpus -q fans -c :0 > $CACHEFILE 2>&1)
+  FAN_CACHE=$(cat $CACHEFILE)
+fi
 
 #####################################
 #    BUILD JSON FROM FAN NUMBERS
@@ -97,8 +104,12 @@ if [ "$SFAN" = "2" ]; then
   if [[ $FAN_CACHE == *"fan:$ID1"* ]]; then
     sudo echo $ID1 > /dev/shm/id1.txt
   else
-    ID1=""
-    sudo echo "" > /dev/shm/id1.txt
+    if [[ $FAN_CACHE != *"ERROR"* ]]; then
+      ID1=""
+      sudo echo "" > /dev/shm/id1.txt
+    else
+      sudo echo $ID1 > /dev/shm/id1.txt
+    fi
   fi
   ID2=$((SUM - 1))
   if [[ $FAN_CACHE == *"fan:$ID2"* ]]; then
