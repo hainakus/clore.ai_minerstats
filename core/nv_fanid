@@ -1,6 +1,17 @@
 #!/bin/bash
 
 #####################################
+#    FAN ID CACHE
+#####################################
+
+FAN_CACHE=""
+CACHEFILE="/dev/shm/nvfan_cache.txt"
+if [ ! -f "$CACHEFILE" ]; then
+  FAN_CACHE=$(nvidia-settings -q gpus -q fans -c :0 > $CACHEFILE 2>&1)
+fi
+FAN_CACHE=$(cat $CACHEFILE)
+
+#####################################
 #    BUILD JSON FROM FAN NUMBERS
 #####################################
 
@@ -39,8 +50,8 @@ if [ ! -f "$CACHEFILE" ]; then
     JSON_FAN=$JSON_FAN'"'$FANNUM'"'$COMMA''
   done
   JSON_FAN=$JSON_FAN'}'
-    # Cache
-    sudo echo $JSON_FAN > $CACHEFILE
+  # Cache
+  sudo echo $JSON_FAN > $CACHEFILE
 else
   JSON_FAN=$(cat $CACHEFILE)
 fi
@@ -78,16 +89,27 @@ done
 
 SFAN=$(echo $JSON_FAN | $JQ_PATH -r .[\"$SNUM\"])
 
+# Search for fan:10
+
 if [ "$SFAN" = "2" ]; then
   #echo "Searched card is RTX, it has two fan to control"
   ID1=$((SUM - 2))
+  if [[ $FAN_CACHE == *"fan:$ID1"* ]]; then
     sudo echo $ID1 > /dev/shm/id1.txt
+  else
+    sudo echo "" > /dev/shm/id1.txt
+  fi
   ID2=$((SUM - 1))
-    sudo echo $ID2 > /dev/shm/id2.txt
+  if [[ $FAN_CACHE == *"fan:$ID2"* ]]; then
+    sudo echo $ID1 > /dev/shm/id2.txt
+  else
+    sudo echo "" > /dev/shm/id2.txt
+  fi
   echo "Fan1 ID: $ID1 , Fan2 ID: $ID2"
 else
   #echo "Searched card is GTX, it has only one fan to control"
   ID1=$((SUM - 1))
-    sudo echo $ID1 > /dev/shm/id1.txt
+  sudo echo $ID1 > /dev/shm/id1.txt
+  sudo echo "" > /dev/shm/id2.txt
   echo "Fan ID: $ID1"
 fi
