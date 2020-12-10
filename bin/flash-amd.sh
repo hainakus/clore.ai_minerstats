@@ -65,7 +65,7 @@ if [[ ! -z "$PN" ]] && [[ ! -z "$PROD" ]] && [[ ! -z "$DID" ]]; then
   echo "Entering maintenance mode"
   sudo /home/minerstat/minerstat-os/core/maintenance >/dev/null 2>&1
   echo "Killing Xorg"
-  sudo killall X sudo >/dev/null 2>&1
+  sudo killall X >/dev/null 2>&1
   sudo killall Xorg >/dev/null 2>&1
    sudo killall Xorg >/dev/null 2>&1
   # Loop GPU List
@@ -109,11 +109,14 @@ if [[ ! -z "$PN" ]] && [[ ! -z "$PROD" ]] && [[ ! -z "$DID" ]]; then
         FLASHLOG=""
         if [[ "$FORCE" = "1" ]]; then
           echo "Preparing to FORCE flash $PATHS to device ID $BUS_ID [BUS: $bus]"
+          # Force flashing regardless of security checkings (e.g. AsicID & BIOS file info check OR boot-up card).
           FLASHLOG=$(sudo /home/minerstat/minerstat-os/bin/$FLASHER -f -p $BUS_ID $PATHS)
           echo $FLASHLOG
         else
           echo "Preparing to flash $PATHS to device ID $BUS_ID [BUS: $bus]"
-          FLASHLOG=$(sudo /home/minerstat/minerstat-os/bin/$FLASHER -p $BUS_ID $PATHS)
+          # Force flashing bypassing already-programmed check only, this reducing when users decide to force flash
+          # Allowing flash with compatible bioses smoothly
+          FLASHLOG=$(sudo /home/minerstat/minerstat-os/bin/$FLASHER -fa -p $BUS_ID $PATHS)
           echo $FLASHLOG
         fi
         # Verify flash
