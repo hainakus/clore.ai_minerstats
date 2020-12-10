@@ -364,6 +364,8 @@ loop() {
   else
 
     echo "Curve process is blocked by ClockTune because different static fan ranges"
+    sleep $SLEEP
+    loop
 
   fi
 
