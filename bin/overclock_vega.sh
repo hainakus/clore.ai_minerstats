@@ -79,7 +79,7 @@ if [ $1 ]; then
   if [ "$MVDD" = "0" ] || [ "$MVDD" = "skip" ] || [ -z "$MVDD" ]; then
     MVDD="1070"
   fi
-  
+
   # SoC Clock
   SOCMIN=600
   SOCMAX=1240
@@ -136,22 +136,22 @@ if [ $1 ]; then
   if [[ "$VDDCI" != "skip" ]] && [[ "$VDDCI" != "0" ]] && [[ "$VDDCI" != "" ]] && [ ! -z "$VDDCI" ]; then
     vddci="VddciLookupTable/entries/0/Vdd=$VDDCI"
   fi
-  
+
   if [[ ! -z $SOC && $SOC != "0" && $SOC != "skip" ]]; then
-  PARSED_SOC=$SOC
-  if [[ $SOC -gt $SOCMAX ]]; then
-    PARSED_SOC=980
-    echo "SoC can't be higher than $SOCMAX using safe value 980"
+    PARSED_SOC=$SOC
+    if [[ $SOC -gt $SOCMAX ]]; then
+      PARSED_SOC=980
+      echo "SoC can't be higher than $SOCMAX using safe value 980"
+    fi
+    if [[ $SOC -lt $SOCMIN ]]; then
+      PARSED_SOC=$SOCMIN
+      # Ignore if set below limit
+      echo "SOCCLK value ignored as below $SOCMIN Mhz limit"
+    else
+      PARSED_SOC=$((($PARSED_SOC)*100))
+      psoc="SocclkDependencyTable/entries/0/Clk=$PARSED_SOC SocclkDependencyTable/entries/1/Clk=$PARSED_SOC SocclkDependencyTable/entries/2/Clk=$PARSED_SOC SocclkDependencyTable/entries/3/Clk=$PARSED_SOC SocclkDependencyTable/entries/4/Clk=$PARSED_SOC SocclkDependencyTable/entries/5/Clk=$PARSED_SOC SocclkDependencyTable/entries/6/Clk=$PARSED_SOC SocclkDependencyTable/entries/7/Clk=$PARSED_SOC StateArray/states/1/SocClockIndexHigh=7"
+    fi
   fi
-  if [[ $SOC -lt $SOCMIN ]]; then
-    PARSED_SOC=$SOCMIN
-    # Ignore if set below limit
-    echo "SOCCLK value ignored as below $SOCMIN Mhz limit"
-  else
-    PARSED_SOC=$((($PARSED_SOC)*100))
-    psoc="SocclkDependencyTable/entries/0/Clk=$PARSED_SOC SocclkDependencyTable/entries/1/Clk=$PARSED_SOC SocclkDependencyTable/entries/2/Clk=$PARSED_SOC SocclkDependencyTable/entries/3/Clk=$PARSED_SOC SocclkDependencyTable/entries/4/Clk=$PARSED_SOC SocclkDependencyTable/entries/5/Clk=$PARSED_SOC SocclkDependencyTable/entries/6/Clk=$PARSED_SOC SocclkDependencyTable/entries/7/Clk=$PARSED_SOC StateArray/states/1/SocClockIndexHigh=7"
-  fi
-fi
 
   timeout 10 sudo /home/minerstat/minerstat-os/bin/vegavolt -i $GPUID --volt-state 7 --vddc-table-set $VDDC
 
@@ -167,13 +167,13 @@ fi
     sudo su minerstat -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
     sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
   fi
-  
+
   sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
     VddcLookupTable/entries/0=$VDDC VddcLookupTable/entries/1=$VDDC VddcLookupTable/entries/2=$VDDC VddcLookupTable/entries/3=$VDDC VddcLookupTable/entries/4=$VDDC VddcLookupTable/entries/5=$VDDC VddcLookupTable/entries/6=$VDDC VddcLookupTable/entries/7=$VDDC \
     MclkDependencyTable/entries/3/VddInd=4 $vddci $cclk $mclk $mvdd $gfx $psoc \
     StateArray/states/0/MemClockIndexLow=3 StateArray/states/0/MemClockIndexHigh=3 StateArray/states/1/MemClockIndexLow=3 StateArray/states/1/MemClockIndexHigh=3 StateArray/states/1/GfxClockIndexLow=7 \
     --write
-    
+
   #for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
   sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
   sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
@@ -245,9 +245,10 @@ fi
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
 
   # fan
+  sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
   sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
   sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
-  
+
   # Apply powerlimit
   if [[ ! -z "$POWERLIMIT" ]] && [[ "$POWERLIMIT" != "skip" ]] && [[ "$POWERLIMIT" != "pwrskip" ]] && [[ "$POWERLIMIT" != "pwrSkip" ]] && [[ $POWERLIMIT == *"pwr"* ]]; then
     POWERLIMIT=$(echo $POWERLIMIT | sed 's/[^0-9]*//g')

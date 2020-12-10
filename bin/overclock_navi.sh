@@ -82,6 +82,13 @@ if [ $1 ]; then
     fi
   fi
 
+  for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+    TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
+    if [ ! -z "$TEST" ]; then
+      MAXFAN=$TEST
+    fi
+  done
+
   # FANS
   if [ "$FANSPEED" != 0 ]; then
     FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $FANSPEED}" | cut -f1 -d".")
@@ -93,13 +100,6 @@ if [ $1 ]; then
     FANVALUE=$(printf "%.0f\n" $FANVALUE)
     echo "GPU$GPUID : FANSPEED => 70% ($FANVALUE)"
   fi
-
-  for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-    TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
-    if [ ! -z "$TEST" ]; then
-      MAXFAN=$TEST
-    fi
-  done
 
   echo "--**--**-- GPU $1 : NAVI --**--**--"
 
