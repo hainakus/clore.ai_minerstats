@@ -133,7 +133,7 @@ if [ $1 ]; then
       pmvdd="smc_pptable/MemMvddVoltage/1=$AMVDD smc_pptable/MemMvddVoltage/2=$AMVDD smc_pptable/MemMvddVoltage/3=$AMVDD"
     fi
   fi
-  
+
   if [[ ! -z $SOC && $SOC != "0" && $SOC != "skip" ]]; then
     PARSED_SOC=$SOC
     if [[ $SOC -gt $SOCMAX ]]; then
@@ -218,6 +218,7 @@ if [ $1 ]; then
   fi
 
   if [ "$TESTD" = "20.30" ] || [ "$TESTD" = "20.40" ] || [ "$TESTD" = "20.45" ]; then
+    sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
     sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
     sudo rm /dev/shm/fantype.txt 2>/dev/null

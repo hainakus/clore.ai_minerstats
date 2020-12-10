@@ -139,6 +139,7 @@ if [ $1 ]; then
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
   #for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+  sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
   sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
   sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
   #done
