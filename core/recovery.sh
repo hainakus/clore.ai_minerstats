@@ -20,6 +20,20 @@ git clone http://labs.minerstat.farm/repo/minerstat-os.git/
 chmod 777 minerstat-os
 cd /home/minerstat/minerstat-os
 sudo chmod -R 777 *
+sudo npm config set registry http://registry.npmjs.org/
+
+echo "Fetching IP.."
+IP=$(timeout 10 wget -O - -q https://status.minerstat.com/loc.php)
+echo "IP Attempt to find closest server: $IP"
+
+if [[ "$IP" = "CN" ]] || [[ "$IP" = "HK" ]] || [[ "$IP" = "TW" ]]; then
+  echo "Proxy NPM server selected"
+  sudo npm config set registry http://r.cnpmjs.org
+else
+  echo "Global NPM server selected"
+  sudo npm config set registry http://registry.npmjs.org
+fi
+
 sudo npm update
 sudo npm install
 sudo chmod -R 777 *
@@ -34,7 +48,7 @@ sudo echo "boot" > /home/minerstat/minerstat-os/bin/random.txt
 screen -S listener -X quit # kill running process
 screen -A -m -d -S listener sudo sh /home/minerstat/minerstat-os/core/init.sh
 echo "MUPDATE"
-sudo bash /home/minerstat/minerstat-os/git.sh 
+sudo bash /home/minerstat/minerstat-os/git.sh
 echo "You can start mining again with: mstart"
 echo ""
 echo "*-*-*-- MINERSTAT.COM--*-*-*"
