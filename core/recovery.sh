@@ -26,7 +26,7 @@ echo "Fetching IP.."
 IP=$(timeout 10 wget -O - -q https://status.minerstat.com/loc.php)
 echo "IP Attempt to find closest server: $IP"
 
-if [[ "$IP" = "CN" ]] || [[ "$IP" = "HK" ]] || [[ "$IP" = "TW" ]]; then
+if [[ "$IP" = "CN" ]] || [[ "$IP" = "HK" ]] || [[ "$IP" = "MO" ]]; then
   echo "Proxy NPM server selected"
   sudo npm config set registry http://r.cnpmjs.org
 else
