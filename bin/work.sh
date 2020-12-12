@@ -106,7 +106,7 @@ if ! screen -list | grep -q "dummy"; then
   cd /home/minerstat/minerstat-os/
   sudo node stop > /dev/null
   sudo su minerstat -c "screen -X -S minerstat-console quit" > /dev/null
-  sudo su -c "echo 'stopboot' > /tmp/stop.pid"
+  sudo su -c "echo 'stop' > /tmp/stop.pid"
   sudo su -c "sudo screen -X -S minew quit" > /dev/null
   cd /home/minerstat/minerstat-os/bin
 
