@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# Check host file
+HOSTLOST=$(wc -c < /etc/hosts)
+
+if [ "$HOSTLOST" -lt "100" ]; then
+  sudo /home/minerstat/minerstat-os/bin/jobs.sh
+fi
+
 # If uptime < 4 minutes then exit
 UPTIME=$(awk '{print $1}' /proc/uptime | cut -f1 -d"." | xargs)
 if [ "$UPTIME" -lt "240" ]; then
