@@ -325,24 +325,16 @@ do
     sudo bash /home/minerstat/minerstat-os/bin/reboot.sh
   fi
 
+  if [ $RESPONSE = "POWERCYCLE" ]; then
+    sudo bash /home/minerstat/minerstat-os/bin/reboot.sh powercycle
+  fi
+
   if [ $RESPONSE = "SHUTDOWN" ]; then
-    #sudo shutdown -h now
-    sudo echo 1 > /proc/sys/kernel/sysrq #enable
-    sudo echo s > /proc/sysrq-trigger #(*S*nc) Sync all cached disk operations to disk
-    sudo echo u > /proc/sysrq-trigger #(*U*mount) Umounts all mounted partitions
-    sleep 1
-    sudo echo o > /proc/sysrq-trigger # shutdown the system
-    sudo su -c "echo 1 > /proc/sys/kernel/sysrq"
-    sleep 1
-    sudo su -c "echo o > /proc/sysrq-trigger"
-    sudo shutdown -h now
+    sudo bash /home/minerstat/minerstat-os/bin/reboot.sh shutdown
   fi
 
   if [ $RESPONSE = "SAFESHUTDOWN" ]; then
-    sudo su -c "sudo screen -X -S minew quit"
-    sudo su minerstat -c "screen -X -S minerstat-console quit";
-    sync
-    sudo shutdown -h now
+    sudo bash /home/minerstat/minerstat-os/bin/reboot.sh safeshutdown
   fi
 
   if [ $RESPONSE = "FLASH" ]; then

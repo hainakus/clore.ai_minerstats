@@ -23,7 +23,7 @@ sudo chmod -R 777 *
 sudo npm config set registry http://registry.npmjs.org/
 
 echo "Fetching IP.."
-IP=$(timeout 10 wget -O - -q https://status.minerstat.com/loc.php)
+IP=$(curl -s ipinfo.io/$(dig @ns1-1.akamaitech.net ANY whoami.akamai.net +short | xargs) | grep '"country":' | sed 's/"country": //g' | sed 's/,//g' | xargs)
 echo "IP Attempt to find closest server: $IP"
 
 if [[ "$IP" = "CN" ]] || [[ "$IP" = "HK" ]] || [[ "$IP" = "MO" ]]; then
