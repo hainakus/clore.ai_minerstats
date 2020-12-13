@@ -383,92 +383,101 @@ module.exports = {
     }
     //// DOWNLOAD LATEST STABLE VERSION AVAILABLE FROM SELECTED minerCpu
     async function downloadMiners(gpuMiner, isCpu, cpuMiner) {
-      var gpuServerVersion,
-        cpuServerVersion,
-        gpuLocalVersion,
-        cpuLocalVersion,
-        dlGpu = false,
-        dlCpu = false;
-      // Create clients folder if not exist
-      var dir = 'clients';
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir);
-      }
-      // Fetch Server Version
-      var request = require('request');
-      request.get({
-        url: 'https://static-ssl.minerstat.farm/miners/linux/version.json',
-        timeout: 15000,
-      }, function(error, response, body) {
-        if (error != null) {
-          console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + error + ")\x1b[0m");
-          clearInterval(global.timeout);
-          clearInterval(global.hwmonitor);
-          console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;33mWaiting for static server\x1b[0m");
-          sleep.sleep(10);
-          tools.restart();
-        } else {
-          var parseData = JSON.parse(body);
-          if (global.PrivateMiner == "True") {
-            gpuServerVersion = global.PrivateMinerURL;
+      try {
+        var gpuServerVersion,
+          cpuServerVersion,
+          gpuLocalVersion,
+          cpuLocalVersion,
+          dlGpu = false,
+          dlCpu = false;
+        // Create clients folder if not exist
+        var dir = 'clients';
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir);
+        }
+        // Fetch Server Version
+        var request = require('request');
+        request.get({
+          url: 'https://static-ssl.minerstat.farm/miners/linux/version.json',
+          timeout: 15000,
+        }, function(error, response, body) {
+          if (error != null) {
+            console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + error + ")\x1b[0m");
+            clearInterval(global.timeout);
+            clearInterval(global.hwmonitor);
+            console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;33mWaiting for static server\x1b[0m");
+            sleep.sleep(10);
+            tools.restart();
           } else {
-            gpuServerVersion = parseData[gpuMiner.toLowerCase()];
-          }
-          if (isCpu.toString() == "true" || isCpu.toString() == "True") {
-            cpuServerVersion = parseData[cpuMiner.toLowerCase()];
-          }
-          // main Miner Check's
-          var dir = 'clients/' + gpuMiner.toLowerCase() + '/msVersion.txt';
-          if (fs.existsSync(dir)) {
-            fs.readFile(dir, 'utf8', function(err, data) {
-              if (err) {
-                gpuLocalVersion = "0";
-              }
-              gpuLocalVersion = data;
-              if (gpuLocalVersion == undefined) {
-                gpuLocalVersion = "0";
-              }
-              if (gpuServerVersion == gpuLocalVersion) {
-                dlGpu = false;
-              } else {
-                dlGpu = true;
-              }
-              // Callback
-              callbackVersion(dlGpu, false, false, "gpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
-            });
-          } else {
-            dlGpu = true;
-            // Callback
-            callbackVersion(dlGpu, false, false, "gpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
-          }
-          // cpu Miner Check's
-          if (isCpu.toString() == "true" || isCpu.toString() == "True") {
-            var dir = 'clients/' + cpuMiner.toLowerCase() + '/msVersion.txt';
+            var parseData = JSON.parse(body);
+            if (global.PrivateMiner == "True") {
+              gpuServerVersion = global.PrivateMinerURL;
+            } else {
+              gpuServerVersion = parseData[gpuMiner.toLowerCase()];
+            }
+            if (isCpu.toString() == "true" || isCpu.toString() == "True") {
+              cpuServerVersion = parseData[cpuMiner.toLowerCase()];
+            }
+            // main Miner Check's
+            var dir = 'clients/' + gpuMiner.toLowerCase() + '/msVersion.txt';
             if (fs.existsSync(dir)) {
               fs.readFile(dir, 'utf8', function(err, data) {
                 if (err) {
-                  cpuLocalVersion = "0";
+                  gpuLocalVersion = "0";
                 }
-                cpuLocalVersion = data;
-                if (cpuLocalVersion == undefined) {
-                  cpuLocalVersion = "0";
+                gpuLocalVersion = data;
+                if (gpuLocalVersion == undefined) {
+                  gpuLocalVersion = "0";
                 }
-                if (cpuServerVersion == cpuLocalVersion) {
-                  dlCpu = false;
+                if (gpuServerVersion == gpuLocalVersion) {
+                  dlGpu = false;
                 } else {
-                  dlCpu = true;
+                  dlGpu = true;
                 }
                 // Callback
-                callbackVersion(false, true, dlCpu, "cpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
+                callbackVersion(dlGpu, false, false, "gpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
               });
             } else {
-              dlCpu = true;
+              dlGpu = true;
               // Callback
-              callbackVersion(false, true, dlCpu, "cpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
+              callbackVersion(dlGpu, false, false, "gpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
+            }
+            // cpu Miner Check's
+            if (isCpu.toString() == "true" || isCpu.toString() == "True") {
+              var dir = 'clients/' + cpuMiner.toLowerCase() + '/msVersion.txt';
+              if (fs.existsSync(dir)) {
+                fs.readFile(dir, 'utf8', function(err, data) {
+                  if (err) {
+                    cpuLocalVersion = "0";
+                  }
+                  cpuLocalVersion = data;
+                  if (cpuLocalVersion == undefined) {
+                    cpuLocalVersion = "0";
+                  }
+                  if (cpuServerVersion == cpuLocalVersion) {
+                    dlCpu = false;
+                  } else {
+                    dlCpu = true;
+                  }
+                  // Callback
+                  callbackVersion(false, true, dlCpu, "cpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
+                });
+              } else {
+                dlCpu = true;
+                // Callback
+                callbackVersion(false, true, dlCpu, "cpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
+              }
             }
           }
-        }
-      });
+        });
+      } catch (error) {
+        console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + error + ")\x1b[0m");
+        clearInterval(global.timeout);
+        clearInterval(global.hwmonitor);
+        console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;33mWaiting for static server\x1b[0m");
+        sleep.sleep(10);
+        tools.restart();
+      }
     }
     // Function for add permissions to run files
     function applyChmod(minerName, minerType) {
