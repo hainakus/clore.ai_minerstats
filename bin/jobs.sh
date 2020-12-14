@@ -103,13 +103,22 @@ sudo ethtool --set-eee eth0 eee off 2>/dev/null
 if [ ! -f "/etc/modprobe.d/e1000e.conf" ]; then
   echo "options e1000e EEE=0" | sudo tee /etc/modprobe.d/e1000e.conf
 fi
-# check cloudflare ips
+# check cloudflare ips main
 SERVERA="104.26.9.16"
 SERVERB="104.26.8.16"
 SERVERC="$SERVERB"
 DNSA=$(ping -c 1 $SERVERA &> /dev/null && echo success || echo fail)
 if [ "$DNSA" = "success" ]; then
   SERVERC="$SERVERA"
+fi
+
+# check cloudflare ips static
+SSERVERA="104.26.1.235"
+SSERVERB="104.26.0.235"
+SSERVERC="$SSERVERB"
+SDNSA=$(ping -c 1 $SSERVERA &> /dev/null && echo success || echo fail)
+if [ "$SDNSA" = "success" ]; then
+  SSERVERC="$SSERVERA"
 fi
 
 # Change hostname
@@ -136,13 +145,13 @@ ff02::2 ip6-allrouters
 $SERVERC minerstat.com
 $SERVERC www.minerstat.com
 $SERVERC api.minerstat.com
-104.26.1.235 static-ssl.minerstat.farm
+$SSERVERC static-ssl.minerstat.farm
 68.183.74.40 eu.pool.ms
 167.71.240.6 us.pool.ms
 68.183.74.40 eu.sandbox.pool.ms
 167.71.240.6 us.sandbox.pool.ms
 162.159.200.1 ntp.ubuntu.com
-104.26.1.235 labs.minerstat.farm
+$SSERVERC labs.minerstat.farm
   " > /etc/hosts
   # Manage CACHE
   sudo rm /home/minerstat/mining-pool-whitelist.txt 2>/dev/null
