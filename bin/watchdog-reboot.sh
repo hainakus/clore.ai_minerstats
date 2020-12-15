@@ -8,6 +8,7 @@ fi
 echo ""
 echo "Sending reboot signal"
 echo -e "  [i] If the computer not rebooting after this command watchdog not supported or not properly installed into the motherboard reset slot \r"
+echo -e "  [i] Hint: Make sure no keyboard / mouse attached to the motherboard. Those can fail the watchdog script. \r"
 echo ""
 
 # attempt to reboot rig with watchdog

@@ -16,6 +16,7 @@ sudo screen -S listener -X quit
 sudo rm -rf /home/minerstat/minerstat-os
 cd /home/minerstat
 ls
+git config --global http.postBuffer 524288000
 git clone http://labs.minerstat.farm/repo/minerstat-os.git/
 chmod 777 minerstat-os
 cd /home/minerstat/minerstat-os
