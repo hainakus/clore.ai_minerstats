@@ -1,0 +1,38 @@
+#!/bin/bash
+exec 2>/dev/null
+
+# Reset
+Color_Off='\033[0m'       # Text Reset
+
+# Regular Colors
+Red='\033[0;31m'          # Red
+Green='\033[0;32m'        # Green
+
+function printfo() {
+  mark="i"
+  if [[ "$1" = "info" ]]; then
+    mark="i"
+  elif [[ "$1" = "fail" ]]; then
+    mark="$Red✗$Color_Off"
+  elif [[ "$1" = "ok" ]]; then
+    mark="$Green✓$Color_Off"
+  fi
+  echo -n ""
+  echo -e "  [$mark] $2 \r"
+  echo -n ""
+}
+
+# Remove Audio Devices
+AUDIO_ID=$(sudo lspci -k | grep Audio | awk {'print $1'} | grep -vE "Subsystem:" | xargs)
+for bus in $AUDIO_ID; do
+  sudo su -c "echo 1 > /sys/bus/pci/devices/0000:$bus/remove"
+  printfo ok "Removed Audio Device $bus"
+done
+
+# Remove custom device upon user request
+# We can cache more things on that file to remove and remove all at once with this e.g: internal gpu and such
+# to free up PCIe lanes
+while read bus; do
+  sudo su -c "echo 1 > /sys/bus/pci/devices/0000:$bus/remove"
+  printfo ok "Removed PCIe Device $bus"
+done </dev/shm/pcirm.txt
