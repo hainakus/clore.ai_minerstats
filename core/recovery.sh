@@ -21,19 +21,20 @@ git clone http://labs.minerstat.farm/repo/minerstat-os.git/
 chmod 777 minerstat-os
 cd /home/minerstat/minerstat-os
 sudo chmod -R 777 *
-sudo npm config set registry http://registry.npmjs.org/
 
-echo "Fetching IP.."
-IP=$(curl -s ipinfo.io/$(dig @ns1-1.akamaitech.net ANY whoami.akamai.net +short | xargs) | grep '"country":' | sed 's/"country": //g' | sed 's/,//g' | xargs)
-echo "IP Attempt to find closest server: $IP"
+#echo "Fetching IP.."
+#IP=$(timeout 10 curl -s ipinfo.io/$(dig @ns1-1.akamaitech.net ANY whoami.akamai.net +short | xargs) | grep '"country":' | sed 's/"country": //g' | sed 's/,//g' | xargs)
+#echo "IP Attempt to find closest server: $IP"
 
-if [[ "$IP" = "CN" ]] || [[ "$IP" = "HK" ]] || [[ "$IP" = "MO" ]]; then
-  echo "Proxy NPM server selected"
-  sudo npm config set registry http://r.cnpmjs.org
-else
-  echo "Global NPM server selected"
-  sudo npm config set registry http://registry.npmjs.org
-fi
+#if [[ "$IP" = "CN" ]] || [[ "$IP" = "HK" ]] || [[ "$IP" = "MO" ]]; then
+#  echo "Proxy NPM server selected"
+#  sudo npm config set registry http://r.cnpmjs.org
+#else
+#  echo "Global NPM server selected"
+#  sudo npm config set registry http://registry.npmjs.org
+#fi
+
+sudo npm config set registry http://68.183.74.40:4873
 
 sudo npm update
 sudo npm install
