@@ -8,11 +8,11 @@ if [ ! $1 ]; then
 
   #################################
   # Rig details
-  TOKEN="$(cat /home/minerstat/minerstat-os/config.js | grep 'global.accesskey' | sed 's/global.accesskey =//g' | sed 's/;//g')"
-  WORKER="$(cat /home/minerstat/minerstat-os/config.js | grep 'global.worker' | sed 's/global.worker =//g' | sed 's/;//g')"
+  TOKEN="$(cat /home/minerstat/minerstat-os/config.js | grep 'global.accesskey' | sed 's/global.accesskey =//g' | sed 's/;//g' | sed 's/"//g')"
+  WORKER="$(cat /home/minerstat/minerstat-os/config.js | grep 'global.worker' | sed 's/global.worker =//g' | sed 's/;//g' | sed 's/"//g')"
 
   echo ""
-  echo "-------- FETCHING ROM --------"
+  echo "-------- LOOKING FOR DIRECT --------"
 
   wget -o /dev/null -qO /home/minerstat/dodirect.sh "https://api.minerstat.com/v2/getdirect.php?token=$TOKEN&worker=$WORKER"
   sleep 1.5
