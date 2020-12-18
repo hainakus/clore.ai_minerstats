@@ -342,7 +342,7 @@ do
   fi
 
   if [ $RESPONSE = "DIRECT" ]; then
-    sudo bash /home/minerstat/minerstat-os/bin/getdirect.sh
+    sudo bash /home/minerstat/minerstat-os/bin/getdirect.sh &
   fi
 
   if [ $RESPONSE = "GETBIOS" ]; then
