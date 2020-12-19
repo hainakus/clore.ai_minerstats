@@ -67,7 +67,7 @@ if [[ ! -z "$PN" ]] && [[ ! -z "$PROD" ]] && [[ ! -z "$DID" ]]; then
   echo "Killing Xorg"
   sudo killall X >/dev/null 2>&1
   sudo killall Xorg >/dev/null 2>&1
-   sudo killall Xorg >/dev/null 2>&1
+  sudo killall Xorg >/dev/null 2>&1
   # Loop GPU List
   for bus in $GPUS; do
     echo
@@ -107,6 +107,11 @@ if [[ ! -z "$PN" ]] && [[ ! -z "$PROD" ]] && [[ ! -z "$DID" ]]; then
         curl --insecure --connect-timeout 20 --max-time 25 --retry 1 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=$bus" --data "id=$SID" --data "status=$STATUS" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
         # Check force
         FLASHLOG=""
+        # Unlock Rom, navi etc...
+        if [[ "$FLASHER" = "amdvbflash" ]]; then
+          FLASHLOG=$(sudo /home/minerstat/minerstat-os/bin/$FLASHER -unlockrom $BUS_ID)
+          echo $FLASHLOG
+        fi
         if [[ "$FORCE" = "1" ]]; then
           echo "Preparing to FORCE flash $PATHS to device ID $BUS_ID [BUS: $bus]"
           # Force flashing regardless of security checkings (e.g. AsicID & BIOS file info check OR boot-up card).
