@@ -50,10 +50,10 @@ odisplay () {
   WORKER="$(cat /home/minerstat/minerstat-os/config.js | grep 'global.worker' | sed 's/global.worker =//g' | sed 's/;//g' | sed 's/"//g')"
   IP=`ifconfig | grep "inet" | grep -v "inet6" | grep -vE "127.0.0.1|169.254|172.17." | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | head -n 1 | grep -o -E '[.0-9]+'`
   PID=$(sudo ls /var/run/screen/S-root | grep minew | sed 's/[^0-9]*//g')
-  MINER=$(sudo pstree $PID | xargs | rev | cut -d+ -f1 | rev | cut -d* -f1 | sed "s/[^a-zA-Z']/ /g" | xargs)
+  MINER=$(sudo pstree $PID | xargs | rev | cut -d+ -f1 | rev | cut -d* -f1 | sed "s/[^a-zA-Z']/ /g" | xargs | cut -d " " -f 1)
 
-  sudo /home/minerstat/minerstat-os/bin/fan_controller_cli > /dev/shm/octo_cache.txt
-  sudo /home/minerstat/minerstat-os/core/gputable > /dev/shm/gputable_cache.txt
+  sudo su -c "sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -h > /dev/shm/octo_cache.txt"
+  sudo su -c "sudo /home/minerstat/minerstat-os/core/gputable > /dev/shm/gputable_cache.txt"
 
   GTEMP=$(cat /dev/shm/gputable_cache.txt | awk -F'|' '{print $4}' | xargs | sed 's/[^0-9 ]//g' | xargs)
   GFAN=$(cat /dev/shm/gputable_cache.txt | awk -F'|' '{print $5}' | xargs | sed 's/[^0-9 ]//g' | xargs)
@@ -93,6 +93,11 @@ odisplay () {
 oshutdown () {
   # Shutdown via chasis
   sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -p
+}
+
+oinfo () {
+  # Reboot via chasis
+  sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -h
 }
 
 oreboot () {
@@ -199,6 +204,10 @@ while (( "$#" )); do
         echo
         exit 1
       fi
+      ;;
+    --info)
+      oinfo
+      shift
       ;;
     -t|--detect)
       odetect
