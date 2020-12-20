@@ -34,6 +34,10 @@ if [ $1 ]; then
   if [ ! -z $GPUBUS ]; then
     GPUBUSINT=$(echo $GPUBUS | cut -f 1 -d '.')
     GPUBUS=$(python -c 'print(int("'$GPUBUSINT'", 16))')
+    # weird segfault with python2 on some cpu
+    if [ -z $GPUBUS ]; then
+      GPUBUS=$(python3 -c 'print(int("'$GPUBUSINT'", 16))')
+    fi
   fi
   # instant / normal
   INSTANT=$9
