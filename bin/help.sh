@@ -77,7 +77,7 @@ else
   echo -e "${BLUE}octo-display${NC}\tUpdate info display"
   echo -e "${BLUE}octo-shutdown${NC}\tShutdown via chasis"
   echo -e "${BLUE}octo-reboot${NC}\tReboot via chasis"
-  echo -e "${BLUE}octo-ping${NC}\tBlink blue light for x minutes. (e.g: octo-ping --min 5)"
-  echo -e "${BLUE}octo-fan${NC}\tControl chasis fans. (e.g: octo-fan --id 1 --val 200)"
+  echo -e "${BLUE}octo-ping${NC}\tBlink blue light for x minutes. (e.g: octo-ping 5)"
+  echo -e "${BLUE}octo-fan${NC}\tControl chasis fans. (e.g: octo-fan 1 200)"
   echo -e "${END}"
 fi
