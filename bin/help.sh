@@ -50,6 +50,7 @@ else
   echo -e "${BLUE}mgpu${NC}\t\tList detected GPUs for debug reasons"
   echo -e "${BLUE}mfind${NC}\t\tFind GPU (e.g. mfind 03.00.0 will set fans to 0% except GPU with bus ID 03.00.0 for 5 seconds)"
   echo -e "${BLUE}mled${NC}\t\tToggle Nvidia LED Lights ON/OFF"
+  echo -e "${BLUE}rmpci${NC}\t\tRemove selected PCIe device(s) from the system"
   echo -e ""
   echo -e "======= Network ======="
   echo -e "${BLUE}netcheck${NC}\tNetwork Tester"

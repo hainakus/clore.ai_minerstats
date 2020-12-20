@@ -23,7 +23,7 @@ function printfo() {
 }
 
 # Remove Audio Devices
-AUDIO_ID=$(timeout 5 sudo lspci -k | grep Audio | awk {'print $1'} | grep -vE "Subsystem:|.0" | xargs)
+AUDIO_ID=$(timeout 5 sudo lspci -k | grep Audio | awk {'print $1'} | grep -vE "Subsystem:" | xargs)
 for bus in $AUDIO_ID; do
   sudo su -c "echo 1 > /sys/bus/pci/devices/0000:$bus/remove"
   printfo ok "Removed Audio Device $bus"
