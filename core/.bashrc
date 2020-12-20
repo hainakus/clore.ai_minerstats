@@ -163,6 +163,11 @@ alias logs='sudo /home/minerstat/minerstat-os/core/logs'
 alias watchdog-reboot='sudo /home/minerstat/minerstat-os/bin/watchdog-reboot.sh'
 alias motd='sudo bash /home/minerstat/minerstat-os/core/10-help-text'
 alias mgpu='sudo bash /home/minerstat/minerstat-os/core/gputable'
+alias octo-display='sudo bash /home/minerstat/minerstat-os/core/octoctrl --display '
+alias octo-shutdown='sudo bash /home/minerstat/minerstat-os/core/octoctrl --shutdown '
+alias octo-reboot='sudo bash /home/minerstat/minerstat-os/core/octoctrl --reboot '
+alias octo-ping='sudo bash /home/minerstat/minerstat-os/core/octoctrl --ping '
+alias octo-fan='sudo bash /home/minerstat/minerstat-os/core/octoctrl --fan '
 
 if grep -q experimental "/etc/lsb-release"; then
   alias amdmemtool='sudo /home/minerstat/minerstat-os/bin/amdmemorytweak'

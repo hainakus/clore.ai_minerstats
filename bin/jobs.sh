@@ -334,28 +334,18 @@ if [ "$NVIDIADEVICE" != "0" ]; then
     sudo su minerstat -c "screen -A -m -d -S display2 sudo X :0" > /dev/null
   fi
 fi
-# Check CURL is installed
-ISCURL=$(dpkg -l curl | grep curl | wc -l | sed 's/[^0-9]*//g')
-if [ "$ISCURL" -lt 1 ]; then
-  sudo apt --yes --force-yes --fix-broken install
-  sudo apt-get --yes --force-yes install curl
-fi
-# install curl if required
-which curl 2>/dev/null && curlPresent=true
-if [ -z "${curlPresent:-}" ]; then
-  echo "CURL FIX"
-  sudo apt --yes --force-yes --fix-broken install
-  sudo apt-get --yes --force-yes install curl libcurl4
-  if [ "$NVIDIADEVICE" -gt 0 ]; then
-    sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
-  fi
-fi
 # nvidia-settings fix for Segmentation fault
 CHECKAPTXN=$(dpkg -l | grep "libegl1-amdgpu-pro" | wc -l)
 if [ "$CHECKAPTXN" -gt "0" ]; then
   if [ "$NVIDIADEVICE" -gt 0 ]; then
     sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
   fi
+fi
+# Detect octo
+sudo /home/minerstat/minerstat-os/core/octoctrl --detect &
+# Update mini lcd screen
+if [[ -f "/dev/shm/octo.pid" ]]; then
+  sudo /home/minerstat/minerstat-os/core/octoctrl --display
 fi
 if [ "$1" -gt 0 ] || [ "$AMDDEVICE" -gt 0 ]; then
   #sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q > /home/minerstat/minerstat-os/bin/amdmeminfo.txt &
@@ -410,48 +400,5 @@ if [ -f "/etc/netplan/minerstat.yaml" ]; then
       sudo echo "         addresses: [1.1.1.1, 1.0.0.1]" >> /etc/netplan/minerstat.yaml
       sudo /usr/sbin/netplan apply
     fi
-  fi
-fi
-# Firmware for v1.2
-if [ "$version" = "1.2" ]; then
-  echo "Checking Firmware.."
-  FILE=/media/storage/fw.txt
-  if test -f "$FILE"; then
-    echo "FW Updated"
-  else
-    echo "FW needs update"
-    echo "Updating firmware.."
-    cd /tmp; mkdir firmware; cd firmware; wget -o /dev/null https://static-ssl.minerstat.farm/miners/linux-firmware.tar.gz; tar -xvf linux-firmware.tar.gz; rm linux-firmware.tar.gz; sudo cp -va * /lib/firmware/amdgpu; sudo update-initramfs -u; sync;
-    sudo su -c "echo '1' > /media/storage/fw.txt"
-  fi
-fi
-if [ "$version" = "1.4" ] || [ "$version" = "1.4.5" ]; then
-  CHECK=$(ls /boot | grep "5.3.0" | wc -l)
-  if [ "$CHECK" != "0" ]; then
-    sudo rm -rf /boot/*5.3.0*
-    echo "generating new grub"
-    sudo update-grub2
-    sync
-  fi
-  CHECK=$(ls /boot | grep "5.4.0" | wc -l)
-  if [ "$CHECK" != "0" ]; then
-    sudo rm -rf /boot/*5.4.0*
-    echo "generating new grub"
-    sudo update-grub2
-    sync
-  fi
-  CHECK=$(ls /boot | grep "5.5.0" | wc -l)
-  if [ "$CHECK" != "0" ]; then
-    sudo rm -rf /boot/*5.4.0*
-    echo "generating new grub"
-    sudo update-grub2
-    sync
-  fi
-  CHECK=$(ls /boot | grep "5.6.0" | wc -l)
-  if [ "$CHECK" != "0" ]; then
-    sudo rm -rf /boot/*5.6.0*
-    echo "generating new grub"
-    sudo update-grub2
-    sync
   fi
 fi

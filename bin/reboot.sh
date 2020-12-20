@@ -11,6 +11,10 @@ sudo echo s > /proc/sysrq-trigger #(*S*nc) Sync all cached disk operations to di
 sudo echo u > /proc/sysrq-trigger #(*U*mount) Umounts all mounted partitions
 
 function reboot () {
+  # Is octo or minerdude board ?
+  if [[ -f "/dev/shm/octo.pid" ]]; then
+    sudo /home/minerstat/minerstat-os/core/octoctrl --reboot
+  fi
   # attempt to reboot rig with watchdog
   sudo /home/minerstat/minerstat-os/bin/watchdog-reboot.sh nosync
   # if upper failes reboot normally
@@ -18,6 +22,9 @@ function reboot () {
 }
 
 function sdown () {
+  if [[ -f "/dev/shm/octo.pid" ]]; then
+    sudo /home/minerstat/minerstat-os/core/octoctrl --shutdown
+  fi
   if [[ "$SYSLOAD" -gt 10 ]]; then
     # Shutdown forced
     sudo echo o > /proc/sysrq-trigger # (shutd*O*wn) Shutdown the system
