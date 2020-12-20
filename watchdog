@@ -9,6 +9,9 @@ P2=$(lsusb | grep "1a86:7523")
 # ALLOYSEED USB Watchdog
 P3=$(lsusb | grep "0471:2379")
 
+# OCTOMINER || MINERDUDE
+P4=$(lsusb | grep "16c0:05dc")
+
 if [ ! -z "$P1" ] || [ ! -z "$P2" ] || [ ! -z "$P3" ]; then
   echo "USB Watchdog detected.. Sending signal"
   while true
@@ -26,6 +29,16 @@ if [ ! -z "$OWDT" ]; then
   while true
   do
     sudo su -c "echo -n '~U' >/dev/ttyACM*"
+    sleep 1
+  done
+fi
+
+if [ ! -z "$P4" ]; then
+  echo "Octominer or Minerdude machine detected.. Sending signal"
+  timeout 1 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -w 180 -v 360
+  while true
+  do
+    timeout 1 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -s
     sleep 1
   done
 fi
