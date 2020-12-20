@@ -126,10 +126,11 @@ if ! screen -list | grep -q "dummy"; then
   #sudo chvt 1
   sudo bash /home/minerstat/minerstat-os/bin/overclock.sh
 
-  if [ "$AMDDEVICE" -gt 0 ]; then
-    echo -e "\033[1;34m==\033[0m Applying AMD Memory Tweak ...\033[0m"
-    sudo screen -A -m -d -S delaymem bash /home/minerstat/minerstat-os/bin/setmem.sh
-  fi
+  #
+  #if [ "$AMDDEVICE" -gt 0 ]; then
+  #  echo -e "\033[1;34m==\033[0m Applying AMD Memory Tweak ...\033[0m"
+  #  sudo screen -A -m -d -S delaymem bash /home/minerstat/minerstat-os/bin/setmem.sh
+  #fi
 
   echo -e "\033[1;34m==\033[0m Starting miner ...\033[0m"
   cd /home/minerstat/minerstat-os
