@@ -26,28 +26,11 @@ if ! screen -list | grep -q "dummy"; then
 
   NVIDIA="$(nvidia-smi -L)"
   AMDDEVICE=$(lsmod | grep amdgpu | wc -l)
-  #if [ "$AMDDEVICE" = "0" ]; then
-  #  AMDDEVICE=$(sudo lshw -C display | grep driver=amdgpu | wc -l)
-  #fi
   NVIDIADEVICE=$(lsmod | grep nvidia | wc -l)
-  #if [ "$NVIDIADEVICE" = "0" ]; then
-  #  NVIDIADEVICE=$(sudo lshw -C display | grep "driver=nvidia" | wc -l)
-  #fi
-  #if [ "$NVIDIADEVICE" = "0" ]; then
-  #  NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
-  #fi
-
-  #echo ""
-  #echo "\033[1;34m================= GPUs =================\033[0m"
-  #echo "\033[1;34m== \033[1;32mAMD:\033[0m $AMDDEVICE"
-  #echo "\033[1;34m== \033[1;32mNVIDIA:\033[0m $NVIDIADEVICE"
-  #echo ""
 
   echo -e "\033[1;34m==\033[0m Configuring network adapters ...\033[0m"
   SSID=$(cat /media/storage/network.txt | grep 'WIFISSID="' | sed 's/WIFISSID="//g' | sed 's/"//g' | xargs | wc -L)
   DHCP=$(cat /media/storage/network.txt | grep "DHCP=" | sed 's/DHCP=//g' | sed 's/"//g')
-
-  #sudo screen -A -m -d -S restartnet sudo /etc/init.d/networking restart
 
   echo -e "\033[1;34m==\033[0m Waiting for connection ...\033[0m"
 
@@ -98,7 +81,7 @@ if ! screen -list | grep -q "dummy"; then
   #echo "Moving MSOS config.js to / (LINUX)"
   sudo cp -rf "/media/storage/config.js" "/home/minerstat/minerstat-os/"
 
-  sleep 1
+  sleep 0.2
   sudo service dgm stop > /dev/null &
   sudo chvt 1
 
