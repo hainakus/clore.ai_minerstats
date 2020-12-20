@@ -35,7 +35,7 @@ fi
 
 if [ ! -z "$P4" ]; then
   echo "Octominer or Minerdude machine detected.. Sending signal"
-  timeout 1 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -w 180 -v 360
+  timeout 1 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -w 300 -v 900
   while true
   do
     timeout 1 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -s

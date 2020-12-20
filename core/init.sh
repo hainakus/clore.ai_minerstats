@@ -249,7 +249,7 @@ do
     # If octominer
     if [[ -f "/dev/shm/octo.pid" ]]; then
       timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -h > /dev/shm/octo_cache.txt 2>&1
-      PSUMETER=$(cat /dev/shm/octo_cache.txt | grep Pac | awk '{print $10}')
+      PSUMETER=$(cat /dev/shm/octo_cache.txt | grep Pac | awk '{print $10}' | sed 's/[^0-9.]//g' | cut -f1 -d"." | xargs)
     fi
 
     if [ "$MONITOR_TYPE" = "amd" ]; then
