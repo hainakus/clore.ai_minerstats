@@ -44,8 +44,6 @@ odetect () {
 }
 
 odisplay () {
-  # Reset
-  sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -o 0,0,4 -v 0
   # Collect Data
   WORKER="$(cat /home/minerstat/minerstat-os/config.js | grep 'global.worker' | sed 's/global.worker =//g' | sed 's/;//g' | sed 's/"//g')"
   IP=`ifconfig | grep "inet" | grep -v "inet6" | grep -vE "127.0.0.1|169.254|172.17." | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | head -n 1 | grep -o -E '[.0-9]+'`
@@ -81,6 +79,8 @@ odisplay () {
   C1=$(sudo cat /dev/shm/octo_cache.txt | grep "Temperatures:" | awk -F' ' '{print $2}')
   C2=$(sudo cat /dev/shm/octo_cache.txt | grep "Temperatures:" | awk -F' ' '{print $2}')
 
+  # Reset
+  sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -o 0,0,4 -v 0
   # Update Entries
   sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -o 1,0,3 -v "$WORKER"
   sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -o 1,2,2 -v "$IP"
