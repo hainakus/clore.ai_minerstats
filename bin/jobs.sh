@@ -342,11 +342,11 @@ if [ "$CHECKAPTXN" -gt "0" ]; then
   fi
 fi
 # Detect octo
-sudo /home/minerstat/minerstat-os/core/octoctrl --detect &
+sudo /home/minerstat/minerstat-os/core/octoctrl --detect > /dev/null 2>&1 &
 # Update mini lcd screen
-if [[ -f "/dev/shm/octo.pid" ]]; then
-  sudo /home/minerstat/minerstat-os/core/octoctrl --display
-fi
+#if [[ -f "/dev/shm/octo.pid" ]]; then
+#  sudo /home/minerstat/minerstat-os/core/octoctrl --display > /dev/null 2>&1
+#fi
 if [ "$1" -gt 0 ] || [ "$AMDDEVICE" -gt 0 ]; then
   #sudo /home/minerstat/minerstat-os/bin/amdmeminfo -s -o -q > /home/minerstat/minerstat-os/bin/amdmeminfo.txt &
   TEST=$(cat /dev/shm/amdmeminfo.txt)
