@@ -131,7 +131,7 @@ if ! screen -list | grep -q "dummy"; then
     sudo screen -A -m -d -S delaymem bash /home/minerstat/minerstat-os/bin/setmem.sh
   fi
 
-  echo -e "\033[1;34m==\033[0m Initializing minerstat OS ...\033[0m"
+  echo -e "\033[1;34m==\033[0m Starting miner ...\033[0m"
   cd /home/minerstat/minerstat-os
   sudo su -c "sudo screen -X -S minew quit" > /dev/null
   sudo su -c "sudo screen -X -S fakescreen quit" > /dev/null
@@ -144,16 +144,21 @@ if ! screen -list | grep -q "dummy"; then
   sleep 2
   sudo su minerstat -c "screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh"
 
+  echo
   echo -e "\033[1;34m==\033[0m Boot process finished ...\033[0m"
+  echo
 
   sudo screen -A -m -d -S finish sudo /home/minerstat/minerstat-os/bin/postboot.sh $AMDDEVICE $NVIDIA
 
-  sudo bash /home/minerstat/minerstat-os/core/gputable
   sudo bash /home/minerstat/minerstat-os/bin/help.sh short
+  sudo bash /home/minerstat/minerstat-os/core/gputable
 
   echo "You may need to Press Ctrl + C to enter commands."
 
-  exec bash
-  source /home/minerstat/minerstat-os/core/.bashrc
+  exec bash &
+  source /home/minerstat/minerstat-os/core/.bashrc &
+
+  echo
+  echo
 
 fi
