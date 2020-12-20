@@ -75,7 +75,7 @@ else
   echo -e "======= Watchdog control ======="
   echo -e "${BLUE}watchdog-reboot${NC}\tTest USB watchdog reboot"
   echo -e ""
-  echo -e "======= Octopus, Minerdude ======="
+  echo -e "======= Octominer, Minerdude ======="
   echo -e "${BLUE}octo-info${NC}\tDisplay detailed info"
   echo -e "${BLUE}octo-display${NC}\tUpdate mini display"
   echo -e "${BLUE}octo-shutdown${NC}\tShutdown via chassis"
