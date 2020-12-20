@@ -84,10 +84,10 @@ odisplay () {
   # Update Entries
   sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -o 1,0,3 -v "$WORKER"
   sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -o 1,2,2 -v "$IP"
-  sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -o 0,4,2 -v "Miner:  $MINER"
-  sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -o 0,5,2 -v "Power:  $POWER"
-  sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -o 0,6,2 -v "GPUs:   $TEMPMAX  $FANMAX"
-  sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -o 0,7,2 -v "Chasis: $C1  $C2"
+  sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -o 0,4,2 -v "Miner:   $MINER"
+  sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -o 0,5,2 -v "Power:   $POWER"
+  sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -o 0,6,2 -v "GPUs:    $TEMPMAX  $FANMAX"
+  sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -o 0,7,2 -v "Chassis: $C1  $C2"
 }
 
 oshutdown () {

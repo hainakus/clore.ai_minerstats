@@ -39,7 +39,7 @@ if [ ! -z "$P4" ]; then
   while true
   do
     timeout 1 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -s
-    sleep 1
+    sleep 5
   done
 fi
 
