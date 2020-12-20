@@ -29,8 +29,10 @@ odetect () {
   sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -h > /dev/shm/octo_cache.txt 2>&1
   VALIDATE=$(sudo cat /dev/shm/octo_cache.txt)
   if [[ $VALIDATE == *"libusb-0.1"* ]]; then
-    wget https://static-ssl.minerstat.farm/miners/libusb-0.1-4_0.1.12-31_amd64.deb -P /tmp
-    sudo dpkg -i /tmp/libusb-0.1-4_0.1.12-31_amd64.deb
+    if [[ ! -f "/tmp/libusb-0.1-4_0.1.12-31_amd64.deb" ]]; then
+      wget https://static-ssl.minerstat.farm/miners/libusb-0.1-4_0.1.12-31_amd64.deb -P /tmp
+    fi
+    sudo dpkg --force-all -i /tmp/libusb-0.1-4_0.1.12-31_amd64.deb
     sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -h > /dev/shm/octo_cache.txt 2>&1
     VALIDATE=$(sudo cat /dev/shm/octo_cache.txt)
   fi
@@ -100,6 +102,9 @@ oreboot () {
 
 oping () {
   # Flash blue lights
+  echo "Raw: $MIN"
+  MIN=$((MIN*60))
+  echo "Will be turned off after: $MIN second"
   sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -l 1 -v 2
   screen -A -m -d -S kill_ping sudo /home/minerstat/minerstat-os/core/octoctrl --kping $MIN
 }
@@ -110,9 +115,6 @@ oerr() {
 }
 
 kping () {
-  echo "Raw: $MIN"
-  MIN=$((MIN*60))
-  echo "Sleeping Sec: $MIN"
   sleep $MIN
   sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -l 0 -v 0
   sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -l 1 -v 0
