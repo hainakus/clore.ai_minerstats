@@ -151,6 +151,8 @@ if ! screen -list | grep -q "dummy"; then
   sudo bash /home/minerstat/minerstat-os/core/gputable
   sudo bash /home/minerstat/minerstat-os/bin/help.sh short
 
+  echo "You may need to Press Ctrl + C to enter commands."
+
   exec bash
   source /home/minerstat/minerstat-os/core/.bashrc
 

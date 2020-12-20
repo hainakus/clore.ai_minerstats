@@ -18,8 +18,9 @@ echo -e ""
 if [[ "$LIGHT" = "short" ]]; then
   echo -e ""
   echo -e "Connect to this terminal from local network: \e[1mhttp://$IP:4200\e[0m"
+  echo -e ""
   echo -e "To see all available commands enter: \e[1mmhelp\e[0m"
-  echo -e "To view agent and miner enter: \e[1mmagent\e[0m"
+  echo -e "To view agent and miner enter: \e[1magent\e[0m"
   echo -e ""
 else
   echo -e "======= System ======="
