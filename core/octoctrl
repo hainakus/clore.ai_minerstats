@@ -140,6 +140,9 @@ ofan () {
 ########
 ##
 
+ISPING=0
+ISFAN=0
+
 while (( "$#" )); do
   case "$1" in
     -i|--id)
@@ -216,11 +219,11 @@ while (( "$#" )); do
       shift
       ;;
     -p|--ping)
-      oping
+      ISPING=1
       shift
       ;;
     -f|--fan)
-      ofan
+      ISFAN=1
       shift
       ;;
     -*|--*=) # unsupported flags
@@ -237,3 +240,11 @@ while (( "$#" )); do
 done
 # set positional arguments in their proper place
 eval set -- "$PARAMS"
+
+# Process after parsing done
+if [[ "$ISPING" = "1" ]]; then
+  oping
+fi
+if [[ "$ISFAN" = "1" ]]; then
+  ofan
+fi
