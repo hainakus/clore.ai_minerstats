@@ -16,8 +16,10 @@ echo -e "${BLUE}minfo${NC}\t\tShow welcome screen and msOS version"
 echo -e "${BLUE}mworker${NC}\t\tChange ACCESSKEY & WORKERNAME"
 echo -e ""
 if [[ "$LIGHT" = "short" ]]; then
-  echo -e "Connect to this terminal from local network: http://$IP:4200"
-  echo -e "To see all available commands show: mhelp"
+  echo -e ""
+  echo -e "Connect to this terminal from local network: \e[1mhttp://$IP:4200\e[0m"
+  echo -e "To see all available commands show: \e[1mmhelp\e[0m"
+  echo -e ""
 else
   echo -e "======= System ======="
   echo -e "${BLUE}mrecovery${NC}\tRestore system to default"

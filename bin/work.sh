@@ -169,6 +169,6 @@ if ! screen -list | grep -q "dummy"; then
   sudo bash /home/minerstat/minerstat-os/bin/help.sh short
 
   exec bash
-  source ~/.bashrc
+  source /home/minerstat/minerstat-os/core/.bashrc
 
 fi

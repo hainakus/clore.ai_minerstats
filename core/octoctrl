@@ -34,9 +34,7 @@ odetect () {
     sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -h > /dev/shm/octo_cache.txt 2>&1
     VALIDATE=$(sudo cat /dev/shm/octo_cache.txt)
   fi
-  if [[ $VALIDATE == *"cannot"* ]]; then
-    echo "false"
-  else
+  if [[ $VALIDATE != *"cannot"* ]]; then
     echo "true"
     sudo echo "true" > /dev/shm/octo.pid
     sudo /home/minerstat/minerstat-os/core/octoctrl --display
@@ -112,6 +110,9 @@ oerr() {
 }
 
 kping () {
+  echo "Raw: $MIN"
+  MIN=$((MIN*60))
+  echo "Sleeping Sec: $MIN"
   sleep $MIN
   sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -l 0 -v 0
   sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -l 1 -v 0
@@ -121,6 +122,7 @@ ofan () {
   # Set fans
   # fan ids: 0-8
   # val range: 0-255
+  echo "db: $ID, $VAL"
   if [[ "$ID" -gt "8" ]] || [[ "$ID" -lt "0" ]]; then
     echo "Invalid ID"
     exit 1
@@ -235,4 +237,3 @@ while (( "$#" )); do
 done
 # set positional arguments in their proper place
 eval set -- "$PARAMS"
-echo
