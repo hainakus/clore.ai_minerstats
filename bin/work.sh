@@ -1,5 +1,5 @@
 #!/bin/bash
-exec 2>/dev/null
+#exec 2>/dev/null
 
 if ! screen -list | grep -q "dummy"; then
   screen -A -m -d -S dummy sleep 22176000
@@ -21,7 +21,7 @@ if ! screen -list | grep -q "dummy"; then
   screen -A -m -d -S checkclock sudo bash /home/minerstat/minerstat-os/core/checkclock
 
   # FIX CTRL + ALT + F1
-  sudo systemctl start nvidia-persistenced > /dev/null &
+  #sudo systemctl start nvidia-persistenced > /dev/null &
   screen -A -m -d -S chvt sudo /home/minerstat/minerstat-os/bin/chvta
 
   NVIDIA="$(nvidia-smi -L)"
@@ -82,7 +82,7 @@ if ! screen -list | grep -q "dummy"; then
   sudo cp -rf "/media/storage/config.js" "/home/minerstat/minerstat-os/"
 
   sleep 0.2
-  sudo service dgm stop > /dev/null &
+  #sudo service dgm stop > /dev/null &
   sudo chvt 1
 
   echo -e "\033[1;34m==\033[0m Overclocking ...\033[0m"
