@@ -34,10 +34,13 @@ if [ ! -z "$NVIDIA" ]; then
       fi
     fi
 
-    if [ "$ETHPILLDELAY" != "999" ]; then
-      cd /home/minerstat/minerstat-os/bin
-      sudo chmod 777 /home/minerstat/minerstat-os/bin/OhGodAnETHlargementPill-r2
-      screen -A -m -d -S ethboost sudo bash ethpill.sh $ETHPILLARGS $ETHPILLDELAY
+    PILL=$(sudo screen -list | grep -c "ethboost")
+    if [[ "$PILL" -lt "1" ]]; then
+      if [ "$ETHPILLDELAY" != "999" ]; then
+        cd /home/minerstat/minerstat-os/bin
+        sudo chmod 777 /home/minerstat/minerstat-os/bin/OhGodAnETHlargementPill-r2
+        sudo screen -A -m -d -S ethboost sudo bash ethpill.sh $ETHPILLARGS $ETHPILLDELAY
+      fi
     fi
 
   fi

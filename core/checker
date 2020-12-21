@@ -132,3 +132,24 @@ RES_TEST=$(timeout 5 ping -c1 l.root-servers.net > /dev/null && echo "ok" || ech
 if [ "$RES_TEST" = "failed" ]; then
   timeout 20 sudo bash /home/minerstat/minerstat-os/core/dnser
 fi
+
+# Validate NVIDIA for ethpill
+
+ETHPILLDELAY=$(cat /media/storage/settings.txt 2>/dev/null | grep 'OHGODADELAY=' | sed 's/[^0-9]*//g')
+PILL=$(sudo screen -list | grep -c "ethboost")
+
+if [[ "$PILL" -lt "1" ]]; then
+  if [[ "$ETHPILLDELAY" != "999" ]]; then
+    NVIDIA="$(nvidia-smi -L)"
+
+    if [ ! -z "$NVIDIA" ]; then
+      if echo "$NVIDIA" | grep -iq "^GPU 0:"; then
+        ETHPILLARGS=$(cat /media/storage/settings.txt 2>/dev/null | grep 'OHGODARGS="' | sed 's/OHGODARGS="//g' | sed 's/"//g')
+        cd /home/minerstat/minerstat-os/bin
+        sudo chmod 777 /home/minerstat/minerstat-os/bin/OhGodAnETHlargementPill-r2
+        sudo screen -A -m -d -S ethboost sudo bash ethpill.sh $ETHPILLARGS $ETHPILLDELAY
+      fi
+    fi
+
+  fi
+fi
