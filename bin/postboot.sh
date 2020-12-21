@@ -1,7 +1,7 @@
 #!/bin/bash
 
-AMDDEVICE=$1
-NVIDIA=$2
+NVIDIA="$(nvidia-smi -L)"
+AMDDEVICE=$(lsmod | grep amdgpu | wc -l)
 
 if grep -q experimental "/etc/lsb-release"; then
   if [ "$AMDDEVICE" -gt 0 ]; then
