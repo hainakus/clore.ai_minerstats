@@ -3,7 +3,12 @@
 STATUS=$(sudo cat /media/storage/settings.txt | grep "OHGODADELAY=" | sed 's/[^=]*\(=.*\)/\1/' | tr --delete = | xargs)
 ETHPILLARGS=$(sudo cat /media/storage/settings.txt | grep "OHGODARGS=" | sed 's/[^=]*\(=.*\)/\1/' | tr --delete = | xargs)
 
+# kill
 sudo chmod 777 /home/minerstat/minerstat-os/bin/OhGodAnETHlargementPill-r2
+PID=$(timeout 5 sudo ls /var/run/screen/S-root | grep ethboost | sed 's/[^0-9]*//g' | head -n1 | xargs)
+sudo screen -XS $PID quit > /dev/null 2>&1
+PID=$(timeout 5 sudo ls /var/run/screen/S-root | grep ethboost | sed 's/[^0-9]*//g' | head -n1 | xargs)
+sudo screen -XS $PID quit > /dev/null 2>&1
 sudo killall OhGodAnETHlargementPill-r2
 
 if [ -z "$STATUS" ]; then
@@ -40,6 +45,6 @@ echo
 echo "Previous PILL Status: $STATUS_ORIGIN"
 echo "Current  PILL Status: $STATUS_NEW"
 echo
-screen -list | grep ethboost
+sudo screen -list | grep ethboost
 echo
 echo
