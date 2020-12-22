@@ -13,13 +13,13 @@ sudo echo u > /proc/sysrq-trigger #(*U*mount) Umounts all mounted partitions
 # attempt
 TOKEN="$(cat /media/storage/config.js | grep 'global.accesskey' | sed 's/global.accesskey =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g' | sed 's/[^a-zA-Z0-9]*//g')"
 WORKER="$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g')"
-RAMLOG=$(timeout 2 cat /dev/shm/miner.log | tac | head --lines 10 | tac)
 
 function emer () {
   timeout 4 sudo curl --insecure --connect-timeout 2 --max-time 3 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os2.php"
 }
 
 function reboot () {
+  RAMLOG=$(timeout 5 cat /dev/shm/miner.log | tac | head --lines 10 | tac)
   RAMLOG="$RAMLOG - System reboot"
   emer
   # Is octo or minerdude board ?
@@ -33,6 +33,7 @@ function reboot () {
 }
 
 function sdown () {
+  RAMLOG=$(timeout 5 cat /dev/shm/miner.log | tac | head --lines 10 | tac)
   RAMLOG="$RAMLOG - System shutdown"
   emer
   if [[ -f "/dev/shm/octo.pid" ]]; then
@@ -60,6 +61,7 @@ if [[ "$1" = "safeshutdown" ]]; then
 fi
 
 if [[ "$1" = "powercycle" ]]; then
+  RAMLOG=$(timeout 5 cat /dev/shm/miner.log | tac | head --lines 10 | tac)
   RAMLOG="$RAMLOG - System PowerCycle"
   emer
   # Check it is supported, if not use normal reboot
