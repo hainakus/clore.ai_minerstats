@@ -11,17 +11,14 @@ sudo echo s > /proc/sysrq-trigger #(*S*nc) Sync all cached disk operations to di
 sudo echo u > /proc/sysrq-trigger #(*U*mount) Umounts all mounted partitions
 
 # attempt
+RAMLOG=""
 TOKEN="$(cat /media/storage/config.js | grep 'global.accesskey' | sed 's/global.accesskey =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g' | sed 's/[^a-zA-Z0-9]*//g')"
 WORKER="$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g')"
 
-function emer () {
-  timeout 4 sudo curl --insecure --connect-timeout 2 --max-time 3 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os2.php"
-}
-
-function reboot () {
+function reboots () {
   RAMLOG=$(timeout 5 cat /dev/shm/miner.log | tac | head --lines 10 | tac)
   RAMLOG="$RAMLOG - System reboot"
-  emer
+  timeout 4 sudo curl --insecure --connect-timeout 2 --max-time 3 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os2.php"
   # Is octo or minerdude board ?
   if [[ -f "/dev/shm/octo.pid" ]]; then
     sudo /home/minerstat/minerstat-os/core/octoctrl --reboot
@@ -35,7 +32,7 @@ function reboot () {
 function sdown () {
   RAMLOG=$(timeout 5 cat /dev/shm/miner.log | tac | head --lines 10 | tac)
   RAMLOG="$RAMLOG - System shutdown"
-  emer
+  timeout 4 sudo curl --insecure --connect-timeout 2 --max-time 3 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os2.php"
   if [[ -f "/dev/shm/octo.pid" ]]; then
     sudo /home/minerstat/minerstat-os/core/octoctrl --shutdown
   fi
@@ -63,7 +60,7 @@ fi
 if [[ "$1" = "powercycle" ]]; then
   RAMLOG=$(timeout 5 cat /dev/shm/miner.log | tac | head --lines 10 | tac)
   RAMLOG="$RAMLOG - System PowerCycle"
-  emer
+  timeout 4 sudo curl --insecure --connect-timeout 2 --max-time 3 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os2.php"
   # Check it is supported, if not use normal reboot
   if [ -f "/sys/class/rtc/rtc0/wakealarm" ]; then
     sudo su -c "echo 0 > /sys/class/rtc/rtc0/wakealarm"
@@ -71,10 +68,10 @@ if [[ "$1" = "powercycle" ]]; then
     sdown
   else
     # Reboot because wakealarm not supported
-    reboot
+    reboots
   fi
   # If not $1 powercycle then probably just normal reboot so processing trough the script
   exit 1
 fi
 
-reboot
+reboots
