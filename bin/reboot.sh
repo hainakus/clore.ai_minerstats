@@ -31,7 +31,9 @@ function reboots () {
 }
 
 function sdown () {
-  RAMLOG="$RAMLOG - System shutdown"
+  if [[ "$1" != "powercycle" ]]; then
+    RAMLOG="$RAMLOG - System shutdown"
+  fi
   timeout 4 sudo curl --insecure --connect-timeout 2 --max-time 3 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os2.php"
   if [[ -f "/dev/shm/octo.pid" ]]; then
     sudo /home/minerstat/minerstat-os/core/octoctrl --shutdown
@@ -58,7 +60,7 @@ if [[ "$1" = "safeshutdown" ]]; then
 fi
 
 if [[ "$1" = "powercycle" ]]; then
-  RAMLOG="$RAMLOG - System PowerCycle"
+  RAMLOG="$RAMLOG - System power cycle"
   timeout 4 sudo curl --insecure --connect-timeout 2 --max-time 3 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os2.php"
   # Check it is supported, if not use normal reboot
   if [ -f "/sys/class/rtc/rtc0/wakealarm" ]; then
