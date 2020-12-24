@@ -291,9 +291,9 @@ if [ $1 ]; then
       # fix
       TESTMD=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get MclkDependencyTable/entries/2/Vddci 2> /dev/null | grep -c "ERROR")
       if [[ "$TESTMD" -lt 1 ]]; then
-        pvddci="MclkDependencyTable/entries/2/Vddci=$VDDCI MclkDependencyTable/entries/1/Vddci=$VDDCI "
+        pvddci="MclkDependencyTable/entries/2/Vddci=$VDDCI MclkDependencyTable/entries/1/Vddci=$VDDCI MclkDependencyTable/entries/0/Vddci=$VDDCI "
       else
-        pvddci="MclkDependencyTable/entries/1/Vddci=$VDDCI "
+        pvddci="MclkDependencyTable/entries/0/Vddci=$VDDCI MclkDependencyTable/entries/1/Vddci=$VDDCI "
       fi
     fi
 
@@ -309,9 +309,9 @@ if [ $1 ]; then
       # fix mvdd
       TESTMD=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get MclkDependencyTable/entries/2/Mvdd 2> /dev/null | grep -c "ERROR")
       if [[ "$TESTMD" -lt 1 ]]; then
-        pmvdd="MclkDependencyTable/entries/2/Mvdd=$MVDD MclkDependencyTable/entries/1/Mvdd=$MVDD "
+        pmvdd="MclkDependencyTable/entries/2/Mvdd=$MVDD MclkDependencyTable/entries/1/Mvdd=$MVDD MclkDependencyTable/entries/0/Mvdd=$MVDD "
       else
-        pmvdd="MclkDependencyTable/entries/1/Mvdd=$MVDD "
+        pmvdd="MclkDependencyTable/entries/1/Mvdd=$MVDD MclkDependencyTable/entries/0/Mvdd=$MVDD "
       fi
     fi
 
