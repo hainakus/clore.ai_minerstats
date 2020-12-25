@@ -46,6 +46,8 @@ if [ $1 ]; then
   # powlim
   POWERLIMIT=${11}
   SOC=${12}
+  # mem index
+  MEMINDEX=${13}
 
   if [ "$INSTANT" = "instantoc5" ]; then
     echo "INSTANT OVERRIDE"
@@ -491,8 +493,13 @@ if [ $1 ]; then
     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
     sudo su -c "echo 5 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
     sudo su -c "echo 7 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-    sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-    sudo su -c "echo 3 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+
+    if [[ "$MEMINDEX" = "1" ]]; then
+      sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+    else
+      sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+      sudo su -c "echo 3 > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+    fi
 
     sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
     if [[ "$CORECLOCK" != "0" ]] && [[ "$CORECLOCK" != "skip" ]]; then
