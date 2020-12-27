@@ -354,7 +354,10 @@ if [ $1 ]; then
         MCLK=$((MEMCLOCK*100))
         TESTMV=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get MclkDependencyTable/entries/2/Mclk 2> /dev/null | grep -c "ERROR")
         if [[ "$TESTMV" -lt 1 ]]; then
-          pmclk="MclkDependencyTable/entries/2/Mclk=$MCLK MclkDependencyTable/entries/1/Mclk=$MCLK "
+          pmclk="MclkDependencyTable/entries/2/Mclk=$MCLK "
+          if [[ "$MEMINDEX" = "1" ]]; then
+            pmclk="$pmclk MclkDependencyTable/entries/1/Mclk=$MCLK "
+          fi
         else
           pmclk="MclkDependencyTable/entries/1/Mclk=$MCLK "
         fi
