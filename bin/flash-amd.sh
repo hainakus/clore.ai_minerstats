@@ -138,18 +138,18 @@ if [[ ! -z "$PN" ]] && [[ ! -z "$PROD" ]] && [[ ! -z "$DID" ]] || [[ "$FORCE" = 
         fi
         # Send status
         sleep 1
-        curl --insecure --connect-timeout 20 --max-time 25 --retry 1 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=$bus" --data "id=$SID" --data "status=$STATUS" --data "log=$FLASHLOG" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
+        curl --insecure --connect-timeout 20 --max-time 25 --retry 1 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=$bus" --data "id=$SID" --data "status=$STATUS" --data "log=$FLASHLOG" "https://api.minerstat.com:2053/v2/setflash.php"
       else
         echo "Something went wrong during making a backup of current .rom, not flashing a new one without backup"
         FAILED=$((FAILED+1))
         sleep 1
-        curl --insecure --connect-timeout 20 --max-time 25 --retry 1 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=$bus" --data "id=$SID" --data "status=error" --data "log=backup failed" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
+        curl --insecure --connect-timeout 20 --max-time 25 --retry 1 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=$bus" --data "id=$SID" --data "status=failed" --data "log=backup failed" "https://api.minerstat.com:2053/v2/setflash.php"
       fi
     else
       echo "Error: $bus not listed within flasher"
       FAILED=$((FAILED+1))
       sleep 1
-      curl --insecure --connect-timeout 20 --max-time 25 --retry 1 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=$bus" --data "id=$SID" --data "status=error" --data "log=not found within the flasher" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
+      curl --insecure --connect-timeout 20 --max-time 25 --retry 1 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=$bus" --data "id=$SID" --data "status=failed" --data "log=not found within the flasher" "https://api.minerstat.com:2053/v2/setflash.php"
     fi
     echo "============================="
     echo
@@ -161,9 +161,10 @@ else
   sleep 1
   for bus in $GPUS; do
     echo "Marking $bus as failed because verification issue [SID: $SID, T: $TOKEN, W: $WORKER]"
-    curl --insecure --connect-timeout 20 --max-time 25 --retry 1 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=$bus" --data "id=$SID" --data "status=error" --data "log=unable to verify bios" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
+    curl --insecure --connect-timeout 20 --max-time 25 --retry 1 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=$bus" --data "id=$SID" --data "status=failed" --data "log=unable to verify bios" "https://api.minerstat.com:2053/v2/setflash.php"
   done
 fi
+
 
 # Turn off maintenance
 sudo rm /dev/shm/maintenance.pid
@@ -177,18 +178,18 @@ if [[ "$REBOOT" = "1" ]]; then
   if [[ "$FAILED" = 0 ]]; then
     echo "Everything went fine, rebooting"
     sleep 1
-    curl --insecure --connect-timeout 20 --max-time 25 --retry 1 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=" --data "id=$SID" --data "status=done-reboot" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
+    curl --insecure --connect-timeout 20 --max-time 25 --retry 1 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=" --data "id=$SID" --data "status=done-reboot" "https://api.minerstat.com:2053/v2/setflash.php"
     sudo bash /home/minerstat/minerstat-os/bin/reboot.sh
   else
     sleep 1
-    curl --insecure --connect-timeout 20 --max-time 25 --retry 1 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=" --data "id=$SID" --data "status=done" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
+    curl --insecure --connect-timeout 20 --max-time 25 --retry 1 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=" --data "id=$SID" --data "status=done" "https://api.minerstat.com:2053/v2/setflash.php"
     echo "Something went wrong during flash, reboot not allowed"
   fi
 else
   echo "Reboot was not requested, skipping"
   sleep 1
-  curl --insecure --connect-timeout 20 --max-time 25 --retry 1 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=" --data "id=$SID" --data "status=done" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
+  curl --insecure --connect-timeout 20 --max-time 25 --retry 1 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=" --data "id=$SID" --data "status=done" "https://api.minerstat.com:2053/v2/setflash.php"
 fi
 
 sleep 2
-curl --insecure --connect-timeout 20 --max-time 25 --retry 1 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=" --data "id=$SID" --data "status=done" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
+curl --insecure --connect-timeout 20 --max-time 25 --retry 1 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=" --data "id=$SID" --data "status=done" "https://api.minerstat.com:2053/v2/setflash.php"
