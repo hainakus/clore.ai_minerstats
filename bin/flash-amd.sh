@@ -57,8 +57,8 @@ if [[ $PROD == *"Polaris"* ]] || [[ $PROD == *"Ellesmere"* ]]; then
   FLASHER="atiflash"
 fi
 
-if [[ ! -z "$PN" ]] && [[ ! -z "$PROD" ]] && [[ ! -z "$DID" ]]; then
-  echo "Bios looks valid"
+if [[ ! -z "$PN" ]] && [[ ! -z "$PROD" ]] && [[ ! -z "$DID" ]] || [[ "$FORCE" = "1" ]]; then
+  echo "Bios looks valid or forced"
   # Stop mining, maintenance mode etc..
   echo "Going to Idle mode"
   sudo /home/minerstat/minerstat-os/core/stop >/dev/null 2>&1
@@ -159,7 +159,9 @@ else
   echo "Bios invalid, flashing skipped"
   FAILED=$((FAILED+1))
   sleep 1
-  curl --insecure --connect-timeout 20 --max-time 25 --retry 1 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=$bus" --data "id=$SID" --data "status=error" --data "log=unable to verify bios, flashing skipped" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
+  for bus in $GPUS; do
+    curl --insecure --connect-timeout 20 --max-time 25 --retry 1 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=$bus" --data "id=$SID" --data "status=error" --data "log=unable to verify bios, flashing skipped" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
+  done
 fi
 
 # Turn off maintenance
