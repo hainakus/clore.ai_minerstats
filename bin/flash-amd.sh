@@ -160,7 +160,8 @@ else
   FAILED=$((FAILED+1))
   sleep 1
   for bus in $GPUS; do
-    curl --insecure --connect-timeout 20 --max-time 25 --retry 1 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=$bus" --data "id=$SID" --data "status=error" --data "log=unable to verify bios, flashing skipped" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
+    echo "Marking $bus as failed because verification issue [SID: $SID, T: $TOKEN, W: $WORKER]"
+    curl --insecure --connect-timeout 20 --max-time 25 --retry 1 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "token=$TOKEN" --data "worker=$WORKER" --data "bus=$bus" --data "id=$SID" --data "status=error" --data "log=unable to verify bios" "https://api.minerstat.com:2053/v2/setflash.php" > /dev/null 2>&1
   done
 fi
 
