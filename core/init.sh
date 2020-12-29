@@ -81,7 +81,7 @@ fi
 CPU_TYPE=$(sudo timeout 15 dmidecode --string processor-version)
 DISK_TYPE=$(timeout 5 lsblk -io KNAME,MODEL,SIZE | grep $DETECT | head -n1 | xargs | awk '{print $2,$3}')
 # System & Graphics
-NVIDIA_DRIVER=$(timeout 5 dpkg -l | grep nvidia-opencl-icd | grep ii | awk '{print $3}' | xargs | cut -d '-' -f 1)
+NVIDIA_DRIVER=$(nvidia-settings --help | grep version | head -n 1 | awk '{print $3}' | xargs | xargs)
 if [ -z "$NVIDIA_DRIVER" ]; then
   NVIDIA_DRIVER=$(timeout 5 nvidia-smi | grep "Driver Version" | xargs | sed 's/[^0-9. ]*//g' | xargs | cut -d ' ' -f 1 | xargs)
 fi
