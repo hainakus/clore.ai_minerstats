@@ -261,11 +261,11 @@ fi
 timeout 5 sudo timedatectl set-ntp on &
 DATES=$(timeout 3 curl -v --insecure --silent www.minerstat.com 2>&1 | grep Date | sed -e 's/< Date: //')
 if [[ ! -z "$DATES" ]]; then
-    sudo date -s "$(echo $DATES)Z"
+    sudo date -s "$(echo $DATES)"
 else
   DATES=$(timeout 3 curl -v --insecure --silent google.com 2>&1 | grep Date | sed -e 's/< Date: //')
   if [[ ! -z "$DATES" ]]; then
-    sudo date -s "$(echo $DATES)Z"
+    sudo date -s "$(echo $DATES)"
   fi
 fi
 # Copy PCIIDS
