@@ -259,11 +259,11 @@ if [ -f "$CURVE_FILE" ]; then
 fi
 # Time Date SYNC
 timeout 5 sudo timedatectl set-ntp on &
-DATES=$(timeout 3 wget -o /dev/null -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)
+DATES=$(timeout 3 wget -qSO- --max-redirect=0 www.minerstat.com 2>&1 | grep Date: | cut -d' ' -f5-8)
 if [[ ! -z "$DATES" ]]; then
   sudo date -s "$(echo $DATES)Z"
 else
-  DATES=$(timeout 3 wget -o /dev/null -qSO- --max-redirect=0 www.minerstat.com 2>&1 | grep Date: | cut -d' ' -f5-8)
+  DATES=$(timeout 3 wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)
   if [[ ! -z "$DATES" ]]; then
     sudo date -s "$(echo $DATES)Z"
   fi
