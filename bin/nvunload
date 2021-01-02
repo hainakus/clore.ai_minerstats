@@ -23,6 +23,9 @@ sudo rmmod -f nvidia_modeset
 sudo rmmod -f nvidia
 sudo init 3
 sudo rmmod -f nvidia
+echo "    - E1000 load"
+sudo modprobe e1000
+sudo modprobe e1000e
 
 echo
 echo "Nvidia drivers unloaded. Validate with: nvflash --list"
