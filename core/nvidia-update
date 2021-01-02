@@ -119,14 +119,18 @@ install () {
     echo "Stopping miner/agent and entering into maintenance mode.."
     echo "================="
     echo
+    echo "  - Running stop script"
     sudo /home/minerstat/minerstat-os/core/stop >/dev/null 2>&1
     # Unload Nvidia
+    echo "  - Unloading Nvidia driver"
     sudo bash /home/minerstat/minerstat-os/bin/nvunload >/dev/null 2>&1
+    echo "  - Killing screens"
     sudo init 3
     # Remove ALL Nvidia
     sudo killall screen >/dev/null 2>&1
     #screen -list
     #sudo screen -list
+    echo "  - Killing Xorg"
     sudo killall X
     sudo killall Xorg
     sudo killall Xorg >/dev/null 2>&1
