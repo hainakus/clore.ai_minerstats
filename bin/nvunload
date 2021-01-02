@@ -15,6 +15,9 @@ sudo killall screen
 sudo killall Xorg
 echo "    - Init"
 sudo init 3
+echo "    - E1000 load"
+sudo modprobe e1000
+sudo modprobe e1000e
 echo "    - rmmod"
 sudo su -c "rmmod -f nvidia_uvm; rmmod -f nvidia_drm; rmmod -f nvidia_modeset; rmmod -f nvidia"
 sudo rmmod -f nvidia_uvm
