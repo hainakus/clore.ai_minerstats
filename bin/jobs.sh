@@ -151,6 +151,7 @@ $SSERVERC static-ssl.minerstat.farm
 68.183.74.40 eu.sandbox.pool.ms
 167.71.240.6 us.sandbox.pool.ms
 162.159.200.1 ntp.ubuntu.com
+134.209.234.128 lanflare.com
 $SSERVERC labs.minerstat.farm
   " > /etc/hosts
   # Manage CACHE
@@ -261,7 +262,7 @@ fi
 timeout 5 sudo timedatectl set-ntp on &
 DATES=$(timeout 3 curl -v --insecure --silent www.minerstat.com 2>&1 | grep Date | sed -e 's/< Date: //')
 if [[ ! -z "$DATES" ]]; then
-    sudo date -s "$(echo $DATES)"
+  sudo date -s "$(echo $DATES)"
 else
   DATES=$(timeout 3 curl -v --insecure --silent google.com 2>&1 | grep Date | sed -e 's/< Date: //')
   if [[ ! -z "$DATES" ]]; then
