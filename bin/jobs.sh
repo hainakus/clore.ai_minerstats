@@ -345,7 +345,7 @@ if [ "$UPTIME" -lt "240" ]; then
     fi
     TESTSC=$(ps aux | grep -c lanflare.pyc)
     # check for 2 instead of 1, as aux checking grep too
-    if [[ "$TESTC" -lt "2" ]]; then
+    if [[ "$TESTC" = "1" ]]; then
       screen -A -m -d -S discovery sudo bash /home/minerstat/minerstat-os/bin/lanflare
     fi
   fi
