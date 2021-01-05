@@ -200,7 +200,7 @@ do
   echo "Local IP: $STR3"
 
   #FREE MEMORY
-  STR5="$(timeout 5 free -m | grep 'Mem' | awk '{print $4}')"
+  STR5="$(timeout 5 free -m | grep 'Mem' | awk '{print $7}')"
   echo "Free Memory: $STR5"
 
   # TELEPROXY ID
