@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# debug
+# python3 /home/minerstat/minerstat-os/core/lanflare.pyc > /dev/null 2>&1
+python3 /home/minerstat/minerstat-os/core/lanflare.pyc
+
+# Keep window open 1 hour unless subshell runtime not works
+sleep 3600

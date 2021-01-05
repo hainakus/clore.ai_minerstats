@@ -338,7 +338,7 @@ fi
 # lanflare
 if [ "$UPTIME" -lt "240" ]; then
   # only changeme
-  TESTC=$(cat /home/minerstat/minerstat-os/config.js | grep -c 'global.accesskey = "CHANGEME";')
+  TESTC=$(cat /home/minerstat/minerstat-os/config.js | grep -c 'global.accesskey = "CHANGEME"')
   if [[ "$TESTC" -gt "0" ]]; then
     if [ ! -f "/dev/shm/gpudata_sort.txt" ]; then
       sudo bash /home/minerstat/minerstat-os/core/gputable > /dev/null 2>&1
@@ -346,7 +346,7 @@ if [ "$UPTIME" -lt "240" ]; then
     TESTSC=$(ps aux | grep -c lanflare.pyc)
     # check for 2 instead of 1, as aux checking grep too
     if [[ "$TESTC" -lt "2" ]]; then
-      python3 /home/minerstat/minerstat-os/core/lanflare.pyc > /dev/null 2>&1
+      screen -A -m -d -S discovery sudo bash /home/minerstat/minerstat-os/bin/lanflare
     fi
   fi
 fi
