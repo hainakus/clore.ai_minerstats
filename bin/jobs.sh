@@ -335,6 +335,20 @@ if [ "$NVIDIADEVICE" != "0" ]; then
     sudo su minerstat -c "screen -A -m -d -S display2 sudo X :0" > /dev/null
   fi
 fi
+# lanflare
+if [ "$UPTIME" -lt "240" ]; then
+  # only changeme
+  TESTC=$(cat /home/minerstat/minerstat-os/config.js | grep -c CHANGE)
+  if [[ "$TESTC" -gt "0" ]]; then
+    if [ ! -f "/dev/shm/gpudata_sort.txt" ]; then
+      sudo bash /home/minerstat/minerstat-os/core/gputable > /dev/null 2>&1
+    fi
+    TESTSC=$(sudo screen -list | grep -c discovery)
+    if [[ "$TESTSC" -lt "1" ]]; then
+      sudo su -c "screen -A -m -d -S discovery python3 /home/minerstat/minerstat-os/core/lanflare.pyc"
+    fi
+  fi
+fi
 # nvidia-settings fix for Segmentation fault
 CHECKAPTXN=$(dpkg -l | grep "libegl1-amdgpu-pro" | wc -l)
 if [ "$CHECKAPTXN" -gt "0" ]; then
