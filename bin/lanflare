@@ -2,7 +2,11 @@
 
 # debug
 # python3 /home/minerstat/minerstat-os/core/lanflare.pyc > /dev/null 2>&1
-python3 /home/minerstat/minerstat-os/core/lanflare.pyc
+ADDC=$(sudo screen -list | grep -c "discovery")
+
+if [[ "$ADDC" == "0" ]]; then
+  python3 /home/minerstat/minerstat-os/core/lanflare.pyc
+fi
 
 # Keep window open 1 hour unless subshell runtime not works
 sleep 3600
