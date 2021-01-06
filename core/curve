@@ -131,41 +131,41 @@ loop() {
             MSG="COLD >$DIFF C!"
             # Colder than target temp
             if [ $DIFF -gt 1 ]; then
-              CHANGE=4
+              CHANGE=5
               if [ $DIFF -gt 2 ]; then
-                CHANGE=5
-              fi
-              if [ $DIFF -gt 5 ]; then
                 CHANGE=10
               fi
-              if [ $DIFF -gt 10 ]; then
+              if [ $DIFF -gt 5 ]; then
                 CHANGE=15
               fi
-              if [ $DIFF -gt 20 ]; then
+              if [ $DIFF -gt 10 ]; then
                 CHANGE=20
               fi
+              if [ $DIFF -gt 20 ]; then
+                CHANGE=25
+              fi
               if [ $DIFF -gt 30 ]; then
-                CHANGE=30
+                CHANGE=35
               fi
               NEWFAN=$((FAN-CHANGE))
               # Hotter than target temp
             elif [ $DIFF -lt -1 ]; then
               MSG="WARM >$DIFF C!"
-              CHANGE=4
+              CHANGE=5
               if [ $DIFF -lt -2 ]; then
-                CHANGE=5
-              fi
-              if [ $DIFF -lt -5 ]; then
                 CHANGE=10
               fi
-              if [ $DIFF -lt -10 ]; then
+              if [ $DIFF -lt -5 ]; then
                 CHANGE=15
               fi
-              if [ $DIFF -lt -20 ]; then
+              if [ $DIFF -lt -10 ]; then
                 CHANGE=20
               fi
+              if [ $DIFF -lt -20 ]; then
+                CHANGE=25
+              fi
               if [ $DIFF -lt -30 ]; then
-                CHANGE=30
+                CHANGE=35
               fi
               NEWFAN=$((FAN+CHANGE))
             else
@@ -268,21 +268,21 @@ loop() {
           MSG="COLD >$DIFF C!"
           # Colder than target temp
           if [ $DIFF -gt 1 ]; then
-            CHANGE=4
+            CHANGE=5
             if [ $DIFF -gt 2 ]; then
-              CHANGE=5
+              CHANGE=8
             fi
             if [ $DIFF -gt 5 ]; then
-              CHANGE=6
-            fi
-            if [ $DIFF -gt 10 ]; then
               CHANGE=10
             fi
+            if [ $DIFF -gt 10 ]; then
+              CHANGE=12
+            fi
             if [ $DIFF -gt 20 ]; then
-              CHANGE=20
+              CHANGE=25
             fi
             if [ $DIFF -gt 30 ]; then
-              CHANGE=30
+              CHANGE=35
             fi
             NEWFAN=$((FAN-CHANGE))
             if [ $NEWFAN -lt $FANMIN ]; then
@@ -296,16 +296,16 @@ loop() {
               CHANGE=8
             fi
             if [ $DIFF -lt -5 ]; then
-              CHANGE=11
+              CHANGE=10
             fi
             if [ $DIFF -lt -10 ]; then
-              CHANGE=15
+              CHANGE=12
             fi
             if [ $DIFF -lt -20 ]; then
-              CHANGE=20
+              CHANGE=25
             fi
             if [ $DIFF -lt -30 ]; then
-              CHANGE=30
+              CHANGE=35
             fi
             NEWFAN=$((FAN+CHANGE))
             if [ $NEWFAN -gt $FANMAX ]; then
