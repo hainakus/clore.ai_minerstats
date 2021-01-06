@@ -47,7 +47,7 @@ if [ "$FANMIN" = "$FANMAX" ]; then
   SLEEP=75
   FANSTATIC=1
 else
-  SLEEP=20
+  SLEEP=15
 fi
 
 if [ -z "$FANDIFF" ] || [ "$FANDIFF" = "0" ]; then
@@ -120,6 +120,8 @@ loop() {
               echo "memtemp is higher, masking current temp to memtemp to cool down"
               TEMP=$MEMTEMP
               TARGET=$TARGET_MEM
+            else
+              TARGET=$TARGETM
             fi
           fi
           if [ ! -z "$TEMP" ]; then
