@@ -123,6 +123,8 @@ loop() {
             else
               TARGET=$TARGETM
             fi
+          else
+            TARGET=$TARGETM
           fi
           if [ ! -z "$TEMP" ]; then
             DIFF=$((TARGET-TEMP))
