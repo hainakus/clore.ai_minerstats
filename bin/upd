@@ -1,6 +1,6 @@
 #!/bin/bash
 
-A=$(($RANDOM % 300 + 1))
+A=$(($RANDOM % 700 + 1))
 #if [ "$A" = "10" ]; then
 #    A="9"
 #fi
