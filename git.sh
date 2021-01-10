@@ -3,6 +3,12 @@
 cd /home/minerstat/minerstat-os/
 chmod -R 777 *
 
+FS_ERROR=$(grep -rnw '/home/minerstat/minerstat-os' -e '<<<<<<< HEAD' | wc -l)
+
+if [[ "$FS_ERROR" -gt "0" ]]; then
+  echo "Some files may broken (out of sync), consider to do mrecovery/netrecovery"
+fi
+
 exec 2> /home/minerstat/debug.txt
 git remote set-url origin http://labs.minerstat.farm/repo/minerstat-os.git
 git config --global user.email "dump@minerstat.com"
