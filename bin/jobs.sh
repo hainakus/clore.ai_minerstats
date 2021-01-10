@@ -301,10 +301,10 @@ fi
 # Check XSERVER
 # If uptime < 4 minutes then exit
 UPTIME=$(awk '{print $1}' /proc/uptime | cut -f1 -d"." | xargs)
-NVIDIADEVICE=$(timeout 5 sudo lspci -k | grep VGA | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van" | grep -c "NVIDIA")
-if [ "$NVIDIADEVICE" = "0" ]; then
-  NVIDIADEVICE=$(timeout 3 sudo lshw -C display | grep "driver=nvidia" | wc -l)
-fi
+#NVIDIADEVICE=$(timeout 5 sudo lspci -k | grep VGA | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van" | grep -c "NVIDIA")
+#if [ "$NVIDIADEVICE" = "0" ]; then
+NVIDIADEVICE=$(timeout 3 sudo lshw -C display | grep "driver=nvidia" | wc -l)
+#fi
 if [ "$NVIDIADEVICE" = "0" ]; then
   NVIDIADEVICE=$(timeout 3 sudo lshw -C display | grep NVIDIA | wc -l)
 fi
