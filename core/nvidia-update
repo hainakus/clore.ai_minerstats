@@ -178,9 +178,12 @@ install () {
     sudo /home/minerstat/minerstat-os/core/stop >/dev/null 2>&1
     echo
     # Check XSERVER
-    NVIDIADEVICE=$(sudo lshw -C display | grep "driver=nvidia" | wc -l)
+    NVIDIADEVICE=$(timeout 5 sudo lspci -k | grep VGA | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van" | grep -c "NVIDIA")
     if [ "$NVIDIADEVICE" = "0" ]; then
-      NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
+      NVIDIADEVICE=$(timeout 3 sudo lshw -C display | grep "driver=nvidia" | wc -l)
+    fi
+    if [ "$NVIDIADEVICE" = "0" ]; then
+      NVIDIADEVICE=$(timeout 3 sudo lshw -C display | grep NVIDIA | wc -l)
     fi
     if [ "$NVIDIADEVICE" != "0" ]; then
       #if echo "$NVIDIA" | grep -iq "^GPU 0:" ;then
@@ -279,7 +282,7 @@ cuda () {
   echo "Installed driver major version number: $SELECTED_VERSION_CUT"
   if [[ "$SELECTED_VERSION_CUT" -ge 460 ]]; then
     # Update this later to 11.2
-    CUDA="11.1" 
+    CUDA="11.1"
   elif [[ "$SELECTED_VERSION_CUT" -ge 455 ]]; then
     CUDA="11.1"
   elif [[ "$SELECTED_VERSION_CUT" -ge 450 ]]; then

@@ -1,7 +1,13 @@
 #!/bin/bash
 #exec 2>/dev/null
 
-AMDN=$(sudo lshw -C display | grep AMD | wc -l)
+AMDDEVICE=$(timeout 5 sudo lspci -k | grep VGA | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van" | grep -c "AMD")
+if [ "$AMDDEVICE" = "0" ]; then
+  AMDDEVICE=$(timeout 3 sudo lshw -C display | grep AMD | wc -l)
+fi
+if [ "$AMDDEVICE" = "0" ]; then
+  AMDDEVICE=$(timeout 3 sudo lshw -C display | grep driver=amdgpu | wc -l)
+fi
 
 sudo rm -rf /home/minerstat/minerstat-os/bin/bios
 sudo mkdir /home/minerstat/minerstat-os/bin/bios
@@ -22,7 +28,7 @@ echo ""
 echo "Saving your gpu rom's to /home/minerstat/minerstat-os/bin/bios"
 echo ""
 
-for (( i=0; i < $AMDN; i++ )); do
+for (( i=0; i < $AMDDEVICE; i++ )); do
   echo "=== Exporting GPU$i VBIOS ==="
   sudo ./atiflash -s $i "bios/"$i"_bios.rom"
 done

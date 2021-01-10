@@ -150,7 +150,13 @@ if ! screen -list | grep -q "dummy"; then
   # <IF EXPERIMENTAL
   if grep -q experimental "/etc/lsb-release"; then
 
-    AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
+    AMDDEVICE=$(timeout 5 sudo lspci -k | grep VGA | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van" | grep -c "AMD")
+    if [ "$AMDDEVICE" = "0" ]; then
+      AMDDEVICE=$(timeout 3 sudo lshw -C display | grep AMD | wc -l)
+    fi
+    if [ "$AMDDEVICE" = "0" ]; then
+      AMDDEVICE=$(timeout 3 sudo lshw -C display | grep driver=amdgpu | wc -l)
+    fi
     if [ "$AMDDEVICE" -gt 0 ]; then
       echo "INFO: Seems you have AMD Device enabled, activating OpenCL Support."
       echo "INFO: Nvidia / AMD Mixing not supported. If you want to use OS on another rig, do mrecovery."

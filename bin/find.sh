@@ -21,8 +21,20 @@ else
   if [ "$RESULT" = "0" ]; then
     #################################£
     # Detect GPU's
-    AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
-    NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
+    AMDDEVICE=$(timeout 5 sudo lspci -k | grep VGA | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van" | grep -c "AMD")
+    if [ "$AMDDEVICE" = "0" ]; then
+      AMDDEVICE=$(timeout 3 sudo lshw -C display | grep AMD | wc -l)
+    fi
+    if [ "$AMDDEVICE" = "0" ]; then
+      AMDDEVICE=$(timeout 3 sudo lshw -C display | grep driver=amdgpu | wc -l)
+    fi
+    NVIDIADEVICE=$(timeout 5 sudo lspci -k | grep VGA | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van" | grep -c "NVIDIA")
+    if [ "$NVIDIADEVICE" = "0" ]; then
+      NVIDIADEVICE=$(timeout 3 sudo lshw -C display | grep "driver=nvidia" | wc -l)
+    fi
+    if [ "$NVIDIADEVICE" = "0" ]; then
+      NVIDIADEVICE=$(timeout 3 sudo lshw -C display | grep NVIDIA | wc -l)
+    fi
     NVIDIA="$(nvidia-smi -L)"
     GID=$1
     echo ""
@@ -43,15 +55,15 @@ else
         echo "GPU $GID >> 100%"
         #STR2="-c :0 -a [gpu:$GID]/GPUFanControlState=1 -a [gpu:$GID]/GPUTargetFanSpeed=100"
         sudo /home/minerstat/minerstat-os/core/nv_fanid $GID
-        ID1=$(cat /dev/shm/id1.txt | xargs) 
+        ID1=$(cat /dev/shm/id1.txt | xargs)
         ID2=$(cat /dev/shm/id2.txt | xargs)
         if [ -z "$ID1" ] && [ -z "$ID2" ]; then
-            STR2="-c :0 -a [gpu:"$GID"]/GPUFanControlState=1 -a [fan:"$GID"]/GPUTargetFanSpeed="$FANSPEED""
+          STR2="-c :0 -a [gpu:"$GID"]/GPUFanControlState=1 -a [fan:"$GID"]/GPUTargetFanSpeed="$FANSPEED""
         else
-            STR2="-c :0 -a [gpu:"$GID"]/GPUFanControlState=1 -a [fan:"$ID1"]/GPUTargetFanSpeed="$FANSPEED""
-            if [ ! -z "$ID2" ]; then
-                STR2="$STR2 -a [gpu:"$GID"]/GPUFanControlState=1 -a [fan:"$ID2"]/GPUTargetFanSpeed="$FANSPEED""
-             fi
+          STR2="-c :0 -a [gpu:"$GID"]/GPUFanControlState=1 -a [fan:"$ID1"]/GPUTargetFanSpeed="$FANSPEED""
+          if [ ! -z "$ID2" ]; then
+            STR2="$STR2 -a [gpu:"$GID"]/GPUFanControlState=1 -a [fan:"$ID2"]/GPUTargetFanSpeed="$FANSPEED""
+          fi
         fi
         APPLY="$(sudo nvidia-settings $STR2)"
         echo $APPLY

@@ -195,7 +195,13 @@ fi
 timeout 5 sudo chmod -R 777 * /home/minerstat/minerstat-os
 
 if [ -z "$1" ]; then
-  AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
+  AMDDEVICE=$(timeout 5 sudo lspci -k | grep VGA | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van" | grep -c "AMD")
+  if [ "$AMDDEVICE" = "0" ]; then
+    AMDDEVICE=$(timeout 3 sudo lshw -C display | grep AMD | wc -l)
+  fi
+  if [ "$AMDDEVICE" = "0" ]; then
+    AMDDEVICE=$(timeout 3 sudo lshw -C display | grep driver=amdgpu | wc -l)
+  fi
   #if [ "$AMDDEVICE" = "0" ]; then
   #  AMDDEVICE=$(sudo lshw -C display | grep driver=amdgpu | wc -l)
   #fi
@@ -295,9 +301,12 @@ fi
 # Check XSERVER
 # If uptime < 4 minutes then exit
 UPTIME=$(awk '{print $1}' /proc/uptime | cut -f1 -d"." | xargs)
-NVIDIADEVICE=$(sudo lshw -C display | grep "driver=nvidia" | wc -l)
+NVIDIADEVICE=$(timeout 5 sudo lspci -k | grep VGA | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van" | grep -c "NVIDIA")
 if [ "$NVIDIADEVICE" = "0" ]; then
-  NVIDIADEVICE=$(sudo lshw -C display | grep NVIDIA | wc -l)
+  NVIDIADEVICE=$(timeout 3 sudo lshw -C display | grep "driver=nvidia" | wc -l)
+fi
+if [ "$NVIDIADEVICE" = "0" ]; then
+  NVIDIADEVICE=$(timeout 3 sudo lshw -C display | grep NVIDIA | wc -l)
 fi
 if [ "$NVIDIADEVICE" != "0" ]; then
   #if echo "$NVIDIA" | grep -iq "^GPU 0:" ;then

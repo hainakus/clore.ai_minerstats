@@ -8,7 +8,13 @@ if [ ! $1 ]; then
 
   #################################£
   # Detect GPU's
-  AMDDEVICE=$(sudo lshw -C display | grep AMD | wc -l)
+  AMDDEVICE=$(timeout 5 sudo lspci -k | grep VGA | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van" | grep -c "AMD")
+  if [ "$AMDDEVICE" = "0" ]; then
+    AMDDEVICE=$(timeout 3 sudo lshw -C display | grep AMD | wc -l)
+  fi
+  if [ "$AMDDEVICE" = "0" ]; then
+    AMDDEVICE=$(timeout 3 sudo lshw -C display | grep driver=amdgpu | wc -l)
+  fi
 
   #################################£
   # Rig details
