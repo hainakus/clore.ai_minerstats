@@ -19,7 +19,7 @@ then
   sleep 2
 
   sudo git commit -a -m "Init"
-  sudo git merge --no-edit
+  sudo git merge --strategy-option theirs --no-edit
   sudo git add * -f
   sudo git commit -a -m "Fix done"
 
