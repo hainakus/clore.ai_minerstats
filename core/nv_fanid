@@ -32,33 +32,55 @@ sudo echo "" > /dev/shm/id2.txt
 CACHEFILE="/dev/shm/nvid_cache.txt"
 
 if [ ! -f "$CACHEFILE" ]; then
-  for i in {0..15}
-  do
-    JSON_FAN=$JSON_FAN'"'$i'":'
-    CHECKTYPE=$(nvidia-smi -L | grep "GPU $i")
-    if [[ $CHECKTYPE == *"RTX"* ]]; then
-      FANNUM="2"
-    elif [[ $CHECKTYPE == *"GTX"* ]]; then
-      FANNUM="1"
-    elif [[ $CHECKTYPE == *"P104"* ]]; then
-      FANNUM="1"
-    elif [[ $CHECKTYPE == *"P102"* ]]; then
-      FANNUM="1"
-    elif [[ $CHECKTYPE == *"P106"* ]]; then
-      FANNUM="1"
-    else
-      FANNUM="0"
-    fi
-    if [[ $i == "15" ]]; then
-      COMMA=""
-    else
-      COMMA=","
-    fi
-    JSON_FAN=$JSON_FAN'"'$FANNUM'"'$COMMA''
-  done
-  JSON_FAN=$JSON_FAN'}'
-  # Cache
-  sudo echo $JSON_FAN > $CACHEFILE
+  # Try to generate list from custom modified nvfanid script
+  timeout 5 DISPLAY=:0 sudo bash /home/minerstat/minerstat-os/bin/nvfanid > /dev/shm/nvid_cachegen.txt 2>&1
+  RB=$(cat /dev/shm/nvid_cachegen.txt)
+  if [[ $RB == *"fan num"* ]]; then
+    for i in {0..15}
+    do
+      JSON_FAN=$JSON_FAN'"'$i'":'
+      FANNUM=$(cat /dev/shm/nvid_cachegen.txt | grep "GPU #$i" | rev | cut -d"#" -f1 | rev | cut -d"," -f1 | rev | cut -d" " -f1 | rev)
+      if [[ $i == "15" ]]; then
+        COMMA=""
+      else
+        COMMA=","
+      fi
+      JSON_FAN=$JSON_FAN'"'$FANNUM'"'$COMMA''
+    done
+    JSON_FAN=$JSON_FAN'}'
+    # Cache
+    sudo echo $JSON_FAN > $CACHEFILE
+  else
+
+    # Failover as standard
+    for i in {0..15}
+    do
+      JSON_FAN=$JSON_FAN'"'$i'":'
+      CHECKTYPE=$(nvidia-smi -L | grep "GPU $i")
+      if [[ $CHECKTYPE == *"RTX"* ]]; then
+        FANNUM="2"
+      elif [[ $CHECKTYPE == *"GTX"* ]]; then
+        FANNUM="1"
+      elif [[ $CHECKTYPE == *"P104"* ]]; then
+        FANNUM="1"
+      elif [[ $CHECKTYPE == *"P102"* ]]; then
+        FANNUM="1"
+      elif [[ $CHECKTYPE == *"P106"* ]]; then
+        FANNUM="1"
+      else
+        FANNUM="0"
+      fi
+      if [[ $i == "15" ]]; then
+        COMMA=""
+      else
+        COMMA=","
+      fi
+      JSON_FAN=$JSON_FAN'"'$FANNUM'"'$COMMA''
+    done
+    JSON_FAN=$JSON_FAN'}'
+    # Cache
+    sudo echo $JSON_FAN > $CACHEFILE
+  fi
 else
   JSON_FAN=$(cat $CACHEFILE)
 fi
