@@ -33,7 +33,7 @@ CACHEFILE="/dev/shm/nvid_cache.txt"
 
 if [ ! -f "$CACHEFILE" ]; then
   # Try to generate list from custom modified nvfanid script
-  DISPLAY=:0 timeout 5 sudo bash /home/minerstat/minerstat-os/bin/nvfanid > /dev/shm/nvid_cachegen.txt 2>&1
+  DISPLAY=:0 timeout 5 sudo /home/minerstat/minerstat-os/bin/nvfanid > /dev/shm/nvid_cachegen.txt 2>&1
   RB=$(cat /dev/shm/nvid_cachegen.txt)
   if [[ $RB == *"fan num"* ]]; then
     for i in {0..15}
