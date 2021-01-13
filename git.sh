@@ -3,10 +3,10 @@
 cd /home/minerstat/minerstat-os/
 chmod -R 777 *
 
-FS_ERROR=$(grep -rnw '/home/minerstat/minerstat-os' -e '<<<<<<< HEAD' | wc -l)
+FS_ERROR=$(grep -rnw '/home/minerstat/minerstat-os' -e '<<<<<<< HEAD' | grep -vE "node_modules|git.sh" | wc -l)
 
 if [[ "$FS_ERROR" -gt "0" ]]; then
-  echo "Some files may broken (out of sync), consider to do mrecovery/netrecovery"
+  echo "Some files might be corrupted (out of sync), consider doing mrecovery/netrecovery."
 fi
 
 exec 2> /home/minerstat/debug.txt
