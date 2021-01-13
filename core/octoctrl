@@ -17,8 +17,8 @@ help () {
   echo "==== Help ===="
   echo "-h  | --help         : Printing this menu"
   echo "-d  | --display      : Update info display"
-  echo "-s  | --shutdown     : Shutdown via chasis"
-  echo "-r  | --reboot       : Reboot via chasis"
+  echo "-s  | --shutdown     : Shutdown via chassis"
+  echo "-r  | --reboot       : Reboot via chassis"
   echo "-p  | --ping         : Blink blue light for x minutes. (e.g: octo-ping --min 5)"
   echo "-f  | --fan          : Control chasis fans. (e.g: octo-fan --id 1 --val 200)"
   echo

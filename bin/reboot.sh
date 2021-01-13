@@ -22,6 +22,7 @@ function reboots () {
   timeout 4 sudo curl --insecure --connect-timeout 2 --max-time 3 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os2.php"
   # Is octo or minerdude board ?
   if [[ -f "/dev/shm/octo.pid" ]]; then
+    timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -w 0 -v 0
     sudo /home/minerstat/minerstat-os/core/octoctrl --reboot
   fi
   # attempt to reboot rig with watchdog
@@ -36,6 +37,7 @@ function sdown () {
   fi
   timeout 4 sudo curl --insecure --connect-timeout 2 --max-time 3 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os2.php"
   if [[ -f "/dev/shm/octo.pid" ]]; then
+    timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -w 0 -v 0
     sudo /home/minerstat/minerstat-os/core/octoctrl --shutdown
   fi
   if [[ "$SYSLOAD" -gt 10 ]]; then
