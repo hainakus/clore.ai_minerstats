@@ -39,7 +39,7 @@ if [ ! -f "$CACHEFILE" ]; then
     for i in {0..15}
     do
       JSON_FAN=$JSON_FAN'"'$i'":'
-      FANNUM=$(cat /dev/shm/nvid_cachegen.txt | grep "GPU #$i" | rev | cut -d"#" -f1 | rev | cut -d"," -f1 | rev | cut -d" " -f1 | rev)
+      FANNUM=$(cat /dev/shm/nvid_cachegen.txt | grep "GPU #$i fan" | rev | cut -d"#" -f1 | rev | cut -d"," -f1 | rev | cut -d" " -f1 | rev)
       if [[ $i == "15" ]]; then
         COMMA=""
       else
