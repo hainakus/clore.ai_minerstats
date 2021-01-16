@@ -40,7 +40,7 @@ function sdown () {
     timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -w 0 -v 0
     sudo /home/minerstat/minerstat-os/core/octoctrl --shutdown
   fi
-  if [[ "$SYSLOAD" -gt 10 ]]; then
+  if [[ "$SYSLOAD" -gt 0 ]]; then
     # Shutdown forced
     sudo echo o > /proc/sysrq-trigger # (shutd*O*wn) Shutdown the system
     sleep 2
