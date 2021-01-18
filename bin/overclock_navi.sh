@@ -35,7 +35,7 @@ if [ $1 ]; then
   version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
 
   # Setting up limits
-  MCMIN=685  #minimum vddci
+  MCMIN=670  #minimum vddci
   MCMAX=850  #max vddci
   MVMIN=1250 #minimum mvdd
   MVMAX=1350 #max mvdd
@@ -286,8 +286,8 @@ if [ $1 ]; then
           VDDC=800
         fi
       else
-        if [ "$VDDC" -lt "700" ]; then
-          echo "Driver accept VDDC range until 700mV, you have set $VDDC and it got adjusted to 800mV"
+        if [ "$VDDC" -lt "649" ]; then
+          echo "Driver accept VDDC range until 650mV, you have set $VDDC and it got adjusted to 800mV"
           echo "You can set Core State 1 or Core State 2 for lower voltages"
           VDDC=800
         fi
