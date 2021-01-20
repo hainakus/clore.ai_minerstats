@@ -170,6 +170,7 @@ alias octo-shutdown='sudo bash /home/minerstat/minerstat-os/core/octoctrl --shut
 alias octo-reboot='sudo bash /home/minerstat/minerstat-os/core/octoctrl --reboot '
 alias octo-ping="sudo bash /home/minerstat/minerstat-os/core/octoctrl --ping "
 alias octo-fan="sudo bash /home/minerstat/minerstat-os/core/octoctrl --fan "
+alias viiboost="sudo bash /home/minerstat/minerstat-os/core/viiboost"
 
 if grep -q experimental "/etc/lsb-release"; then
   alias amdmemtool='sudo /home/minerstat/minerstat-os/bin/amdmemorytweak'
