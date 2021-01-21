@@ -36,9 +36,9 @@ fi
 
 if [ "$MONITOR_TYPE" = "unknown" ]; then
   TEST_NVIDIA=$(nvidia-smi -L)
-  NUM_AMD=$(sudo lshw -C display | grep AMD | wc -l)
+  NUM_AMD=$(timeout 40 sudo lshw -C display | grep AMD | wc -l)
   if [ -z "$NUM_AMD" ]; then
-    NUM_AMD=$(sudo lshw -C display | grep amdgpu | wc -l)
+    NUM_AMD=$(timeout 40 sudo lshw -C display | grep amdgpu | wc -l)
   fi
   TEST_AMD=$NUM_AMD
   if [[ $TEST_NVIDIA == *"GPU 0"* ]]; then

@@ -21,7 +21,7 @@ else
   if [ "$RESULT" = "0" ]; then
     #################################£
     # Detect GPU's
-    AMDDEVICE=$(timeout 5 sudo lspci -k | grep VGA | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van" | grep -c "AMD")
+    AMDDEVICE=$(timeout 40 sudo lspci -k | grep VGA | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van" | grep -c "AMD")
     if [ -z "$AMDDEVICE" ]; then
       AMDDEVICE=$(timeout 3 sudo lshw -C display | grep AMD | wc -l)
     fi
@@ -30,7 +30,7 @@ else
     fi
     #NVIDIADEVICE=$(timeout 5 sudo lspci -k | grep VGA | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van" | grep -c "NVIDIA")
     #if [ "$NVIDIADEVICE" = "0" ]; then
-    NVIDIADEVICE=$(timeout 3 sudo lshw -C display | grep "driver=nvidia" | wc -l)
+    NVIDIADEVICE=$(timeout 40 sudo lshw -C display | grep "driver=nvidia" | wc -l)
     #fi
     if [ "$NVIDIADEVICE" = "0" ]; then
       NVIDIADEVICE=$(timeout 3 sudo lshw -C display | grep NVIDIA | wc -l)
