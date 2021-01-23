@@ -149,11 +149,22 @@ if [[ ! -z "$INF_AMD" ]]; then
     BUS=$(echo $BUS | sed 's/00000000://')
     # EXTENDED CALL
     #EXT=$(sed -n $NUM'p' < /dev/shm/amdmeminfo.txt)
-    EXT=$(cat /dev/shm/amdmeminfo.txt | grep $BUS)
+    BUSEDIT=$(echo $BUS | cut -f1 -d".")
+    if [ ${#BUSEDIT} -ge 3 ]; then
+      #echo "longer $BUSEDIT"
+      if [[ "$BUSEDIT" =~ ^0.* ]]; then
+        #echo "editing $BUSEDIT"
+        BUSEDIT="${BUSEDIT:1}"
+        #echo "edited $BUSEDIT"
+      fi
+    fi
+    EXT=$(cat /dev/shm/amdmeminfo.txt | grep ":$BUSEDIT.0")
+    echo $EXT
     IFS=':' read -r -a arrays <<< "$EXT"
     NAME=${arrays[2]}
     NAME=$(echo $Red$NAME$Reset | xargs | xargs)
-    echo "$BUS,$NAME,$TEMP,$FAN" >> /dev/shm/gpudata.txt
+    BUSEDIT=${arrays[1]}
+    echo "$BUSEDIT,$NAME,$TEMP,$FAN" >> /dev/shm/gpudata.txt
     NUM=$((NUM+1))
     HID=$((HID+1))
   done < "/dev/shm/amdcache.txt"
