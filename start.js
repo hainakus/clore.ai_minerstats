@@ -277,7 +277,7 @@ module.exports = {
           clearInterval(global.timeout);
           clearInterval(global.hwmonitor);
           console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mPlease validate your config.js file\x1b[0m");
-          console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mor add a worker on my.minerstat.com with the name: " + global.worker + "\x1b[0m");
+          console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mor use Discovery tool on workers list page to find this worker on the same local network. \x1b[0m");
 
           console.log("")
           console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;33mTOKEN: " + global.accesskey + " \x1b[0m");
