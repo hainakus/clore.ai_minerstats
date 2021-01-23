@@ -159,7 +159,7 @@ if [[ ! -z "$INF_AMD" ]]; then
       fi
     fi
     EXT=$(cat /dev/shm/amdmeminfo.txt | grep ":$BUSEDIT.0")
-    echo $EXT
+    #echo $EXT
     IFS=':' read -r -a arrays <<< "$EXT"
     NAME=${arrays[2]}
     NAME=$(echo $Red$NAME$Reset | xargs | xargs)
