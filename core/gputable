@@ -148,7 +148,8 @@ if [[ ! -z "$INF_AMD" ]]; then
     BUS=${array[6]}
     BUS=$(echo $BUS | sed 's/00000000://')
     # EXTENDED CALL
-    EXT=$(sed -n $NUM'p' < /dev/shm/amdmeminfo.txt)
+    #EXT=$(sed -n $NUM'p' < /dev/shm/amdmeminfo.txt)
+    EXT=$(cat /dev/shm/amdmeminfo.txt | grep $BUS)
     IFS=':' read -r -a arrays <<< "$EXT"
     NAME=${arrays[2]}
     NAME=$(echo $Red$NAME$Reset | xargs | xargs)
