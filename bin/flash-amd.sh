@@ -87,9 +87,9 @@ if [[ ! -z "$PN" ]] && [[ ! -z "$PROD" ]] && [[ ! -z "$DID" ]] || [[ "$FORCE" = 
       echo "Validation: $bus is listed within the flasher"
       BUS_ID=""
       if [[ "$FLASHER" = "atiflash" ]]; then
-        BUS_ID=$(sudo /home/minerstat/minerstat-os/bin/$FLASHER -i | awk '{print $1, $2}' | grep -i "$GPUBUSINT" | awk {'print $1'})
+        BUS_ID=$(sudo /home/minerstat/minerstat-os/bin/$FLASHER -i | awk '{print $1, $2}' | grep -i "$GPUBUSINT" | grep -vE "adapter" | awk {'print $1'})
       else
-        BUS_ID=$(sudo /home/minerstat/minerstat-os/bin/$FLASHER -i | awk '{print $1, $3}' | grep -i "$GPUBUSINT" | awk {'print $1'})
+        BUS_ID=$(sudo /home/minerstat/minerstat-os/bin/$FLASHER -i | awk '{print $1, $3}' | grep -i "$GPUBUSINT" | grep -vE "adapter" | awk {'print $1'})
       fi
       echo "ADAPTER ID: $BUS_ID"
       BIOS="$DATE-$GPUBUSINT-bios.rom"
