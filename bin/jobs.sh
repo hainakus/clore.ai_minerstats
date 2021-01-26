@@ -175,13 +175,13 @@ fi
 
 GET_GATEWAY=$(timeout 5 route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
 NSCHECK=$(cat /etc/resolv.conf | grep "nameserver 1.1.1.1" | xargs)
-RES_TEST=$(timeout 5 ping -c1 l.root-servers.net > /dev/null && echo "ok" || echo "failed")
+RES_TEST=$(timeout 15 ping -c1 l.root-servers.net > /dev/null && echo "ok" || echo "failed")
 if [ "$NSCHECK" != "nameserver 1.1.1.1" ] || [ ! -z "$GET_GATEWAY" ] || [ "$RES_TEST" = "failed" ]; then
   #GCHECK=$(cat /etc/resolv.conf | grep "nameserver $GET_GATEWAY" | xargs)
   if [ ! -z "$GET_GATEWAY" ]; then
     # Detect IP blocker DNS
-    BLOCK_TEST=$(timeout 5 nslookup eu1.ethermine.org $GET_GATEWAY | grep Address: | grep "0.0.0.0" | head -n1 | awk '{print $2}' | xargs | xargs)
-    if [ "$BLOCK_TEST" = "0.0.0.0" ]; then
+    BLOCK_TEST=$(nslookup eu1.ethermine.org $GET_GATEWAY | grep Address: | grep "0.0.0.0" | head -n1 | awk '{print $2}' | xargs | xargs)
+    if [ "$BLOCK_TEST" = "0.0.0.0" ] || [ "$BLOCK_TEST" = "::" ]; then
       sudo su -c "echo -n > /etc/resolv.conf; echo 'nameserver 1.1.1.1' >> /etc/resolv.conf; echo 'nameserver 1.0.0.1' >> /etc/resolv.conf; echo 'nameserver 8.8.8.8' >> /etc/resolv.conf; echo 'nameserver 8.8.4.4' >> /etc/resolv.conf; echo 'nameserver 114.114.114.114' >> /etc/resolv.conf; echo 'nameserver 114.114.115.115' >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf;" 2>/dev/null
     else
       sudo su -c "echo -n > /etc/resolv.conf; echo 'nameserver $GET_GATEWAY' >> /etc/resolv.conf; echo 'nameserver 1.1.1.1' >> /etc/resolv.conf; echo 'nameserver 1.0.0.1' >> /etc/resolv.conf; echo 'nameserver 8.8.8.8' >> /etc/resolv.conf; echo 'nameserver 8.8.4.4' >> /etc/resolv.conf; echo 'nameserver 114.114.114.114' >> /etc/resolv.conf; echo 'nameserver 114.114.115.115' >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf;" 2>/dev/null
