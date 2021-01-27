@@ -53,9 +53,9 @@ echo "Bios queue:   $PATHS"
 echo "============================="
 echo
 
-if [[ $PROD == *"Polaris"* ]] || [[ $PROD == *"Ellesmere"* ]]; then
-  FLASHER="atiflash"
-fi
+#if [[ $PROD == *"Polaris"* ]] || [[ $PROD == *"Ellesmere"* ]]; then
+#  FLASHER="atiflash"
+#fi
 
 if [[ ! -z "$PN" ]] && [[ ! -z "$PROD" ]] && [[ ! -z "$DID" ]] || [[ "$FORCE" = "1" ]]; then
   echo "Bios looks valid or forced"
