@@ -212,6 +212,8 @@ timeout 5 git config --global http.sslverify false
 # Update motd.d
 timeout 5 sudo chmod 777 /etc/update-motd.d/10-help-text
 timeout 5 sudo cp /home/minerstat/minerstat-os/core/10-help-text /etc/update-motd.d
+# disable wifi powersave
+timeout 3 sudo sed -i 's/3/2/' /etc/NetworkManager/conf.d/default-wifi-powersave-on.conf
 # Update tmux design
 if [ "$version" = "1.6.0" ]; then
   sudo cp -f /home/minerstat/minerstat-os/core/.tmux2.conf /home/minerstat/.tmux.conf
