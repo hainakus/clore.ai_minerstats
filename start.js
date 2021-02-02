@@ -719,6 +719,7 @@ module.exports = {
         "claymore-zec": "config.txt",
         "cryptodredge": "start.bash",
         "ethminer": "start.bash",
+        "nsfminer": "start.bash",
         "kawpowminer": "start.bash",
         "ewbf-zec": "start.bash",
         "ewbf-zhash": "start.bash",
