@@ -834,6 +834,7 @@ module.exports = {
       fkill('GrinProMiner').then(() => {});
       fkill('serominer').then(() => {});
       fkill('nbminer').then(() => {});
+      fkill('nsfminer').then(() => {});
       if (global.PrivateMiner == "True") {
         fkill(global.privateExe).then(() => {});
       }
