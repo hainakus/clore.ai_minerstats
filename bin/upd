@@ -13,4 +13,8 @@ R="$A"
 
 sleep $R
 
-sudo /bin/sh /home/minerstat/minerstat-os/git.sh
+if [ -f "/home/minerstat/upd.pid" ]; then
+  echo "Runtime updates disabled"
+else
+  sudo /bin/bash /home/minerstat/minerstat-os/git.sh
+fi

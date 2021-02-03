@@ -212,7 +212,14 @@ do
   echo "SYS UPTIM: $SYSTIME"
 
   # MINER logs
-  RAMLOG=$(timeout 5 cat /dev/shm/miner.log | tac | head --lines 10 | tac)
+  RAMLOG=""
+
+  if [ -f "/home/minerstat/snapshot.pid" ]; then
+    RAMLOG=""
+  else
+    RAMLOG=$(timeout 5 cat /dev/shm/miner.log | tac | head --lines 10 | tac)
+  fi
+
   echo "RAMLOG"
 
   # Extended Query with loop

@@ -44,6 +44,8 @@ else
   echo -e "${BLUE}forcereboot${NC}\tForce Reboot the rig (<0.1 sec)"
   echo -e "${BLUE}mshutdown${NC}\tShut down the rig"
   echo -e "${BLUE}forceshutdown${NC}\tForce Shut down the rig (<0.1 sec)"
+  echo -e "${BLUE}update-ctrl${NC}\tEnable/Disable runtime system updates"
+  echo -e "${BLUE}snapshot-ctrl${NC}\tEnable/Disable Snapshot logs"
   echo -e "${BLUE}mclock${NC}\t\tFetch OC from the dashboard"
   echo -e ""
   echo -e "======= Debugging ======="
