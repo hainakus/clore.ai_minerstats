@@ -56,7 +56,7 @@ $W  Website.....:$W https://minerstat.com
 $W  Dashboard...:$W https://my.minerstat.com
 $W  Discord.....:$W https://minerstat.com/discord
 $W
-$W  OS Version..: $W$version ($version_type)
+$W  OS Version..: $W$version
 $W  Kernel......: $W$KERNEL_VER
 $W  IP Address..: $W$ip
 $W  Uptime......: $W`uptime | grep -ohe 'up .*' | sed 's/,/\ hours/g' | awk '{ printf $2" "$3 }'`

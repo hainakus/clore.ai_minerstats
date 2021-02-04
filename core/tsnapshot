@@ -13,8 +13,8 @@ fi
 # ECHO
 echo
 echo
-echo "Previous Auto Update Control: $STATUS_ORIGIN"
-echo "Current  Auto Update Control: $STATUS_NEW"
+echo "Previous Snapshot Control: $STATUS_ORIGIN"
+echo "Current  Snapshot Control: $STATUS_NEW"
 echo
 echo
 
