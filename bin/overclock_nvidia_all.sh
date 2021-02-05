@@ -119,9 +119,27 @@ if [ $1 ]; then
       MEMORYOFFSET=$((EFF_MHZ*2))
       echo "New memory offset $MEMORYOFFSET Mhz"
     fi
+
+    # DAG DELAY
+    # SET MEMCLOCK BACK AFTER MINER STARTED 40 sec
+    sudo echo "ALL:$MEMORYOFFSET" >> /dev/shm/nv_memcache.txt
+
+    echo "!!!!!!!!"
+    echo "GPU #ALL: $MEMORYOFFSET Mhz Memory Clock will be applied after miner started and DAG generated (40 sec)"
+    echo "!!!!!!!"
+
+    # DAG PROTECTION
+    MEMORYOFFSET=0
+    #COREOFFSET=0
+
+    TEST=$(sudo screen -list | grep -wc memdelay)
+    if [ "$TEST" = "0" ]; then
+      sudo screen -A -m -d -S memdelay sudo bash /home/minerstat/minerstat-os/core/memdelay &
+    fi
+
     # P2
-    E1="-a [gpu:"$GPUID"]/GPUMemoryTransferRateOffset[2]="$MEMORYOFFSET""
-    E2="-a [gpu:"$GPUID"]/GPUGraphicsClockOffset[2]="$COREOFFSET""
+    E1="-a GPUMemoryTransferRateOffset[2]="$MEMORYOFFSET""
+    E2="-a GPUGraphicsClockOffset[2]="$COREOFFSET""
   fi
 
 
