@@ -41,9 +41,7 @@ if [ "$TEST" = "1" ]; then
     GETCLOCK=$(cat /dev/shm/nv_memcache_unique.txt | grep "ALL:" | rev | cut -d: -f1 | rev)
     echo "Fetched clock is $GETCLOCK Mhz"
     JOB="-a GPUMemoryTransferRateOffset[4]="$GETCLOCK" -a GPUMemoryTransferRateOffsetAllPerformanceLevels="$GETCLOCK" -a GPUMemoryTransferRateOffset[2]="$GETCLOCK""
-  fi
-
-  if [[ $READIN == *"0:"* ]]; then
+  else
     echo "Appling memclock per gpu basis"
     while read line; do
       GETCLOCK=$(echo $line | rev | cut -d: -f1 | rev)
