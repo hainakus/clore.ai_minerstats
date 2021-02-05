@@ -39,15 +39,19 @@ if [ "$TEST" = "1" ]; then
   if [[ $READIN == *"ALL:"* ]]; then
     echo "Appling same memclock to all selected"
     GETCLOCK=$(cat /dev/shm/nv_memcache_unique.txt | grep "ALL:" | rev | cut -d: -f1 | rev)
-    echo "Fetched clock is $GETCLOCK Mhz"
-    JOB="-a GPUMemoryTransferRateOffset[4]="$GETCLOCK" -a GPUMemoryTransferRateOffsetAllPerformanceLevels="$GETCLOCK" -a GPUMemoryTransferRateOffset[2]="$GETCLOCK""
+    if [[ "$GETCLOCK" != "skip" ]]; then
+      echo "Fetched clock is $GETCLOCK Mhz"
+      JOB="-a GPUMemoryTransferRateOffset[4]="$GETCLOCK" -a GPUMemoryTransferRateOffsetAllPerformanceLevels="$GETCLOCK" -a GPUMemoryTransferRateOffset[2]="$GETCLOCK""
+    fi
   else
     echo "Appling memclock per gpu basis"
     while read line; do
       GETCLOCK=$(echo $line | rev | cut -d: -f1 | rev)
       GETID=$(echo $line | cut -d: -f1)
-      echo "Fetched clock is $GETCLOCK Mhz for ID $GETID"
-      JOB="$JOB -a [gpu:"$GETID"]/GPUMemoryTransferRateOffset[4]="$GETCLOCK" -a [gpu:"$GETID"]/GPUMemoryTransferRateOffsetAllPerformanceLevels="$GETCLOCK" -a [gpu:"$GETID"]/GPUMemoryTransferRateOffset[2]="$GETCLOCK""
+      if [[ "$GETCLOCK" != "skip" ]]; then
+        echo "Fetched clock is $GETCLOCK Mhz for ID $GETID"
+        JOB="$JOB -a [gpu:"$GETID"]/GPUMemoryTransferRateOffset[4]="$GETCLOCK" -a [gpu:"$GETID"]/GPUMemoryTransferRateOffsetAllPerformanceLevels="$GETCLOCK" -a [gpu:"$GETID"]/GPUMemoryTransferRateOffset[2]="$GETCLOCK""
+      fi
     done </dev/shm/nv_memcache_unique.txt
   fi
 
