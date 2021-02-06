@@ -115,7 +115,7 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
-alias mstart='sudo su minerstat -c "screen -X -S minerstat-console quit" > /dev/null 2>&1; cd /home/minerstat/minerstat-os/; sudo node stop > /dev/null 2>&1; sudo rm /tmp/stop.pid > /dev/null 2>&1; sudo rm /dev/shm/maintenance.pid > /dev/null 2>&1; sleep 1; screen -A -m -d -S minerstat-console sudo sh start.sh; echo "Minerstat has been re(started)! type: miner to check output, anytime!"; sleep 1; screen -x minerstat-console '
+alias mstart='sudo su minerstat -c "screen -X -S minerstat-console quit" > /dev/null 2>&1; cd /home/minerstat/minerstat-os/; sudo node stop > /dev/null 2>&1; sudo rm /tmp/stop.pid > /dev/null 2>&1; sudo rm /dev/shm/maintenance.pid > /dev/null 2>&1; sleep 1; screen -A -m -d -S minerstat-console sudo bash start.sh; echo "Minerstat has been re(started)! type: miner to check output, anytime!"; sleep 1; screen -x minerstat-console '
 alias miner='sudo bash /home/minerstat/minerstat-os/core/miner'
 alias agent='sh /home/minerstat/minerstat-os/core/view'
 alias mstop='sudo /home/minerstat/minerstat-os/core/stop'
@@ -142,7 +142,7 @@ alias mwifi='sudo /home/minerstat/minerstat-os/core/mwifi'
 alias nvidia-update='cd /home/minerstat; sudo /home/minerstat/minerstat-os/core/nvidia-update'
 alias autotune='sudo /home/minerstat/minerstat-os/core/autotune'
 alias rocm-smi='sudo /home/minerstat/minerstat-os/bin/rocm-smi'
-alias netrecovery='sudo su -c "cd /home/minerstat; sudo rm /home/minerstat/recovery.sh; wget https://labs.minerstat.farm/repo/minerstat-os/-/raw/master/core/recovery.sh; sudo chmod 777 /home/minerstat/recovery.sh;"; sudo bash /home/minerstat/recovery.sh'
+alias netrecovery='cd /home/minerstat; sudo su -c "cd /home/minerstat; sudo rm /home/minerstat/recovery.sh; wget https://labs.minerstat.farm/repo/minerstat-os/-/raw/master/core/recovery.sh; sudo chmod 777 /home/minerstat/recovery.sh;"; sudo bash /home/minerstat/recovery.sh'
 alias mpill='sudo /home/minerstat/minerstat-os/core/mpill'
 alias static='sudo bash /home/minerstat/minerstat-os/core/mstatic'
 alias dhcp='sudo /home/minerstat/minerstat-os/core/dhcp'

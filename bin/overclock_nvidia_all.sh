@@ -120,21 +120,26 @@ if [ $1 ]; then
       echo "New memory offset $MEMORYOFFSET Mhz"
     fi
 
-    # DAG DELAY
-    # SET MEMCLOCK BACK AFTER MINER STARTED 40 sec
-    sudo echo "ALL:$MEMORYOFFSET" >> /dev/shm/nv_memcache.txt
+    # for instant OC just apply memclock without delay
+    if [[ "$INSTANT" != "instant" ]]; then
 
-    echo "!!!!!!!!"
-    echo "GPU #ALL: $MEMORYOFFSET Mhz Memory Clock will be applied after miner started and DAG generated (40 sec)"
-    echo "!!!!!!!"
+      # DAG DELAY
+      # SET MEMCLOCK BACK AFTER MINER STARTED 40 sec
+      sudo echo "ALL:$MEMORYOFFSET" >> /dev/shm/nv_memcache.txt
 
-    # DAG PROTECTION
-    MEMORYOFFSET=0
-    #COREOFFSET=0
+      echo "!!!!!!!!"
+      echo "GPU #ALL: $MEMORYOFFSET Mhz Memory Clock will be applied after miner started and DAG generated (40 sec)"
+      echo "!!!!!!!"
 
-    TEST=$(sudo screen -list | grep -wc memdelay)
-    if [ "$TEST" = "0" ]; then
-      sudo screen -A -m -d -S memdelay sudo bash /home/minerstat/minerstat-os/core/memdelay &
+      # DAG PROTECTION
+      MEMORYOFFSET=0
+      #COREOFFSET=0
+
+      TEST=$(sudo screen -list | grep -wc memdelay)
+      if [ "$TEST" = "0" ]; then
+        sudo screen -A -m -d -S memdelay sudo bash /home/minerstat/minerstat-os/core/memdelay &
+      fi
+
     fi
 
     # P2

@@ -11,4 +11,27 @@ sudo su minerstat -c "screen -X -S fakescreen quit"
 
 screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh
 
-sh launcher.sh
+node /home/minerstat/minerstat-os/validate.js > /dev/shm/validate_node.txt 2>&1
+READBACK=$(cat /dev/shm/validate_node.txt)
+
+if [[ $READBACK == *"unexpected"* ]]; then
+  echo ""
+  echo "!!!!!!!!!"
+  echo "Invalid config.js file. Manual action required!"
+  echo "Type: mworker accesskey workername"
+  echo "Replace accesskey/workername with your details. After you can try mstart again."
+  echo "!!!!!!!!!"
+  echo ""
+fi
+
+if [[ $READBACK == *"Cannot"* ]]; then
+  echo ""
+  echo "!!!!!!!!!"
+  echo "Some important files missing."
+  echo "Type: netrecovery"
+  echo "After netrecovery command OS attempt to restore itself to original state. After you can try mstart again."
+  echo "!!!!!!!!!"
+  echo ""
+fi
+
+bash launcher.sh
