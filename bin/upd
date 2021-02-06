@@ -16,5 +16,5 @@ sleep $R
 if [ -f "/home/minerstat/upd.pid" ]; then
   echo "Runtime updates disabled"
 else
-  sudo /bin/bash /home/minerstat/minerstat-os/git.sh
+  sudo /bin/bash /home/minerstat/minerstat-os/git.sh auto
 fi
