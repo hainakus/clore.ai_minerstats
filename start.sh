@@ -14,7 +14,7 @@ screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh
 node /home/minerstat/minerstat-os/validate.js > /dev/shm/validate_node.txt 2>&1
 READBACK=$(cat /dev/shm/validate_node.txt)
 
-if [[ $READBACK == *"unexpected"* ]]; then
+if [[ $READBACK == *"unexpected"* ]] || [[ $READBACK == *"Unexpected"* ]]; then
   echo ""
   echo "!!!!!!!!!"
   echo "Invalid config.js file. Manual action required!"
@@ -24,7 +24,7 @@ if [[ $READBACK == *"unexpected"* ]]; then
   echo ""
 fi
 
-if [[ $READBACK == *"Cannot"* ]]; then
+if [[ $READBACK == *"Cannot"* ]] || [[ $READBACK == *"color"* ]]; then
   echo ""
   echo "!!!!!!!!!"
   echo "Some important files missing."
