@@ -32,7 +32,7 @@ if [[ -z "$AUTOLOGIN" ]] || [[ "$AUTOLOGINE" != "1" ]]; then
 fi
 timeout 10 sudo systemctl daemon-reload > /dev/null &
 # Kernel panic auto reboot and clean older miner logs
-sudo su -c "echo 20 >/proc/sys/kernel/panic'; echo '' > /dev/shm/miner.log"
+sudo su -c "sudo echo 1 > /proc/sys/kernel/sysrq; sudo echo 20 > /proc/sys/kernel/panic; echo '' > /dev/shm/miner.log"
 # Remove logs
 find '/home/minerstat/minerstat-os/clients/claymore-eth' -name "*log.txt" -type f -delete
 sudo find /var/log -type f -name "*.journal" -delete
