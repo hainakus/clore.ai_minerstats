@@ -102,6 +102,10 @@ if [ $1 ]; then
     echo "GPU$GPUID : FANSPEED => 70% ($FANVALUE)"
   fi
 
+  if [[ $FANVALUE -gt $MAXFAN ]]; then
+    FANVALUE=$MAXFAN
+  fi
+
   echo "--**--**-- GPU $1 : NAVI --**--**--"
 
   # Compare user input and apply min/max

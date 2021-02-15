@@ -280,6 +280,10 @@ if [ $1 ]; then
       echo "GPU$GPUID : FANSPEED => 70% ($FANVALUE)"
     fi
 
+    if [[ $FANVALUE -gt $MAXFAN ]]; then
+      FANVALUE=$MAXFAN
+    fi
+
     # Compare user input and apply min/max
     if [[ ! -z $VDDCI && $VDDCI != "0" && $VDDCI != "skip" ]]; then
       PARSED_VDDCI=$VDDCI
