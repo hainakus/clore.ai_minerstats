@@ -43,12 +43,13 @@ if [ $1 ]; then
   # Reset
   #sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "r"
 
-  for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-    TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
-    if [ ! -z "$TEST" ]; then
-      MAXFAN=$TEST
-    fi
-  done
+  #for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+  #  TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
+  #  if [ ! -z "$TEST" ]; then
+  #    MAXFAN=$TEST
+  #  fi
+  #done
+  MAXFAN="255"
 
   # FANS
   if [ "$FANSPEED" != 0 ]; then
