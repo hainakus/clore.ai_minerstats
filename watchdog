@@ -8,11 +8,13 @@ P1=$(lsusb | grep "5131:2007")
 P2=$(lsusb | grep "1a86:7523")
 # ALLOYSEED USB Watchdog
 P3=$(lsusb | grep "0471:2379")
+# test Watchdog watchdog.in.ua
+P5=$(lsusb | grep "16c0:03e8")
 
 # OCTOMINER || MINERDUDE
 P4=$(lsusb | grep "16c0:05dc")
 
-if [ ! -z "$P1" ] || [ ! -z "$P2" ] || [ ! -z "$P3" ]; then
+if [ ! -z "$P1" ] || [ ! -z "$P2" ] || [ ! -z "$P3" ] || [ ! -z "$P5" ]; then
   echo "USB Watchdog detected.. Sending signal"
   while true
   do
