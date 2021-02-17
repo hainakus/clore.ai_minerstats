@@ -1,5 +1,5 @@
 #!/bin/bash
-#exec 2>/dev/null
+exec 2>/dev/null
 
 echo "---- FIND MY GPU ----"
 echo ""
@@ -64,7 +64,7 @@ else
           echo "Using global fan ID method."
           STR2="-c :0 -a [gpu:"$GID"]/GPUFanControlState=1 -a [fan:"$GID"]/GPUTargetFanSpeed="$FANSPEED""
         else
-          echo "Using seperate fan ID method."
+          echo "Using separate fan ID method."
           STR2="-c :0 -a [gpu:"$GID"]/GPUFanControlState=1 -a [fan:"$ID1"]/GPUTargetFanSpeed="$FANSPEED""
           if [ ! -z "$ID2" ]; then
             STR2="$STR2 -a [gpu:"$GID"]/GPUFanControlState=1 -a [fan:"$ID2"]/GPUTargetFanSpeed="$FANSPEED""
