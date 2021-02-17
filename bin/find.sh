@@ -1,5 +1,5 @@
 #!/bin/bash
-exec 2>/dev/null
+#exec 2>/dev/null
 
 echo "---- FIND MY GPU ----"
 echo ""
@@ -58,13 +58,16 @@ else
         ID1=$(cat /dev/shm/id1.txt | xargs)
         ID2=$(cat /dev/shm/id2.txt | xargs)
         if [ -z "$ID1" ] && [ -z "$ID2" ]; then
+          echo "Using global fan ID method."
           STR2="-c :0 -a [gpu:"$GID"]/GPUFanControlState=1 -a [fan:"$GID"]/GPUTargetFanSpeed="$FANSPEED""
         else
+          echo "Using seperate fan ID method."
           STR2="-c :0 -a [gpu:"$GID"]/GPUFanControlState=1 -a [fan:"$ID1"]/GPUTargetFanSpeed="$FANSPEED""
           if [ ! -z "$ID2" ]; then
             STR2="$STR2 -a [gpu:"$GID"]/GPUFanControlState=1 -a [fan:"$ID2"]/GPUTargetFanSpeed="$FANSPEED""
           fi
         fi
+        echo "sudo nvidia-settings $STR2"
         APPLY="$(sudo nvidia-settings $STR2)"
         echo $APPLY
         echo ""
@@ -75,7 +78,7 @@ else
         echo ""
         echo "--- Loading original settings --"
         cd /home/minerstat/minerstat-os/bin
-        sudo sh setfans.sh
+        sudo bash setfans.sh
       fi
     fi
 
