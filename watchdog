@@ -67,6 +67,7 @@ if [ ! -z "$P5" ]; then
   while true
   do
     timeout 2 sudo /home/minerstat/minerstat-os/bin/watchdoginua $TIMEOUT single > /dev/null 2>&1
+    sleep 5
   done
 fi
 
