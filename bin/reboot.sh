@@ -20,11 +20,6 @@ WORKER="$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.wo
 function reboots () {
   RAMLOG="$RAMLOG - System reboot"
   timeout 4 sudo curl --insecure --connect-timeout 2 --max-time 3 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os2.php"
-  # Is octo or minerdude board ?
-  if [[ -f "/dev/shm/octo.pid" ]]; then
-    timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -w 0 -v 0
-    sudo /home/minerstat/minerstat-os/core/octoctrl --reboot
-  fi
   # attempt to reboot rig with watchdog
   sudo /home/minerstat/minerstat-os/bin/watchdog-reboot.sh nosync
   # if upper failes reboot normally
@@ -39,6 +34,10 @@ function sdown () {
   if [[ -f "/dev/shm/octo.pid" ]]; then
     timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -w 0 -v 0
     sudo /home/minerstat/minerstat-os/core/octoctrl --shutdown
+  fi
+  P5=$(lsusb | grep "16c0:03e8")
+  if [ ! -z "$P5" ]; then
+    timeout 3 sudo /home/minerstat/minerstat-os/bin/watchdoginua $TIMEOUT testpower
   fi
   if [[ "$SYSLOAD" -gt 0 ]]; then
     # Shutdown forced

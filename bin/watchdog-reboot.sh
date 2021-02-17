@@ -16,6 +16,17 @@ sudo su -c "printf '\xFF\x55' >/dev/ttyUSB*"
 sudo su -c "printf '\xFF\x55' >/dev/hidraw*"
 sudo su -c "echo -n '~T1' >/dev/ttyACM*"
 
+# Is octo or minerdude board ?
+if [[ -f "/dev/shm/octo.pid" ]]; then
+  timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -w 0 -v 0
+  sudo /home/minerstat/minerstat-os/core/octoctrl --reboot
+fi
+# watchdog in ua
+P5=$(lsusb | grep "16c0:03e8")
+if [ ! -z "$P5" ]; then
+  timeout 3 sudo /home/minerstat/minerstat-os/bin/watchdoginua $TIMEOUT testreset
+fi
+
 # echo lsusb
 echo "Listing detected USB devices"
 echo -e "  [i] Check below your USB recognised or not \r"

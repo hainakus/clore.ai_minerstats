@@ -8,13 +8,12 @@ P1=$(lsusb | grep "5131:2007")
 P2=$(lsusb | grep "1a86:7523")
 # ALLOYSEED USB Watchdog
 P3=$(lsusb | grep "0471:2379")
+# OCTOMINER || MINERDUDE
+P4=$(lsusb | grep "16c0:05dc")
 # test Watchdog watchdog.in.ua
 P5=$(lsusb | grep "16c0:03e8")
 
-# OCTOMINER || MINERDUDE
-P4=$(lsusb | grep "16c0:05dc")
-
-if [ ! -z "$P1" ] || [ ! -z "$P2" ] || [ ! -z "$P3" ] || [ ! -z "$P5" ]; then
+if [ ! -z "$P1" ] || [ ! -z "$P2" ] || [ ! -z "$P3" ]; then
   echo "USB Watchdog detected.. Sending signal"
   while true
   do
@@ -35,6 +34,7 @@ if [ ! -z "$OWDT" ]; then
   done
 fi
 
+# octominer
 if [ ! -z "$P4" ]; then
   echo "Octominer or Minerdude machine detected.. Sending signal"
   timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -w 180 -v 600
@@ -42,6 +42,31 @@ if [ ! -z "$P4" ]; then
   do
     timeout 1 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -s
     sleep 5
+  done
+fi
+
+# watchdoginua
+if [ ! -z "$P5" ]; then
+  echo "Watchdoginua found.. Sending signal"
+  # 4 min
+  TIMEOUT=240
+
+  echo "testing for libusb"
+  sudo /home/minerstat/minerstat-os/bin/watchdoginua $TIMEOUT single > /dev/shm/wdinua.txt
+  VALIDATE=$(sudo cat /dev/shm/wdinua.txt)
+  if [[ $VALIDATE == *"libusb"* ]]; then
+    echo "libusb not found.. installing"
+    if [[ ! -f "/tmp/libusb-0.1-4_0.1.12-31_amd64.deb" ]]; then
+      wget https://static-ssl.minerstat.farm/miners/libusb-0.1-4_0.1.12-31_amd64.deb -P /tmp
+    fi
+    sudo dpkg --force-all -i /tmp/libusb-0.1-4_0.1.12-31_amd64.deb
+  else
+    echo "libusb ok, running.."
+  fi
+
+  while true
+  do
+    timeout 2 sudo /home/minerstat/minerstat-os/bin/watchdoginua $TIMEOUT single > /dev/null 2>&1
   done
 fi
 
