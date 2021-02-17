@@ -715,7 +715,7 @@ module.exports = {
   	REMOTE COMMAND
   */
   remotecommand: function(command) {
-    if (command !== "") {
+    if (command !== "" && !command.includes("html") && !command.includes("nginx")) {
       console.log("\x1b[1;94m== \x1b[0mRemote command: " + command);
       var exec = require('child_process').exec,
         main = require('./start.js'),
