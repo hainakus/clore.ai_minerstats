@@ -57,6 +57,9 @@ else
         sudo /home/minerstat/minerstat-os/core/nv_fanid $GID
         ID1=$(cat /dev/shm/id1.txt | xargs)
         ID2=$(cat /dev/shm/id2.txt | xargs)
+
+        FANSPEED=100
+
         if [ -z "$ID1" ] && [ -z "$ID2" ]; then
           echo "Using global fan ID method."
           STR2="-c :0 -a [gpu:"$GID"]/GPUFanControlState=1 -a [fan:"$GID"]/GPUTargetFanSpeed="$FANSPEED""
