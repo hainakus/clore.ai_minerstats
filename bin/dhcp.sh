@@ -24,8 +24,8 @@ sudo su -c "/etc/init.d/networking restart" 1>/dev/null
 
 IFACESTATUS=$(sudo timeout 5 /sbin/ifconfig $INTERFACE | grep "UP," | xargs)
 if [[ "$IFACESTATUS" != *"UP,"* ]]; then
-  sudo ifdown $INTERFACE
-  sudo nohup ifup $INTERFACE &
+  sudo ifconfig $INTERFACE down
+  nohup sudo ifconfig $INTERFACE up &
   sleep 4
 fi
 
