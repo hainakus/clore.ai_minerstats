@@ -13,6 +13,19 @@ if [ "$UPTIME" -lt "240" ]; then
   exit 1
 fi
 
+# Check if ro
+DETECT="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | sed 's/[0-9]*//g' | head -n1 | xargs)"
+PART=$DETECT"1"
+if [ "$DETECT" = "nvmenp" ]; then
+  echo "Changeing header, NVM drive detected.."
+  DETECT="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | xargs | sed 's/.$//' | sed 's/\s.*$//' | xargs | sed 's/\p//g')"
+  PART=$DETECT"p1"
+fi
+
+if findmnt -n -o OPTIONS /dev/"$DETECT"1 | egrep "^ro,|,ro,|,ro$"; then
+  sudo bash /home/minerstat/minerstat-os/bin/reboot.sh ro
+fi
+
 # Check More "LISTENER"
 SNUM=$(sudo su minerstat -c "screen -list | grep -c listener")
 if [ "$SNUM" -gt "1" ]; then

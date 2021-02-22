@@ -9,6 +9,12 @@ sudo killall watchdog >/dev/null 2>&1
 # sync, unmount, reboot
 RAMLOG=""
 RAMLOG=$(timeout 5 cat /dev/shm/miner.log | tac | head --lines 10 | tac)
+
+# ro check
+if [[ "$1" = "ro" ]]; then
+  RAMLOG="$RAMLOG Device failure, read only filesystem. Rebooting.."
+fi
+
 sudo echo s > /proc/sysrq-trigger #(*S*nc) Sync all cached disk operations to disk
 sudo echo u > /proc/sysrq-trigger #(*U*mount) Umounts all mounted partitions
 
