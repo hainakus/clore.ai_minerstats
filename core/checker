@@ -22,7 +22,7 @@ if [ "$DETECT" = "nvmenp" ]; then
   PART=$DETECT"p1"
 fi
 
-if findmnt -n -o OPTIONS /dev/"$DETECT"1 | egrep "^ro,|,ro,|,ro$"; then
+if findmnt -n -o OPTIONS /dev/"$PART" | egrep "^ro,|,ro,|,ro$"; then
   sudo bash /home/minerstat/minerstat-os/bin/reboot.sh ro
 fi
 
