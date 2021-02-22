@@ -2,23 +2,51 @@
 
 echo "Watchdog agent starting.."
 
+check=""
+
 # ANPIX USB WatchDog Card
 P1=$(lsusb | grep "5131:2007")
+if [ ! -z "$P1" ]; then
+  check="5131:2007"
+fi
 # domybest USB Watchdog Card
 P2=$(lsusb | grep "1a86:7523")
+if [ ! -z "$P2" ]; then
+  check="1a86:7523"
+fi
 # ALLOYSEED USB Watchdog
 P3=$(lsusb | grep "0471:2379")
+if [ ! -z "$P3" ]; then
+  check="0471:2379"
+fi
 # OCTOMINER || MINERDUDE
 P4=$(lsusb | grep "16c0:05dc")
-# test Watchdog watchdog.in.ua
+if [ ! -z "$P4" ]; then
+  check="16c0:05dc"
+fi
+# Watchdog watchdog.in.ua
 P5=$(lsusb | grep "16c0:03e8")
+if [ ! -z "$P5" ]; then
+  check="16c0:03e8"
+fi
+
+# Try to find devpath
+if [ ! -z "$check" ]; then
+  sysdevpath=$(find /sys/bus/usb/devices/usb*/ -name dev | grep $check)
+  syspath=${sysdevpath%/dev}
+  devname=$(udevadm info -q name -p $syspath)
+fi
 
 if [ ! -z "$P1" ] || [ ! -z "$P2" ] || [ ! -z "$P3" ]; then
   echo "USB Watchdog detected.. Sending signal"
   while true
   do
-    sudo su -c "printf '\x1E\x00' >/dev/ttyUSB*"
-    sudo su -c "printf '\x1E\x00' >/dev/hidraw*"
+    if [ -z "$check" ]; then
+      sudo su -c "printf '\x1E\x00' >/dev/ttyUSB*"
+      sudo su -c "printf '\x1E\x00' >/dev/hidraw*"
+    else
+      sudo su -c "printf '\x1E\x00' >/dev/$devname"
+    fi
     sleep 1
   done
 fi
@@ -29,7 +57,11 @@ if [ ! -z "$OWDT" ]; then
   echo "Open-dev USB Watchdog detected.. Sending signal"
   while true
   do
-    sudo su -c "echo -n '~U' >/dev/ttyACM*"
+    if [ -z "$check" ]; then
+      sudo su -c "echo -n '~U' >/dev/ttyACM*"
+    else
+      sudo su -c "echo -n '~U' >/dev/$devname"
+    fi
     sleep 1
   done
 fi

@@ -11,9 +11,33 @@ echo -e "  [i] If the computer not rebooting after this command watchdog not sup
 echo -e "  [i] Hint: Make sure no keyboard / mouse attached to the motherboard. Those can fail the watchdog script. \r"
 echo ""
 
+# recheck
+check=""
+# ANPIX USB WatchDog Card
+P1=$(lsusb | grep "5131:2007")
+if [ ! -z "$P1" ]; then
+  check="5131:2007"
+fi
+# domybest USB Watchdog Card
+P2=$(lsusb | grep "1a86:7523")
+if [ ! -z "$P2" ]; then
+  check="1a86:7523"
+fi
+# ALLOYSEED USB Watchdog
+P3=$(lsusb | grep "0471:2379")
+if [ ! -z "$P3" ]; then
+  check="0471:2379"
+fi
+
 # attempt to reboot rig with watchdog
-sudo su -c "printf '\xFF\x55' >/dev/ttyUSB*"
-sudo su -c "printf '\xFF\x55' >/dev/hidraw*"
+if [ ! -z "$P1" ] || [ ! -z "$P2" ] || [ ! -z "$P3" ]; then
+  if [ -z "$check" ]; then
+    sudo su -c "printf '\xFF\x55' >/dev/ttyUSB*"
+    sudo su -c "printf '\xFF\x55' >/dev/hidraw*"
+  else
+    sudo su -c "printf '\xFF\x55' >/dev/$devname"
+  fi
+fi
 sudo su -c "echo -n '~T1' >/dev/ttyACM*"
 
 # Is octo or minerdude board ?
