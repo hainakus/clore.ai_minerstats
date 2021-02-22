@@ -28,10 +28,22 @@ P3=$(lsusb | grep "0471:2379")
 if [ ! -z "$P3" ]; then
   check="0471:2379"
 fi
+# QinHeng Electronics HL-340 USB-Serial adapter
+P6=$(lsusb | grep "1a86:7523")
+if [ ! -z "$P5" ]; then
+  check="1a86:7523"
+fi
+
+# Try to find devpath
+if [ ! -z "$check" ]; then
+  sysdevpath=$(find /sys/bus/usb/devices/usb*/ -name dev | grep $check)
+  syspath=${sysdevpath%/dev}
+  devname=$(udevadm info -q name -p $syspath 2>/dev/null)
+fi
 
 # attempt to reboot rig with watchdog
-if [ ! -z "$P1" ] || [ ! -z "$P2" ] || [ ! -z "$P3" ]; then
-  if [ -z "$check" ]; then
+if [ ! -z "$P1" ] || [ ! -z "$P2" ] || [ ! -z "$P3" ] || [ ! -z "$P6" ]; then
+  if [ -z "$devname" ]; then
     sudo su -c "printf '\xFF\x55' >/dev/ttyUSB*"
     sudo su -c "printf '\xFF\x55' >/dev/hidraw*"
   else

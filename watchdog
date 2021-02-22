@@ -29,19 +29,25 @@ P5=$(lsusb | grep "16c0:03e8")
 if [ ! -z "$P5" ]; then
   check="16c0:03e8"
 fi
+# QinHeng Electronics HL-340 USB-Serial adapter
+P6=$(lsusb | grep "1a86:7523")
+if [ ! -z "$P5" ]; then
+  check="1a86:7523"
+fi
+
 
 # Try to find devpath
 if [ ! -z "$check" ]; then
   sysdevpath=$(find /sys/bus/usb/devices/usb*/ -name dev | grep $check)
   syspath=${sysdevpath%/dev}
-  devname=$(udevadm info -q name -p $syspath)
+  devname=$(udevadm info -q name -p $syspath 2>/dev/null)
 fi
 
-if [ ! -z "$P1" ] || [ ! -z "$P2" ] || [ ! -z "$P3" ]; then
+if [ ! -z "$P1" ] || [ ! -z "$P2" ] || [ ! -z "$P3" ] || [ ! -z "$P6" ]; then
   echo "USB Watchdog detected.. Sending signal"
   while true
   do
-    if [ -z "$check" ]; then
+    if [ -z "$devname" ]; then
       sudo su -c "printf '\x1E\x00' >/dev/ttyUSB*"
       sudo su -c "printf '\x1E\x00' >/dev/hidraw*"
     else
@@ -57,7 +63,7 @@ if [ ! -z "$OWDT" ]; then
   echo "Open-dev USB Watchdog detected.. Sending signal"
   while true
   do
-    if [ -z "$check" ]; then
+    if [ -z "$devname" ]; then
       sudo su -c "echo -n '~U' >/dev/ttyACM*"
     else
       sudo su -c "echo -n '~U' >/dev/$devname"
