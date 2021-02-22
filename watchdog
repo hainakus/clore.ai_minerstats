@@ -38,9 +38,9 @@ fi
 
 # Try to find devpath
 if [ ! -z "$check" ]; then
-  sysdevpath=$(find /sys/bus/usb/devices/usb*/ -name dev | grep $check)
-  syspath=${sysdevpath%/dev}
-  devname=$(udevadm info -q name -p $syspath 2>/dev/null)
+  sysbuspath=$(find /sys/bus/usb/devices/usb*/ -name dev | grep $check)
+  pathedit=${sysbuspath%/dev}
+  devname=$(udevadm info -q name -p $pathedit 2>/dev/null)
 fi
 
 if [ ! -z "$P1" ] || [ ! -z "$P2" ] || [ ! -z "$P3" ] || [ ! -z "$P6" ]; then

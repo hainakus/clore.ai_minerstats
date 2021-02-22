@@ -36,13 +36,13 @@ fi
 
 # Try to find devpath
 if [ ! -z "$check" ]; then
-  sysdevpath=$(find /sys/bus/usb/devices/usb*/ -name dev | grep $check)
-  syspath=${sysdevpath%/dev}
-  devname=$(udevadm info -q name -p $syspath 2>/dev/null)
+  sysbuspath=$(find /sys/bus/usb/devices/usb*/ -name dev | grep $check)
+  pathedit=${sysbuspath%/dev}
+  devname=$(udevadm info -q name -p $pathedit 2>/dev/null)
 fi
 
 # attempt to reboot rig with watchdog
-if [ ! -z "$P1" ] || [ ! -z "$P2" ] || [ ! -z "$P3" ] || [ ! -z "$P6" ]; then
+if [ ! -z "$P1" ] || [ ! -z "$P2" ] || [ ! -z "$P3" ]; then
   if [ -z "$devname" ]; then
     sudo su -c "printf '\xFF\x55' >/dev/ttyUSB*"
     sudo su -c "printf '\xFF\x55' >/dev/hidraw*"
@@ -50,6 +50,14 @@ if [ ! -z "$P1" ] || [ ! -z "$P2" ] || [ ! -z "$P3" ] || [ ! -z "$P6" ]; then
     sudo su -c "printf '\xFF\x55' >/dev/$devname"
   fi
 fi
+
+if [ ! -z "$P6" ]; then
+  # edit later
+  # cat -v < /dev/ttyUSB0
+  sudo su -c "printf '\xFF\x55' >/dev/ttyUSB0"
+  sudo su -c "printf '\xFF' >/dev/ttyUSB0"
+fi
+
 sudo su -c "echo -n '~T1' >/dev/ttyACM*"
 
 # Is octo or minerdude board ?
