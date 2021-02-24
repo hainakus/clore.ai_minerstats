@@ -66,6 +66,8 @@ else
   echo -e "${BLUE}mpill${NC}\t\tToggle ETHPill ON/OFF"
   echo -e "${BLUE}mswap${NC}\t\tTool for swap file creation"
   echo -e "${BLUE}hugepages${NC}\tSet Custom Hugepages for CPU mining"
+  echo -e "${BLUE}viiboost${NC}\tEnable Radeon VII above 100Mhs"
+  echo -e "${BLUE}pci-realloc${NC}\tResolves PCI I/O, Bar0 issues"
   echo -e ""
   echo -e "======= CLI Flashing ======="
   echo -e "${BLUE}nvflash${NC}\t\tNVIDIA VBIOS Flasher"

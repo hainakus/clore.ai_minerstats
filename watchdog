@@ -3,6 +3,7 @@
 echo "Watchdog agent starting.."
 
 check=""
+devname=""
 
 # ANPIX USB WatchDog Card
 P1=$(lsusb | grep "5131:2007")

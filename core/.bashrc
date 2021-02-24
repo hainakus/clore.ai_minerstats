@@ -173,6 +173,7 @@ alias octo-fan="sudo bash /home/minerstat/minerstat-os/core/octoctrl --fan "
 alias viiboost="sudo bash /home/minerstat/minerstat-os/core/viiboost"
 alias update-ctrl='sudo /home/minerstat/minerstat-os/core/tupdate'
 alias snapshot-ctrl='sudo /home/minerstat/minerstat-os/core/tsnapshot'
+alias pci-realloc='sudo /home/minerstat/minerstat-os/core/pci-realloc'
 
 if grep -q experimental "/etc/lsb-release"; then
   alias amdmemtool='sudo /home/minerstat/minerstat-os/bin/amdmemorytweak'
