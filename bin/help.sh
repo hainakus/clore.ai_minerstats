@@ -46,6 +46,7 @@ else
   echo -e "${BLUE}forceshutdown${NC}\tForce Shut down the rig (<0.1 sec)"
   echo -e "${BLUE}update-ctrl${NC}\tEnable/Disable runtime system updates"
   echo -e "${BLUE}snapshot-ctrl${NC}\tEnable/Disable Snapshot logs"
+  echo -e "${BLUE}extend${NC}\t\tExtend partitions to volume size"
   echo -e "${BLUE}mclock${NC}\t\tFetch OC from the dashboard"
   echo -e ""
   echo -e "======= Debugging ======="
