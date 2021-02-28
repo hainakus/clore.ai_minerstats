@@ -22,9 +22,7 @@ if [[ $READBACK == *"unexpected"* ]] || [[ $READBACK == *"Unexpected"* ]]; then
   echo "Replace accesskey/workername with your details. After you can try mstart again."
   echo "!!!!!!!!!"
   echo ""
-fi
-
-if [[ $READBACK == *"Cannot"* ]] || [[ $READBACK == *"color"* ]]; then
+elif [[ $READBACK == *"Cannot"* ]] || [[ $READBACK == *"color"* ]]; then
   echo ""
   echo "!!!!!!!!!"
   echo "Some important files missing."
@@ -32,6 +30,6 @@ if [[ $READBACK == *"Cannot"* ]] || [[ $READBACK == *"color"* ]]; then
   echo "After netrecovery command OS attempt to restore itself to original state. After you can try mstart again."
   echo "!!!!!!!!!"
   echo ""
+else
+  bash launcher.sh
 fi
-
-bash launcher.sh
