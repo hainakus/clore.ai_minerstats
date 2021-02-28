@@ -115,7 +115,7 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
-alias mstart='sudo su minerstat -c "screen -X -S minerstat-console quit" > /dev/null 2>&1; cd /home/minerstat/minerstat-os/; sudo node stop > /dev/null 2>&1; sudo rm /tmp/stop.pid > /dev/null 2>&1; sudo rm /dev/shm/maintenance.pid > /dev/null 2>&1; sleep 1; screen -A -m -d -S minerstat-console sudo bash start.sh; echo "Minerstat has been re(started)! type: miner to check output, anytime!"; sleep 1; screen -x minerstat-console '
+alias mstart='sudo su minerstat -c "screen -X -S minerstat-console quit" > /dev/null 2>&1; cd /home/minerstat/minerstat-os/; sudo node stop > /dev/null 2>&1; sudo rm /tmp/stop.pid > /dev/null 2>&1; sudo rm /dev/shm/maintenance.pid > /dev/null 2>&1; sleep 1; sudo bash /home/minerstat/minerstat-os/validate.sh; screen -A -m -d -S minerstat-console sudo bash start.sh; echo "Minerstat has been re(started)! type: miner to check output, anytime!"; sleep 1; screen -x minerstat-console '
 alias miner='sudo bash /home/minerstat/minerstat-os/core/miner'
 alias agent='sh /home/minerstat/minerstat-os/core/view'
 alias mstop='sudo /home/minerstat/minerstat-os/core/stop'
