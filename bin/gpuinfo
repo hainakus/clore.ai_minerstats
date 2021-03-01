@@ -7,6 +7,9 @@
 if [[ $1 == "nvidia" ]]; then
   TEST_NVIDIA=$(nvidia-smi -L)
   TEST_AMD=""
+
+  NVT=$(nvidia-smi --help-query-gpu | grep clocks_throttle_reasons.sw_thermal_slowdown)
+
   if [[ $TEST_NVIDIA == *"GPU 0"* ]] && [[ $TEST_NVIDIA != *"Error"* ]]; then
     NVIDIA_NUM=$(nvidia-smi --query-gpu=count --format=csv,noheader | tail -n1)
     NVIDIA_INUM=$((NVIDIA_NUM-1))
@@ -25,12 +28,13 @@ if [[ $1 == "nvidia" ]]; then
     z="1"
     JSON_EOF='{'
     until [ $NVIDIA_NUM == "$x" ]; do
-      QUERY=$(nvidia-smi -i $x --query-gpu=name,temperature.gpu,fan.speed,power.draw,clocks.current.sm,clocks.current.memory,utilization.gpu,pci.bus_id,clocks.max.sm,clocks.max.memory,power.min_limit,power.max_limit,power.default_limit,memory.total,clocks_throttle_reasons.hw_slowdown,clocks_throttle_reasons.hw_thermal_slowdown,clocks_throttle_reasons.hw_power_brake_slowdown,clocks_throttle_reasons.sw_thermal_slowdown --format=csv,noheader | tail -n1)
-      if [[ $QUERY == *"is not a valid field to query"* ]]; then
+      if [[ -z "$QUERY" ]]; then
         QUERY=$(nvidia-smi -i $x --query-gpu=name,temperature.gpu,fan.speed,power.draw,clocks.current.sm,clocks.current.memory,utilization.gpu,pci.bus_id,clocks.max.sm,clocks.max.memory,power.min_limit,power.max_limit,power.default_limit,memory.total,clocks_throttle_reasons.hw_slowdown,clocks_throttle_reasons.hw_thermal_slowdown,clocks_throttle_reasons.hw_power_brake_slowdown --format=csv,noheader | tail -n1)
         if [[ ! -z "$QUERY" ]]; then
           QUERY="$QUERY, Not Active"
         fi
+      else
+        QUERY=$(nvidia-smi -i $x --query-gpu=name,temperature.gpu,fan.speed,power.draw,clocks.current.sm,clocks.current.memory,utilization.gpu,pci.bus_id,clocks.max.sm,clocks.max.memory,power.min_limit,power.max_limit,power.default_limit,memory.total,clocks_throttle_reasons.hw_slowdown,clocks_throttle_reasons.hw_thermal_slowdown,clocks_throttle_reasons.hw_power_brake_slowdown,clocks_throttle_reasons.sw_thermal_slowdown --format=csv,noheader | tail -n1)
       fi
       JSON_EOF=$JSON_EOF'"'$x'":'
 
