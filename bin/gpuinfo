@@ -28,7 +28,7 @@ if [[ $1 == "nvidia" ]]; then
     z="1"
     JSON_EOF='{'
     until [ $NVIDIA_NUM == "$x" ]; do
-      if [[ -z "$QUERY" ]]; then
+      if [[ -z "$NVT" ]]; then
         QUERY=$(nvidia-smi -i $x --query-gpu=name,temperature.gpu,fan.speed,power.draw,clocks.current.sm,clocks.current.memory,utilization.gpu,pci.bus_id,clocks.max.sm,clocks.max.memory,power.min_limit,power.max_limit,power.default_limit,memory.total,clocks_throttle_reasons.hw_slowdown,clocks_throttle_reasons.hw_thermal_slowdown,clocks_throttle_reasons.hw_power_brake_slowdown --format=csv,noheader | tail -n1)
         if [[ ! -z "$QUERY" ]]; then
           QUERY="$QUERY, Not Active"
