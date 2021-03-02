@@ -165,8 +165,12 @@ install () {
     sudo update-initramfs -u
     # Sync
     sync
+    # make sure xorg Installed
+    sudo apt-get install -y xorg
     # Install CUDA
     cuda
+    # Sync
+    sync
     # Make a safety recovery
     echo
     echo "================="
