@@ -10,6 +10,9 @@ FANDIFF=$(cat /media/storage/fans.txt 2>/dev/null | grep "FANDIFF=" | xargs | se
 # Override on static
 FANSTATIC=0
 
+# Just started
+JUSTSTART="0"
+
 echo "Debug read: min: $FANMIN max: $FANMAX tar: $TARGET"
 
 # Navi "2" pwm
@@ -371,6 +374,12 @@ loop() {
   else
 
     echo "Curve process is blocked by ClockTune because different static fan ranges"
+
+    if [[ $JUSTSTART = "0" ]]; then
+      JUSTSTART="1"
+      timeout 25 sudo bash /home/minerstat/minerstat-os/bin/setfans.sh
+    fi
+
     sleep $SLEEP
     loop
 
