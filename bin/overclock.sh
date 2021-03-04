@@ -191,7 +191,7 @@ if [ ! -z "$DOAMD" ]; then
 
   sleep 1.5
   sudo bash doclock.sh
-  timeout 15 sudo bash /home/minerstat/minerstat-os/bin/setfans.sh
+  sudo screen -A -m -d -S fan sudo bash /home/minerstat/minerstat-os/bin/setfans.sh
 
   ###################
   AMDINFO=$(sudo /home/minerstat/minerstat-os/bin/gpuinfo amd2)
