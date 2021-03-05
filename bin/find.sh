@@ -93,7 +93,7 @@ else
       echo ""
       if [ ${#GID} -ge 3 ]; then
         echo "-- VALIDATE ON BUS --"
-        GPUBUSINT=$(echo $GPUBUS | cut -f 1 -d '.')
+        GPUBUSINT=$(echo $GID | cut -f 1 -d '.')
         GPUBUS=$(python -c 'print(int("'$GPUBUSINT'", 16))')
         echo "Bus ID: $GID"
         GID=$(ls /sys/bus/pci/devices/*$GPUBUSINT":00.0"/drm | grep "card" | sed 's/[^0-9]*//g')
