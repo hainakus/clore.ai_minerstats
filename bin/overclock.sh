@@ -103,6 +103,7 @@ if [ ! -z "$DONVIDIA" ]; then
   RAMLOG="$RAMLOG $TESTVIDIA"
   sudo curl --insecure --connect-timeout 15 --max-time 25 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=nvidia" --data "hwData=$QUERYNVIDIA" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os.php"
 
+  sudo screen -A -m -d -S fan sudo bash /home/minerstat/minerstat-os/bin/setfans.sh
 
   sync
 
@@ -191,7 +192,6 @@ if [ ! -z "$DOAMD" ]; then
 
   sleep 1.5
   sudo bash doclock.sh
-  sudo screen -A -m -d -S fan sudo bash /home/minerstat/minerstat-os/bin/setfans.sh
 
   ###################
   AMDINFO=$(sudo /home/minerstat/minerstat-os/bin/gpuinfo amd2)
@@ -215,6 +215,7 @@ if [ ! -z "$DOAMD" ]; then
 
   sudo curl --insecure --connect-timeout 15 --max-time 25 --retry 1 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=amd" --data "hwData=$AMDINFO" --data "hwPower=$QUERYPOWER" --data "hwMemory=$HWMEMORY" --data "hwStrap=$HWSTRAPS" --data "mineLog=$RAMLOG" "https://api.minerstat.com:2053/v2/set_node_config_os2.php"
   sudo screen -A -m -d -S delaymem bash /home/minerstat/minerstat-os/bin/setmem.sh
+  sudo screen -A -m -d -S fan sudo bash /home/minerstat/minerstat-os/bin/setfans.sh
 
   sync
   sudo chvt 1
