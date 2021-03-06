@@ -168,6 +168,11 @@ do
 
   echo "-*- BACKGROUND SERVICE -*-"
 
+  # reboot if read-only
+  if findmnt -n -o OPTIONS /dev/"$PART" | egrep "^ro,|,ro,|,ro$"; then
+    sudo bash /home/minerstat/minerstat-os/bin/reboot.sh ro
+  fi
+
   RESPONSE="null"
 
   #HOSTNAME
