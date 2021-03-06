@@ -1,5 +1,5 @@
 #!/bin/bash
-#exec 2>/dev/null
+exec 2>/dev/null
 echo "*-*-* Overclocking in progress *-*-*"
 
 #NVIDIADEVICE=$(timeout 5 sudo lspci -k | grep VGA | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van" | grep -c "NVIDIA")
