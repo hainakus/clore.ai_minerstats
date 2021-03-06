@@ -48,6 +48,7 @@ else
   echo -e "${BLUE}snapshot-ctrl${NC}\tEnable/Disable Snapshot logs"
   echo -e "${BLUE}extend${NC}\t\tExtend partitions to volume size"
   echo -e "${BLUE}mclock${NC}\t\tFetch OC from the dashboard"
+  echo -e "${BLUE}fan-apply${NC}\tApply FAN settings only"
   echo -e ""
   echo -e "======= Debugging ======="
   echo -e "${BLUE}logs${NC}\t\tToogle logs between RAM/Storage"
