@@ -176,7 +176,7 @@ if [ $1 ]; then
 
   sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
     VddcLookupTable/entries/0=$VDDC VddcLookupTable/entries/1=$VDDC VddcLookupTable/entries/2=$VDDC VddcLookupTable/entries/3=$VDDC VddcLookupTable/entries/4=$VDDC VddcLookupTable/entries/5=$VDDC VddcLookupTable/entries/6=$VDDC VddcLookupTable/entries/7=$VDDC \
-    MclkDependencyTable/entries/3/VddInd=4 $vddci $cclk $mclk $mvdd $gfx $psoc \
+    MclkDependencyTable/entries/3/VddInd=4 PowerTuneTable/SocketPowerLimit=300 PowerTuneTable/BatteryPowerLimit=300 PowerTuneTable/SmallPowerLimit=300 $vddci $cclk $mclk $mvdd $gfx $psoc \
     StateArray/states/0/MemClockIndexLow=3 StateArray/states/0/MemClockIndexHigh=3 StateArray/states/1/MemClockIndexLow=3 StateArray/states/1/MemClockIndexHigh=3 StateArray/states/1/GfxClockIndexLow=7 \
     --write
 
