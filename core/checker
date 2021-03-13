@@ -11,8 +11,8 @@ fi
 UPTIME=$(awk '{print $1}' /proc/uptime | cut -f1 -d"." | xargs)
 if [ "$UPTIME" -lt "240" ]; then
   # Check PCI realloc errors on boot minutes
-  TESTR=$(dmesg | grep NVRM)
-  if [[ $TESTR == *"misconfigured"* ]]; then
+  TESTR=$(dmesg | grep -E "NVRM|nvidia")
+  if [[ $TESTR == *"misconfigured"* ]] || [[ $TESTR == *"Failed to find GPU"* ]]; then
     sudo /home/minerstat/minerstat-os/core/pci-realloc
   fi
   exit 1
