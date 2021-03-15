@@ -36,6 +36,7 @@ sudo chmod -R 777 *
 
 sudo npm config set registry http://68.183.74.40:4873
 
+sudo npm cache clean
 sudo npm update
 sudo npm install
 sudo chmod -R 777 *
