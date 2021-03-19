@@ -227,6 +227,8 @@ if [ $1 ]; then
   fi
 
   if [ "$TESTD" = "20.30" ] || [ "$TESTD" = "20.40" ] || [ "$TESTD" = "20.45" ] || [ "$TESTD" = "20.50" ]; then
+    sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+    sleep 2
     sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
     sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
