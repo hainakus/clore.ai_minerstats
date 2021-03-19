@@ -222,7 +222,7 @@ if [ $1 ]; then
     TESTD=$(timeout 5 dpkg -l | grep amdgpu-pro-rocr-opencl | head -n1 | awk '{print $3}' | xargs | cut -f1 -d"-")
   fi
 
-  if [ "$TESTD" = "20.30" ] || [ "$TESTD" = "20.40" ] || [ "$TESTD" = "20.45" ]; then
+  if [ "$TESTD" = "20.30" ] || [ "$TESTD" = "20.40" ] || [ "$TESTD" = "20.45" ] || [ "$TESTD" = "20.50" ]; then
     sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
     sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
