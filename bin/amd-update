@@ -187,7 +187,11 @@ install () {
     sudo tar -xvf /tmp/$FULL -C /tmp
     FULL_CUT=$(echo $FULL | sed s/".tar.xz"//)
     sudo chmod -R 777 /tmp/$FULL_CUT >/dev/null 2>&1
-    sudo /tmp/$FULL_CUT/amdgpu-pro-install -y --opencl=legacy,pal --headless
+    if [[ $FULL_CUT == *"20.50"* ]]; then
+      sudo /tmp/$FULL_CUT/amdgpu-pro-install -y --opencl=legacy,rocr --headless
+    else
+      sudo /tmp/$FULL_CUT/amdgpu-pro-install -y --opencl=legacy,pal --headless
+    fi
     # Initramfs
     sudo update-initramfs -u
     # force amd opencl
