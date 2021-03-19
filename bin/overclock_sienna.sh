@@ -14,7 +14,7 @@ if [ ! $1 ]; then
   echo "7 = VDDCI"
   echo ""
   echo "-- Full Example --"
-  echo "./overclock_sienna.sh 0 1000 1400 85 skip skip skip"
+  echo "./overclock_sienna.sh 0 1000 1400 80 900 1350 825"
   echo ""
 fi
 
@@ -35,7 +35,7 @@ if [ $1 ]; then
   version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
 
   # Setting up limits
-  MCMIN=685  #minimum vddci
+  MCMIN=670  #minimum vddci
   MCMAX=850  #max vddci
   MVMIN=1250 #minimum mvdd
   MVMAX=1350 #max mvdd
@@ -82,6 +82,14 @@ if [ $1 ]; then
     fi
   fi
 
+  #for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+  #  TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
+  #  if [ ! -z "$TEST" ]; then
+  #    MAXFAN=$TEST
+  #  fi
+  #done
+  MAXFAN="255"
+
   # FANS
   if [ "$FANSPEED" != 0 ]; then
     FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $FANSPEED}" | cut -f1 -d".")
@@ -94,14 +102,11 @@ if [ $1 ]; then
     echo "GPU$GPUID : FANSPEED => 70% ($FANVALUE)"
   fi
 
-  for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-    TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
-    if [ ! -z "$TEST" ]; then
-      MAXFAN=$TEST
-    fi
-  done
+  if [[ $FANVALUE -gt $MAXFAN ]]; then
+    FANVALUE=$MAXFAN
+  fi
 
-  echo "--**--**-- GPU $1 : SIENNA --**--**--"
+  echo "--**--**-- GPU $1 : NAVI --**--**--"
 
   # Compare user input and apply min/max
   if [[ ! -z $VDDCI && $VDDCI != "0" && $VDDCI != "skip" ]]; then
@@ -133,7 +138,7 @@ if [ $1 ]; then
       pmvdd="smc_pptable/MemMvddVoltage/1=$AMVDD smc_pptable/MemMvddVoltage/2=$AMVDD smc_pptable/MemMvddVoltage/3=$AMVDD"
     fi
   fi
-  
+
   if [[ ! -z $SOC && $SOC != "0" && $SOC != "skip" ]]; then
     PARSED_SOC=$SOC
     if [[ $SOC -gt $SOCMAX ]]; then
@@ -168,24 +173,28 @@ if [ $1 ]; then
       TT=50
     fi
 
-    #sudo rm /dev/shm/safetycheck.txt &> /dev/null
-    #sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get smc_pptable/MinVoltageGfx &> /dev/shm/safetycheck.txt
+    sudo rm /dev/shm/safetycheck.txt &> /dev/null
+    sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get smc_pptable/MinVoltageGfx &> /dev/shm/safetycheck.txt
     # Reinstall upp if error
-    #SAFETY=$(cat /dev/shm/safetycheck.txt)
-    #if [[ $SAFETY == *"has no attribute"* ]] || [[ $SAFETY == *"ModuleNotFoundError"* ]] || [[ $SAFETY == *"table version"* ]]; then
-    #  sudo su minerstat -c "yes | sudo pip3 uninstall setuptools"
-    #  sudo su minerstat -c "yes | sudo pip3 uninstall click"
-    #  sudo su minerstat -c "yes | sudo pip3 uninstall upp"
-    #  sudo su -c "yes | sudo pip3 uninstall upp"
-    #  sudo su minerstat -c "pip3 install setuptools"
-    #  sudo su minerstat -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
-    #  sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
-    #fi
+    SAFETY=$(cat /dev/shm/safetycheck.txt)
+    if [[ $SAFETY == *"has no attribute"* ]] || [[ $SAFETY == *"ModuleNotFoundError"* ]] || [[ $SAFETY == *"table version"* ]]; then
+      sudo su minerstat -c "yes | sudo pip3 uninstall setuptools"
+      sudo su minerstat -c "yes | sudo pip3 uninstall click"
+      sudo su minerstat -c "yes | sudo pip3 uninstall upp"
+      sudo su -c "yes | sudo pip3 uninstall upp"
+      sudo su minerstat -c "pip3 install setuptools"
+      sudo su minerstat -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
+      sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
+    fi
 
-    #sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
-    #  overdrive_table/max/6=1100 overdrive_table/max/7=1100 overdrive_table/min/6=650 overdrive_table/min/7=650 smc_pptable/MinVoltageGfx=2800 \
-    #  smc_pptable/FanTargetTemperature=$TT smc_pptable/FanThrottlingRpm=3000 $pmvdd $pvddci $psoc \
-    #  smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=0 smc_pptable/FanZeroRpmEnable=0 --write
+    #sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set smc_pptable/FreqTableUclk/3=1025 DcModeMaxFreq=1025 overdrive_table/max/2=1025 overdrive_table/min/2=1025 --write
+    #sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set smc_pptable/FreqTableUclk/3=1025 smc_pptable/DcModeMaxFreq/2=1025 overdrive_table/max/2=1025 overdrive_table/min/2=1025 --write
+
+
+    sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
+      overdrive_table/max/8=1200 overdrive_table/max/6=1200 overdrive_table/max/7=1200 overdrive_table/min/3=650 overdrive_table/min/5=650 overdrive_table/min/7=650 smc_pptable/MinVoltageGfx=2600 \
+      smc_pptable/FanTargetTemperature=$TT smc_pptable/FanThrottlingRpm=3000 $pmvdd $pvddci $psoc \
+      smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=0 smc_pptable/FanZeroRpmEnable=0 --write
   fi
 
   # Apply powerlimit
@@ -218,6 +227,7 @@ if [ $1 ]; then
   fi
 
   if [ "$TESTD" = "20.30" ] || [ "$TESTD" = "20.40" ] || [ "$TESTD" = "20.45" ]; then
+    sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
     sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
     sudo rm /dev/shm/fantype.txt 2>/dev/null
@@ -227,6 +237,13 @@ if [ $1 ]; then
     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
     sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
   fi
+
+  #if [ "$FANSPEED" = "100" ]; then
+  #  echo "2" > /dev/shm/fantype.txt
+  #  sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+  #  sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+  #  sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
+  #fi
 
   # Requirements
   sudo su -c "echo manual > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
@@ -243,21 +260,19 @@ if [ $1 ]; then
 
   # MemoryClock
   if [ "$MEMCLOCK" != "skip" ]; then
-    if [[ $MEMCLOCK -gt "960" ]]; then
-      echo "!! Invalid memory clock detected, auto fixing.."
-      echo "Maximum possible clock atm 960Mhz (Windows: 960*2 = 1920Mhz)"
-      echo "You have set $MEMCLOCK Mhz reducing back to 940Mhz"
-      MEMCLOCK=940
-    fi
     # Auto fix Windows Clocks to linux ones
     # Windows is memclock * 2
-    if [[ $MEMCLOCK -gt "1500" ]]; then
+    if [[ $MEMCLOCK -gt "2300" ]]; then
       echo "!! MEMORY CLOCK CONVERTED TO LINUX FORMAT [WINDOWS_MEMCLOCK/2]"
       MEMCLOCK=$((MEMCLOCK/2))
     fi
-
+    if [[ $MEMCLOCK -gt "2300" ]]; then
+      echo "!! Invalid memory clock detected, auto fixing.."
+      echo "Maximum recommended clock atm 950Mhz (Windows: 950*2 = 1900Mhz)"
+      echo "You have set $MEMCLOCK Mhz reducing back to 950Mhz"
+      MEMCLOCK=1025
+    fi
     echo "GPU$GPUID : MEMCLOCK => $MEMCLOCK Mhz"
-
     sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "m 1 $MEMCLOCK"
     sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "m 2 $MEMCLOCK"
     sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "m 3 $MEMCLOCK"
@@ -277,13 +292,13 @@ if [ $1 ]; then
         if [ "$VDDC" -lt "800" ]; then
           echo "Driver accept VDDC range until 800mV, you have set $VDDC and it got adjusted to 800mV"
           echo "You can set Core State 1 or Core State 2 for lower voltages or flash to v1.6 or higher where lowest possible value is 700mv"
-          VDDC=800
+          VDDC=850
         fi
       else
-        if [ "$VDDC" -lt "700" ]; then
-          echo "Driver accept VDDC range until 700mV, you have set $VDDC and it got adjusted to 800mV"
+        if [ "$VDDC" -lt "649" ]; then
+          echo "Driver accept VDDC range until 650mV, you have set $VDDC and it got adjusted to 800mV"
           echo "You can set Core State 1 or Core State 2 for lower voltages"
-          VDDC=800
+          VDDC=850
         fi
       fi
 
@@ -314,8 +329,8 @@ if [ $1 ]; then
 
   # Apply Changes
   sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-  sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-  sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+  #sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
+  #sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "c"
 
 
