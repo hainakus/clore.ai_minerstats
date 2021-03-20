@@ -242,6 +242,10 @@ if [ $1 ]; then
     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
     sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
+    RB=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1)
+    if [[ "$RB" = "0" ]]; then
+      sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+    fi
   fi
 
   #if [ "$FANSPEED" = "100" ]; then
