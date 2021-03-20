@@ -16,6 +16,12 @@ if [ "$version" = "1.5" ] || [ "$version" = "1.6" ] || [ "$version" = "1.7.0" ] 
     exit 1
   fi
 
+  # Update rocm
+  if [[ "$1" = "rocm" ]]; then
+    sudo apt-get update
+    sudo apt-get install rocm-opencl -y
+  fi
+
 
   FOLDER='rocm-3.1.0'
   if [ -d "/opt/rocm-3.3.0" ]; then
@@ -29,6 +35,9 @@ if [ "$version" = "1.5" ] || [ "$version" = "1.6" ] || [ "$version" = "1.7.0" ] 
   fi
   if [ -d "/opt/rocm-3.9.0" ]; then
     FOLDER='rocm-3.9.0'
+  fi
+  if [ -d "/opt/rocm-4.0.0" ]; then
+    FOLDER='rocm-4.0.0'
   fi
 
   FILE=/media/storage/opencl.txt
