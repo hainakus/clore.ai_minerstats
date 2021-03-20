@@ -68,6 +68,10 @@ if [ $1 ]; then
     COREINDEX="2"
   fi
 
+  if [[ -z "$CORECLOCK" ]] || [[ "$CORECLOCK" = "" ]] || [[ "$CORECLOCK" = "skip" ]]; then
+    CORECLOCK="1470"
+  fi
+
   if [ "$COREINDEX" = "skip" ]; then
     COREINDEX="2"
   fi
