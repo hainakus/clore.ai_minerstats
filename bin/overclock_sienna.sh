@@ -68,10 +68,6 @@ if [ $1 ]; then
     COREINDEX="2"
   fi
 
-  if [[ -z "$CORECLOCK" ]] || [[ "$CORECLOCK" = "" ]] || [[ "$CORECLOCK" = "skip" ]]; then
-    CORECLOCK="1470"
-  fi
-
   if [ "$COREINDEX" = "skip" ]; then
     COREINDEX="2"
   fi
@@ -85,6 +81,25 @@ if [ $1 ]; then
       COREINDEX="2"
     fi
   fi
+
+  # Defaults until Alpha/Beta to avoid bugs
+  if [[ -z "$CORECLOCK" ]] || [[ "$CORECLOCK" = "" ]] || [[ "$CORECLOCK" = "skip" ]]; then
+    CORECLOCK="1470"
+  fi
+
+  if [[ -z "$MVDD" ]] || [[ "$MVDD" = "" ]] || [[ "$MVDD" = "skip" ]]; then
+    MVDD="1350"
+  fi
+
+  if [[ -z "$VDDCI" ]] || [[ "$VDDCI" = "" ]] || [[ "$VDDCI" = "skip" ]]; then
+    VDDCI="850"
+  fi
+
+  if [[ -z "$VDDC" ]] || [[ "$VDDC" = "" ]] || [[ "$VDDC" = "skip" ]]; then
+    VDDC="900"
+  fi
+
+
 
   #for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
   #  TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
