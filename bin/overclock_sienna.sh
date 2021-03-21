@@ -209,10 +209,12 @@ if [ $1 ]; then
     #sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set smc_pptable/FreqTableUclk/3=1025 DcModeMaxFreq=1025 overdrive_table/max/2=1025 overdrive_table/min/2=1025 --write
     #sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set smc_pptable/FreqTableUclk/3=1025 smc_pptable/DcModeMaxFreq/2=1025 overdrive_table/max/2=1025 overdrive_table/min/2=1025 --write
 
+    # smc_pptable/FanTargetTemperature=$TT
+    # smc_pptable/FanThrottlingRpm=3000
 
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
-      smc_pptable/DpmDescriptor/0/VoltageMode=2 overdrive_table/max/8=1200 overdrive_table/max/6=1200 overdrive_table/max/7=1200 overdrive_table/min/3=650 overdrive_table/min/5=650 overdrive_table/min/7=650 smc_pptable/MinVoltageGfx=2600 \
-      smc_pptable/FanTargetTemperature=$TT smc_pptable/FanThrottlingRpm=3000 smc_pptable/VcBtcEnabled=0 $pmvdd $pvddci $psoc \
+      smc_pptable/DpmDescriptor/0/VoltageMode=2 overdrive_table/max/8=1200 overdrive_table/max/6=1200 overdrive_table/max/7=1200 overdrive_table/min/3=650 overdrive_table/min/5=650 overdrive_table/min/7=650 \
+      smc_pptable/MinVoltageGfx=2600 smc_pptable/VcBtcEnabled=0 $pmvdd $pvddci $psoc \
       smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=5 smc_pptable/FanZeroRpmEnable=0 smc_pptable/dBtcGbGfxDfllModelSelect=2 --write
   fi
 
@@ -246,11 +248,11 @@ if [ $1 ]; then
   fi
 
   if [ "$TESTD" = "20.30" ] || [ "$TESTD" = "20.40" ] || [ "$TESTD" = "20.45" ] || [ "$TESTD" = "20.50" ]; then
-    sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
-    sleep 2
     sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
     sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
+    sleep 1
+    echo "Reading back fan value .."
     RB=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1)
     if [[ "$RB" = "0" ]]; then
       echo "2" > /dev/shm/fantype.txt
@@ -265,10 +267,10 @@ if [ $1 ]; then
     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
     sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
-    RB=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1)
-    if [[ "$RB" = "0" ]]; then
-      sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
-    fi
+    #RB=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1)
+    #if [[ "$RB" = "0" ]]; then
+    #  sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+    #fi
   fi
 
   #if [ "$FANSPEED" = "100" ]; then
