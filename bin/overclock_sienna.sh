@@ -179,17 +179,17 @@ if [ $1 ]; then
 
     # Target temp
     FILE=/media/storage/fans.txt
-    TT=50
+    TT=69
     if [ -f "$FILE" ]; then
       TARGET=$(cat /media/storage/fans.txt | grep "TARGET_TEMP=" | xargs | sed 's/[^0-9]*//g')
       if [[ ! -z "$TARGET" ]]; then
         TT=$TARGET
         echo "NAVI Fan Curve Target: $TT"
       else
-        TT=60
+        TT=69
       fi
     else
-      TT=60
+      TT=69
     fi
 
     sudo rm /dev/shm/safetycheck.txt &> /dev/null
@@ -215,7 +215,7 @@ if [ $1 ]; then
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
       smc_pptable/DpmDescriptor/0/VoltageMode=2 overdrive_table/max/8=1200 overdrive_table/max/6=1200 overdrive_table/max/7=1200 overdrive_table/min/3=650 overdrive_table/min/5=650 overdrive_table/min/7=650 \
       smc_pptable/MinVoltageGfx=2600 smc_pptable/VcBtcEnabled=0 $pmvdd $pvddci $psoc \
-      smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=10 smc_pptable/FanZeroRpmEnable=0 smc_pptable/FanTargetTemperature=$TT smc_pptable/dBtcGbGfxDfllModelSelect=2 --write
+      smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=10 smc_pptable/FanZeroRpmEnable=0 smc_pptable/FanTargetTemperature=$TT smc_pptable/FanTargetGfxclk=1000 smc_pptable/dBtcGbGfxDfllModelSelect=2 --write
   fi
 
   # Apply powerlimit
