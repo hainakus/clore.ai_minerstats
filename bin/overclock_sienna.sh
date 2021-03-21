@@ -211,9 +211,9 @@ if [ $1 ]; then
 
 
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
-      overdrive_table/max/8=1200 overdrive_table/max/6=1200 overdrive_table/max/7=1200 overdrive_table/min/3=650 overdrive_table/min/5=650 overdrive_table/min/7=650 smc_pptable/MinVoltageGfx=2600 \
-      smc_pptable/FanTargetTemperature=$TT smc_pptable/FanThrottlingRpm=3000 $pmvdd $pvddci $psoc \
-      smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=0 smc_pptable/FanZeroRpmEnable=0 --write
+      smc_pptable/DpmDescriptor/0/VoltageMode=2 overdrive_table/max/8=1200 overdrive_table/max/6=1200 overdrive_table/max/7=1200 overdrive_table/min/3=650 overdrive_table/min/5=650 overdrive_table/min/7=650 smc_pptable/MinVoltageGfx=2600 \
+      smc_pptable/FanTargetTemperature=$TT smc_pptable/FanThrottlingRpm=3000 smc_pptable/VcBtcEnabled=0 $pmvdd $pvddci $psoc \
+      smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=5 smc_pptable/FanZeroRpmEnable=0 smc_pptable/dBtcGbGfxDfllModelSelect=2 --write
   fi
 
   # Apply powerlimit
@@ -254,6 +254,8 @@ if [ $1 ]; then
     RB=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1)
     if [[ "$RB" = "0" ]]; then
       echo "2" > /dev/shm/fantype.txt
+      echo "Driver autofan .."
+      sleep 2
       sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
     else
       sudo rm /dev/shm/fantype.txt 2>/dev/null
