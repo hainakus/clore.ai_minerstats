@@ -247,6 +247,10 @@ if [ $1 ]; then
     TESTD=$(timeout 5 dpkg -l | grep amdgpu-pro-rocr-opencl | head -n1 | awk '{print $3}' | xargs | cut -f1 -d"-")
   fi
 
+  echo "Waiting for fans 5 second as new pptable just got applied"
+  sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+  sleep 5
+
   if [ "$TESTD" = "20.30" ] || [ "$TESTD" = "20.40" ] || [ "$TESTD" = "20.45" ] || [ "$TESTD" = "20.50" ]; then
     sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
@@ -256,8 +260,12 @@ if [ $1 ]; then
     RB=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1)
     if [[ "$RB" = "0" ]]; then
       echo "2" > /dev/shm/fantype.txt
-      echo "Driver autofan .."
-      sleep 2
+      echo "Driver autofan kick .."
+      sleep 1
+      sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+      sleep 1
+      sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+      sleep 1
       sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
     else
       sudo rm /dev/shm/fantype.txt 2>/dev/null
