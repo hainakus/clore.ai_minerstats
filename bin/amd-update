@@ -91,8 +91,8 @@ list () {
   while read ver; do
     vers=$(echo $ver | sed -e 's#^amdgpu-pro-##;' | cut -f1 -d"-")
     add=""
-    if [[ "$vers" = "20.45" ]] || [[ "$vers" = "20.40" ]]; then
-      add="[Unstable - DO NOT UPGRADE]"
+    if [[ "$vers" = "20.45" ]] || [[ "$vers" = "20.40" ]] || [[ "$vers" = "20.50" ]]; then
+      add="[Unstable/Experimental - DO NOT UPGRADE]"
     fi
     echo "$vers $add"
   done < $VLIST_FILE
