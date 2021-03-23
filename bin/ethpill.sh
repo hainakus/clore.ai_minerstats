@@ -10,5 +10,5 @@ else
 fi
 
 while true; do
-    sudo /home/minerstat/minerstat-os/bin/OhGodAnETHlargementPill-r2 $1
+  sudo /home/minerstat/minerstat-os/bin/OhGodAnETHlargementPill-r2 "$1"
 done
