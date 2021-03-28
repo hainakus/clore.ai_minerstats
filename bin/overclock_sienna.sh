@@ -215,7 +215,7 @@ if [ $1 ]; then
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
       smc_pptable/DpmDescriptor/0/VoltageMode=2 overdrive_table/max/8=1200 overdrive_table/max/6=1200 overdrive_table/max/7=1200 overdrive_table/min/3=650 overdrive_table/min/5=650 overdrive_table/min/7=650 \
       smc_pptable/MinVoltageGfx=2600 smc_pptable/VcBtcEnabled=0 $pmvdd $pvddci $psoc \
-      smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=10 smc_pptable/FanZeroRpmEnable=0 smc_pptable/FanTargetTemperature=$TT smc_pptable/FanTargetGfxclk=1000 smc_pptable/dBtcGbGfxDfllModelSelect=2 --write
+      smc_pptable/FanStopTemp=35 smc_pptable/FanStartTemp=20 smc_pptable/FanZeroRpmEnable=0 smc_pptable/FanTargetTemperature=$TT smc_pptable/FanTargetGfxclk=1000 smc_pptable/dBtcGbGfxDfllModelSelect=2 --write
   fi
 
   # Apply powerlimit
