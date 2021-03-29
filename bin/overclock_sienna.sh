@@ -279,6 +279,11 @@ if [ $1 ]; then
       sleep 1
     fi
 
+    # For public beta disable fan control to keep pwm steady
+    if [ "$version" = "1.7.2" ]; then
+      sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/fan1_enable" 2>/dev/null
+    fi
+
     RB=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1)
     if [[ "$RB" = "0" ]]; then
       echo "2" > /dev/shm/fantype.txt
