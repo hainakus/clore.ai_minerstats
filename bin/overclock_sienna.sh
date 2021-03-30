@@ -260,43 +260,45 @@ if [ $1 ]; then
     TESTD=$(timeout 5 dpkg -l | grep amdgpu-pro-rocr-opencl | head -n1 | awk '{print $3}' | xargs | cut -f1 -d"-")
   fi
 
-  echo "Waiting for fans 5 second as new pptable just got applied"
+  # Disable fans this will ramp up RPM to max
+  echo "Waiting for fans 2 second as new pptable just got applied"
   sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
-  sleep 5
+  sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/fan1_enable" 2>/dev/null
+  sleep 2
 
   if [ "$TESTD" = "20.30" ] || [ "$TESTD" = "20.40" ] || [ "$TESTD" = "20.45" ] || [ "$TESTD" = "20.50" ]; then
 
+    # Enable fan and manual control
     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/fan1_enable" 2>/dev/null
+
+    # Set new target
     sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
     sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
-    sleep 1
-    echo "Reading back fan value .."
 
-    if [ "$version" = "1.7.1" ]; then
+    if [[ "$version" = "1.7.1" ]] || [[ "$version" = "1.7.0" ]]; then
       # RPM KICK
       sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/fan1_enable" 2>/dev/null
       sudo su -c "echo $RPMVAL > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/fan1_target" 2>/dev/null
-      sleep 1
+      sleep 2
+
+      echo "Reading back fan value .."
+
+      RB=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1)
+      if [[ "$RB" = "0" ]]; then
+        echo "2" > /dev/shm/fantype.txt
+        echo "Driver autofan kick .."
+        sleep 1
+        sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+        sleep 1
+        sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+        sleep 1
+        sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+      else
+        sudo rm /dev/shm/fantype.txt 2>/dev/null
+      fi
     fi
 
-    # For public beta disable fan control to keep pwm steady
-    if [ "$version" = "1.7.2" ]; then
-      sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/fan1_enable" 2>/dev/null
-    fi
-
-    RB=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1)
-    if [[ "$RB" = "0" ]]; then
-      echo "2" > /dev/shm/fantype.txt
-      echo "Driver autofan kick .."
-      sleep 1
-      sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
-      sleep 1
-      sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
-      sleep 1
-      sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
-    else
-      sudo rm /dev/shm/fantype.txt 2>/dev/null
-    fi
   else
     echo "2" > /dev/shm/fantype.txt
     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
