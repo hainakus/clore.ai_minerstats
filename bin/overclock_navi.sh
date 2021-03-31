@@ -89,17 +89,30 @@ if [ $1 ]; then
   #  fi
   #done
   MAXFAN="255"
+  RPMMIN=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/fan1_min)
+  RPMMAX=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/fan1_max)
+  RPMVAL="0"
 
   # FANS
   if [ "$FANSPEED" != 0 ]; then
     FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $FANSPEED}" | cut -f1 -d".")
     FANVALUE=$(printf "%.0f\n" $FANVALUE)
     FANVALUE=$(awk -v n="$FANVALUE" 'BEGIN{print int((n+5)/10) * 10}')
-    echo "GPU$GPUID : FANSPEED => $FANSPEED% ($FANVALUE)"
+
+    RPMVAL=$(echo - | awk "{print $RPMMAX / 100 * $FANSPEED}" | cut -f1 -d".")
+    RPMVAL=$(printf "%.0f\n" $RPMVAL)
+    RPMVAL=$(awk -v n="$RPMVAL" 'BEGIN{print int((n+5)/10) * 10}')
+
+    echo "GPU$GPUID : FANSPEED => $FANSPEED% ($FANVALUE) [RPM: $RPMVAL]"
   else
     FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * 70}" | cut -f1 -d".")
     FANVALUE=$(printf "%.0f\n" $FANVALUE)
-    echo "GPU$GPUID : FANSPEED => 70% ($FANVALUE)"
+
+    RPMVAL=$(echo - | awk "{print $RPMMAX / 100 * 70}" | cut -f1 -d".")
+    RPMVAL=$(printf "%.0f\n" $RPMVAL)
+    RPMVAL=$(awk -v n="$RPMVAL" 'BEGIN{print int((n+5)/10) * 10}')
+
+    echo "GPU$GPUID : FANSPEED => 70% ($FANVALUE) [RPM: $RPMVAL]"
   fi
 
   if [[ $FANVALUE -gt $MAXFAN ]]; then
@@ -222,11 +235,46 @@ if [ $1 ]; then
     TESTD=$(timeout 5 dpkg -l | grep amdgpu-pro-rocr-opencl | head -n1 | awk '{print $3}' | xargs | cut -f1 -d"-")
   fi
 
+  # Disable fans this will ramp up RPM to max
+  echo "Waiting for fans 2 second as new pptable just got applied"
+  sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+  sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/fan1_enable" 2>/dev/null
+  sleep 2
+
   if [ "$TESTD" = "20.30" ] || [ "$TESTD" = "20.40" ] || [ "$TESTD" = "20.45" ] || [ "$TESTD" = "20.50" ]; then
+
+    # Enable fan and manual control
+    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/fan1_enable" 2>/dev/null
+
     sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
     sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
     sudo rm /dev/shm/fantype.txt 2>/dev/null
+
+    if [[ "$version" = "1.7.2" ]] || [[ "$version" = "1.7.1" ]] || [[ "$version" = "1.7.0" ]]; then
+      # RPM KICK
+      sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/fan1_enable" 2>/dev/null
+      sudo su -c "echo $RPMVAL > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/fan1_target" 2>/dev/null
+      sleep 2
+
+      echo "Reading back fan value .."
+
+      RB=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1)
+      if [[ "$RB" = "0" ]]; then
+        echo "2" > /dev/shm/fantype.txt
+        echo "Driver autofan kick .."
+        sleep 1
+        sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+        sleep 1
+        sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+        sleep 1
+        sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+      else
+        sudo rm /dev/shm/fantype.txt 2>/dev/null
+      fi
+    fi
+
   else
     echo "2" > /dev/shm/fantype.txt
     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
