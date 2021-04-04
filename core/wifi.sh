@@ -65,7 +65,7 @@ if echo "$DEVICE" | grep "w" ;then
   IFACESTATUS=$(sudo timeout 5 /sbin/ifconfig $DEVICE | grep "UP," | xargs)
   if [[ "$IFACESTATUS" != *"UP,"* ]]; then
     #sudo ifconfig $INTERFACE down
-    nohup sudo ifconfig $INTERFACE up &
+    nohup sudo ifconfig $DEVICE up &
     sleep 4
   fi
 
