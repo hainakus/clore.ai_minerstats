@@ -252,11 +252,11 @@ if [ $1 ]; then
     sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
     sudo rm /dev/shm/fantype.txt 2>/dev/null
 
-    if [[ "$version" = "1.7.2" ]] || [[ "$version" = "1.7.1" ]] || [[ "$version" = "1.7.0" ]]; then
+    if [[ "$version" = "1.7.3" ]] || [[ "$version" = "1.7.2" ]] || [[ "$version" = "1.7.1" ]] || [[ "$version" = "1.7.0" ]]; then
       # RPM KICK
       sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/fan1_enable" 2>/dev/null
       sudo su -c "echo $RPMVAL > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/fan1_target" 2>/dev/null
-      sleep 2
+      sleep 1
 
       echo "Reading back fan value .."
 
