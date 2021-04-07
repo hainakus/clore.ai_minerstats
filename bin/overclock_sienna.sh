@@ -302,6 +302,8 @@ if [ $1 ]; then
           if [[ "$RB" = "0" ]]; then
             # 100% fans
             sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+            sleep 1
+            sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
           fi
         else
           sudo rm /dev/shm/fantype.txt 2>/dev/null
