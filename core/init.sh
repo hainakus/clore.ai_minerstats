@@ -30,7 +30,7 @@ if [ "$DETECTA" -gt "0" ]; then
 fi
 
 echo "Checking for AMD APU"
-IS_APU=$(timeout 5 sudo lspci -k | grep VGA | grep -cE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van")
+IS_APU=$(timeout 40 sudo lspci -k | grep VGA | grep -cE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van")
 echo "AMD APU Num: $IS_APU"
 
 if [ "$DETECTB" -gt "0" ]; then
