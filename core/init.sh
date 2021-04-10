@@ -35,7 +35,12 @@ echo "AMD APU Num: $IS_APU"
 
 if [ "$DETECTB" -gt "0" ]; then
   echo "Hardware Monitor: AMD GPU found"
-  if [[ "$IS_APU" = "1" ]] && [[ "$DETECTB" = "1" ]]; then
+  NUM_AMD=$(timeout 40 sudo lshw -C display | grep AMD | wc -l)
+  if [ -z "$NUM_AMD" ]; then
+    NUM_AMD=$(timeout 40 sudo lshw -C display | grep amdgpu | wc -l)
+  fi
+  echo "Number of AMD: $NUM_AMD"
+  if [[ "$IS_APU" = "1" ]] && [[ "$NUM_AMD" = "1" ]]; then
     echo "AMD skipped seems only Internal GPU available"
   else
     echo "No APU found or higher than 1 number for AMD graphics"
