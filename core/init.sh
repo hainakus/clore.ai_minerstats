@@ -29,9 +29,18 @@ if [ "$DETECTA" -gt "0" ]; then
   MONITOR_TYPE="nvidia"
 fi
 
+echo "Checking for AMD APU"
+IS_APU=$(timeout 5 sudo lspci -k | grep VGA | grep -cE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van")
+echo "AMD APU Num: $IS_APU"
+
 if [ "$DETECTB" -gt "0" ]; then
   echo "Hardware Monitor: AMD GPU found"
-  MONITOR_TYPE="amd"
+  if [[ "$IS_APU" = "1" ]] && [[ "$DETECTB" = "1" ]]; then
+    echo "AMD skipped seems only Internal GPU available"
+  else
+    echo "No APU found or higher than 1 number for AMD graphics"
+    MONITOR_TYPE="amd"
+  fi
 fi
 
 if [ "$MONITOR_TYPE" = "unknown" ]; then
@@ -55,6 +64,8 @@ if [ "$MONITOR_TYPE" = "unknown" ]; then
     MONITOR_TYPE="nvidia"
   fi
 fi
+
+echo "Final hardware to monitor: $MONITOR_TYPE"
 
 # UEFI / LEGACY
 [ -d /sys/firmware/efi ] && BOOTED="UEFI" || BOOTED="LEGACY"
