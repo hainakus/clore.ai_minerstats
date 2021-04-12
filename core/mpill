@@ -27,7 +27,7 @@ if [[ "$STATUS" == *"999"* ]]; then
   sudo sed -i '/OHGODADELAY/d' /media/storage/settings.txt
   sudo echo "" >> /media/storage/settings.txt
   sudo echo "OHGODADELAY=10" >> /media/storage/settings.txt
-  screen -A -m -d -S ethboost sudo sh /home/minerstat/minerstat-os/bin/ethpill.sh $ETHPILLARGS 10
+  screen -A -m -d -S ethboost sudo sh /home/minerstat/minerstat-os/bin/ethpill.sh "$ETHPILLARGS"
 fi
 
 #if [ "$STATUS" = "10" ]; then

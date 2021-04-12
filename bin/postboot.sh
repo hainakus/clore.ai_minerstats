@@ -39,7 +39,7 @@ if [ ! -z "$NVIDIA" ]; then
       if [ "$ETHPILLDELAY" != "999" ]; then
         cd /home/minerstat/minerstat-os/bin
         sudo chmod 777 /home/minerstat/minerstat-os/bin/OhGodAnETHlargementPill-r2
-        sudo screen -A -m -d -S ethboost sudo bash ethpill.sh $ETHPILLARGS $ETHPILLDELAY
+        sudo screen -A -m -d -S ethboost sudo bash ethpill.sh "$ETHPILLARGS"
       fi
     fi
 

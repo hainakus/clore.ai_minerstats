@@ -161,7 +161,7 @@ if [[ "$PILL" -lt "1" ]]; then
         ETHPILLARGS=$(cat /media/storage/settings.txt 2>/dev/null | grep 'OHGODARGS="' | sed 's/OHGODARGS="//g' | sed 's/"//g')
         cd /home/minerstat/minerstat-os/bin
         sudo chmod 777 /home/minerstat/minerstat-os/bin/OhGodAnETHlargementPill-r2
-        sudo screen -A -m -d -S ethboost sudo bash ethpill.sh $ETHPILLARGS $ETHPILLDELAY
+        sudo screen -A -m -d -S ethboost sudo bash ethpill.sh "$ETHPILLARGS"
       fi
     fi
 
