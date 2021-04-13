@@ -362,11 +362,13 @@ if [ "$NVIDIADEVICE" != "0" ]; then
     fi
     # Remove previous xorg config
     sudo rm -f /etc/X11/xorg.conf
+    sudo su -c "echo '' > /etc/X11/xorg.conf"
+    sudo nvidia-xconfig --preserve-busid --preserve-driver-name
     # Generate new xorg
     if [[ "$NVIDIADEVICE" -gt 1 ]]; then
-      sudo timeout 10 nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" --custom-edid="DFP-0:/home/minerstat/minerstat-os/bin/edid.bin" --use-edid --use-edid-dpi --preserve-driver-name --preserve-busid --enable-all-gpus $EGPU
+      sudo timeout 30 nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" --custom-edid="DFP-0:/home/minerstat/minerstat-os/bin/edid.bin" --use-edid --use-edid-dpi --preserve-driver-name --preserve-busid --enable-all-gpus $EGPU
     else
-      sudo timeout 10 nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" --custom-edid="DFP-0:/home/minerstat/minerstat-os/bin/edid.bin" --use-edid --use-edid-dpi --preserve-driver-name --preserve-busid $EGPU
+      sudo timeout 30 nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0" --custom-edid="DFP-0:/home/minerstat/minerstat-os/bin/edid.bin" --use-edid --use-edid-dpi --preserve-driver-name --preserve-busid $EGPU
     fi
     sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf > /dev/null
     sudo sed -i 's/UseEdid" "True"/UseEdid" "True"\n    Option         "IgnoreEDID" "False"/g' /etc/X11/xorg.conf
