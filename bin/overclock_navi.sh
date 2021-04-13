@@ -253,14 +253,21 @@ if [ $1 ]; then
     sudo rm /dev/shm/fantype.txt 2>/dev/null
 
     if [[ "$version" = "1.7.3" ]] || [[ "$version" = "1.7.2" ]] || [[ "$version" = "1.7.1" ]] || [[ "$version" = "1.7.0" ]]; then
-      # RPM KICK
-      sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/fan1_enable" 2>/dev/null
-      sudo su -c "echo $RPMVAL > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/fan1_target" 2>/dev/null
-      sleep 1
 
-      echo "Reading back fan value .."
+      RB=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1 | xargs)
+      echo "Reading back fan value .. $RB"
+      if [[ "$RB" = "0" ]]; then
+        # RPM KICK
+        echo "RPM KICK Method $RB"
+        sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/fan1_enable" 2>/dev/null
+        sudo su -c "echo $RPMVAL > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/fan1_target" 2>/dev/null
+        sleep 2
+      fi
 
-      RB=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1)
+      sleep 2
+
+      RB=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1 | xargs)
+      echo "Reading back fan value .. $RB"
       if [[ "$RB" = "0" ]]; then
         echo "2" > /dev/shm/fantype.txt
         echo "Driver autofan kick .."
@@ -270,9 +277,20 @@ if [ $1 ]; then
         sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
         sleep 1
         sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+        sleep 1
       else
         sudo rm /dev/shm/fantype.txt 2>/dev/null
       fi
+
+      RB=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1 | xargs)
+      if [[ "$RB" = "0" ]]; then
+        # 100% fans
+        echo "Nothing worked 100% fans then auto"
+        sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+        sleep 1
+        sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
+      fi
+
     fi
 
   else
