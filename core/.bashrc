@@ -119,7 +119,7 @@ alias mstart='sudo su minerstat -c "screen -X -S minerstat-console quit" > /dev/
 alias miner='sudo bash /home/minerstat/minerstat-os/core/miner'
 alias agent='sh /home/minerstat/minerstat-os/core/view'
 alias mstop='sudo /home/minerstat/minerstat-os/core/stop'
-alias mrecovery='cd /home/minerstat/minerstat-os/core/; sudo bash recovery.sh'
+alias mrecovery='cd /home/minerstat; sudo bash /home/minerstat/minerstat-os/core/recovery.sh'
 alias mupdate='cd /home/minerstat/minerstat-os/; sudo bash git.sh; source ~/.bashrc'
 alias mreconf='sudo rm /home/minerstat/minerstat-os/bin/random.txt; sudo nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=31 --use-display-device="DFP-0" --connected-monitor="DFP-0"; sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf; sudo killall Xorg; sudo rm /tmp/.X0-lock; sleep 5; sync; sudo su -c "echo 1 > /proc/sys/kernel/sysrq"; sudo su -c "echo b > /proc/sysrq-trigger";'
 alias mhelp='sudo bash /home/minerstat/minerstat-os/bin/help.sh'
