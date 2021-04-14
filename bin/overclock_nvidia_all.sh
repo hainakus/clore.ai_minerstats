@@ -155,52 +155,39 @@ if [ $1 ]; then
   #################################£
   # POWER LIMIT
 
-  if [ "$POWERLIMITINWATT" -ne 0 ]
-  then
-    if [ "$POWERLIMITINWATT" != "skip" ]
-    then
-      sudo nvidia-smi -pl $POWERLIMITINWATT
-    fi
+  if [[ "$POWERLIMITINWATT" -ne 0 ]] && [[ "$POWERLIMITINWATT" != "skip" ]]; then
+    sudo nvidia-smi -pl $POWERLIMITINWATT
   fi
 
   #################################£
   # FAN SPEED
 
-  if [ "$FANSPEED" != "0" ]
-  then
+  if [[ "$FANSPEED" != "0" ]]; then
     echo "--- MANUAL GPU FAN MOD. ---"
   else
     echo "--- AUTO FAN SPEED (by Drivers) ---"
     STR1="-a GPUFanControlState=0"
   fi
 
-  if [ "$FANSPEED" != "skip" ]
-  then
+  if [[ "$FANSPEED" != "skip" ]]; then
     STR1="-a GPUFanControlState=1 -a GPUTargetFanSpeed="$FANSPEED""
   fi
 
   #################################£
   # CLOCKS
 
-  if [ "$MEMORYOFFSET" != "skip" ]
-  then
-    if [ "$MEMORYOFFSET" != "0" ]
-    then
-      STR2="-a GPUMemoryTransferRateOffset["$PLEVEL"]="$MEMORYOFFSET" -a GPUMemoryTransferRateOffsetAllPerformanceLevels="$MEMORYOFFSET" $E1"
-    fi
+  if [[ "$MEMORYOFFSET" != "skip" ]] && [[ "$MEMORYOFFSET" != "0" ]]; then
+    STR2="-a GPUMemoryTransferRateOffset["$PLEVEL"]="$MEMORYOFFSET" -a GPUMemoryTransferRateOffsetAllPerformanceLevels="$MEMORYOFFSET" $E1"
   fi
 
-  if [ "$COREOFFSET" != "skip" ]
-  then
-    if [ "$COREOFFSET" != "0" ]
-    then
-      STR3="-a GPUGraphicsClockOffset["$PLEVEL"]="$COREOFFSET" -a GPUGraphicsClockOffsetAllPerformanceLevels="$COREOFFSET" $E2"
-    fi
+  if [[ "$COREOFFSET" != "skip" ]] && [[ "$COREOFFSET" != "0" ]]; then
+    STR3="-a GPUGraphicsClockOffset["$PLEVEL"]="$COREOFFSET" -a GPUGraphicsClockOffsetAllPerformanceLevels="$COREOFFSET" $E2"
   fi
 
   # Lock core clock
   if [[ ! -z "$CORELOCK" ]] && [[ "$CORELOCK" != "0" ]] && [[ "$CORELOCK" != "skip" ]]; then
     echo "Applying Core Clock Lock to All GPUs [$CORELOCK Mhz]"
+    STR3="-a GPUGraphicsClockOffset["$PLEVEL"]=0 -a GPUGraphicsClockOffsetAllPerformanceLevels=0 $E2"
     sudo nvidia-smi -lgc $CORELOCK,$CORELOCK
   fi
 

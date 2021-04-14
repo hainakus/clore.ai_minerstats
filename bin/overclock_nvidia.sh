@@ -156,25 +156,21 @@ if [ $1 ]; then
   #################################£
   # POWER LIMIT
 
-  if [ "$POWERLIMITINWATT" != "skip" ]; then
-    if [ "$POWERLIMITINWATT" -ne 0 ]; then
-      sudo nvidia-smi -i $GPUID -pl $POWERLIMITINWATT
-    fi
+  if [[ "$POWERLIMITINWATT" -ne 0 ]] && [[ "$POWERLIMITINWATT" != "skip" ]]; then
+    sudo nvidia-smi -i $GPUID -pl $POWERLIMITINWATT
   fi
 
   #################################£
   # FAN SPEED
 
-  if [ "$FANSPEED" != "0" ]
-  then
+  if [[ "$FANSPEED" != "0" ]]; then
     echo "--- MANUAL GPU FAN MOD. ---"
   else
     echo "--- AUTO GPU FAN SPEED (by Drivers) ---"
     STR1="-a [gpu:$GPUID]/GPUFanControlState=0"
   fi
 
-  if [ "$FANSPEED" != "skip" ]
-  then
+  if [[ "$FANSPEED" != "skip" ]]; then
     #STR1="-a GPUFanControlState=1 -a GPUTargetFanSpeed="$FANSPEED""
     sudo /home/minerstat/minerstat-os/core/nv_fanid $GPUID
     ID1=$(cat /dev/shm/id1.txt | xargs)
@@ -192,25 +188,18 @@ if [ $1 ]; then
   #################################£
   # CLOCKS
 
-  if [ "$MEMORYOFFSET" != "skip" ]
-  then
-    if [ "$MEMORYOFFSET" != "0" ]
-    then
-      STR2="-a [gpu:"$GPUID"]/GPUMemoryTransferRateOffset["$PLEVEL"]="$MEMORYOFFSET" -a [gpu:"$GPUID"]/GPUMemoryTransferRateOffsetAllPerformanceLevels="$MEMORYOFFSET" $E1"
-    fi
+  if [[ "$MEMORYOFFSET" != "skip" ]] && [[ "$MEMORYOFFSET" != "0" ]]; then
+    STR2="-a [gpu:"$GPUID"]/GPUMemoryTransferRateOffset["$PLEVEL"]="$MEMORYOFFSET" -a [gpu:"$GPUID"]/GPUMemoryTransferRateOffsetAllPerformanceLevels="$MEMORYOFFSET" $E1"
   fi
 
-  if [ "$COREOFFSET" != "skip" ]
-  then
-    if [ "$COREOFFSET" != "0" ]
-    then
-      STR3="-a [gpu:"$GPUID"]/GPUGraphicsClockOffset["$PLEVEL"]="$COREOFFSET" -a [gpu:"$GPUID"]/GPUGraphicsClockOffsetAllPerformanceLevels="$COREOFFSET" $E2"
-    fi
+  if [[ "$COREOFFSET" != "skip" ]] && [[ "$COREOFFSET" != "0" ]]; then
+    STR3="-a [gpu:"$GPUID"]/GPUGraphicsClockOffset["$PLEVEL"]="$COREOFFSET" -a [gpu:"$GPUID"]/GPUGraphicsClockOffsetAllPerformanceLevels="$COREOFFSET" $E2"
   fi
 
   # Lock core clock
   if [[ ! -z "$CORELOCK" ]] && [[ "$CORELOCK" != "0" ]] && [[ "$CORELOCK" != "skip" ]]; then
     echo "Applying Core Clock Lock to GPU $GPUID [$CORELOCK Mhz]"
+    STR3="-a [gpu:"$GPUID"]/GPUGraphicsClockOffset["$PLEVEL"]=0 -a [gpu:"$GPUID"]/GPUGraphicsClockOffsetAllPerformanceLevels=0 $E2"
     sudo nvidia-smi -i $GPUID -lgc $CORELOCK,$CORELOCK
   fi
 
