@@ -187,8 +187,8 @@ if [ $1 ]; then
   # Lock core clock
   if [[ ! -z "$CORELOCK" ]] && [[ "$CORELOCK" != "0" ]] && [[ "$CORELOCK" != "skip" ]]; then
     echo "Applying Core Clock Lock to All GPUs [$CORELOCK Mhz]"
-    STR3="-a GPUGraphicsClockOffset["$PLEVEL"]=0 -a GPUGraphicsClockOffsetAllPerformanceLevels=0 $E2"
-    sudo nvidia-smi -lgc $CORELOCK,$CORELOCK
+    #STR3="-a GPUGraphicsClockOffset["$PLEVEL"]=0 -a GPUGraphicsClockOffsetAllPerformanceLevels=0 $E2"
+    sudo nvidia-smi -lgc $CORELOCK
   fi
 
   #################################£
