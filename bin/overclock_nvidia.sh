@@ -23,7 +23,10 @@ if [ $1 ]; then
   FANSPEED=$3
   MEMORYOFFSET=$4
   COREOFFSET=$5
-  CORELOCK=$6
+  # INSTANT
+  INSTANT=$6
+  # Lock core clock
+  CORELOCK=$7
 
   ## BULIDING QUERIES
   STR1=""
@@ -31,8 +34,7 @@ if [ $1 ]; then
   STR3=""
   STR4="-c :0"
 
-  # INSTANT
-  INSTANT=$6
+
 
   if [ "$INSTANT" = "instant" ]; then
     echo "INSTANT OVERRIDE"
