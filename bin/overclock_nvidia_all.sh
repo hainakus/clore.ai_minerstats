@@ -9,9 +9,10 @@ if [ ! $1 ]; then
   echo "2 = GLOBAL FAN SPEED (100 = 100%)"
   echo "3 = Memory Offset"
   echo "4 = Core Offset"
+  echo "5 = Core Clock Lock"
   echo ""
   echo "-- Full Example --"
-  echo "./overclock_nvidia_all.sh 0 120 80 1300 100"
+  echo "./overclock_nvidia_all.sh 0 120 80 1300 100 1600"
   echo ""
 fi
 
@@ -20,6 +21,7 @@ if [ $1 ]; then
   FANSPEED=$2
   MEMORYOFFSET=$3
   COREOFFSET=$4
+  CORELOCK=$5
 
   ## BULIDING QUERIES
   STR1=""
@@ -196,6 +198,11 @@ if [ $1 ]; then
     fi
   fi
 
+  # Lock core clock
+  if [[ ! -z "$CORELOCK" ]] && [[ "$CORELOCK" != "0" ]] && [[ "$CORELOCK" != "skip" ]]; then
+    echo "Applying Core Clock Lock to All GPUs [$CORELOCK Mhz]"
+    sudo nvidia-smi -lgc $CORELOCK,$CORELOCK
+  fi
 
   #################################£
   # APPLY THIS GPU SETTINGS AT ONCE
