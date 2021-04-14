@@ -295,8 +295,10 @@ cuda () {
   SELECTED_VERSION_CUT=$(echo $SELECTED_VERSION | cut -f1 -d".")
   echo
   echo "Installed driver major version number: $SELECTED_VERSION_CUT"
-  if [[ "$SELECTED_VERSION_CUT" -ge 460 ]]; then
+  if [[ "$SELECTED_VERSION_CUT" -ge 465 ]]; then
     # Update this later to 11.2
+    CUDA="11.1"
+  elif [[ "$SELECTED_VERSION_CUT" -ge 460 ]]; then
     CUDA="11.1"
   elif [[ "$SELECTED_VERSION_CUT" -ge 455 ]]; then
     CUDA="11.1"
