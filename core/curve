@@ -23,6 +23,11 @@ if [ -z "$PWM" ]; then
   PWM="1"
 fi
 
+# Forced fans 100%
+if [ -f "/home/minerstat/fanforce.pid" ]; then
+  PWM="3"
+fi
+
 # If no settings
 if [ -z "$FANMIN" ]; then
   FANMIN=60
@@ -387,4 +392,18 @@ loop() {
 
 }
 
-loop
+if [[ "$PWM" = "3" ]]; then
+  while true
+  do
+    for y in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
+      sudo su -c "echo 0 > /sys/class/drm/card$y/device/hwmon/hwmon*/fan1_enable"
+      sudo su -c "echo 2 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable"
+      sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable"
+      sudo su -c "echo 255 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1"
+      sudo su -c "echo 0 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable"
+    done
+    sleep 2
+  done
+else
+  loop
+fi

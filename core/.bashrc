@@ -177,6 +177,7 @@ alias pci-realloc='sudo /home/minerstat/minerstat-os/core/pci-realloc'
 alias extend='sudo bash /home/minerstat/minerstat-os/core/expand.sh'
 alias fan-test='sudo bash /home/minerstat/minerstat-os/bin/testfan'
 alias fan-apply='sudo bash /home/minerstat/minerstat-os/bin/setfans.sh'
+alias fan-force='sudo bash /home/minerstat/minerstat-os/core/fanforce'
 
 if grep -q experimental "/etc/lsb-release"; then
   alias amdmemtool='sudo /home/minerstat/minerstat-os/bin/amdmemorytweak'
