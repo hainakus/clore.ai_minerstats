@@ -396,11 +396,11 @@ if [[ "$PWM" = "3" ]]; then
   while true
   do
     for y in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
-      sudo su -c "echo 0 > /sys/class/drm/card$y/device/hwmon/hwmon*/fan1_enable"
-      sudo su -c "echo 2 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable"
-      sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable"
-      sudo su -c "echo 255 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1"
-      sudo su -c "echo 0 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable"
+      sudo su -c "echo 0 > /sys/class/drm/card$y/device/hwmon/hwmon*/fan1_enable" &> /dev/null
+      sudo su -c "echo 2 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable" &> /dev/null
+      sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable" &> /dev/null
+      sudo su -c "echo 255 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1" &> /dev/null
+      sudo su -c "echo 0 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable" &> /dev/null
     done
     sleep 2
   done
