@@ -270,12 +270,16 @@ if [ $1 ]; then
   if [ "$TESTD" = "20.30" ] || [ "$TESTD" = "20.40" ] || [ "$TESTD" = "20.45" ] || [ "$TESTD" = "20.50" ]; then
 
     # Enable fan and manual control
+    sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/fan1_enable" 2>/dev/null
 
     # Set new target
+    sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
     sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
     sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
+
+    sleep 1
 
     #if [[ "$version" = "1.7.3" ]] || [[ "$version" = "1.7.2" ]] || [[ "$version" = "1.7.1" ]] || [[ "$version" = "1.7.0" ]]; then
     RB=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1 | xargs)
@@ -309,6 +313,7 @@ if [ $1 ]; then
     RB=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1 | xargs)
     if [[ "$RB" = "0" ]]; then
       # 100% fans
+      echo "2" > /dev/shm/fantype.txt
       echo "Nothing worked 100% fans then auto"
       sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
       sleep 1
