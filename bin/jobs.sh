@@ -319,6 +319,11 @@ if [[ -z "$TSOT" ]] && [[ $TSOT != *"off"* ]]; then
   fi
 fi
 # Check XSERVER
+XINST=$(which X)
+if [[ -z "$XINST" ]]; then
+  sudo apt-get update
+  sudo apt-get -y install xorg --fix-missing
+fi
 # If uptime < 4 minutes then exit
 UPTIME=$(awk '{print $1}' /proc/uptime | cut -f1 -d"." | xargs)
 #NVIDIADEVICE=$(timeout 5 sudo lspci -k | grep VGA | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van" | grep -c "NVIDIA")
