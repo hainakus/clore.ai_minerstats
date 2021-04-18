@@ -1,7 +1,7 @@
 #!/bin/bash
 
 OFFLINE_COUNT=0
-OFFLINE_NUM=17
+OFFLINE_NUM=36
 IS_ONLINE="YES"
 DETECT="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | sed 's/[0-9]*//g' | head -n1 | xargs)"
 PART=$DETECT"1"
