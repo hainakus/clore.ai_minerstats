@@ -8,6 +8,10 @@ echo
 
 # Global vars
 CURRENT_DRIVER=$(timeout 5 nvidia-smi | grep "Driver Version" | xargs | sed 's/[^0-9. ]*//g' | xargs | cut -d ' ' -f 1 | xargs)
+# If driver version missing
+if [[ -z "$CURRENT_DRIVER"]]; then
+  CURRENT_DRIVER=$(nvidia-settings --help | grep "version" | xargs | sed 's/[^0-9. ]*//g' | xargs | cut -d ' ' -f 1 | xargs)
+fi
 SELECTED_VERSION=""
 VLIST="https://static-ssl.minerstat.farm/drivers/nvidia/nvlist.txt"
 VLIST_TMP="/dev/shm"
