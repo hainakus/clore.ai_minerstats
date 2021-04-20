@@ -2,7 +2,7 @@
 echo -e ""
 echo -e "\033[1;34m=========== CONFIGURING DHCP ===========\033[0m"
 
-INTERFACE="$(sudo timeout 5 cat /proc/net/dev | grep -vE "lo|docker0" | tail -n1 | awk -F '\\:' '{print $1}' | xargs)"
+INTERFACE="$(sudo timeout 5 cat /proc/net/dev | grep -vE "lo|docker0|wlan0" | tail -n1 | awk -F '\\:' '{print $1}' | xargs)"
 
 echo -e "\033[1;34m==\033[0m DHCP Interface: \033[1;32m$INTERFACE\033[0m"
 echo -e ""
