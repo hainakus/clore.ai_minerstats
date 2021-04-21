@@ -1,6 +1,6 @@
 #!/bin/bash
 exec 2>/dev/null
-echo "Running Clean jobs ..."
+echo "[0%] Running Clean jobs ..."
 TESTLOGIN=$(timeout 2 systemctl list-jobs)
 if [ "$TESTLOGIN" != "No jobs running." ]; then
   sudo systemctl restart systemd-logind.service &
@@ -17,6 +17,7 @@ fi
 #sudo su minerstat -c "screen -ls | grep sockets | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe; sudo killall sockets; screen -A -m -d -S sockets sudo bash /home/minerstat/minerstat-os/core/sockets" > /dev/null
 #fi
 #END SOCKET
+echo "[10%] Checking services ..."
 timeout 10 sudo systemctl mask apt-daily.service apt-daily-upgrade.service > /dev/null &
 timeout 10 sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic linux-firmware > /dev/null &
 timeout 10 sudo systemctl disable thermald systemd-timesyncd.service > /dev/null &
@@ -41,8 +42,9 @@ sudo su -c "sudo service rsyslog stop"
 #sudo su -c "systemctl disable wpa_supplicant"
 #echo "Log files deleted"
 sudo dmesg -n 1
-sudo apt clean &
+#sudo apt clean &
 # Apply crontab + Fix slow start
+echo "[20%] Setting env varibles ..."
 sudo su -c "cp /home/minerstat/minerstat-os/core/minerstat /var/spool/cron/crontabs/minerstat; chmod 600 /var/spool/cron/crontabs/; chown minerstat /var/spool/cron/crontabs/minerstat; systemctl disable NetworkManager-wait-online.service; systemctl disable systemd-networkd-wait-online.service"
 sudo chmod 1730 /var/spool/cron/crontabs
 sudo chown root:crontab /var/spool/cron/crontabs
@@ -92,6 +94,8 @@ fi
 sudo su -c "echo $HPAGE > /proc/sys/vm/nr_hugepages; sysctl vm.nr_hugepages=$HPAGE; echo always > /sys/kernel/mm/transparent_hugepage/enabled; sysctl vm.dirty_background_ratio=20; sysctl vm.dirty_expire_centisecs=0; sysctl vm.dirty_ratio=80; sysctl vm.dirty_writeback_centisecs=0" > /dev/null 2>&1
 # Auto OpenCL for/above v1.5
 version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
+
+echo "[30%] Validating hosts file ..."
 
 # Fix ERROR Messages
 export LC_CTYPE=en_US.UTF-8
@@ -209,6 +213,8 @@ if [ "$NSCHECK" != "nameserver 1.1.1.1" ] || [ ! -z "$GET_GATEWAY" ] || [ "$RES_
   fi
 fi
 
+echo "[40%] Generating device report ..."
+
 # Memory Info
 timeout 5 sudo chmod -R 777 * /home/minerstat/minerstat-os
 
@@ -250,6 +256,9 @@ if [[ ! -z "$TESTPAM" ]] && [[ $TESTPAM == *"no"* ]]; then
 fi
 #sudo killall tmate
 #/home/minerstat/minerstat-os/bin/tmate -S /tmp/tmate.sock new-session -d
+
+echo "[50%] Restarting services ..."
+
 # Update profile
 sudo chmod 777 /etc/profile
 sudo cp /home/minerstat/minerstat-os/core/profile /etc
@@ -284,6 +293,9 @@ if [ -f "$CURVE_FILE" ]; then
   sleep 0.1
   sudo screen -A -m -d -S curve /home/minerstat/minerstat-os/core/curve
 fi
+
+echo "[60%] Validating Time/Date ..."
+
 # Time Date SYNC
 timeout 5 sudo timedatectl set-ntp on &
 DATES=$(timeout 3 curl -v --insecure --silent www.minerstat.com 2>&1 | grep Date | sed -e 's/< Date: //')
@@ -318,6 +330,7 @@ if [[ -z "$TSOT" ]] && [[ $TSOT != *"off"* ]]; then
     timeout 5 sudo ethtool -K eth0 tso off
   fi
 fi
+echo "[70%] Checking X Server ..."
 # Check XSERVER
 XINST=$(which X)
 if [[ -z "$XINST" ]]; then
@@ -380,6 +393,7 @@ if [ "$NVIDIADEVICE" != "0" ]; then
     sudo su minerstat -c "screen -A -m -d -S display2 sudo X :0" > /dev/null
   fi
 fi
+echo "[80%] Updating plugins ..."
 # lanflare
 if [ "$UPTIME" -lt "240" ]; then
   # only changeme
@@ -402,6 +416,9 @@ if [ "$CHECKAPTXN" -gt "0" ]; then
     sudo dpkg --remove --force-all libegl1-amdgpu-pro:i386 libegl1-amdgpu-pro:amd64
   fi
 fi
+
+echo "[90%] Checking for new devices ..."
+
 # Detect octo
 sudo /home/minerstat/minerstat-os/core/octoctrl --detect > /dev/null 2>&1 &
 # Update mini lcd screen
@@ -442,9 +459,7 @@ if [ "$1" -gt 0 ] || [ "$AMDDEVICE" -gt 0 ]; then
   fi
 fi
 if [ -f "/etc/netplan/minerstat.yaml" ]; then
-  if grep -q dhcp-identifier "/etc/netplan/minerstat.yaml"; then
-    echo ""
-  else
+  if ! grep -q dhcp-identifier "/etc/netplan/minerstat.yaml"; then
     INTERFACE="$(sudo cat /proc/net/dev | grep -vE lo | tail -n1 | awk -F '\\:' '{print $1}' | xargs)"
     if [ "$INTERFACE" = "eth0" ]; then
       sudo echo "network:" > /etc/netplan/minerstat.yaml
@@ -461,3 +476,5 @@ if [ -f "/etc/netplan/minerstat.yaml" ]; then
     fi
   fi
 fi
+
+echo "[100%] Done"

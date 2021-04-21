@@ -105,7 +105,7 @@ list () {
     if [[ "$vers" = "20.30" ]]; then
       add="[Supports up to RX5000 Series]"
     fi
-    if [[ "$vers" = "20.45" ]] || [[ "$vers" = "20.40" ]] || [[ "$vers" = "20.50" ]]; then
+    if [[ "$vers" = "20.45" ]] || [[ "$vers" = "20.40" ]] || [[ "$vers" = "20.50" ]] || [[ "$vers" = "21.10" ]]; then
       add="[Unstable/Experimental - DO NOT UPGRADE]"
     fi
     echo "$vers $add"
@@ -201,7 +201,7 @@ install () {
     sudo tar -xvf /tmp/$FULL -C /tmp
     FULL_CUT=$(echo $FULL | sed s/".tar.xz"//)
     sudo chmod -R 777 /tmp/$FULL_CUT >/dev/null 2>&1
-    if [[ $FULL_CUT == *"20.50"* ]]; then
+    if [[ $FULL_CUT == *"20.50"* ]] || [[ $FULL_CUT == *"21.10"* ]]; then
       sudo /tmp/$FULL_CUT/amdgpu-pro-install -y --opencl=legacy,rocr --headless
     else
       sudo /tmp/$FULL_CUT/amdgpu-pro-install -y --opencl=legacy,pal --headless

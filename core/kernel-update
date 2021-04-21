@@ -44,8 +44,8 @@ if [[ $CURRENT_KERNEL != *"5.4.113"* ]]; then
   wget https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.4.113/amd64/linux-modules-5.4.113-0504113-generic_5.4.113-0504113.202104161036_amd64.deb
   sudo dpkg -i /home/minerstat/kernel/*.deb
 
+  cd /home/minerstat
   sudo rm -rf /home/minerstat/kernel
-
   sleep 1
 
   #echo
@@ -80,8 +80,7 @@ if [[ $CURRENT_KERNEL != *"5.4.113"* ]]; then
   # validate installation
   TEST=$(dkms status | grep amdgpu)
   TEST2=$(dpkg -l | grep -c 5.4.113)
-  TEST3=$(dpkg -l | grep -c 5.0.21)
-  if [[ "$TEST" == *"installed"* ]] && [[ "$TEST2" -gt 0 ]] && [[ "$TEST3" = "0" ]]; then
+  if [[ "$TEST2" -gt 0 ]]; then
     echo
     echo "================="
     echo "Kernel successfully updated. Reboot with: forcereboot"
@@ -96,6 +95,15 @@ if [[ $CURRENT_KERNEL != *"5.4.113"* ]]; then
     echo "================="
     echo
   fi
+
+  if [[ -z "$TEST" ]]; then
+    echo
+    echo "================="
+    echo "!! AMD Driver missing from DKMS. Kernel/Driver combination unsupported or failed."
+    echo "================="
+    echo
+  fi
+
   sync
 
 else
