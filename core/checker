@@ -4,7 +4,7 @@
 HOSTLOST=$(wc -c < /etc/hosts)
 
 if [ "$HOSTLOST" -lt "100" ]; then
-  sudo /home/minerstat/minerstat-os/bin/jobs.sh
+  sudo /home/minerstat/minerstat-os/bin/hostfix.sh
 fi
 
 # If uptime < 4 minutes then exit
@@ -21,7 +21,7 @@ fi
 # Fixing recursive fault but reboot is needed!
 # AMD CRASH
 FAULT=$(dmesg | grep -c -E "Fixing recursive fault but reboot is needed")
-if [[ "$FAULT" -gt "1" ]]; then
+if [[ "$FAULT" -gt "0" ]]; then
   sudo bash /home/minerstat/minerstat-os/bin/reboot.sh fault
 fi
 
@@ -154,7 +154,7 @@ if [ ! -f /tmp/stop.pid ]; then
   fi
 fi
 
-RES_TEST=$(timeout 5 ping -c1 l.root-servers.net > /dev/null && echo "ok" || echo "failed")
+RES_TEST=$(timeout 5 ping -c1 api.minerstat.com > /dev/null && echo "ok" || echo "failed")
 if [ "$RES_TEST" = "failed" ]; then
   timeout 20 sudo bash /home/minerstat/minerstat-os/core/dnser
 fi
