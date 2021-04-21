@@ -33,15 +33,15 @@ if [[ -z "$AUTOLOGIN" ]] || [[ "$AUTOLOGINE" != "1" ]]; then
 fi
 timeout 10 sudo systemctl daemon-reload > /dev/null &
 # Kernel panic auto reboot and clean older miner logs
-sudo su -c "sudo echo 1 > /proc/sys/kernel/sysrq; sudo echo 20 > /proc/sys/kernel/panic; echo '' > /dev/shm/miner.log"
+timeout 10 sudo su -c "sudo echo 1 > /proc/sys/kernel/sysrq; sudo echo 20 > /proc/sys/kernel/panic; echo '' > /dev/shm/miner.log"
 # Remove logs
-find '/home/minerstat/minerstat-os/clients/claymore-eth' -name "*log.txt" -type f -delete
-sudo find /var/log -type f -name "*.journal" -delete
-sudo su -c "sudo service rsyslog stop"
+timeout 10 find '/home/minerstat/minerstat-os/clients/claymore-eth' -name "*log.txt" -type f -delete
+timeout 10 sudo find /var/log -type f -name "*.journal" -delete
+timeout 10 sudo su -c "sudo service rsyslog stop"
 #sudo su -c "systemctl disable rsyslog"
 #sudo su -c "systemctl disable wpa_supplicant"
 #echo "Log files deleted"
-sudo dmesg -n 1
+timeout 10 sudo dmesg -n 1
 #sudo apt clean &
 # Apply crontab + Fix slow start
 echo "[20%] Setting env varibles ..."
