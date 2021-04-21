@@ -18,6 +18,13 @@ if [ "$UPTIME" -lt "240" ]; then
   exit 1
 fi
 
+# Fixing recursive fault but reboot is needed!
+# AMD CRASH
+FAULT=$(dmesg | grep -c -E "Fixing recursive fault but reboot is needed")
+if [[ "$FAULT" -gt "1" ]]; then
+  sudo bash /home/minerstat/minerstat-os/bin/reboot.sh fault
+fi
+
 # Check More "LISTENER"
 SNUM=$(sudo su minerstat -c "screen -list | grep -c listener")
 if [ "$SNUM" -gt "1" ]; then

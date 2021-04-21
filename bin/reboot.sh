@@ -15,6 +15,10 @@ if [[ "$1" = "ro" ]]; then
   RAMLOG="$RAMLOG Device failure, read only filesystem. Rebooting.."
 fi
 
+if [[ "$1" = "fault" ]]; then
+  RAMLOG="$RAMLOG amdgpu_vm_free_table fixing recursive fault but reboot is needed. Rebooting.."
+fi
+
 sudo echo s > /proc/sysrq-trigger #(*S*nc) Sync all cached disk operations to disk
 sudo echo u > /proc/sysrq-trigger #(*U*mount) Umounts all mounted partitions
 
