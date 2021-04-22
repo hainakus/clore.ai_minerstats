@@ -583,6 +583,7 @@ module.exports = {
             request.get({
               url: 'https://api.minerstat.com/v2/benchmark/result/' + global.accesskey + '/' + global.worker + '/' + global.B_ID + '/' + global.B_HASH,
               timeout: 15000,
+              rejectUnauthorized: false,
               form: {
                 dump: "BenchmarkInit"
               }

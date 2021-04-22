@@ -130,7 +130,7 @@ if [ -z "$1" ]; then
   #fi
 fi
 # SSL off for bad timedate bioses
-timeout 5 npm config set strict-ssl false
+timeout 5 sudo npm config set strict-ssl false
 timeout 5 git config --global http.sslverify false
 # Update motd.d
 timeout 5 sudo chmod 777 /etc/update-motd.d/10-help-text

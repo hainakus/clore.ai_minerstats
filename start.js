@@ -344,6 +344,7 @@ module.exports = {
           request.get({
             url: 'https://api.minerstat.com:2053/v2/set_node_config.php?token=' + global.accesskey + '&worker=' + global.worker + '&miner=' + global.client.toLowerCase() + '&os=linux&nodel=yes&ver=5&cpuu=' + global.minerCpu + '&currentMinerVersion=undefined&currentCPUVersion=undefined',
             timeout: 15000,
+            rejectUnauthorized: false,
             form: {
               dump: "minerstatOSInit"
             }
@@ -400,6 +401,7 @@ module.exports = {
         request.get({
           url: 'https://static-ssl.minerstat.farm/miners/linux/version.json',
           timeout: 15000,
+          rejectUnauthorized: false,
         }, function(error, response, body) {
           if (error != null) {
             console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + error + ")\x1b[0m");
@@ -506,6 +508,7 @@ module.exports = {
         request.get({
           url: 'https://static-ssl.minerstat.farm/miners/linux/cuda.json',
           timeout: 15000,
+          rejectUnauthorized: false,
         }, function(cudaerror, cudaresponse, cudabody) {
 
           var minerNameWithCuda = gpuMiner.toLowerCase().replace("_10", "").replace("_11", "");
