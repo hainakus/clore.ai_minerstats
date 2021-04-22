@@ -128,6 +128,7 @@ module.exports = {
     request.post({
       url: 'https://api.minerstat.com:2053/v2/set_node_config.php?token=' + global.accesskey + '&worker=' + global.worker + '&miner=' + global.client.toLowerCase() + '&ver=4&cpuu=' + global.minerCpu + '&cpud=HASH' + '&os=linux&hwNew=true&currentcpu=' + global.cpuDefault.toLowerCase() + '&hwType=' + global.minerType + '&privateMiner=' + global.PrivateMiner + '&currentMinerVersion=' + global.minerVersion + '&currentCPUVersion=' + global.cpuVersion,
       timeout: 15000,
+      rejectUnauthorized: false,
       form: {
         minerData: res_data,
         cpuData: cpu_data
@@ -266,7 +267,8 @@ module.exports = {
     const https = require('https');
     var needle = require('needle');
     needle.get('https://api.minerstat.com/v2/node/gpu/' + global.accesskey + '/' + global.worker, {
-      "timeout": 15000
+      "timeout": 15000,
+      rejectUnauthorized: false,
     }, function(error, response) {
       if (error === null) {
         console.log(response.body);
@@ -772,7 +774,8 @@ module.exports = {
       }
 
       needle.get('https://api.minerstat.com/v2/conf/gpu/' + global.accesskey + '/' + global.worker + '/' + miner.toLowerCase().replace("_10", "").replace("_11", ""), {
-        "timeout": 15000
+        "timeout": 15000,
+        rejectUnauthorized: false,
       }, function(error, response) {
         if (error === null) {
           var str = response.body;
