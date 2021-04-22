@@ -267,8 +267,7 @@ module.exports = {
     const https = require('https');
     var needle = require('needle');
     needle.get('https://api.minerstat.com/v2/node/gpu/' + global.accesskey + '/' + global.worker, {
-      "timeout": 15000,
-      rejectUnauthorized: false,
+      "timeout": 15000
     }, function(error, response) {
       if (error === null) {
         console.log(response.body);
@@ -774,8 +773,7 @@ module.exports = {
       }
 
       needle.get('https://api.minerstat.com/v2/conf/gpu/' + global.accesskey + '/' + global.worker + '/' + miner.toLowerCase().replace("_10", "").replace("_11", ""), {
-        "timeout": 15000,
-        rejectUnauthorized: false,
+        "timeout": 15000
       }, function(error, response) {
         if (error === null) {
           var str = response.body;
