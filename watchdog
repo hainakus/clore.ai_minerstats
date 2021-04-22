@@ -33,11 +33,13 @@ fi
 # QinHeng Electronics HL-340 USB-Serial adapter
 P6=$(lsusb | grep "1a86:7523")
 if [ ! -z "$P5" ]; then
+  sudo modprobe ch341
   check="1a86:7523"
 fi
-# QuinHeng
+# QuinHeng some different revision?
 P7=$(lsusb | grep "1a86:e2e3")
-if [ ! -z "$P2" ]; then
+if [ ! -z "$P7" ]; then
+  sudo modprobe ch341
   check="1a86:e2e3"
 fi
 
