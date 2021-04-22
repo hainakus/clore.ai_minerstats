@@ -5,12 +5,21 @@ echo "Watchdog agent starting.."
 check=""
 devname=""
 
+# kernel load modules
+sudo modprobe ch341
+
 # ANPIX USB WatchDog Card
 P1=$(lsusb | grep "5131:2007")
 if [ ! -z "$P1" ]; then
   check="5131:2007"
 fi
+# QuinHeng
+P6=$(lsusb | grep "1a86:e2e3")
+if [ ! -z "$P6" ]; then
+  check="1a86:e2e3"
+fi
 # domybest USB Watchdog Card
+# QinHeng Electronics HL-340 USB-Serial adapter
 P2=$(lsusb | grep "1a86:7523")
 if [ ! -z "$P2" ]; then
   check="1a86:7523"
@@ -30,18 +39,6 @@ P5=$(lsusb | grep "16c0:03e8")
 if [ ! -z "$P5" ]; then
   check="16c0:03e8"
 fi
-# QinHeng Electronics HL-340 USB-Serial adapter
-P6=$(lsusb | grep "1a86:7523")
-if [ ! -z "$P6" ]; then
-  sudo modprobe ch341
-  check="1a86:7523"
-fi
-# QuinHeng some different revision?
-P7=$(lsusb | grep "1a86:e2e3")
-if [ ! -z "$P7" ]; then
-  sudo modprobe ch341
-  check="1a86:e2e3"
-fi
 
 
 # Try to find devpath
@@ -51,7 +48,7 @@ if [ ! -z "$check" ]; then
   devname=$(udevadm info -q name -p $pathedit 2>/dev/null)
 fi
 
-if [ ! -z "$P1" ] || [ ! -z "$P2" ] || [ ! -z "$P3" ] || [ ! -z "$P6" ] || [ ! -z "$P7" ]; then
+if [ ! -z "$P1" ] || [ ! -z "$P2" ] || [ ! -z "$P3" ] || [ ! -z "$P6" ]; then
   echo "USB Watchdog detected.. Sending signal"
   while true
   do
