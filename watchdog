@@ -35,6 +35,11 @@ P6=$(lsusb | grep "1a86:7523")
 if [ ! -z "$P5" ]; then
   check="1a86:7523"
 fi
+# QuinHeng
+P7=$(lsusb | grep "1a86:e2e3")
+if [ ! -z "$P2" ]; then
+  check="1a86:e2e3"
+fi
 
 
 # Try to find devpath
@@ -44,7 +49,7 @@ if [ ! -z "$check" ]; then
   devname=$(udevadm info -q name -p $pathedit 2>/dev/null)
 fi
 
-if [ ! -z "$P1" ] || [ ! -z "$P2" ] || [ ! -z "$P3" ] || [ ! -z "$P6" ]; then
+if [ ! -z "$P1" ] || [ ! -z "$P2" ] || [ ! -z "$P3" ] || [ ! -z "$P6" ] || [ ! -z "$P7" ]; then
   echo "USB Watchdog detected.. Sending signal"
   while true
   do
