@@ -256,14 +256,22 @@ do
   IS_ONLINE="YES"
   echo "NETCHECK"
 
-  while ! ping 104.24.98.231 -w 1 | grep "0%"; do
+  #while ! ping -c 1 -W 1 api.minerstat.com | grep "0%"; do
+  #  OFFLINE_COUNT=$(($OFFLINE_COUNT + $OFFLINE_NUM))
+  #  echo "$OFFLINE_COUNT"
+  #  IS_ONLINE="NO"
+  #  break
+  #done
+
+  PING=$(timeout 10 ping -c 1 -W 1 api.minerstat.com)
+
+  if [[ $PING != *"0% packet loss"* ]]; then
     OFFLINE_COUNT=$(($OFFLINE_COUNT + $OFFLINE_NUM))
     echo "$OFFLINE_COUNT"
     IS_ONLINE="NO"
-    break
-  done
+  fi
 
-  if [ "$IS_ONLINE" = "YES" ]; then
+  if [[ "$IS_ONLINE" = "YES" ]]; then
 
     OFFLINE_COUNT=0
 
@@ -332,7 +340,7 @@ do
 
   fi
 
-  if [ "$IS_ONLINE" = "NO" ]; then
+  if [[ "$IS_ONLINE" = "NO" ]]; then
     echo "offline"
     if [ "$OFFLINE_COUNT" = "360" ]; then
       # Reboot after 10 min of connection lost
