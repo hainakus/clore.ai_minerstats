@@ -109,6 +109,9 @@ sudo ethtool --set-eee eth0 eee off 2>/dev/null
 if [ ! -f "/etc/modprobe.d/e1000e.conf" ]; then
   echo "options e1000e EEE=0" | sudo tee /etc/modprobe.d/e1000e.conf
 fi
+# Clear clock cache
+CCHECK=$(cat /home/minerstat/cache_date 2>/dev/null)
+echo "#!/bin/bash" > /home/minerstat/clock_cache
 # Validate hosts file
 sudo bash /home/minerstat/minerstat-os/bin/hostfix.sh
 

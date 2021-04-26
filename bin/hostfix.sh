@@ -41,13 +41,8 @@ HCHECK=$(cat /etc/hosts | grep "$SERVERC minerstat.com" | xargs)
 WCHECK=$(cat /etc/hosts | grep "127.0.1.1 $WNAME" | xargs)
 
 CURRENT_DATE=$(date +'%Y-%m-%d %H:00')
-CCHECK=$(cat /home/minerstat/cache_date 2>/dev/null)
-echo "#!/bin/bash" > /home/minerstat/clock_cache
-
 WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
 if [ "$HCHECK" != "$SERVERC minerstat.com" ] || [ "$WCHECK" != "127.0.1.1 $WNAME" ] || [ "$CCHECK" != "$CURRENT_DATE" ]; then
-  sudo su -c "echo '$WNAME' > /etc/hostname"
-  sudo hostname -F /etc/hostname
   sudo echo "
 127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1     ip6-localhost ip6-loopback
@@ -68,9 +63,12 @@ $SSERVERC static-ssl.minerstat.farm
 134.209.234.128 lanflare.com
 $SSERVERC labs.minerstat.farm
   " > /etc/hosts
+  # Set hostname after new hosts file
+  sudo su -c "echo '$WNAME' > /etc/hostname"
+  sudo hostname -F /etc/hostname
   # Manage CACHE
   sudo rm /home/minerstat/mining-pool-whitelist.txt 2>/dev/null
-  wget -o /dev/null https://minerstat.com/mining-pool-whitelist.txt -O /home/minerstat/mining-pool-whitelist.txt
+  timeout 10 wget -o /dev/null https://minerstat.com/mining-pool-whitelist.txt -O /home/minerstat/mining-pool-whitelist.txt
   if [ $? -ne 0 ]; then
     echo "Cache wget failed. Trying next time"
   else
