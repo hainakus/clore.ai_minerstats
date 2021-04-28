@@ -54,7 +54,7 @@ function restartNode() {
     //console.log("yes false");
     var main = require('./start.js');
     //console.log(global.watchnum);
-    if (global.watchnum == 16 || global.watchnum == 24) {
+    if (global.watchnum == 24 || global.watchnum == 32) {
       console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;31mError (" + global.watchnum + "×)\x1b[0m");
       console.log("\x1b[1;94m== \x1b[0mAction: Restarting client ...");
       clearInterval(global.timeout);
@@ -69,7 +69,7 @@ function restartNode() {
         main.main();
       }
     }
-    if (global.watchnum >= 32) {
+    if (global.watchnum >= 40) {
       console.log("\x1b[1;94m== \x1b[0mClient Status: \x1b[1;31mError (" + global.watchnum + "×)\x1b[0m");
       console.log("\x1b[1;94m== \x1b[0mAction: Rebooting ...");
       clearInterval(global.timeout);
