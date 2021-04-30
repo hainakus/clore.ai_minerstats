@@ -37,7 +37,12 @@ sudo cat /media/storage/config.js
 echo "Reinitalize, hostname etc.."
 echo
 
-sudo sh /home/minerstat/minerstat-os/bin/jobs.sh
+sudo bash /home/minerstat/minerstat-os/bin/jobs.sh
+
+echo "Applying ClockTune Profile"
+echo
+
+sudo bash /home/minerstat/minerstat-os/bin/overclock.sh
 
 echo
 echo
