@@ -19,6 +19,8 @@ if [ "$NVIDIADEVICE" != "0" ]; then
   SNUM=$(sudo su minerstat -c "screen -list | grep -c display2")
   # pm
   timeout 5 sudo nvidia-smi -pm 1
+  # reset gpu clocks to clear locked clocks
+  timeout 5 sudo nvidia-smi -rgc > /dev/null 2>&1
   # force compute mode where available
   #timeout 5 sudo nvidia-smi --gom=COMPUTE &> /dev/null
   # Unknown Error
