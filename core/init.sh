@@ -95,6 +95,17 @@ if [ -z "$MAC_ADDRESS" ]; then
   MAC_ADDRESS=$(timeout 5 ifconfig -a | grep : | grep -vE "eth0|lo|wlan0" | grep ether | awk '{print $2}')
 fi
 CPU_TYPE=$(sudo timeout 15 dmidecode --string processor-version)
+
+# For Ryzen CPUS
+# lm-sensor need to be installed
+if [[ "$CPU_TYPE" == *"Ryzen"* ]]; then
+  SENTEST=$(timeout 3 which sensors)
+  if [[ -z "$SENTEST" ]]; then
+    sudo apt-get install -y lm-sensors >/dev/null 2>&1 &
+    timeout 5 sudo modprobe k10temp force=1
+  fi
+fi
+
 DISK_TYPE=$(timeout 5 lsblk -io KNAME,MODEL,SIZE | grep $DETECT | head -n1 | xargs | awk '{print $2,$3}')
 # System & Graphics
 NVIDIA_DRIVER=$(nvidia-settings --help | grep version | head -n 1 | awk '{print $3}' | xargs | xargs)
@@ -244,7 +255,13 @@ do
   echo "RAMLOG"
 
   # Extended Query with loop
-  CPU_TEMP=$(timeout 5 cat /sys/class/thermal/thermal_zone*/temp 2> /dev/null | column -s $'\t' -t | sed 's/\(.\)..$/.\1/' | tac | head -n 1)
+
+  if [[ "$CPU_TYPE" != *"Ryzen"* ]]; then
+    CPU_TEMP=$(timeout 5 cat /sys/class/thermal/thermal_zone*/temp 2> /dev/null | column -s $'\t' -t | sed 's/\(.\)..$/.\1/' | tac | head -n 1)
+  else
+    CPU_TEMP=$(timeout 5 sudo sensors 2> /dev/null | grep -A 2 k10temp-pci | grep temp1 | awk '{print $2}' | sed 's/[^0-9.]//g')
+  fi
+
   if [ -z "$CPU_TEMP" ]; then
     CPU_TEMP="0"
   fi
