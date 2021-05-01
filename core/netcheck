@@ -8,13 +8,13 @@ Red='\033[0;31m'          # Red
 Green='\033[0;32m'        # Green
 
 function printfo() {
-  mark="i"
+  mark="INFO"
   if [[ "$1" = "info" ]]; then
-    mark="i"
+    mark="INFO"
   elif [[ "$1" = "fail" ]]; then
-    mark="$Red✗$Color_Off"
+    mark="$Red FAIL $Color_Off"
   elif [[ "$1" = "ok" ]]; then
-    mark="$Green✓$Color_Off"
+    mark="$Green OK $Color_Off"
   fi
   echo -n ""
   echo -e "  [$mark] $2 \r"
