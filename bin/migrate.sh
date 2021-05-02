@@ -9,6 +9,8 @@ Green='\033[0;32m'        # Green
 Yellow='\033[0;33m'       # Yellow
 
 # Global varibles
+DIR="$(dirname "${BASH_SOURCE[0]}")"  # Get the directory name
+DIR="$(realpath "${DIR}")"    # Resolve its full path if need be
 FR="/tmp/fakeroot"
 IS_ONLINE="YES"
 FORCE="NO"
@@ -499,7 +501,7 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
     cp -a /usr/lib/x86_64-linux-gnu/libstdc++* $FR/usr/lib/x86_64-linux-gnu > /dev/null 2>&1
 
     # copy migrate script
-    cp $(pwd)/migrate.sh $FR/opt
+    cp $DIR/migrate.sh $FR/opt
     chmod 777 $FR/opt/migrate.sh
 
     # rebind for chroot
