@@ -471,8 +471,8 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
       sudo rm -rf $FR > /dev/null 2>&1
     fi
 
-    # Remount main drive as read only
-    sudo mount -f -o remount,ro / > /dev/null 2>&1
+    # Remount main drive as rw
+    sudo mount -f -o remount,rw / > /dev/null 2>&1
 
     # Create Virtual filesystem
     sudo mkdir $FR > /dev/null 2>&1
