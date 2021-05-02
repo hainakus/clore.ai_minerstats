@@ -12,7 +12,7 @@ function printfo() {
   if [[ "$1" = "info" ]]; then
     mark="INFO"
   elif [[ "$1" = "fail" ]]; then
-    mark="$Red FAIL $Color_Off"
+    mark="$Red"'FAIL'"$Color_Off"
   elif [[ "$1" = "ok" ]]; then
     mark="$Green OK $Color_Off"
   fi
