@@ -499,7 +499,7 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
     cp -a /usr/lib/x86_64-linux-gnu/libstdc++* $FR/usr/lib/x86_64-linux-gnu > /dev/null 2>&1
 
     # copy migrate script
-    cp migrate.sh $FR/opt
+    cp $(pwd)/migrate.sh $FR/opt
     chmod 777 $FR/opt/migrate.sh
 
     # rebind for chroot

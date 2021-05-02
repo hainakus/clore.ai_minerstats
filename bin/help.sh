@@ -33,6 +33,7 @@ else
   echo -e "${BLUE}force-gen2${NC}\tForce PCIe GEN2"
   echo -e ""
   echo -e "======= System updates ======="
+  echo -e "${BLUE}mreflash${NC}\tChange running OS version"
   echo -e "${BLUE}kernel-update${NC}\tUpdate kernel"
   echo -e "${BLUE}nvidia-update${NC}\tUpdate Nvidia drivers"
   echo -e "${BLUE}amd-update${NC}\tUpdate AMD drivers"

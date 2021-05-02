@@ -178,7 +178,7 @@ alias extend='sudo bash /home/minerstat/minerstat-os/core/expand.sh'
 alias fan-test='sudo bash /home/minerstat/minerstat-os/bin/testfan'
 alias fan-apply='sudo bash /home/minerstat/minerstat-os/bin/setfans.sh'
 alias fan-force='sudo bash /home/minerstat/minerstat-os/core/fanforce'
-alias mreflash='sudo su -c "sudo bash /home/minerstat/minerstat-os/bin/migrate.sh"'
+alias mreflash='sudo bash /home/minerstat/minerstat-os/bin/migrate.sh'
 
 if grep -q experimental "/etc/lsb-release"; then
   alias amdmemtool='sudo /home/minerstat/minerstat-os/bin/amdmemorytweak'
