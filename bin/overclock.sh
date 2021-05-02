@@ -104,6 +104,7 @@ if [ ! -z "$DONVIDIA" ]; then
   #sudo nvidia-smi -pm 1
   sudo killall memdelay > /dev/null 2>&1
   sudo rm /dev/shm/nv_memcache.txt > /dev/null 2>&1
+  sudo rm /dev/shm/nv_lockcache.txt > /dev/null 2>&1
   sudo rm /dev/shm/nv_clkcache.txt > /dev/null 2>&1
 
   sudo wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 5 -o /dev/null -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=nvidia&token=$TOKEN&worker=$WORKER&nums=$NVIDIADEVICE&instant=$INSTANT"

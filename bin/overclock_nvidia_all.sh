@@ -188,7 +188,17 @@ if [ $1 ]; then
   if [[ ! -z "$CORELOCK" ]] && [[ "$CORELOCK" != "0" ]] && [[ "$CORELOCK" != "skip" ]]; then
     echo "Applying Core Clock Lock to All GPUs [$CORELOCK Mhz]"
     #STR3="-a GPUGraphicsClockOffset["$PLEVEL"]=0 -a GPUGraphicsClockOffsetAllPerformanceLevels=0 $E2"
-    sudo nvidia-smi -lgc $CORELOCK
+    # SET MEMCLOCK BACK AFTER MINER STARTED 40 sec
+    if [[ "$INSTANT" != "instant" ]]; then
+      sudo echo "ALL:$CORELOCK" >> /dev/shm/nv_lockcache.txt
+      # check lock delay process
+      TEST=$(sudo screen -list | grep -wc lockdelay)
+      if [ "$TEST" = "0" ]; then
+        sudo screen -A -m -d -S lockdelay sudo bash /home/minerstat/minerstat-os/core/lockdelay &
+      fi
+    else
+      sudo nvidia-smi -lgc $CORELOCK
+    fi
   fi
 
   #################################£
