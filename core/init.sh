@@ -259,7 +259,7 @@ do
   if [[ "$CPU_TYPE" != *"Ryzen"* ]]; then
     CPU_TEMP=$(timeout 5 cat /sys/class/thermal/thermal_zone*/temp 2> /dev/null | column -s $'\t' -t | sed 's/\(.\)..$/.\1/' | tac | head -n 1)
   else
-    CPU_TEMP=$(timeout 5 sudo sensors 2> /dev/null | grep -A 2 k10temp-pci | grep temp1 | awk '{print $2}' | sed 's/[^0-9.]//g')
+    CPU_TEMP=$(timeout 5 sudo sensors 2> /dev/null | grep -A 2 k10temp-pci | grep -E "temp1|Tdie" | awk '{print $2}' | sed 's/[^0-9.]//g')
   fi
 
   if [ -z "$CPU_TEMP" ]; then
