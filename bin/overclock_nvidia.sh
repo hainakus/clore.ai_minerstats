@@ -111,6 +111,7 @@ if [ $1 ]; then
   elif echo "$QUERY" | grep "RTX" ;then PLEVEL=4
   elif echo "$QUERY" | grep "1660" ;then PLEVEL=2
   elif echo "$QUERY" | grep "1650" ;then PLEVEL=2
+  elif echo "$QUERY" | grep "CMP 30HX" ;then PLEVEL=2
   fi
 
   E1=""
