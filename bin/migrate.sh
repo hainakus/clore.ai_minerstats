@@ -316,10 +316,19 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
     printfo info "Unexpected issues can occur"
   fi
   # Free space check
-  if [[ "$FREE_TMP" -lt 8000 ]]; then
-    printfo fail "Error: At least 8GB free space is required"
-    if [[ "$FORCE" = "NO" ]]; then
-      exit
+  if [[ "$FREE_TMP" -lt 7500 ]]; then
+    CLRCLIENT="0"
+    LSB=$(cat /etc/lsb-release)
+    if [[ "$LSB" == *"minerstat"* ]]; then
+      sudo rm -rf /home/minerstat/minerstat-os/clients >/dev/null 2>&1
+      printfo ok "msOS essentials - Removed miner cache"
+    fi
+    FREE_TMP=$(df -hm | grep "$BOOT_PART" | grep -vE "/media/storage|/boot" | awk '{print $4}')
+    if [[ "$FREE_TMP" -lt 7500 ]]; then
+      printfo fail "Error: At least 7.5GB free space is required"
+      if [[ "$FORCE" = "NO" ]]; then
+        exit
+      fi
     fi
   fi
   # Free memory check
