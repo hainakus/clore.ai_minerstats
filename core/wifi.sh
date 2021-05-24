@@ -17,6 +17,12 @@ for dev in $INTERFACE; do
   if [ -d "/sys/class/net/$dev/wireless" ]; then DEVICE=$dev; fi;
 done
 
+# Disable to generate new resolv.conf
+NMResolv=$(cat /etc/NetworkManager/NetworkManager.conf)
+if [[ $NMResolv != *"dns"* ]]; then
+  sudo sed -i '/plugin/i dns=none' /etc/NetworkManager/NetworkManager.conf
+fi
+
 sudo systemctl enable NetworkManager
 sudo systemctl start NetworkManager
 
