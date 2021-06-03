@@ -143,7 +143,12 @@ if ! screen -list | grep -q "dummy"; then
   sudo su minerstat -c "screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh"
   sudo su -c "sudo rm /tmp/stop.pid"
   sleep 2
-  sudo su minerstat -c "screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh"
+
+  if [ -f "/dev/shm/maintenance.pid" ]; then
+    echo "Miner not started, maintenance enabled"
+  else
+    sudo su minerstat -c "screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh"
+  fi
 
   echo
   echo -e "\033[1;34m==\033[0m Boot process finished ...\033[0m"

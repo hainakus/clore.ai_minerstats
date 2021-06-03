@@ -204,6 +204,11 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
     echo "--smb-user                             |     Only use this option for username/password protected shares. Example: nobody"
     echo "--smb-pass                             |     Only use this option for username/password protected shares. Example: mypass"
     echo
+    echo
+    echo "==========    AUTH      ============="
+    echo "--token accesskey                      |     Define your accesskey (Optional)"
+    echo "--worker workername                    |     Define your workername (Mandatory if --token used)"
+    echo
   }
 
   # If no args help
@@ -251,7 +256,7 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
           SMB_USER=$2
           printfo info "SMB Username: $SMB_USER"
         else
-          printfo fail "SMB Username empty"
+          printfo fail "SMB Username is empty"
           exit
         fi
         shift
@@ -261,7 +266,7 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
           SMB_PASS=$2
           printfo info "SMB Pass: $SMB_PASS"
         else
-          printfo fail "SMB Pass empty"
+          printfo fail "SMB Pass is empty"
           exit
         fi
         shift
@@ -271,7 +276,7 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
           SMB_SHARE=$2
           printfo info "SMB Share: $SMB_SHARE"
         else
-          printfo fail "SMB Share empty"
+          printfo fail "SMB Share is empty"
           exit
         fi
         shift
@@ -281,7 +286,27 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
           SMB_FILE=$2
           printfo info "SMB File Path: $SMB_FILE"
         else
-          printfo fail "SMB File Path empty"
+          printfo fail "SMB File Path is empty"
+          exit
+        fi
+        shift
+        ;;
+      --token)
+        if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
+          ACCESS_KEY=$2
+          printfo info "Accesskey: $ACCESS_KEY"
+        else
+          printfo fail "Accesskey is empty"
+          exit
+        fi
+        shift
+        ;;
+      --worker)
+        if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
+          WORKERNAME=$2
+          printfo info "Worker: $WORKERNAME"
+        else
+          printfo fail "Worker name is empty"
           exit
         fi
         shift
@@ -437,10 +462,15 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
       printfo ok "msOS essentials - Xorg killed"
       screen -A -m -d -S usbdog sudo bash /home/minerstat/minerstat-os/watchdog
       printfo ok "msOS essentials - Watchdog ping started"
-      ACCESS_KEY="$(cat /media/storage/config.js | grep 'global.accesskey' | sed 's/global.accesskey =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g' | sed 's/[^a-zA-Z0-9]*//g')"
-      WORKERNAME="$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g')"
-      printfo info "msOS essentials - Key:    $ACCESS_KEY"
-      printfo info "msOS essentials - Worker: $WORKERNAME"
+      if [[ -z "$ACCESS_KEY" ]]; then
+        ACCESS_KEY="$(cat /media/storage/config.js | grep 'global.accesskey' | sed 's/global.accesskey =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g' | sed 's/[^a-zA-Z0-9]*//g')"
+        WORKERNAME="$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =//g' | sed 's/;//g' | sed 's/ //g' | sed 's/"//g' | sed 's/\\r//g')"
+        printfo info "msOS essentials - Key:    $ACCESS_KEY"
+        printfo info "msOS essentials - Worker: $WORKERNAME"
+      else
+        printo info "Accesskey manually defined $ACCESS_KEY"
+        printo info "Workername manually defined $WORKERNAME"
+      fi
     fi
     # smOS
     if [[ -f /mnt/user/config.txt ]] || [[ -f /root/config.txt ]]; then
@@ -465,6 +495,14 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
       sleep 2
       killall xinit >/dev/null 2>&1
       printfo ok "Hive essentials - Services stopped"
+    fi
+
+    # Safety check for accesskey and workername pairs
+    if [[ ! -z "$ACCESS_KEY" ]]; then
+      if [[ ! -z "$WORKERNAME" ]]; then
+        printfo fail "Worker name can't be empty if accesskey defined"
+        exit
+      fi
     fi
 
     # Turning off swap space, in case enabled
