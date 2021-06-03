@@ -206,8 +206,8 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
     echo
     echo
     echo "==========    AUTH      ============="
-    echo "--token accesskey                      |     Define your accesskey (Optional)"
-    echo "--worker workername                    |     Define your workername (Mandatory if --token used)"
+    echo "--accesskey accesskey                  |     Define your accesskey (Optional)"
+    echo "--worker workername                    |     Define your workername (Mandatory if --accesskey used)"
     echo
   }
 
@@ -291,7 +291,7 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
         fi
         shift
         ;;
-      --token)
+      --accesskey)
         if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
           ACCESS_KEY=$2
           printfo info "Accesskey: $ACCESS_KEY"
