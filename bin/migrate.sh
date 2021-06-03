@@ -468,8 +468,8 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
         printfo info "msOS essentials - Key:    $ACCESS_KEY"
         printfo info "msOS essentials - Worker: $WORKERNAME"
       else
-        printo info "Accesskey manually defined $ACCESS_KEY"
-        printo info "Workername manually defined $WORKERNAME"
+        printfo info "Accesskey manually defined $ACCESS_KEY"
+        printfo info "Workername manually defined $WORKERNAME"
       fi
     fi
     # smOS
@@ -499,7 +499,7 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
 
     # Safety check for accesskey and workername pairs
     if [[ ! -z "$ACCESS_KEY" ]]; then
-      if [[ ! -z "$WORKERNAME" ]]; then
+      if [[ -z "$WORKERNAME" ]]; then
         printfo fail "Worker name can't be empty if accesskey defined"
         exit
       fi
