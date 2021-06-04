@@ -130,9 +130,9 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
     if [[ ! -f "$FR/opt/image.zip" ]]; then
       WGET_SHOW=$(wget -help | grep -c "show")
       if [[ "$WGET_SHOW" -gt 0 ]]; then
-        wget -q --show-progress -O $FR/opt/image.zip "$HOST?file=$FILE"
+        wget -q -c --retry-connrefused --tries=0 --show-progress -O $FR/opt/image.zip "$HOST?file=$FILE"
       else
-        wget -O $FR/opt/image.zip "$HOST?file=$FILE"
+        wget -c --retry-connrefused --tries=0 -O $FR/opt/image.zip "$HOST?file=$FILE"
       fi
     else
       printfo info "RAW Image already exists, skipping download"
@@ -460,6 +460,8 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
       sudo killall Xorg >/dev/null 2>&1
       sudo killall Xorg >/dev/null 2>&1
       printfo ok "msOS essentials - Xorg killed"
+      sudo service cron stop
+      printfo ok "msOS essentials - crontab stopped"
       screen -A -m -d -S usbdog sudo bash /home/minerstat/minerstat-os/watchdog
       printfo ok "msOS essentials - Watchdog ping started"
       if [[ -z "$ACCESS_KEY" ]]; then
@@ -525,7 +527,7 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
 
     # Create Virtual filesystem
     sudo mkdir $FR > /dev/null 2>&1
-    sudo mount -t tmpfs -o rw,size=3800M tmpfs $FR > /dev/null 2>&1
+    sudo mount -t tmpfs -o rw,size=3820M tmpfs $FR > /dev/null 2>&1
 
     # Create VFS folders
     mkdir $FR/proc $FR/sys $FR/dev $FR/usr $FR/run $FR/var $FR/bin $FR/sbin $FR/lib $FR/tmp $FR/usr $FR/opt > /dev/null 2>&1
