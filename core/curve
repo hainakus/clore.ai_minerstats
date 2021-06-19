@@ -66,7 +66,7 @@ echo "Debug final: min: $FANMIN max: $FANMAX tar: $TARGET"
 
 # Drivers
 TEST_NVIDIA=$(nvidia-smi -L)
-NUM_AMD=$(timeout 40 sudo lspci -k | grep VGA | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van" | grep -c "AMD")
+NUM_AMD=$(timeout 40 sudo lspci -k | grep VGA | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van|RS880" | grep -c "AMD")
 if [ -z "$NUM_AMD" ]; then
   NUM_AMD=$(timeout 3 sudo lshw -C display | grep AMD | wc -l)
 fi
