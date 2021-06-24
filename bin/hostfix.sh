@@ -70,14 +70,14 @@ $SSERVERC labs.minerstat.farm
   sudo rm /home/minerstat/mining-pool-whitelist.txt 2>/dev/null
   timeout 10 wget -o /dev/null https://minerstat.com/mining-pool-whitelist.txt -O /home/minerstat/mining-pool-whitelist.txt
   if [ $? -ne 0 ]; then
-    echo "Cache wget failed. Trying next time"
+    echo "[INFO] Cache wget failed. Trying next time"
   else
     TEST=$(sudo wc -c /home/minerstat/mining-pool-whitelist.txt | awk '{print $1}')
     TEST2=$(cat /home/minerstat/mining-pool-whitelist.txt | grep -c "ethermine")
     TEST3=$(cat /home/minerstat/mining-pool-whitelist.txt | grep -c "2miners")
     TEST4=$(cat /home/minerstat/mining-pool-whitelist.txt | grep -c "nanopool")
     if [[ "$TEST" -gt 1000 ]] && [[ "$TEST2" -gt 0 ]] && [[ "$TEST3" -gt 0 ]] && [[ "$TEST4" -gt 0 ]]; then
-      echo "Cache valid"
+      echo "[OK] Cache valid"
       sudo cat /home/minerstat/mining-pool-whitelist.txt >> /etc/hosts
       sudo echo "$CURRENT_DATE" > /home/minerstat/cache_date
       sync &

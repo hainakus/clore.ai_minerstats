@@ -144,7 +144,7 @@ if [ $1 ]; then
 
       TEST=$(sudo screen -list | grep -wc memdelay)
       if [ "$TEST" = "0" ]; then
-        sudo screen -A -m -d -S memdelay sudo bash /home/minerstat/minerstat-os/core/memdelay &
+        sudo screen -A -m -d -S memdelay sudo bash /home/minerstat/minerstat-os/core/memdelay
       fi
 
     fi

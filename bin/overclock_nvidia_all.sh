@@ -195,7 +195,7 @@ if [ $1 ]; then
       # check lock delay process
       TEST=$(sudo screen -list | grep -wc lockdelay)
       if [ "$TEST" = "0" ]; then
-        sudo screen -A -m -d -S lockdelay sudo bash /home/minerstat/minerstat-os/core/lockdelay &
+        sudo screen -A -m -d -S lockdelay sudo bash /home/minerstat/minerstat-os/core/lockdelay
       fi
     else
       sudo nvidia-smi -lgc $CORELOCK

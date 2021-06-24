@@ -438,7 +438,7 @@ do
 
   if [ $RESPONSE = "SETFANS" ]; then
     echo "-------------------------------------------"
-    screen -A -m -d -S instantoc sudo /home/minerstat/minerstat-os/bin/setfans.sh &
+    screen -A -m -d -S setfan sudo /home/minerstat/minerstat-os/bin/setfans.sh &
     echo "-------------------------------------------"
   fi
 

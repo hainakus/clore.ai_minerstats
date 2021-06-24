@@ -2,6 +2,9 @@
 exec 2>/dev/null
 echo "*-*-* Overclocking in progress *-*-*"
 
+# To keep libs inside screen too
+cd /home/minerstat/minerstat-os/bin/
+
 #NVIDIADEVICE=$(timeout 5 sudo lspci -k | grep VGA | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van" | grep -c "NVIDIA")
 #if [ "$NVIDIADEVICE" = "0" ]; then
 NVIDIADEVICE=$(timeout 40 sudo lshw -C display | grep "driver=nvidia" | wc -l)
