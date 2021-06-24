@@ -9,18 +9,19 @@ echo
 
 
 # Warning
-version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
-if [[ "$version" == *"1.7"* ]]; then
-  echo
-  echo "On Alpha and Beta packages driver updates/downgrades are disabled"
-  echo "because the package shipped with unique customizations that can't be installed with the amd-update tool."
-  echo
-  exit 1
-fi
+#version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
+#if [[ "$version" == *"1.7"* ]]; then
+#  echo
+#  echo "On Alpha and Beta packages driver updates/downgrades are disabled"
+#  echo "because the package shipped with unique customizations that can't be installed with the amd-update tool."
+#  echo
+#  exit 1
+#fi
 
 # Global
 SILENT="no"
 REBOOT="no"
+OCLSWITCH="no"
 
 # Ubuntu version
 U_VER=$(cat /etc/lsb-release)
@@ -102,18 +103,24 @@ list () {
   while read ver; do
     vers=$(echo $ver | sed -e 's#^amdgpu-pro-##;' | cut -f1 -d"-")
     add=""
+    if [[ "$vers" == *"18."* ]] || [[ "$vers" == *"19."* ]] || [[ "$vers" = "20.10" ]] || [[ "$vers" = "20.20" ]]; then
+      add="[Outdated]"
+    fi
     if [[ "$vers" = "20.30" ]]; then
-      add="[Supports up to RX5000 Series]"
+      add="[Supports up to RX5000 Series] [Recommended]"
+    fi
+    if [[ "$vers" = "20.50" ]] || [[ "$vers" = "21.10" ]] || [[ "$vers" = "21.20" ]]; then
+      add="[Supports up to RX6000 Series] "
     fi
     if [[ "$vers" = "20.45" ]] || [[ "$vers" = "20.40" ]] || [[ "$vers" = "20.50" ]] || [[ "$vers" = "21.10" ]] || [[ "$vers" = "21.20" ]]; then
-      add="[Unstable/Experimental - DO NOT UPGRADE]"
+      add="$add[Experimental] [Not Recommended] [20.40 openCL]"
     fi
     echo "$vers $add"
   done < $VLIST_FILE
   echo
   echo "======= Current version: v$CURRENT_DRIVER =========="
   echo
-  echo "Update to latest: amd-update --install $vers"
+  echo "Update to latest: amd-update --install 20.30"
   echo
   echo "==================================================="
   echo
@@ -201,18 +208,44 @@ install () {
     sudo tar -xvf /tmp/$FULL -C /tmp
     FULL_CUT=$(echo $FULL | sed s/".tar.xz"//)
     sudo chmod -R 777 /tmp/$FULL_CUT >/dev/null 2>&1
+    if [[ $FULL_CUT == *"20.45"* ]]; then
+      OCLSWITCH="yes"
+    fi
     if [[ $FULL_CUT == *"20.50"* ]] || [[ $FULL_CUT == *"21.10"* ]] || [[ $FULL_CUT == *"21.20"* ]]; then
+      OCLSWITCH="yes"
       sudo /tmp/$FULL_CUT/amdgpu-pro-install -y --opencl=legacy,rocr --headless
     else
       sudo /tmp/$FULL_CUT/amdgpu-pro-install -y --opencl=legacy,pal --headless
     fi
     # Initramfs
     sudo update-initramfs -u
+    # sudo clinfo
+    sudo /home/minerstat/minerstat-os/core/stop >/dev/null 2>&1
+
+    # Install 20.40 OpencCL if required
+    if [[ "$OCLSWITCH" = "yes" ]]; then
+      echo
+      echo "Installing 20.40 OpenCL"
+      wget "https://static-ssl.minerstat.farm/drivers/amd/1804/opencl_2040.zip" -P /tmp
+      if [[ $? -ne 0 ]]; then
+        echo "Download opencl installer failed.."
+        echo "Start amd-update again"
+        sudo rm /tmp/opencl_2040.zip
+        exit 1
+      fi
+      sudo chmod 777 /tmp/opencl_2040.zip >/dev/null 2>&1
+      #sudo mkdir /tmp/opencl_2040
+      sudo unzip /tmp/opencl_2040.zip -d /tmp/opencl_2040
+      sudo ls /tmp/opencl_2040
+      cd /tmp/opencl_2040
+      sudo dpkg --force-all -i /tmp/opencl_2040/*
+      sudo apt -y --fix-broken install
+      echo
+    fi
+
     # force amd opencl
     sudo su -c "echo '/opt/amdgpu-pro/lib/x86_64-linux-gnu/libamdocl64.so' > /etc/OpenCL/vendors/amdocl64.icd"
-    # sudo clinfo
     # Sync
-    sudo /home/minerstat/minerstat-os/core/stop >/dev/null 2>&1
     TEST=$(dkms status | grep amdgpu)
     if [[ "$TEST" == *"installed"* ]]; then
       echo
