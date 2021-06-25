@@ -87,6 +87,8 @@ fi
 
 # List
 install () {
+  # Path safety
+  cd /home/minerstat
   # List drivers line by line
   echo
   EXISTS="0"
@@ -161,8 +163,13 @@ install () {
         exit 1
       fi
     fi
+    # Path safety
+    cd /home/minerstat
     # Permissions
     sudo chmod 777 /tmp/$FILE >/dev/null 2>&1
+    # Safety
+    sudo killall Xorg
+    sudo killall X
     # Install
     sudo /tmp/$FILE --accept-license --no-questions --ui=none --dkms --no-cc-version-check
     # Initramfs
