@@ -179,6 +179,7 @@ alias fan-test='sudo bash /home/minerstat/minerstat-os/bin/testfan'
 alias fan-apply='sudo bash /home/minerstat/minerstat-os/bin/setfans.sh'
 alias fan-force='sudo bash /home/minerstat/minerstat-os/core/fanforce'
 alias mreflash='sudo bash /home/minerstat/minerstat-os/bin/migrate.sh'
+alias mpass='passwd'
 
 if grep -q experimental "/etc/lsb-release"; then
   alias amdmemtool='sudo /home/minerstat/minerstat-os/bin/amdmemorytweak'

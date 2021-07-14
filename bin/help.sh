@@ -31,6 +31,7 @@ else
   echo -e "${BLUE}mreconf${NC}\t\tSimulate first boot: configure DHCP, creating fake dummy"
   echo -e "${BLUE}mlang${NC}\t\tSet keyboard layout (e.g. mlang de)"
   echo -e "${BLUE}force-gen2${NC}\tForce PCIe GEN2"
+  echo -e "${BLUE}mpass${NC}\t\tChange default user password"
   echo -e ""
   echo -e "======= System updates ======="
   echo -e "${BLUE}mreflash${NC}\tChange running OS version"
