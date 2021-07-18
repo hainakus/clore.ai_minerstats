@@ -9,7 +9,7 @@ sudo su -c "echo 'stop' > /tmp/stop.pid"
 sudo su -c "sudo screen -X -S minew quit >/dev/null" 2>&1 >/dev/null
 sudo su -c "echo "" > /dev/shm/miner.log >/dev/null" 2>&1 >/dev/null
 
-timeout 20 sudo nvidia-settings -a GPUPowerMizerMode=0 -c :0 2>&1 >/dev/null
+timeout 20 sudo nvidia-settings -a GPUPowerMizerMode=0 -c :0 2>/dev/null
 
 echo -e ""
 echo -e "\e[1;38;5;69m============= MINERSTAT AGENT ============\e[39m"
