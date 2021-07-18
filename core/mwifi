@@ -18,17 +18,27 @@ fi
 echo "SSID: $1"
 echo "PASSWD: $2"
 
+# Network manager start (used only for Wifi)
 sudo systemctl enable NetworkManager >/dev/null
 sudo systemctl start NetworkManager >/dev/null
 
+# Scan
 echo
 nmcli d wifi rescan
 nmcli d wifi list
 nmcli device wifi connect "$1" password "$2"
 echo
 
+# Grant permissions
+sudo su -c "chmod 777 /media/storage/network.txt"
+
+# Remove old wifi values in case multiple mwifi used
 sudo sed -i '/WIFISSID/d' /media/storage/network.txt
 sudo sed -i '/WIFIPASS/d' /media/storage/network.txt
 
+# Insert new values
 sudo echo 'WIFISSID="'$1'"' >> /media/storage/network.txt
 sudo echo 'WIFIPASS="'$2'"' >> /media/storage/network.txt
+
+# Remove double spacing only
+sudo sed -i '/^$/d' /media/storage/network.txt

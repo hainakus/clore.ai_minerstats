@@ -44,7 +44,7 @@ timeout 10 sudo su -c "sudo service rsyslog stop"
 timeout 10 sudo dmesg -n 1
 #sudo apt clean &
 # Apply crontab + Fix slow start
-echo "[20%] Setting env varibles ..."
+echo "[20%] Setting env variables ..."
 sudo su -c "cp /home/minerstat/minerstat-os/core/minerstat /var/spool/cron/crontabs/minerstat; chmod 600 /var/spool/cron/crontabs/; chown minerstat /var/spool/cron/crontabs/minerstat; systemctl disable NetworkManager-wait-online.service; systemctl disable systemd-networkd-wait-online.service"
 sudo chmod 1730 /var/spool/cron/crontabs
 sudo chown root:crontab /var/spool/cron/crontabs

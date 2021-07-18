@@ -484,6 +484,7 @@ do
     sudo su minerstat -c "screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh"
     sleep 2
     sudo su minerstat -c "screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh"
+    timeout 20 sudo nvidia-settings -a GPUPowerMizerMode=1 -c :0
   fi
 
   if [ $RESPONSE = "STOP" ]; then
@@ -496,6 +497,7 @@ do
     sleep 2
     sudo su -c "sudo screen -X -S minew quit"
     sudo su minerstat -c "screen -X -S minerstat-console quit";
+    timeout 20 udo nvidia-settings -a GPUPowerMizerMode=0 -c :0
   fi
 
   #if [ $RESPONSE = "RECOVERY" ]; then

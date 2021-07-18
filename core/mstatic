@@ -24,6 +24,7 @@ else
 
     sudo cp -rf /etc/network/interfaces /etc/network/interfaces.bak
     # MODIFY NETWORK.TXT
+    sudo su -c "chmod 777 /media/storage/network.txt"
     sudo sed -i '/IPADDRESS/d' /media/storage/network.txt
     sudo sed -i '/NETMASK/d' /media/storage/network.txt
     sudo sed -i '/GATEWAY/d' /media/storage/network.txt
@@ -38,6 +39,8 @@ else
     # Extension
     sudo ifconfig eth0 $1 netmask $2
     sudo route add default gw $3 eth0
+    # Remove double spacing only
+    sudo sed -i '/^$/d' /media/storage/network.txt
     # CHECK IPV4
     if ping -q -c 1 -W 1 1.1.1.1 >/dev/null; then
       echo
