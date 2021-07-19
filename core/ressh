@@ -113,6 +113,9 @@ if ping -q -c 1 -W 1 1.1.1.1 >/dev/null; then
     sudo iptables -A INPUT -p tcp --match multiport --dports 4200,22,7777,3333,42000,1880,4028,2222,5008,9090,9091,5777,20000 -j DROP
   fi
 
+  # IP bans, infected websites, malwares, botnets
+  sudo iptables -D INPUT -s 159.203.120.5 -j DROP
+
   # Print out new IPTABLE
   sudo iptables -S
 else
