@@ -43,7 +43,7 @@ JOBSSH=$(wc -c < /home/minerstat/minerstat-os/bin/jobs.sh)
 TOOLS=$(cat /home/minerstat/minerstat-os/tools.js | grep -c "ethermine")
 if [ "$STARTJS" = "0" ] || [ "$WORKSH" = "0" ] || [ "$JOBSSH" = "0" ] || [ "$TOOLS" -gt "0" ]; then
   if [[ "$TOOLS" -gt "0" ]]; then
-   sudo su -c "echo 'system auto-recovery' > /dev/shm/miner.log"
+    sudo su -c "echo 'system auto-recovery' > /dev/shm/miner.log"
   fi
   sudo su -c "sudo screen -X -S minew quit"
   sudo su -c "sudo screen -X -S fakescreen quit"
@@ -63,6 +63,48 @@ if [ "$STARTJS" = "0" ] || [ "$WORKSH" = "0" ] || [ "$JOBSSH" = "0" ] || [ "$TOO
   sudo su minerstat -c "screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh"
   sleep 2
   sudo su minerstat -c "screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh"
+fi
+
+# Cache Public IP in memory
+if [[ ! -f "/dev/shm/public.txt" ]]; then
+  TESTIP=$(curl checkip.amazonaws.com)
+  if [[ -z "$TESTIP" ]]; then
+    TESTIP=$(curl ipecho.net/plain)
+  fi
+  if [[ $TESTIP == *"."* ]]; then
+    echo "IPV4: $TESTIP"
+    sudo su -c "echo $TESTIP > /dev/shm/public.txt"
+  fi
+fi
+
+# Check public ip exists in cache and lock ssh if exposed
+if [[ ! -f "/home/minerstat/shh-unlock.pid" ]]; then
+  if [[ ! -f "/home/minerstat/public_test.txt" ]]; then
+    if [[ -f "/dev/shm/public.txt" ]]; then
+      TESTIP=$(cat /dev/shm/public.txt)
+      echo "IP Cache: $TESTIP"
+
+      TESTS=$(curl https://status.minerstat.com/port.php?ip=$TESTIP)
+      if [[ $TESTS == *"Exposed"* ]]; then
+        echo "Network is open"
+        echo "No manual unlock found, auto-locking down"
+        sudo su -c "echo 'system auto-lock' > /dev/shm/miner.log"
+        sudo bash /home/minerstat/minerstat-os/core/ssh-lock
+        RES="OPEN"
+      fi
+
+      if [[ $TESTS == *"Safe"* ]]; then
+        echo "Network is safe"
+        RES="SAFE"
+      fi
+
+      if [[ ! -z "$TESTS" ]]; then
+        sudo su -c "echo $RES > /home/minerstat/public_test.txt"
+        sync &
+      fi
+
+    fi
+  fi
 fi
 
 # Check XSERVER

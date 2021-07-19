@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Free
+sudo rm /home/minerstat/shh-lock.pid
+sudo echo "whitelist" > /home/minerstat/shh-unlock.pid
+sudo /home/minerstat/minerstat-os/core/ressh
+
+# ECHO
+echo
+echo
+echo "SSH and Web Console ports open."
+echo
+echo
+
+sync &

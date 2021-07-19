@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Block
+sudo rm /home/minerstat/shh-unlock.pid
+sudo echo "disable" > /home/minerstat/shh-lock.pid
+sudo /home/minerstat/minerstat-os/core/ressh
+
+# ECHO
+echo
+echo
+echo "SSH and Web Console ports blocked."
+echo
+echo
+
+sync &
