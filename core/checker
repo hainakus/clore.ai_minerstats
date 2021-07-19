@@ -78,7 +78,7 @@ if [[ ! -f "/dev/shm/public.txt" ]]; then
 fi
 
 # Check public ip exists in cache and lock ssh if exposed
-if [[ ! -f "/home/minerstat/shh-unlock.pid" ]]; then
+if [[ ! -f "/home/minerstat/ssh-unlock.pid" ]]; then
   if [[ ! -f "/home/minerstat/public_test.txt" ]]; then
     if [[ -f "/dev/shm/public.txt" ]]; then
       TESTIP=$(cat /dev/shm/public.txt)
