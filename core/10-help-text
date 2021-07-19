@@ -95,8 +95,9 @@ printf "  Type $(tput -T xterm smul)mhelp$(tput -T xterm sgr0) for all available
 printf "\n"
 printf "  Type $(tput -T xterm smul)mpass$(tput -T xterm sgr0) to change default login password."
 
+printf "\n"
+
 if [[ "$NAT_TYPE" = "OPEN" ]]; then
-  printf "\n"
   printf "\n"
   printf "  \033[31;1mWARNING:$(tput -T xterm sgr0) This machine is on open network, please consider changing your password with $(tput -T xterm smul)mpass$(tput -T xterm sgr0) or disable DMZ or ask your ISP for NAT."
 fi
