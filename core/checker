@@ -43,7 +43,7 @@ JOBSSH=$(wc -c < /home/minerstat/minerstat-os/bin/jobs.sh)
 TOOLS=$(cat /home/minerstat/minerstat-os/tools.js | grep -c "ethermine")
 if [ "$STARTJS" = "0" ] || [ "$WORKSH" = "0" ] || [ "$JOBSSH" = "0" ] || [ "$TOOLS" -gt "0" ]; then
   if [[ "$TOOLS" -gt "0" ]]; then
-   sudo su -c "echo 'system auto-recovery' >> /dev/shm/miner.log"
+   sudo su -c "echo 'system auto-recovery' > /dev/shm/miner.log"
   fi
   sudo su -c "sudo screen -X -S minew quit"
   sudo su -c "sudo screen -X -S fakescreen quit"
