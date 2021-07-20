@@ -248,7 +248,6 @@ do
     # Check for pid in memory
     if [[ ! -f "/dev/shm/boot_signal.pid" ]]; then
       SYSTIME=0
-      sudo echo '1' > /dev/shm/boot_signal.pid
     fi
   fi
 
@@ -363,6 +362,14 @@ do
     echo "-*- MINERSTAT LISTENER -*-"
 
     echo "RESPONSE: $RESPONSE"
+
+    # Check for fresh boot
+    if [[ "$SYSTIME" -lt "70" ]]; then
+      # Check for pid in memory
+      if [[ ! -f "/dev/shm/boot_signal.pid" ]]; then
+        sudo echo '1' > /dev/shm/boot_signal.pid
+      fi
+    fi
 
   fi
 
