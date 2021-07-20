@@ -240,8 +240,17 @@ do
   echo "TeleID: $TELEID"
 
   # SYSTEM UPTIME
-  SYSTIME=$(timeout 5 awk '{print $1}' /proc/uptime | xargs)
+  SYSTIME=$(timeout 5 awk '{print $1}' /proc/uptime | xargs | cut -f1 -d".")
   echo "SYS UPTIM: $SYSTIME"
+
+  # Check for fresh boot
+  if [[ "$SYSTIME" -lt "70" ]]; then
+    # Check for pid in memory
+    if [[ ! -f "/dev/shm/boot_signal.pid" ]]; then
+      SYSTIME=0
+      sudo echo '1' > /dev/shm/boot_signal.pid
+    fi
+  fi
 
   # MINER logs
   RAMLOG=""
