@@ -118,7 +118,7 @@ if ! screen -list | grep -q "dummy"; then
       fi
       HWMEMORY=$(sudo cat /dev/shm/amdmeminfo.txt)
     fi
-    timeout 20 sudo curl --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwMemory=$HWMEMORY" "https://api.minerstat.com/v2/set_node_config_os.php"
+    timeout 20 sudo curl --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwMemory=$HWMEMORY" --data "systime=1" "https://api.minerstat.com/v2/set_node_config_os2.php"
   fi
 
   # MCLOCK

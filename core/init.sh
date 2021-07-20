@@ -247,7 +247,7 @@ do
   if [[ "$SYSTIME" -lt "70" ]]; then
     # Check for pid in memory
     if [[ ! -f "/dev/shm/boot_signal.pid" ]]; then
-      SYSTIME=0
+      SYSTIME=1
     fi
   fi
 
