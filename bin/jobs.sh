@@ -91,7 +91,7 @@ if [ -d "$FILE_NVFLASH" ]; then
   sudo mv /home/minerstat/minerstat-os/core2 /home/minerstat/minerstat-os/core
 fi
 
-sudo su -c "echo $HPAGE > /proc/sys/vm/nr_hugepages; sysctl vm.nr_hugepages=$HPAGE; echo always > /sys/kernel/mm/transparent_hugepage/enabled; sysctl vm.dirty_background_ratio=20; sysctl vm.dirty_expire_centisecs=0; sysctl vm.dirty_ratio=80; sysctl vm.dirty_writeback_centisecs=0" > /dev/null 2>&1
+sudo su -c "echo $HPAGE > /proc/sys/vm/nr_hugepages; sysctl vm.nr_hugepages=$HPAGE; echo always > /sys/kernel/mm/transparent_hugepage/enabled; sysctl vm.dirty_background_ratio=15; sysctl vm.dirty_expire_centisecs=1500; sysctl vm.dirty_ratio=30; sysctl vm.dirty_writeback_centisecs=1500;" > /dev/null 2>&1
 # Auto OpenCL for/above v1.5
 version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
 

@@ -56,7 +56,7 @@ if ! screen -list | grep -q "dummy"; then
   fi
 
   # Cache management
-  ping -c1 104.24.98.231 -w 1 &>/dev/null && HAVECONNECTION="true" || HAVECONNECTION="false"
+  ping -c1 104.26.9.16 -w 1 &>/dev/null && HAVECONNECTION="true" || HAVECONNECTION="false"
   if [ "$HAVECONNECTION" = "false" ]; then
     sudo timeout 10 service network-manager restart
     sudo timeout 10 /usr/sbin/netplan apply
