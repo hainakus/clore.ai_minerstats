@@ -123,6 +123,10 @@ if [ ! -z "$DONVIDIA" ]; then
     VALIDATE=$(cat /dev/shm/nvapplyclk.txt)
     echo $VALIDATE
     if [[ "$VALIDATE" == *"Unable to find"* ]] || [[ "$VALIDATE" == *"Unknown"* ]] || [[ -z "$VALIDATE" ]]; then
+      echo "Seems NVIDIA driver returned error"
+      echo "Watiing 25 sec before attempting to apply again"
+      sudo su -c "echo 'system oc error $VALIDATE' > /dev/shm/miner.log"
+      sleep 25
       sudo su minerstat -c "DISPLAY=:0 nvidia-settings --verbose -c :0 $STR"
     fi
     sleep 1
