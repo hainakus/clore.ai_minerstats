@@ -102,7 +102,7 @@ if [[ "$NAT_TYPE" = "OPEN" ]]; then
   printf "  \033[31;1mWARNING:$(tput -T xterm sgr0) This machine is on open network, please consider changing your password with $(tput -T xterm smul)mpass$(tput -T xterm sgr0) or disable DMZ or ask your ISP for NAT."
 fi
 
-if [[ -f "/home/minerstat/shh-lock.pid" ]]; then
+if [[ -f "/home/minerstat/ssh-lock.pid" ]]; then
   printf "\n"
   printf "  SSH (22) and Shellinabox (4200) got disabled for your protection. You can enable back at your own risk with $(tput -T xterm smul)ssh-unlock$(tput -T xterm sgr0)."
 fi
