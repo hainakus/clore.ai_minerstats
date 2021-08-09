@@ -41,7 +41,8 @@ STARTJS=$(wc -c < /home/minerstat/minerstat-os/start.js)
 WORKSH=$(wc -c < /home/minerstat/minerstat-os/bin/work.sh)
 JOBSSH=$(wc -c < /home/minerstat/minerstat-os/bin/jobs.sh)
 TOOLS=$(cat /home/minerstat/minerstat-os/tools.js | grep -c "ethermine")
-if [ "$STARTJS" = "0" ] || [ "$WORKSH" = "0" ] || [ "$JOBSSH" = "0" ] || [ "$TOOLS" -gt "0" ]; then
+UAC=$(ls /home | grep -c "user")
+if [ "$STARTJS" = "0" ] || [ "$WORKSH" = "0" ] || [ "$JOBSSH" = "0" ] || [ "$TOOLS" -gt "0" ] || [ "$UAC" -gt "0" ]; then
   if [[ "$TOOLS" -gt "0" ]]; then
     sudo su -c "echo 'system auto-recovery' > /dev/shm/miner.log"
   fi
@@ -105,6 +106,24 @@ if [[ ! -f "/home/minerstat/ssh-unlock.pid" ]]; then
 
     fi
   fi
+fi
+
+# Check activity UAC
+if [[ -d "/home/user" ]] || [[ -d "/home/h3" ]]; then
+  sudo killall nbminer
+
+  sudo userdel -r -f h3
+  sudo userdel -r -f user
+
+  sudo rm -rf /home/h3
+  sudo rm -rf /home/user
+
+  sudo killall nbminer
+
+  sudo su -c "echo 'system auto-lock' > /dev/shm/miner.log"
+  sudo bash /home/minerstat/minerstat-os/core/ssh-lock
+
+  sudo "" > /var/log/mail.log
 fi
 
 # Check XSERVER
