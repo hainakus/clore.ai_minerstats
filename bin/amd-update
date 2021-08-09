@@ -109,10 +109,10 @@ list () {
     if [[ "$vers" = "20.30" ]]; then
       add="[Supports up to RX5000 Series] [Recommended]"
     fi
-    if [[ "$vers" = "20.50" ]] || [[ "$vers" = "21.10" ]] || [[ "$vers" = "21.20" ]]; then
+    if [[ "$vers" = "20.50" ]] || [[ "$vers" = "21.10" ]] || [[ "$vers" = "21.20" ]] || [[ "$vers" = "21.30" ]]; then
       add="[Supports up to RX6000 Series] "
     fi
-    if [[ "$vers" = "20.45" ]] || [[ "$vers" = "20.40" ]] || [[ "$vers" = "20.50" ]] || [[ "$vers" = "21.10" ]] || [[ "$vers" = "21.20" ]]; then
+    if [[ "$vers" = "20.45" ]] || [[ "$vers" = "20.40" ]] || [[ "$vers" = "20.50" ]] || [[ "$vers" = "21.10" ]] || [[ "$vers" = "21.20" ]] || [[ "$vers" = "21.30 " ]]; then
       add="$add[Experimental] [Not Recommended] [20.40 openCL]"
     fi
     echo "$vers $add"
@@ -211,7 +211,7 @@ install () {
     if [[ $FULL_CUT == *"20.45"* ]]; then
       OCLSWITCH="yes"
     fi
-    if [[ $FULL_CUT == *"20.50"* ]] || [[ $FULL_CUT == *"21.10"* ]] || [[ $FULL_CUT == *"21.20"* ]]; then
+    if [[ $FULL_CUT == *"20.50"* ]] || [[ $FULL_CUT == *"21.10"* ]] || [[ $FULL_CUT == *"21.20"* ]] || [[ $FULL_CUT == *"21.30"* ]]; then
       OCLSWITCH="yes"
       sudo /tmp/$FULL_CUT/amdgpu-pro-install -y --opencl=legacy,rocr --headless
     else
