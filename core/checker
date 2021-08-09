@@ -82,11 +82,14 @@ fi
 if [[ ! -f "/home/minerstat/ssh-unlock.pid" ]]; then
   if [[ ! -f "/home/minerstat/public_test.txt" ]]; then
     if [[ -f "/dev/shm/public.txt" ]]; then
+
+      LOCALIP="$(timeout 5 ifconfig | grep "inet" | grep -v "inet6" | grep -vE "127.0.0.1|169.254|172.17." | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | head -n 1 | grep -o -E '[.0-9]+')"
+
       TESTIP=$(cat /dev/shm/public.txt)
       echo "IP Cache: $TESTIP"
 
       TESTS=$(curl https://status.minerstat.com/port.php?ip=$TESTIP)
-      if [[ $TESTS == *"Exposed"* ]]; then
+      if [[ $TESTS == *"Exposed"* ]] || [[ "$LOCALIP" = "$TESTIP" ]]; then
         echo "Network is open"
         echo "No manual unlock found, auto-locking down"
         sudo su -c "echo 'system auto-lock' > /dev/shm/miner.log"
