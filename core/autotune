@@ -51,18 +51,18 @@ apply_tables() {
       if [[ $CURR_REF == *" "* ]]; then
         CURR_REF=$(sudo /home/minerstat/minerstat-os/bin/$MEMTOOL --current | grep -A 20 "GPU $GPU_MEM_ID:" | grep "REF:" | sed 's/Timing 12://g' | sed 's/[^0-9 ]*//g' | xargs)
       fi
-      wget --quiet http://static-ssl.minerstat.farm/miners/tables/$MODEL -O /dev/shm/$MODEL
-      if [ ! -f "/dev/shm/$MODEL" ]; then
-        rm /dev/shm/$MODEL
-        wget --quiet http://static-ssl.minerstat.farm/miners/tables/$MODEL -O /dev/shm/$MODEL
-      fi
-      if [ -f "/dev/shm/$MODEL" ]; then
-        sudo su -c "cat /dev/shm/$MODEL > /sys/class/drm/card$recheckID/device/pp_table"
-        echo "card$recheckID => new pp_table applied !"
-        rm /dev/shm/$MODEL
-      else
-        echo "Something went wrong. Please, try again in few minutes.."
-      fi
+      #wget --quiet http://static-ssl.minerstat.farm/miners/tables/$MODEL -O /dev/shm/$MODEL
+      #if [ ! -f "/dev/shm/$MODEL" ]; then
+      #  rm /dev/shm/$MODEL
+      #  wget --quiet http://static-ssl.minerstat.farm/miners/tables/$MODEL -O /dev/shm/$MODEL
+      #fi
+      #if [ -f "/dev/shm/$MODEL" ]; then
+      #sudo su -c "cat /dev/shm/$MODEL > /sys/class/drm/card$recheckID/device/pp_table"
+      #echo "card$recheckID => new pp_table applied !"
+      #rm /dev/shm/$MODEL
+      #else
+      #  echo "Something went wrong. Please, try again in few minutes.."
+      #fi
       #if [[ $MODEL == *"VII"* ]]; then
       #  if [ "$CURR_REF" -gt "1000" ]; then
       #    NEWREF="7000"
