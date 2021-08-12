@@ -224,6 +224,22 @@ loop() {
                   if [ "$PWM" = "1" ]; then
                     sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable"
                     sudo su -c "echo $FANVALUE > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1"
+                    sleep 2
+                    RB=$(cat /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1)
+                    echo "Set $FANVALUE, Read back: $RB"
+                    if [ "$RB" -gt "$FANVALUE" ]; then
+                      DIFFERENCE=$((RB-FANVALUE))
+                      if [ "$DIFFERENCE" -gt "59" ]; then
+                        NEW_ATTEMPT=$((FANVALUE-DIFFERENCE))
+                        echo "Read back is higher, some driver issue detected. Attempting to auto offset it"
+                        echo "Diff: $DIFFERENCE, New val: $NEW_ATTEMPT"
+                        sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable"
+                        sudo su -c "echo $NEW_ATTEMPT > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1"
+                        sleep 2
+                        RB=$(cat /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1)
+                        echo "Set $NEW_ATTEMPT, Read back: $RB"
+                      fi
+                    fi
                   else
                     sudo su -c "echo 2 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable"
                     sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable"
