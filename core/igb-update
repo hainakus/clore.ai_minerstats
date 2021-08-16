@@ -1,0 +1,15 @@
+#!/bin/bash
+
+cd /home/minerstat
+wget -o /dev/null https://downloadmirror.intel.com/13663/eng/igb-5.7.2.tar.gz
+tar -xvf igb-5.7.2.tar.gz
+cd igb-5.7.2/src
+sed -i 's/#if UTS_UBUNTU_RELEASE_ABI > 65535/#if UTS_UBUNTU_RELEASE_ABI > 999255/' /home/minerstat/igb-5.7.2/src/kcompat.h
+sed -i 's/UTS_UBUNTU_RELEASE_ABI > 65535/UTS_UBUNTU_RELEASE_ABI > 999255/' /home/minerstat/igb-5.7.2/src/kcompat.h
+sudo make
+sudo make install
+sudo rmmod igb
+sudo modprobe igb
+sudo insmod igb
+sudo update-initramfs -u
+sync
