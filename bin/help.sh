@@ -69,6 +69,7 @@ else
   echo -e "${BLUE}static${NC}\t\tYou can now configure static IP with static command."
   echo -e "${BLUE}dhcp${NC}\t\tSwitch back to Dynamic IP"
   echo -e "${BLUE}e1000-update${NC}\tUpdate e1000 driver"
+  echo -e "${BLUE}igb-update${NC}\tUpdate Intel IGB Ethernet drivers"
   echo -e ""
   echo -e "======= Mining settings ======="
   echo -e "${BLUE}mpill${NC}\t\tToggle ETHPill ON/OFF"
