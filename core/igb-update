@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Intel IGB
+# Network Adapter Driver for 82575/6, 82580, I350, and I210/211-Based Gigabit Network Connections for Linux
+
 cd /home/minerstat
 wget -o /dev/null https://downloadmirror.intel.com/13663/eng/igb-5.7.2.tar.gz
 tar -xvf igb-5.7.2.tar.gz
@@ -15,4 +18,18 @@ sudo update-initramfs -u
 sync
 
 # Intel 10Gig
-# https://downloadmirror.intel.com/14687/eng/ixgbe-5.12.5.tar.gz
+# The ixgbe driver supports 82598- and 82599-based PCI Express* 10 Gigabit Network Connections.
+
+cd /home/minerstat
+wget -o /dev/null https://downloadmirror.intel.com/14687/eng/ixgbe-5.12.5.tar.gz
+tar -xvf ixgbe-5.12.5.tar.gz
+cd ixgbe-5.12.5/src
+sed -i 's/#if UTS_UBUNTU_RELEASE_ABI > 65535/#if UTS_UBUNTU_RELEASE_ABI > 999255/' /home/minerstat/ixgbe-5.12.5/src/kcompat.h
+sed -i 's/UTS_UBUNTU_RELEASE_ABI > 65535/UTS_UBUNTU_RELEASE_ABI > 999255/' /home/minerstat/ixgbe-5.12.5/src/kcompat.h
+sudo make
+sudo make install
+sudo rmmod ixgbe
+sudo modprobe ixgbe
+sudo insmod ixgbe
+sudo update-initramfs -u
+sync
