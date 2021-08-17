@@ -1,4 +1,5 @@
 #!/bin/bash
+exec 2> /dev/null
 
 # Reset
 Color_Off='\033[0m'       # Text Reset
@@ -6,6 +7,11 @@ Color_Off='\033[0m'       # Text Reset
 # Regular Colors
 Red='\033[0;31m'          # Red
 Green='\033[0;32m'        # Green
+
+echo -e "$Color_Off"
+
+ERR_GATEWAY="$Red Check your Router and Ethernet connection/cable $Color_Off"
+ERR_REACH="$Red Check your DNS/Router-Firewall settings $Color_Off"
 
 function printfo() {
   mark="INFO"
@@ -19,7 +25,7 @@ function printfo() {
   echo -n ""
   echo -e "  [$mark] $2 \r"
   if [[ ! -z "$3" ]]; then
-    echo -e "  [INFO] $3 resolved for $2 \r"
+    echo -e "  $Color_Off [INFO] $3 resolved for $2 \r"
   fi
   echo -n ""
 }
@@ -36,7 +42,7 @@ while read ip; do
       if [[ "$RES_TEST" = "ok" ]]; then
         printfo ok $ip
       else
-        printfo fail $ip
+        printfo fail "$ip $ERR_GATEWAY"
       fi
     fi
   fi
@@ -60,7 +66,7 @@ if [[ "$RES_TEST" = "ok" ]]; then
         if [[ "$RES_TEST" = "ok" ]]; then
           printfo ok $ip
         else
-          printfo fail $ip
+          printfo fail "$ip $ERR_REACH"
         fi
       fi
     fi
@@ -88,7 +94,7 @@ while read ip; do
           if [[ "$RES_TEST" = "ok" ]]; then
             printfo ok "$host" "$ip"
           else
-            printfo fail "$host" "$ip"
+            printfo fail "$host" "$ip $ERR_REACH"
           fi
         fi
       fi
@@ -112,7 +118,7 @@ if [[ "$CNT" -lt 22 ]]; then
             if [[ "$RES_TEST" = "ok" ]]; then
               printfo ok "$ip"
             else
-              printfo fail "$ip"
+              printfo fail "$ip $ERR_REACH"
             fi
           fi
         fi
