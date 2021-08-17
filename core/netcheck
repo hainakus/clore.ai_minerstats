@@ -25,7 +25,7 @@ function printfo() {
   echo -n ""
   echo -e "  [$mark] $2 \r"
   if [[ ! -z "$3" ]]; then
-    echo -e "  $Color_Off [INFO] $3 resolved for $2 \r"
+    echo -e "  $Color_Off[INFO] $3 resolved for $2 \r"
   fi
   echo -n ""
 }
