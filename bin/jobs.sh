@@ -69,7 +69,8 @@ export GPU_MAX_ALLOC_PERCENT=100
 export GPU_SINGLE_ALLOC_PERCENT=100
 export GPU_MAX_HEAP_SIZE=100
 # Check SSH Keys
-timeout 10 sudo bash /home/minerstat/minerstat-os/core/ressh
+echo "[25%] Validating SSH Keys ..."
+timeout 10 sudo bash /home/minerstat/minerstat-os/core/ressh > /dev/null
 # .bashrc
 sudo cp -fR /home/minerstat/minerstat-os/core/.bashrc /home/minerstat
 # rocm for VEGA
