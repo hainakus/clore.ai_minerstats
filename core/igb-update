@@ -13,3 +13,6 @@ sudo modprobe igb
 sudo insmod igb
 sudo update-initramfs -u
 sync
+
+# Intel 10Gig
+# https://downloadmirror.intel.com/14687/eng/ixgbe-5.12.5.tar.gz
