@@ -12,3 +12,7 @@ sudo modprobe e1000e
 sudo insmod e1000e
 sudo update-initramfs -u
 sync
+
+echo ""
+echo "E1000 updated"
+echo ""

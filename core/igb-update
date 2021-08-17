@@ -3,6 +3,8 @@
 # Intel IGB
 # Network Adapter Driver for 82575/6, 82580, I350, and I210/211-Based Gigabit Network Connections for Linux
 
+echo "Installing Intel Gigabit Networking (IGB) Updates"
+
 cd /home/minerstat
 wget -o /dev/null https://downloadmirror.intel.com/13663/eng/igb-5.7.2.tar.gz
 tar -xvf igb-5.7.2.tar.gz
@@ -17,8 +19,12 @@ sudo insmod igb
 sudo update-initramfs -u
 sync
 
+echo "IGB Done .."
+
 # Intel 10Gig
 # The ixgbe driver supports 82598- and 82599-based PCI Express* 10 Gigabit Network Connections.
+
+echo "Installing Intel IXGBE (10Gig) Updates"
 
 cd /home/minerstat
 wget -o /dev/null https://downloadmirror.intel.com/14687/eng/ixgbe-5.12.5.tar.gz
@@ -33,3 +39,17 @@ sudo modprobe ixgbe
 sudo insmod ixgbe
 sudo update-initramfs -u
 sync
+
+echo "IXGBE Done .."
+
+# After IGB Recommended to update E1000
+
+echo "Installing Intel E1000 Updates"
+
+sudo bash /home/minerstat/minerstat-os/core/e1000
+
+echo "E1000 Done."
+
+echo ""
+echo "Finished. Reboot to apply changes."
+echo ""
