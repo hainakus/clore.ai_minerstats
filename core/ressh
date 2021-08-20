@@ -53,7 +53,7 @@ fi
 # All port is disabled from public already, for new packages generating new host keys for additional layer of security
 # On iptables already all port disabled 4200,22,7777,3333,42000,1880,4028,2222,5008,9090,9091,5777,20000 only local network access enabled
 version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
-if [ "$version" = "1.4.9" ] || [ "$version" = "1.5.3" ] || [ "$version" = "1.5.4" ] || [ "$version" = "1.5.5" ] || [ "$version" = "1.6.0" ] || [ "$version" = "1.2.6" ] || [ "$version" = "1.7.0" ] || [ "$version" = "1.7.1" ] || [ "$version" = "1.7.2" ] || [ "$version" = "1.7.3" ] || [ "$version" = "1.7.4" ] || [ "$version" = "1.7.5" ] || [ "$version" = "1.4.10" ]; then
+if [ "$version" = "1.4.9" ] || [ "$version" = "1.5.3" ] || [ "$version" = "1.5.4" ] || [ "$version" = "1.5.5" ] || [ "$version" = "1.6.0" ] || [ "$version" = "1.2.6" ] || [ "$version" = "1.7.0" ] || [ "$version" = "1.7.1" ] || [ "$version" = "1.7.2" ] || [ "$version" = "1.7.3" ] || [ "$version" = "1.7.4" ] || [ "$version" = "1.7.5" ] || [ "$version" = "1.4.10" ] || [ "$version" = "1.7.6" ]; then
   FILE=/media/storage/ssh.txt
   if [ -f "$FILE" ]; then
     echo "SSH Keys Already Regenerated.."
