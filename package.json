@@ -19,7 +19,7 @@
     "execa": "^0.10.0",
     "express": "^4.17.1",
     "fkill": "^5.3.0",
-    "needle": "^2.4.0",
+    "needle": "^2.7.0",
     "parse-spawn-args": "^1.0.2",
     "progress": "^2.0.3",
     "pump": "^3.0.0",
