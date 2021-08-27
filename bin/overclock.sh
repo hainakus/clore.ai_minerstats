@@ -117,11 +117,11 @@ if [ ! -z "$DONVIDIA" ]; then
   if [ -f "/dev/shm/nv_clkcache.txt" ]; then
     DISPLAY=:0
     export DISPLAY=:0
-    STR=$(sudo cat /dev/shm/nv_clkcache.txt | tr -d '\r\n' | xargs -0)
+    STR=$(sudo cat /dev/shm/nv_clkcache.txt | sed  '/^$/d' | xargs)
     echo "DISPLAY=:0 nvidia-settings --verbose -c :0 $STR"
     sudo su minerstat -c "DISPLAY=:0 nvidia-settings --verbose -c :0 $STR" &> /dev/shm/nvapplyclk.txt
-    VALIDATE=$(cat /dev/shm/nvapplyclk.txt | tr '\n' ' ' | xargs -0)
-    cat /dev/shm/nvapplyclk.txt
+    VALIDATE=$(cat /dev/shm/nvapplyclk.txt | sed  '/^$/d' | xargs)
+    cat /dev/shm/nvapplyclk.txt | sed  '/^$/d'
     if [[ "$VALIDATE" == *"Unable to find"* ]] || [[ "$VALIDATE" == *"Unknown"* ]] || [[ -z "$VALIDATE" ]]; then
       echo "Seems NVIDIA driver returned error"
       echo "Watiing 25 sec before attempting to apply again"

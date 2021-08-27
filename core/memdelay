@@ -56,8 +56,8 @@ fi
 if [[ "$JOB" != "" ]]; then
   echo "EXECUTE: nvidia-settings --verbose -c :0 $JOB"
   sudo su minerstat -c "DISPLAY=:0 nvidia-settings --verbose -c :0 $JOB" &> /dev/shm/nvapplymclk.txt
-  VALIDATE=$(cat /dev/shm/nvapplymclk.txt | tr '\n' ' ' | xargs -0)
-  cat /dev/shm/nvapplymclk.txt
+  VALIDATE=$(cat /dev/shm/nvapplymclk.txt | sed  '/^$/d' | xargs)
+  cat /dev/shm/nvapplymclk.txt | sed  '/^$/d'
   if [[ "$VALIDATE" == *"Unable to find"* ]] || [[ "$VALIDATE" == *"Unknown"* ]] || [[ -z "$VALIDATE" ]]; then
     echo "Watiing 25 sec before attempting to apply again"
     sudo su -c "echo '$VALIDATE' > /dev/shm/miner.log"
