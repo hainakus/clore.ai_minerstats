@@ -1,10 +1,21 @@
 #!/bin/bash
 
-sleep 90
+# Wait a bit
+sleep 40
 
 # Check if clocktune applied or not after boot
 # If not exec for protection
 
+TEST=$(sudo screen -list | grep -wc minew)
+
+until [ $TEST = 1 ]
+do
+  TEST=$(sudo screen -list | grep -wc minew)
+  echo "Waiting miner to start..."
+  sleep 1
+done
+
+# Loop to check clocktune applied
 while true
 do
   FILE=/dev/shm/bootclock.pid
