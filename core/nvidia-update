@@ -251,6 +251,9 @@ install () {
       echo "================="
       echo
       sudo /usr/bin/nvidia-smi
+      echo
+      echo "Enter: mclock to apply clocks"
+      echo "Enter: forcereboot to reboot"
       if [[ "$REBOOT" == "yes" ]]; then
         echo "Everything went fine, rebooting"
         sync
