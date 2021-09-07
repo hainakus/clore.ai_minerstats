@@ -20,10 +20,17 @@ while true
 do
   FILE=/dev/shm/bootclock.pid
   if [ -f "$FILE" ]; then
-    echo "pid found"
+    echo "clocktune applied before"
+
+    VALIDATE=$(cat /dev/shm/nvapplymclk.txt | sed  '/^$/d' | xargs)
+    if [[ "$VALIDATE" == *"Unable to find"* ]] || [[ "$VALIDATE" == *"Unknown"* ]] || [[ -z "$VALIDATE" ]] || [[ "$VALIDATE" == *"not available"* ]]; then
+      sudo killall Xorg
+      sudo bash /home/minerstat/minerstat-os/bin/overclock.sh
+    fi
+
     exit
   else
-    echo "pid not found"
+    echo "clocktune not applied yet"
     #sudo echo "stopboot" > /tmp/stop.pid;
     sudo su -c "echo 'stopboot' > /tmp/stop.pid"
     ping -c1 api.minerstat.com -w 1 &>/dev/null && HAVECONNECTION="true" || HAVECONNECTION="false"
@@ -31,6 +38,7 @@ do
       ping -c1 api.minerstat.com -w 1 &>/dev/null && HAVECONNECTION="true" || HAVECONNECTION="false"
       sleep 2
     done
+    sudo killall Xorg
     sudo bash /home/minerstat/minerstat-os/bin/overclock.sh
     #sudo rm /tmp/stop.pid
     sudo su -c "sudo rm /tmp/stop.pid"

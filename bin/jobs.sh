@@ -266,8 +266,9 @@ if [ "$NVIDIADEVICE" != "0" ]; then
     timeout 10 sudo rm /dev/shm/nverr.txt &> /dev/null
     CHECK_ERR=$(timeout 10 sudo nvidia-settings --verbose -c :0 -a GPUFanControlState=1 -a GPUTargetFanSpeed="$FANMAX" &> /dev/shm/nverr.txt)
     CHECK_ERR=$(cat /dev/shm/nverr.txt | grep -c "Unknown Error")
+    CHECK_ERR2=$(cat /dev/shm/nverr.txt | grep -c "not available")
   fi
-  if [[ "$SNUM" != "1" ]] || [[ "$XORG" -lt 1 ]] || [[ "$XORG" -lt $NVIDIADEVICE ]] || [[ "$CHECK_ERR" -gt 0 ]]; then
+  if [[ "$SNUM" != "1" ]] || [[ "$XORG" -lt 1 ]] || [[ "$XORG" -lt $NVIDIADEVICE ]] || [[ "$CHECK_ERR" -gt 0 ]] || [[ "$CHECK_ERR2" -gt 0 ]]; then
     sudo su -c "timeout 10 sudo screen -X -S display quit" > /dev/null
     timeout 10 screen -X -S display quit > /dev/null
     timeout 10 screen -X -S display2 quit > /dev/null

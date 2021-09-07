@@ -210,7 +210,8 @@ install () {
       timeout 10 sudo rm /dev/shm/nverr.txt &> /dev/null
       CHECK_ERR=$(timeout 10 sudo nvidia-settings -c :0 -a GPUFanControlState=1 -a GPUTargetFanSpeed="75" &> /dev/shm/nverr.txt)
       CHECK_ERR=$(cat /dev/shm/nverr.txt | grep -c "Unknown Error")
-      if [[ "$SNUM" != "1" ]] || [[ "$XORG" -lt 1 ]] || [[ "$XORG" -lt $NVIDIADEVICE ]] || [[ "$CHECK_ERR" -gt 0 ]]; then
+      CHECK_ERR2=$(cat /dev/shm/nverr.txt | grep -c "not available")
+      if [[ "$SNUM" != "1" ]] || [[ "$XORG" -lt 1 ]] || [[ "$XORG" -lt $NVIDIADEVICE ]] || [[ "$CHECK_ERR" -gt 0 ]] || [[ "$CHECK_ERR2" -gt 0 ]]; then
         sudo su -c "timeout 10 sudo screen -X -S display quit" > /dev/null
         timeout 10 screen -X -S display quit > /dev/null
         timeout 10 screen -X -S display2 quit > /dev/null

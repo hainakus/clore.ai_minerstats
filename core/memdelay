@@ -58,15 +58,14 @@ if [[ "$JOB" != "" ]]; then
   sudo su minerstat -c "DISPLAY=:0 nvidia-settings --verbose -c :0 $JOB" &> /dev/shm/nvapplymclk.txt
   VALIDATE=$(cat /dev/shm/nvapplymclk.txt | sed  '/^$/d' | xargs)
   cat /dev/shm/nvapplymclk.txt | sed  '/^$/d'
-  if [[ "$VALIDATE" == *"Unable to find"* ]] || [[ "$VALIDATE" == *"Unknown"* ]] || [[ -z "$VALIDATE" ]]; then
+  if [[ "$VALIDATE" == *"Unable to find"* ]] || [[ "$VALIDATE" == *"Unknown"* ]] || [[ -z "$VALIDATE" ]] || [[ "$VALIDATE" == *"not available"* ]]; then
     echo "Watiing 25 sec before attempting to apply again"
     sudo su -c "echo '$VALIDATE' > /dev/shm/miner.log"
     sleep 25
-    sudo su minerstat -c "DISPLAY=:0 nvidia-settings --verbose -c :0 $JOB"
-  fi
-  # Xorg not available error. Suspected external monitor need restart
-  # WARNING: Attribute 'GPUMemoryTransferRateOffset' specified in assignment .. is not available on
-  if [[ "$VALIDATE" == *"not available"* ]]; then
+    # sudo su minerstat -c "DISPLAY=:0 nvidia-settings --verbose -c :0 $JOB"
+
+    # Xorg not available error. Suspected external monitor need restart
+    # WARNING: Attribute 'GPUMemoryTransferRateOffset' specified in assignment .. is not available on
     sudo killall Xorg
     sudo su -c "timeout 10 sudo screen -X -S display quit" > /dev/null
     timeout 10 screen -X -S display quit > /dev/null
