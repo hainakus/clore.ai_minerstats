@@ -295,6 +295,7 @@ if [ "$NVIDIADEVICE" != "0" ]; then
     sudo sed -i s/"DPMS"/"NODPMS"/ /etc/X11/xorg.conf > /dev/null
     sudo sed -i 's/UseEdid" "True"/UseEdid" "True"\n    Option         "IgnoreEDID" "False"/g' /etc/X11/xorg.conf
     sudo su minerstat -c "screen -A -m -d -S display2 sudo X :0" > /dev/null
+    timeout 10 sudo rm /dev/shm/nverr.txt &> /dev/null
   fi
 fi
 echo "[80%] Updating plugins ..."

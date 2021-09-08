@@ -52,7 +52,7 @@ else
   echo -e "${BLUE}update-ctrl${NC}\tEnable/Disable runtime system updates"
   echo -e "${BLUE}snapshot-ctrl${NC}\tEnable/Disable Snapshot logs"
   echo -e "${BLUE}extend${NC}\t\tExtend partitions to volume size"
-  echo -e "${BLUE}mclock${NC}\t\tFetch OC from the dashboard"
+  echo -e "${BLUE}mclock${NC}\t\tApply ClockTune profile for the worker."
   echo -e "${BLUE}fan-apply${NC}\tApply FAN settings only"
   echo -e "${BLUE}fan-force${NC}\tForce 100% Fan (AMD RX6000)"
   echo -e ""

@@ -15,10 +15,10 @@ do
   sleep 1
 done
 # Miner up and running
-echo "Miner started, wait 40 sec, then apply clocks"
-sleep 10
+echo "Miner started, wait 30 sec, then apply clocks"
+sleep 5
 echo "30 sec wait left.."
-sleep 10
+sleep 5
 echo "20 sec wait left.."
 sleep 10
 echo "10 sec wait left.."
