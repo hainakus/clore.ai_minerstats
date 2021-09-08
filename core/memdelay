@@ -25,12 +25,28 @@ echo "10 sec wait left.."
 sleep 10
 echo "Working on it..."
 
+
+echo "Waiting until ClockTune script finishes"
+
+TEST=$(ps aux | grep -c overclock)
+until [ $TEST = 1 ]
+do
+  TEST=$(ps aux | grep -c overclock)
+  echo "Waiting ClockTune to finish"
+  sleep 1
+done
+
+echo "Converting to unique base"
+
 sudo chmod 777 /dev/shm/nv_memcache.txt
 sudo awk '!a[$0]++' /dev/shm/nv_memcache.txt > /dev/shm/nv_memcache_unique.txt
 sudo chmod 777 /dev/shm/nv_memcache_unique.txt
 
 cat /dev/shm/nv_memcache_unique.txt
 READIN=$(cat /dev/shm/nv_memcache_unique.txt)
+
+
+echo "Start applying .."
 
 JOB=""
 
