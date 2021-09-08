@@ -234,7 +234,12 @@ if [[ -z "$TSOT" ]] && [[ $TSOT != *"off"* ]]; then
   fi
 fi
 echo "[70%] Checking X Server ..."
-# Check XSERVER
+# Nvidia persistenced
+NPT=$(ps aux | grep -c nvidia-persistenced)
+if [[ "$NPT" -lt 2 ]]; then
+  DISPLAY=:0 sudo nvidia-persistenced
+fi
+# Check XSERVERr
 XINST=$(which X)
 if [[ -z "$XINST" ]]; then
   sudo apt-get update
