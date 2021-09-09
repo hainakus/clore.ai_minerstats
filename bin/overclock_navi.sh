@@ -35,7 +35,7 @@ if [ $1 ]; then
   version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
 
   # Setting up limits
-  MCMIN=670  #minimum vddci
+  MCMIN=600  #minimum vddci
   MCMAX=850  #max vddci
   MVMIN=1250 #minimum mvdd
   MVMAX=1350 #max mvdd
