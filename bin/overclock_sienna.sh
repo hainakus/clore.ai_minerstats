@@ -226,8 +226,8 @@ if [ $1 ]; then
     # smc_pptable/FanThrottlingRpm=3000
 
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
-      smc_pptable/DpmDescriptor/0/VoltageMode=2 overdrive_table/max/8=1200 overdrive_table/max/6=1200 overdrive_table/max/7=1200 overdrive_table/min/3=650 overdrive_table/min/5=650 overdrive_table/min/7=650 \
-      smc_pptable/MinVoltageGfx=2600 smc_pptable/VcBtcEnabled=0 $pmvdd $pvddci $psoc \
+      smc_pptable/DpmDescriptor/0/VoltageMode=2 overdrive_table/max/8=1200 overdrive_table/max/6=1200 overdrive_table/max/7=1200 overdrive_table/min/3=600 overdrive_table/min/5=600 overdrive_table/min/7=600 \
+      smc_pptable/MinVoltageGfx=2400 smc_pptable/VcBtcEnabled=0 $pmvdd $pvddci $psoc \
       smc_pptable/FanStopTemp=35 smc_pptable/FanStartTemp=20 smc_pptable/FanZeroRpmEnable=0 smc_pptable/FanTargetTemperature=$TT smc_pptable/FanTargetGfxclk=1000 smc_pptable/dBtcGbGfxDfllModelSelect=2 --write
     #smc_pptable/FanGain/0=100 smc_pptable/FanGain/1=100 smc_pptable/FanGain/2=100 smc_pptable/FanGain/3=100 smc_pptable/FanGain/4=100 smc_pptable/FanGain/5=100 smc_pptable/FanGain/6=100 smc_pptable/FanGain/7=100 smc_pptable/FanGain/8=100 smc_pptable/FanGain/9=100 smc_pptable/FanPwmMin=1 --write
   fi
