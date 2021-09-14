@@ -180,9 +180,9 @@ module.exports = {
       //console.log("\n");
     });
   },
-  boot: function(miner, startArgs) {
+  boot: function(miner, startArgs, modifierArg, modifierExt) {
     var tools = require('./tools.js');
-    tools.start(miner, startArgs);
+    tools.start(miner, startArgs, modifierArg, modifierExt);
   },
   killall: function() {
     var tools = require('./tools.js');
@@ -786,6 +786,50 @@ module.exports = {
             str = global.B_CONFIG;
           }
           miner = miner.replace("_10", "").replace("_11", "");
+
+
+          var modifierExt = "";
+          var modifierArg = "";
+
+          //
+          // Trex JSON/ARG Switcher
+          //
+
+          if (miner.includes("trex")) {
+            if (!str.toString().includes("{") && !str.toString().includes("{") && str.toString().includes("-")) {
+              console.log("\x1b[1;94m== \x1b[0mtrex config type: ARGS\x1b[0m");
+              modifierArg = 'auto';
+              modifierExt = " --api-bind-http 127.0.0.1:3333 --json-response --pci-indexing --no-watchdog --exit-on-cuda-error";
+              // str = if startswith trex trim smt..
+              MINER_CONFIG_FILE[miner.toLowerCase()] = "start.bash";
+            } else {
+              console.log("\x1b[1;94m== \x1b[0mtrex config type: JSON\x1b[0m");
+              modifierArg = '-c config.json';
+              modifierExt = "";
+              MINER_CONFIG_FILE[miner.toLowerCase()] = "config.json";
+            }
+          }
+
+          //
+          // LOLMINER JSON/ARG Switcher
+          //
+
+          if (miner.includes("lolminer")) {
+            if (!str.toString().includes("{") && !str.toString().includes("{") && str.toString().includes("-")) {
+              console.log("\x1b[1;94m== \x1b[0mlolminer config type: ARGS\x1b[0m");
+              modifierArg = 'auto';
+              modifierExt = " --apiport 3333";
+              // str =
+              MINER_CONFIG_FILE[miner.toLowerCase()] = "start.bash";
+            } else {
+              console.log("\x1b[1;94m== \x1b[0mlolminer config type: JSON\x1b[0m");
+              modifierArg = '--profile MINERSTAT';
+              modifierExt = "";
+              MINER_CONFIG_FILE[miner.toLowerCase()] = "user_config.json";
+            }
+          }
+
+
           //if (miner != "ewbf-zec" && miner != "cast-xmr" && miner != "gminer" && miner != "wildrig-multi" && miner != "zjazz-x22i" && miner != "mkxminer" && miner != "teamredminer" && miner != "progpowminer" && miner != "bminer" && miner != "xmrig-amd" && miner != "ewbf-zhash" && miner != "ethminer" && miner != "zm-zec" && miner != "z-enemy" && miner != "cryptodredge" && miner.indexOf("ccminer") === -1 && miner.indexOf("cpu") === 1) {
           if (MINER_CONFIG_FILE[miner.toLowerCase()] != "start.bash") {
 
@@ -813,12 +857,12 @@ module.exports = {
             writeStream.on('finish', function() {
               //tools.killall();
               console.log("\x1b[1;94m== \x1b[0mClient Status (" + miner + "): \x1b[1;32mSaved config to " + saveFileLocation + "\x1b[0m");
-              tools.autoupdate(miner, str);
+              tools.autoupdate(miner, str, modifierArg, modifierExt);
             });
           } else {
             //console.log(response.body);
             //tools.killall();
-            tools.autoupdate(miner, str);
+            tools.autoupdate(miner, str, modifierArg, modifierExt);
           }
           if (clientType == "gpu") {
 

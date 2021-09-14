@@ -15,7 +15,7 @@ function getDateTime() {
   return hour + ":" + min + ":" + sec;
 }
 
-function runMiner(miner, execFile, args, plus) {
+function runMiner(miner, execFile, args, modifierArg, modifierExt) {
 
   var isCPU = "false";
   var isCMD = "cd /home/minerstat/minerstat-os/clients/; sudo chmod -R 777 *; sudo chmod -R 664 *.bin; sudo screen -X -S minew quit; sleep 1; sudo screen -A -m -d -S minew sudo /home/minerstat/minerstat-os/clients/" + miner + "/start.bash; sleep 5; sudo tmux split-window 'sudo /home/minerstat/minerstat-os/core/wrapper' \; sudo tmux swap-pane -s 1 -t 0 \; screen -S minerstat-console -X stuff ''; sudo screen -S minew -X stuff ''; sudo su minerstat -c 'sudo /home/minerstat/minerstat-os/core/screenr' ";
@@ -82,7 +82,7 @@ function restartNode() {
     global.watchnum++;
   }
 }
-const MINER_JSON = {
+var MINER_JSON = {
   "cast-xmr": {
     "args": "auto",
     "execFile": "cast_xmr-vega",
@@ -432,14 +432,22 @@ module.exports = {
   /*
   	START MINER
   */
-  start: async function(miner, startArgs) {
+  start: async function(miner, startArgs, modifierArg, modifierExt) {
     var execFile,
       args,
       parse = require('parse-spawn-args').parse,
       sleep = require('sleep'),
       mains = require('./start.js'),
       miner = miner.toLowerCase();
-    console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32m" + global.worker + " (" + miner + ") applying config:\x1b[0m " + startArgs);
+
+    // Modify global json with modifier for json/args switch
+    if (modifierArg != "") {
+      var old = MINER_JSON[miner.toLowerCase()].args;
+      MINER_JSON[miner.toLowerCase()].args = modifierArg;
+      console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32mmodifier changed:\x1b[0m " + old + "/" + MINER_JSON[miner.toLowerCase()].args + "/" + modifierArg);
+    }
+
+    console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32m" + global.worker + " (" + miner + ") applying config:\x1b[0m " + startArgs + "" + modifierExt);
     sleep.sleep(2);
 
     if (global.PrivateMiner == "True" && miner != "xmrig" && miner != "cpuminer-opt") {
@@ -495,7 +503,7 @@ module.exports = {
         if (miner == "srbminer-multi") {
           str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; sudo ./" + execFile + " " + args + "" + logInFile + "; sleep 20";
         } else {
-          str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + " " + args + "" + logInFile + "; sleep 20";
+          str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + " " + args + "" + modifierExt + "" + logInFile + "; sleep 20";
         }
       }
     }
@@ -513,7 +521,7 @@ module.exports = {
               console.log(stdout);
               //console.log("Starting miner screen...");
               mains.setsync();
-              runMiner(miner, execFile, args);
+              runMiner(miner, execFile, args, modifierArg, modifierExt);
             }
           });
       } catch (killError) {}
@@ -522,7 +530,7 @@ module.exports = {
         //console.log(stdout);
         //console.log("Starting miner screen...");
         mains.setsync();
-        runMiner(miner, execFile, args);
+        runMiner(miner, execFile, args, modifierArg, modifierExt);
       }
 
     });
@@ -530,9 +538,9 @@ module.exports = {
   /*
   	AUTO UPDATE
   */
-  autoupdate: function(miner, startArgs) {
+  autoupdate: function(miner, startArgs, modifierArg, modifierExt) {
     var main = require('./start.js');
-    main.boot(miner, startArgs);
+    main.boot(miner, startArgs, modifierArg, modifierExt);
   },
   /*
   	BENCHMARK

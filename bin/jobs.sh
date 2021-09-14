@@ -249,11 +249,29 @@ fi
 UPTIME=$(awk '{print $1}' /proc/uptime | cut -f1 -d"." | xargs)
 #NVIDIADEVICE=$(timeout 5 sudo lspci -k | grep VGA | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van" | grep -c "NVIDIA")
 #if [ "$NVIDIADEVICE" = "0" ]; then
-NVIDIADEVICE=$(timeout 3 sudo lshw -C display | grep "driver=nvidia" | wc -l)
+NVIDIADEVICE=$(timeout 5 sudo lshw -C display)
+
+if [[ $NVIDIADEVICE == *"0000:00:01.0"* ]]; then
+  if [[ $NVIDIADEVICE == *"Radeon R5/R6/R7 Graphics"* ]]; then
+    echo "[75%] Disabing Radeon Internal GPU ..."
+    timeout 5 sudo bash /home/minerstat/minerstat-os/core/rmpci 00:01.0
+  fi
+fi
+
+echo "[78%] Disabing Audio Devices ..."
+sudo bash /home/minerstat/minerstat-os/core/rmpci
+
+NVIDIADEVICE=$(echo $NVIDIADEVICE | grep "driver=nvidia" | wc -l)
 #fi
 if [ "$NVIDIADEVICE" = "0" ]; then
   NVIDIADEVICE=$(timeout 3 sudo lshw -C display | grep NVIDIA | wc -l)
 fi
+# Additional safety for above 10GPU rigs to make clocktune work upon boot when things slowed down
+if [ "$NVIDIADEVICE" = "0" ]; then
+  NVIDIADEVICE=$(timeout 3 nvidia-smi -L | grep -c "GPU ")
+fi
+
+
 if [ "$NVIDIADEVICE" != "0" ]; then
   #if echo "$NVIDIA" | grep -iq "^GPU 0:" ;then
   DONVIDIA="YES"
