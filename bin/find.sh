@@ -35,6 +35,10 @@ else
     if [ "$NVIDIADEVICE" = "0" ]; then
       NVIDIADEVICE=$(timeout 3 sudo lshw -C display | grep NVIDIA | wc -l)
     fi
+    # Safety
+    if [ "$NVIDIADEVICE" = "0" ]; then
+      NVIDIADEVICE=$(timeout 3 nvidia-smi -L | grep -c "GPU ")
+    fi
     NVIDIA="$(nvidia-smi -L)"
     GID=$1
     echo ""

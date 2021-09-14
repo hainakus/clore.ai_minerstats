@@ -91,9 +91,13 @@ if [[ "$JOB" != "" ]]; then
     sudo timeout 5 kill -9 $(sudo pidof Xorg) > /dev/null
     sudo timeout 5 rm /tmp/.X0-lock > /dev/null
 
-    NVIDIADEVICE=$(timeout 40 sudo lshw -C display | grep "driver=nvidia" | wc -l)
+    NVIDIADEVICE=$(timeout 30 sudo lshw -C display | grep "driver=nvidia" | wc -l)
     if [ "$NVIDIADEVICE" = "0" ]; then
-      NVIDIADEVICE=$(timeout 40 sudo lshw -C display | grep NVIDIA | wc -l)
+      NVIDIADEVICE=$(timeout 30 sudo lshw -C display | grep NVIDIA | wc -l)
+    fi
+    # Safety check
+    if [ "$NVIDIADEVICE" = "0" ]; then
+      NVIDIADEVICE=$(timeout 10 nvidia-smi -L | grep -c "GPU ")
     fi
 
     EGPU=""

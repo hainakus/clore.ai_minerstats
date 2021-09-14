@@ -137,6 +137,10 @@ NVIDIADEVICE=$(timeout 40 sudo lshw -C display | grep "driver=nvidia" | wc -l)
 if [ "$NVIDIADEVICE" = "0" ]; then
   NVIDIADEVICE=$(timeout 3 sudo lshw -C display | grep NVIDIA | wc -l)
 fi
+# Safety
+if [ "$NVIDIADEVICE" = "0" ]; then
+  NVIDIADEVICE=$(timeout 8 nvidia-smi -L | grep -c "GPU ")
+fi
 if [ "$NVIDIADEVICE" != "0" ]; then
   #if echo "$NVIDIA" | grep -iq "^GPU 0:" ;then
   DONVIDIA="YES"

@@ -12,7 +12,11 @@ NVIDIADEVICE=$(timeout 40 sudo lshw -C display | grep "driver=nvidia" | wc -l)
 if [ "$NVIDIADEVICE" = "0" ]; then
   NVIDIADEVICE=$(timeout 40 sudo lshw -C display | grep NVIDIA | wc -l)
 fi
-NVIDIA="$(nvidia-smi -L)"
+# Additional safety for above 10GPU rigs to make clocktune work upon boot when things slowed down
+if [ "$NVIDIADEVICE" = "0" ]; then
+  NVIDIADEVICE=$(timeout 3 nvidia-smi -L | grep -c "GPU ")
+fi
+NVIDIA="$(timeout 1 nvidia-smi -L)"
 
 if [ "$NVIDIADEVICE" != "0" ]; then
   #if echo "$NVIDIA" | grep -iq "^GPU 0:" ;then
