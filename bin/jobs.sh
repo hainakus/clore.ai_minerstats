@@ -258,8 +258,8 @@ if [[ $NVIDIADEVICE == *"0000:00:01.0"* ]]; then
   fi
 fi
 
-echo "[78%] Disabing Audio Devices ..."
-sudo bash /home/minerstat/minerstat-os/core/rmpci
+#echo "[78%] Disabing Audio Devices ..."
+#sudo bash /home/minerstat/minerstat-os/core/rmpci
 
 NVIDIADEVICE=$(echo $NVIDIADEVICE | grep "driver=nvidia" | wc -l)
 #fi
