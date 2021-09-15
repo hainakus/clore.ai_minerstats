@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Block
-sudo rm /home/minerstat/ssh-unlock.pid
+sudo rm /home/minerstat/ssh-unlock.pid >/dev/null 2>&1
 sudo echo "disable" > /home/minerstat/ssh-lock.pid
 sudo /home/minerstat/minerstat-os/core/ressh
 

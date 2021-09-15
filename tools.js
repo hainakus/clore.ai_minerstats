@@ -514,25 +514,54 @@ module.exports = {
       console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32m" + global.worker + " (" + miner + ") preparing ...\x1b[0m");
       sleep.sleep(2);
 
-      try {
-        var killQuery = require('child_process').exec,
-          killQueryProc = killQuery("sudo timeout 30 /home/minerstat/minerstat-os/core/killport.sh " + MINER_JSON[miner]["apiPort"], function(error, stdout, stderr) {
-            if (global.PrivateMiner == "False") {
-              console.log(stdout);
-              //console.log("Starting miner screen...");
-              mains.setsync();
-              runMiner(miner, execFile, args, modifierArg, modifierExt);
-            }
-          });
-      } catch (killError) {}
+      function continueStart() {
+        console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32mStarting miner");
 
-      if (global.PrivateMiner == "True") {
-        //console.log(stdout);
-        //console.log("Starting miner screen...");
-        mains.setsync();
-        runMiner(miner, execFile, args, modifierArg, modifierExt);
+        // Start
+        try {
+          var killQuery = require('child_process').exec,
+            killQueryProc = killQuery("sudo timeout 30 /home/minerstat/minerstat-os/core/killport.sh " + MINER_JSON[miner]["apiPort"], function(error, stdout, stderr) {
+              if (global.PrivateMiner == "False") {
+                console.log(stdout);
+                //console.log("Starting miner screen...");
+                mains.setsync();
+                runMiner(miner, execFile, args, modifierArg, modifierExt);
+              }
+            });
+        } catch (killError) {}
+
+        if (global.PrivateMiner == "True") {
+          //console.log(stdout);
+          //console.log("Starting miner screen...");
+          mains.setsync();
+          runMiner(miner, execFile, args, modifierArg, modifierExt);
+        }
       }
+      // miner delay
+      if (global.minerStartDelay != 0) {
+        console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32mMiner delay set for " + global.minerStartDelay + " sec");
+        // Get system uptime
+        var getUptime = require('child_process').exec,
+          getUptimeProc = getUptime('timeout 5 awk "{print $1}" /proc/uptime | xargs | cut -f1 -d"." | xargs -0', function(error, stdout, stderr) {
+            var systemUptime = 301;
+            try {
+              systemUptime = stdout.replace(/(<([^>]+)>)/gi, "").trim();
+            } catch (errs) {
+              systemUptime = 301;
+            }
+            console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32mSystem Uptime: \x1b[1;32m" + systemUptime + " sec\x1b[0m");
 
+            if (systemUptime <= 300) {
+              console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32mMiner Delay: Waiting \x1b[1;32m" + global.minerStartDelay + " sec before continue.. \x1b[0m");
+              var sleepd = require('sleep');
+              sleepd.sleep(global.minerStartDelay);
+            }
+            continueStart();
+          });
+      } else {
+        console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32mNo miner delay set.");
+        continueStart();
+      }
     });
   },
   /*

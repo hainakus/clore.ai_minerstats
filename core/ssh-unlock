@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Free
-sudo rm /home/minerstat/ssh-lock.pid
+sudo rm /home/minerstat/ssh-lock.pid >/dev/null 2>&1
 sudo echo "whitelist" > /home/minerstat/ssh-unlock.pid
 sudo /home/minerstat/minerstat-os/core/ressh
 

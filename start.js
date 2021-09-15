@@ -28,6 +28,7 @@ global.PrivateMinerType;
 global.PrivateMinerConfigFile;
 global.PrivateMinerStartFile;
 global.PrivateMinerStartArgs;
+global.minerStartDelay = 0;
 global.watchnum = 0;
 global.osversion;
 global.memoryloc;
@@ -299,6 +300,14 @@ module.exports = {
           global.minerType = response.body.type;
           global.minerOverclock = response.body.overclock;
           global.minerCpu = response.body.cpu;
+
+          // miner delay
+          try {
+            global.minerStartDelay = response.body.delay;
+          } catch (err) {
+
+          }
+
           try {
             global.PrivateMiner = response.body.private;
             if (global.PrivateMiner == "True" && global.benchmark.toString() == 'false') {

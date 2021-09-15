@@ -160,7 +160,7 @@ if ! screen -list | grep -q "dummy"; then
   sudo bash /home/minerstat/minerstat-os/core/gputable
 
   # Clear SSH test to check may network open again
-  sudo rm /home/minerstat/public_test.txt
+  sudo rm /home/minerstat/public_test.txt >/dev/null 2>&1
 
   echo "You may need to Press Ctrl + C to enter commands."
 
