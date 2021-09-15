@@ -552,7 +552,7 @@ module.exports = {
             console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32mSystem Uptime: \x1b[1;32m" + systemUptime + " sec\x1b[0m");
 
             if (systemUptime <= 300) {
-              console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32mMiner Delay: Waiting \x1b[1;32m" + global.minerStartDelay + " sec before continue.. \x1b[0m");
+              console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32mMiner Delay: Waiting \x1b[1;32m" + global.minerStartDelay + " seconds before continuing.. \x1b[0m");
               var sleepd = require('sleep');
               sleepd.sleep(global.minerStartDelay);
             }
