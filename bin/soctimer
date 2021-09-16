@@ -9,10 +9,10 @@ if [ "$TEST" = "1" ]; then
     exit 1
   fi
 
-  echo "Waiting 20..."
-  sleep 10
-  echo "Waiting 10..."
-  sleep 10
+  echo "Waiting 20 sec ..."
+  sleep 20
+  echo "Waiting 20 sec ..."
+  sleep 20
 
   TEST=$(sudo screen -list | grep -wc minew)
 
