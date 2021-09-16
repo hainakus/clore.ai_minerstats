@@ -115,7 +115,10 @@ fi
 if [ -z "$NVIDIA_DRIVER" ]; then
   NVIDIA_DRIVER=$(timeout 5 dpkg -l | grep nvidia-driver | grep ii | awk '{print $3}' | xargs | cut -d '-' -f 1)
 fi
-AMD_DRIVER=$(timeout 5 dpkg -l | grep opencl-amdgpu-pro-icd | head -n1 | awk '{print $3}' | xargs)
+AMD_DRIVER=$(timeout 5 dpkg -l | grep amdgpu-pin | head -n1 | awk '{print $3}' | xargs)
+if [ -z "$AMD_DRIVER" ]; then
+  AMD_DRIVER=$(timeout 5 dpkg -l | grep opencl-amdgpu-pro-icd | head -n1 | awk '{print $3}' | xargs)
+fi
 if [ -z "$AMD_DRIVER" ]; then
   AMD_DRIVER=$(timeout 5 dpkg -l | grep amdgpu-pro-rocr-opencl | head -n1 | awk '{print $3}' | xargs | cut -f1 -d"-")
 fi
