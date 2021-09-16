@@ -87,11 +87,11 @@ help () {
   echo "-r  | --reboot       : Reboot after successful install"
   echo
   echo
-  echo "======= Current version: v$CURRENT_DRIVER =========="
+  echo "======= Current driver: v$CURRENT_DRIVER, openCL: v$CURRENT_OPENCL =========="
   echo
-  echo "Install Example: amd-update --install 20.30"
+  echo "Update to latest: amd-update --install 21.20"
   echo
-  echo "==================================================="
+  echo "========================================================================="
   echo
   exit 9
 }
@@ -129,7 +129,7 @@ list () {
   echo
   echo "Update to latest: amd-update --install 21.20"
   echo
-  echo "==================================================="
+  echo "========================================================================="
   echo
 }
 
