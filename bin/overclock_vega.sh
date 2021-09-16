@@ -282,9 +282,9 @@ if [ $1 ]; then
   if [ "$TEST" = "0" ]; then
     screen -A -m -D -S soctimer sudo bash /home/minerstat/minerstat-os/bin/soctimer $GPUID &
     echo "#!/bin/bash" > /home/minerstat/clock_cache
-    echo "sudo bash /home/minerstat/minerstat-os/bin/overclock_vega.sh $1 $2 $3 $4 $5 $6 $7 $8 $9" >> /home/minerstat/clock_cache
+    echo "sudo bash /home/minerstat/minerstat-os/bin/overclock_vega.sh $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10}" >> /home/minerstat/clock_cache
   else
-    echo "sudo bash /home/minerstat/minerstat-os/bin/overclock_vega.sh $1 $2 $3 $4 $5 $6 $7 $8 $9" >> /home/minerstat/clock_cache
+    echo "sudo bash /home/minerstat/minerstat-os/bin/overclock_vega.sh $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10}" >> /home/minerstat/clock_cache
   fi
 
   exit 1
