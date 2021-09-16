@@ -237,16 +237,17 @@ install () {
       if [[ $? -ne 0 ]]; then
         echo "Download opencl installer failed.."
         echo "Start amd-update again"
-        sudo rm /tmp/opencl_2040.zip
+        sudo rm /tmp/opencl_2040.zip >/dev/null 2>&1
         exit 1
       fi
       sudo chmod 777 /tmp/opencl_2040.zip >/dev/null 2>&1
       #sudo mkdir /tmp/opencl_2040
-      sudo unzip /tmp/opencl_2040.zip -d /tmp/opencl_2040
+      sudo unzip -o /tmp/opencl_2040.zip -d /tmp/opencl_2040
       sudo ls /tmp/opencl_2040
       cd /tmp/opencl_2040
       sudo dpkg --force-all -i /tmp/opencl_2040/*
       sudo apt -y --fix-broken install
+      sudo rm -rf /tmp/opencl_2040 >/dev/null 2>&1
       echo
     fi
 
