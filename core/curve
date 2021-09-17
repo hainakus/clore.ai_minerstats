@@ -159,7 +159,7 @@ loop() {
                 CHANGE=35
               fi
               # 0% fan protection
-              if [[ "$TEMP" = "0" ]]; then
+              if [[ "$FAN" = "0" ]]; then
                 CHANGE=100
               fi
               NEWFAN=$((FAN-CHANGE))
@@ -183,7 +183,7 @@ loop() {
                 CHANGE=35
               fi
               # 0% fan protection
-              if [[ "$TEMP" = "0" ]]; then
+              if [[ "$FAN" = "0" ]]; then
                 CHANGE=100
               fi
               NEWFAN=$((FAN+CHANGE))
@@ -320,7 +320,7 @@ loop() {
               CHANGE=35
             fi
             # 0% fan protection
-            if [[ "$TEMP" = "0" ]]; then
+            if [[ "$FAN" = "0" ]]; then
               CHANGE=100
             fi
             NEWFAN=$((FAN-CHANGE))
@@ -344,7 +344,7 @@ loop() {
               CHANGE=35
             fi
             # 0% fan protection
-            if [[ "$TEMP" = "0" ]]; then
+            if [[ "$FAN" = "0" ]]; then
               CHANGE=100
             fi
             NEWFAN=$((FAN+CHANGE))
