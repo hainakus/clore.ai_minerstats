@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Read settings
-FANMIN=$(cat /media/storage/fans.txt 2>/dev/null | grep "FANMIN=" | head -n1 | xargs | sed 's/[^0-9]*//g')
-FANMAX=$(cat /media/storage/fans.txt 2>/dev/null | grep "FANMAX=" | head -n1 | xargs | sed 's/[^0-9]*//g')
-TARGET=$(cat /media/storage/fans.txt 2>/dev/null | grep "TARGET_TEMP=" | head -n1 | xargs | sed 's/[^0-9]*//g')
-TARGET_MEM=$(cat /media/storage/fans.txt 2>/dev/null | grep "TARGET_MEM=" | head -n1 | xargs | sed 's/[^0-9]*//g')
-FANDIFF=$(cat /media/storage/fans.txt 2>/dev/null | grep "FANDIFF=" | head -n1 | xargs | sed 's/[^0-9]*//g')
+FANMIN=$(cat /media/storage/fans.txt 2>/dev/null | grep "FANMIN=" | head -n1 | xargs | sed 's/[^0-9]*//g' | xargs -0)
+FANMAX=$(cat /media/storage/fans.txt 2>/dev/null | grep "FANMAX=" | head -n1 | xargs | sed 's/[^0-9]*//g' | xargs -0)
+TARGET=$(cat /media/storage/fans.txt 2>/dev/null | grep "TARGET_TEMP=" | head -n1 | xargs | sed 's/[^0-9]*//g' | xargs -0)
+TARGET_MEM=$(cat /media/storage/fans.txt 2>/dev/null | grep "TARGET_MEM=" | head -n1 | xargs | sed 's/[^0-9]*//g' | xargs -0)
+FANDIFF=$(cat /media/storage/fans.txt 2>/dev/null | grep "FANDIFF=" | head -n1 | xargs | sed 's/[^0-9]*//g' | xargs -0)
 
 # Override on static
 FANSTATIC=0
@@ -184,10 +184,10 @@ loop() {
               #NEWFAN=$FANMIN
               MSG="ON TARGET"
             fi
-            if [ $NEWFAN -lt $FANMIN ]; then
+            if [[ "$NEWFAN" -lt "$FANMIN" ]]; then
               NEWFAN=$FANMIN
             fi
-            if [ $NEWFAN -gt $FANMAX ]; then
+            if [[ "$NEWFAN" -gt "$FANMAX" ]]; then
               NEWFAN=$FANMAX
             fi
             if [ "$MSG" != "ON TARGET" ]; then
@@ -340,11 +340,11 @@ loop() {
 
           # Protections
           # If higher than max
-          if [ $NEWFAN -gt $FANMAX ]; then
+          if [[ "$NEWFAN" -gt "$FANMAX" ]]; then
             NEWFAN=$FANMAX
           fi
           # If lower than min
-          if [ $NEWFAN -lt $FANMIN ]; then
+          if [[ "$NEWFAN" -lt "$FANMIN" ]]; then
             NEWFAN=$FANMIN
           fi
 
