@@ -158,6 +158,10 @@ loop() {
               if [ $DIFF -gt 30 ]; then
                 CHANGE=35
               fi
+              # 0% fan protection
+              if [[ "$TEMP" = "0" ]]; then
+                CHANGE=100
+              fi
               NEWFAN=$((FAN-CHANGE))
               # Hotter than target temp
             elif [ $DIFF -lt -1 ]; then
@@ -177,6 +181,10 @@ loop() {
               fi
               if [ $DIFF -lt -30 ]; then
                 CHANGE=35
+              fi
+              # 0% fan protection
+              if [[ "$TEMP" = "0" ]]; then
+                CHANGE=100
               fi
               NEWFAN=$((FAN+CHANGE))
             else
@@ -311,6 +319,10 @@ loop() {
             if [ $DIFF -gt 30 ]; then
               CHANGE=35
             fi
+            # 0% fan protection
+            if [[ "$TEMP" = "0" ]]; then
+              CHANGE=100
+            fi
             NEWFAN=$((FAN-CHANGE))
             # Hotter than target temp
           elif [ $DIFF -lt -1 ]; then
@@ -330,6 +342,10 @@ loop() {
             fi
             if [ $DIFF -lt -30 ]; then
               CHANGE=35
+            fi
+            # 0% fan protection
+            if [[ "$TEMP" = "0" ]]; then
+              CHANGE=100
             fi
             NEWFAN=$((FAN+CHANGE))
           else
