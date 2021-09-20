@@ -6,7 +6,7 @@ sleep 1
 
 #################################£
 # Detect GPU's
-AMDDEVICE=$(timeout 40 sudo lspci -k | grep VGA | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van|RS880|Wani|Wrestler|X1200" | grep -c "AMD")
+AMDDEVICE=$(timeout 40 sudo lspci -k | grep VGA | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van|RS880|Wani|Wrestler|X1200|RS780L" | grep -c "AMD")
 if [ -z "$AMDDEVICE" ]; then
   AMDDEVICE=$(timeout 3 sudo lshw -C display | grep AMD | wc -l)
 fi
