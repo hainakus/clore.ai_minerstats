@@ -127,6 +127,8 @@ install () {
     echo
     echo "  - Running stop script"
     sudo /home/minerstat/minerstat-os/core/stop >/dev/null 2>&1
+    #sudo mv /home/minerstat/minerstat-os/core /home/minerstat/minerstat-os/core2
+    #sudo mv /home/minerstat/minerstat-os/core2 /home/minerstat/minerstat-os/core
     # Unload Nvidia
     echo "  - Unloading Nvidia driver"
     sudo bash /home/minerstat/minerstat-os/bin/nvunload >/dev/null 2>&1
@@ -148,9 +150,9 @@ install () {
     echo
     sudo apt-get -y --fix-broken install
     sudo apt-get purge -y nvidia*
-    sudo apt-get purge -y nvidia-430*
-    sudo apt-get purge -y nvidia-440*
-    sudo apt-get purge -y nvidia-driver*
+    #sudo apt-get purge -y nvidia-430*
+    #sudo apt-get purge -y nvidia-440*
+    #sudo apt-get purge -y nvidia-driver*
     sudo /usr/bin/nvidia-uninstall --accept-license --no-questions --ui=none
     # Download
     FILE="NVIDIA-Linux-x86_64-$SELECTED_VERSION.run"
@@ -170,6 +172,7 @@ install () {
     # Safety
     sudo killall Xorg
     sudo killall X
+    sudo su -c "sudo rm /tmp/.X0-lock"
     # Install
     sudo /tmp/$FILE --accept-license --no-questions --ui=none --dkms --no-cc-version-check
     # Initramfs
@@ -190,6 +193,7 @@ install () {
     echo
     sudo su -c "cd /home/minerstat; sudo rm /home/minerstat/recovery.sh; wget -o /dev/null https://labs.minerstat.farm/repo/minerstat-os/-/raw/master/core/recovery.sh; sudo chmod 777 /home/minerstat/recovery.sh;"
     sudo bash /home/minerstat/recovery.sh
+    sudo /home/minerstat/minerstat-os/core2/stop >/dev/null 2>&1
     sudo /home/minerstat/minerstat-os/core/stop >/dev/null 2>&1
     echo
     # Check XSERVER

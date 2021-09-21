@@ -162,7 +162,13 @@ if ! screen -list | grep -q "dummy"; then
   # Clear SSH test to check may network open again
   sudo rm /home/minerstat/public_test.txt >/dev/null 2>&1
 
+
   echo "You may need to Press Ctrl + C to enter commands."
+
+  # Show Agent after successfully booted
+  if [[ -f "/home/minerstat/minerboot.pid" ]]; then
+    sudo su minerstat -c "bash /home/minerstat/minerstat-os/core/view"
+  fi
 
   exec bash &
   source /home/minerstat/minerstat-os/core/.bashrc &

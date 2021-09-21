@@ -25,6 +25,15 @@ if [[ "$FAULT" -gt "0" ]]; then
   sudo bash /home/minerstat/minerstat-os/bin/reboot.sh fault
 fi
 
+# Exit script if maintenance mode active
+
+if [[ -f "/dev/shm/maintenance.pid" ]]; then
+  echo "Maintenance enabled - Exit 0"
+  exit 0
+fi
+
+###############
+
 # Check More "LISTENER"
 SNUM=$(sudo su minerstat -c "screen -list | grep -c listener")
 if [ "$SNUM" -gt "1" ]; then

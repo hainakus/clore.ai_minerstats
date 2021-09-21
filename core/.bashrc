@@ -183,6 +183,7 @@ alias mpass='passwd'
 alias ssh-lock='sudo bash /home/minerstat/minerstat-os/core/ssh-lock'
 alias ssh-unlock='sudo bash /home/minerstat/minerstat-os/core/ssh-unlock'
 alias igb-update='sudo bash /home/minerstat/minerstat-os/core/igb-update'
+alias toggle-agent='sudo bash /home/minerstat/minerstat-os/core/bootminer'
 
 if grep -q experimental "/etc/lsb-release"; then
   alias amdmemtool='sudo /home/minerstat/minerstat-os/bin/amdmemorytweak'

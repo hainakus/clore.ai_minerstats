@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [ -f "/home/minerstat/minerboot.pid" ]; then
+  STATUS_ORIGIN="ON"
+  STATUS_NEW="OFF"
+  sudo rm /home/minerstat/minerboot.pid
+else
+  STATUS_ORIGIN="OFF"
+  STATUS_NEW="ON"
+  sudo echo "disable" > /home/minerstat/minerboot.pid
+fi
+
+# ECHO
+echo
+echo
+echo "Previous Status for Auto Agent: $STATUS_ORIGIN"
+echo "Current  Status for Auto Agent: $STATUS_NEW"
+echo
+echo
+
+sync &

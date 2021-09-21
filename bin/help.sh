@@ -25,6 +25,7 @@ if [[ "$LIGHT" = "short" ]]; then
   echo -e ""
 else
   echo -e "======= System ======="
+  echo -e "${BLUE}toggle-agent${NC}\tShow agent screen after end of boot process."
   echo -e "${BLUE}mrecovery${NC}\tRestore system to default"
   echo -e "${BLUE}netrecovery${NC}\tRestore system to default from minerstat servers."
   echo -e "${BLUE}mupdate${NC}\t\tUpdate system (clients, fixes, ...)"
