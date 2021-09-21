@@ -23,6 +23,7 @@ SILENT="no"
 REBOOT="no"
 OCLSWITCH="no"
 IGNORE="no"
+WORKSTATION="no"
 
 # Ubuntu version
 U_VER=$(cat /etc/lsb-release)
@@ -61,6 +62,10 @@ VLIST="https://static-ssl.minerstat.farm/drivers/amd/$S_DIR/amdlist.txt"
 VLIST_TMP="/dev/shm"
 VLIST_FILE="$VLIST_TMP/amdlist.txt"
 
+VLIST_PRO="https://static-ssl.minerstat.farm/drivers/amd/$S_DIR/amdlistpro.txt"
+VLIST_PRO_TMP="/dev/shm"
+VLIST_PRO_FILE="$VLIST_PRO_TMP/amdlistpro.txt"
+
 # Download driver list
 if [ ! -f "$VLIST_FILE" ]; then
   wget $VLIST -P $VLIST_TMP
@@ -81,11 +86,13 @@ fi
 help () {
   echo
   echo "==== Help ===="
-  echo "-h  | --help         : Printing this menu"
-  echo "-l  | --list         : Listing all available driver version to install"
-  echo "-i  | --install      : Install selected version"
-  echo "-s  | --silent       : Silent mode, no questions asked"
-  echo "-r  | --reboot       : Reboot after successful install"
+  echo "-h   | --help         : Printing this menu"
+  echo "-l   | --list         : Listing all available driver version to install"
+  echo "-wl  | --wlist        : Listing all available workstation driver version to install"
+  echo "-i   | --install      : Install selected version"
+  echo "-s   | --silent       : Silent mode, no questions asked"
+  echo "-r   | --reboot       : Reboot after successful install"
+  echo "--workstation         : Select workstation driver version"
   echo
   echo
   echo "======= Current driver: v$CURRENT_DRIVER, openCL: v$CURRENT_OPENCL =========="
@@ -134,6 +141,25 @@ list () {
   echo
 }
 
+# List
+wlist () {
+  # List drivers line by line
+  echo
+  echo "==== Available Versions ====="
+  while read ver; do
+    vers=$(echo $ver | sed -e 's#^amdgpu-pro-##;' | cut -f1 -d"-")
+    add=""
+    echo "$vers $add"
+  done < $VLIST_PRO_FILE
+  echo
+  echo "======= Current driver: v$CURRENT_DRIVER, openCL: v$CURRENT_OPENCL =========="
+  echo
+  echo "Update to latest: amd-update --workstation --install 21.20"
+  echo
+  echo "========================================================================="
+  echo
+}
+
 # check if EMPTY
 if [[ -z "$1" ]]; then
   list
@@ -174,6 +200,9 @@ install () {
     fi
   fi
   FULL=$(cat $VLIST_FILE | grep $SELECTED_VERSION | xargs | xargs | cut -f1 -d" ")
+  if [[ "$WORKSTATION" = "yes" ]]; then
+    FULL=$(cat $VLIST_PRO_FILE | grep $SELECTED_VERSION | xargs | xargs | cut -f1 -d" ")
+  fi
   if [[ ! -z "$FULL" ]] || [[ "$IGNORE" = "yes" ]]; then
     echo
     echo "================="
@@ -328,8 +357,17 @@ while (( "$#" )); do
       IGNORE="yes"
       shift
       ;;
+    --workstation)
+      echo -e "  [i] Workstation list selected \r"
+      WORKSTATION="yes"
+      shift
+      ;;
     -l|--list)
       list
+      shift
+      ;;
+    -wl|--wlist)
+      wlist
       shift
       ;;
     -*|--*=) # unsupported flags
