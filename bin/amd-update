@@ -22,6 +22,7 @@ echo
 SILENT="no"
 REBOOT="no"
 OCLSWITCH="no"
+IGNORE="no"
 
 # Ubuntu version
 U_VER=$(cat /etc/lsb-release)
@@ -173,7 +174,7 @@ install () {
     fi
   fi
   FULL=$(cat $VLIST_FILE | grep $SELECTED_VERSION | xargs | xargs | cut -f1 -d" ")
-  if [[ ! -z "$FULL" ]]; then
+  if [[ ! -z "$FULL" ]] || [[ "$IGNORE" = "yes" ]]; then
     echo
     echo "================="
     echo "Valid version provided.. [$FULL] Attempting to download and install amdgpu-pro $SELECTED_VERSION .."
@@ -320,6 +321,11 @@ while (( "$#" )); do
     -r|--reboot)
       echo -e "  [i] Reboot after valid install \r"
       REBOOT="yes"
+      shift
+      ;;
+    -i|--ignore)
+      echo -e "  [i] Ignore version check \r"
+      IGNORE="yes"
       shift
       ;;
     -l|--list)
