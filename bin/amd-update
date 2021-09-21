@@ -67,11 +67,22 @@ VLIST_PRO_TMP="/dev/shm"
 VLIST_PRO_FILE="$VLIST_PRO_TMP/amdlistpro.txt"
 
 # Download driver list
+# Generic
 if [ ! -f "$VLIST_FILE" ]; then
   wget $VLIST -P $VLIST_TMP
   if [[ $? -ne 0 ]]; then
     echo "Download version list file failed.."
-    sudo rm $VLIST_TMP
+    sudo rm $VLIST_PRO_FILE
+    exit 1
+  fi
+fi
+
+# W-Series
+if [ ! -f "$VLIST_PRO_FILE" ]; then
+  wget $VLIST_PRO -P $VLIST_PRO_TMP
+  if [[ $? -ne 0 ]]; then
+    echo "Download version list file failed.."
+    sudo rm $VLIST_PRO_FILE
     exit 1
   fi
 fi
