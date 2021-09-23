@@ -10,19 +10,24 @@ sudo su -c "sudo screen -X -S minew quit"; sudo su -c "echo "" > /dev/shm/miner.
 echo "    - Start maintenance"
 sudo /home/minerstat/minerstat-os/core/maintenance
 cd /home/minerstat/minerstat-os
-mv core core2
+sudo mv /home/minerstat/minerstat-os/core /home/minerstat/minerstat-os/core2
 sudo killall screen
 sudo killall Xorg
+sudo killall nvidia-persistenced
+sudo killall nvidia-persistenced
+sudo killall nvidia-persistenced
 echo "    - Init"
 sudo init 3
 echo "    - E1000 load"
 sudo modprobe e1000
 sudo modprobe e1000e
+sudo killall Xorg
 echo "    - rmmod"
 sudo su -c "rmmod -f nvidia_uvm; rmmod -f nvidia_drm; rmmod -f nvidia_modeset; rmmod -f nvidia"
 sudo rmmod -f nvidia_uvm
 sudo rmmod -f nvidia_drm
 sudo rmmod -f nvidia_modeset
+sudo rmmod -f i2c_nvidia_gpu
 sudo rmmod -f nvidia
 sudo init 3
 sudo rmmod -f nvidia
