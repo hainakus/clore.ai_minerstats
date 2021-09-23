@@ -68,7 +68,25 @@ if [ "$NVIDIADEVICE" != "0" ]; then
     sudo su minerstat -c "screen -A -m -d -S display2 sudo X :0" > /dev/null
     echo "Initalizing.. waiting for full Xorg start"
     timeout 10 sudo rm /dev/shm/nverr.txt &> /dev/null
-    sleep 20
+    #sleep 20
+
+    # Do not wait 20 second, but check to faster boot process
+    MAX_ROUND=30
+    CURR_ROUND=0
+    XORG=$(timeout 5 nvidia-smi | grep -c Xorg)
+    until [ $XORG = $NVIDIADEVICE ]
+    do
+      XORG=$(timeout 5 nvidia-smi | grep -c Xorg)
+      CURR_ROUND=$((CURR_ROUND+1))
+      echo "Waiting for Xorg start [$CURR_ROUND/$MAX_ROUND]"
+      if [[ "$CURR_ROUND" = "$MAX_ROUND" ]]; then
+        XORG=$NVIDIADEVICE
+      fi
+      sleep 1
+    done
+
+    echo "Xorg started - Applying clocks.."
+
   fi
   #fi
 fi

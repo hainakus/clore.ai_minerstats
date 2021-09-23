@@ -225,6 +225,16 @@ if [ $1 ]; then
     # smc_pptable/FanTargetTemperature=$TT
     # smc_pptable/FanThrottlingRpm=3000
 
+    proArgs=""
+    isRadeonPro=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI ${11}:" | grep -E "Pro|PRO" | wc -l)
+
+    if [[ "$isRadeonPro" -gt "0" ]]; then
+      proArgs="overdrive_table/cap/0=1 overdrive_table/cap/1=1 overdrive_table/cap/2=1 overdrive_table/cap/3=1 overdrive_table/cap/4=1 overdrive_table/cap/5=1 overdrive_table/cap/6=1 overdrive_table/cap/7=1 "
+      proArgs+="overdrive_table/cap/8=1 overdrive_table/cap/9=1 overdrive_table/cap/10=1 overdrive_table/cap/11=1 overdrive_table/cap/12=1 overdrive_table/cap/13=1"
+      sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
+        $proArgs --write
+    fi
+
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
       smc_pptable/DpmDescriptor/0/VoltageMode=2 overdrive_table/max/8=1200 overdrive_table/max/6=1200 overdrive_table/max/7=1200 overdrive_table/min/3=600 overdrive_table/min/5=600 overdrive_table/min/7=600 \
       smc_pptable/MinVoltageGfx=2400 smc_pptable/VcBtcEnabled=0 $pmvdd $pvddci $psoc \
