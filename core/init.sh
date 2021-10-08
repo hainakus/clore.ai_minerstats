@@ -388,9 +388,7 @@ do
 
   if [ -f "/dev/shm/maintenance.pid" ]; then
     echo "Maintenance mode, all remote commands disabled."
-    if [[ $RESPONSE = "CONSOLE" ]] || [[ $RESPONSE = "DIRECT" ]]; then
-      RESPONSE="CONSOLE"
-    else
+    if [[ $RESPONSE != "CONSOLE" ]] || [[ $RESPONSE != "DIRECT" ]]; then
       RESPONSE="null"
     fi
   fi
