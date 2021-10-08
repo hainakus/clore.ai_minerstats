@@ -387,9 +387,12 @@ do
   echo "response check"
 
   if [ -f "/dev/shm/maintenance.pid" ]; then
-    echo "Maintenance mode, all remote commands disabled."
-    if [[ $RESPONSE != "CONSOLE" ]] || [[ $RESPONSE != "DIRECT" ]]; then
-      RESPONSE="null"
+    echo "Maintenance mode, enabled !!"
+    if [[ $RESPONSE = "CONSOLE" ]] || [[ $RESPONSE = "DIRECT" ]] || [[ $RESPONSE = "UPDATE" ]] || [[ $RESPONSE = "DIAG" ]]; then
+        echo "accepted: $RESPONSE"
+      else 
+        echo "denied: $RESPONSE"
+        RESPONSE="null"
     fi
   fi
 
