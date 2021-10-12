@@ -796,7 +796,7 @@ module.exports = {
             if (!str.toString().includes("{") && !str.toString().includes("{") && str.toString().includes("-")) {
               console.log("\x1b[1;94m== \x1b[0mtrex config type: ARGS\x1b[0m");
               modifierArg = 'auto';
-              modifierExt = " --api-bind-http 127.0.0.1:3333 --json-response --pci-indexing --no-watchdog --exit-on-cuda-error";
+              modifierExt = " --api-bind-http 127.0.0.1:3333 --pci-indexing --no-watchdog --exit-on-cuda-error";
               // str = if startswith trex trim smt..
               MINER_CONFIG_FILE[miner.toLowerCase()] = "start.bash";
             } else {
