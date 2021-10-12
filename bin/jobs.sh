@@ -290,14 +290,16 @@ if [ "$NVIDIADEVICE" != "0" ]; then
     CHECK_ERR=$(timeout 10 sudo nvidia-settings --verbose -c :0 -a GPUFanControlState=1 -a GPUTargetFanSpeed="$FANMAX" &> /dev/shm/nverr.txt)
     CHECK_ERR=$(cat /dev/shm/nverr.txt | grep -c "Unknown Error")
     CHECK_ERR2=$(cat /dev/shm/nverr.txt | grep -c "not available")
+    CHECK_ERR3=$(cat /dev/shm/nverr.txt | grep -c "targets match")
+    CHECK_ERR4=$(cat /dev/shm/nverr.txt | grep -c "NV-CONTROL extension")
   fi
-  if [[ "$SNUM" != "1" ]] || [[ "$XORG" -lt 1 ]] || [[ "$XORG" -lt $NVIDIADEVICE ]] || [[ "$CHECK_ERR" -gt 0 ]] || [[ "$CHECK_ERR2" -gt 0 ]]; then
+  if [[ "$SNUM" != "1" ]] || [[ "$XORG" -lt 1 ]] || [[ "$XORG" -lt $NVIDIADEVICE ]] || [[ "$CHECK_ERR" -gt 0 ]] || [[ "$CHECK_ERR2" -gt 0 ]] || [[ "$CHECK_ERR3" -gt 0 ]] || [[ "$CHECK_ERR4" -gt 0 ]]; then
     sudo su -c "timeout 10 sudo screen -X -S display quit" > /dev/null
     timeout 10 screen -X -S display quit > /dev/null
     timeout 10 screen -X -S display2 quit > /dev/null
     sudo timeout 10 killall X > /dev/null
     sudo timeout 10 killall Xorg > /dev/null
-    sudo timeout 5 kill -9 $(sudo pidof Xorg) > /dev/null
+    sudo timeout 5 sudo kill -9 $(sudo pidof Xorg) > /dev/null
     sudo timeout 5 rm /tmp/.X0-lock > /dev/null
     echo "device num: $NVIDIADEVICE"
     EGPU=""

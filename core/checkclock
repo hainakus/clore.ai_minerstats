@@ -23,8 +23,10 @@ do
     echo "clocktune applied before"
 
     VALIDATE=$(cat /dev/shm/nvapplymclk.txt | sed  '/^$/d' | xargs)
-    if [[ "$VALIDATE" == *"Unable to find"* ]] || [[ "$VALIDATE" == *"Unknown"* ]] || [[ -z "$VALIDATE" ]] || [[ "$VALIDATE" == *"not available"* ]]; then
+    if [[ "$VALIDATE" == *"Unable to find"* ]] || [[ "$VALIDATE" == *"Unknown"* ]] || [[ -z "$VALIDATE" ]] || [[ "$VALIDATE" == *"not available"* ]] || [[ "$VALIDATE" == *"targets match"* ]] || [[ "$VALIDATE" == *"NV-CONTROL extension"* ]]; then
       sudo killall Xorg
+      sudo killall Xorg
+      sudo kill -9 $(sudo pidof Xorg)
       sudo bash /home/minerstat/minerstat-os/bin/overclock.sh
     fi
 

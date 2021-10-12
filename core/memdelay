@@ -74,7 +74,7 @@ if [[ "$JOB" != "" ]]; then
   sudo su minerstat -c "DISPLAY=:0 nvidia-settings --verbose -c :0 $JOB" &> /dev/shm/nvapplymclk.txt
   VALIDATE=$(cat /dev/shm/nvapplymclk.txt | sed  '/^$/d' | xargs -0)
   cat /dev/shm/nvapplymclk.txt | sed  '/^$/d'
-  if [[ "$VALIDATE" == *"Unable to find"* ]] || [[ "$VALIDATE" == *"Unknown"* ]] || [[ -z "$VALIDATE" ]] || [[ "$VALIDATE" == *"not available"* ]]; then
+  if [[ "$VALIDATE" == *"Unable to find"* ]] || [[ "$VALIDATE" == *"Unknown"* ]] || [[ -z "$VALIDATE" ]] || [[ "$VALIDATE" == *"not available"* ]] || [[ "$VALIDATE" == *"targets match"* ]] || [[ "$VALIDATE" == *"NV-CONTROL extension"* ]]; then
     echo "Watiing 25 sec before attempting to apply again"
     sudo su -c "echo '$VALIDATE' > /dev/shm/miner.log"
     sleep 25
@@ -88,7 +88,7 @@ if [[ "$JOB" != "" ]]; then
     timeout 10 screen -X -S display2 quit > /dev/null
     sudo timeout 10 killall X > /dev/null
     sudo timeout 10 killall Xorg > /dev/null
-    sudo timeout 5 kill -9 $(sudo pidof Xorg) > /dev/null
+    sudo timeout 5 sudo kill -9 $(sudo pidof Xorg) > /dev/null
     sudo timeout 5 rm /tmp/.X0-lock > /dev/null
 
     NVIDIADEVICE=$(timeout 30 sudo lshw -C display | grep "driver=nvidia" | wc -l)

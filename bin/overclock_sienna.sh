@@ -219,12 +219,6 @@ if [ $1 ]; then
       sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
     fi
 
-    #sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set smc_pptable/FreqTableUclk/3=1025 DcModeMaxFreq=1025 overdrive_table/max/2=1025 overdrive_table/min/2=1025 --write
-    #sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set smc_pptable/FreqTableUclk/3=1025 smc_pptable/DcModeMaxFreq/2=1025 overdrive_table/max/2=1025 overdrive_table/min/2=1025 --write
-
-    # smc_pptable/FanTargetTemperature=$TT
-    # smc_pptable/FanThrottlingRpm=3000
-
     proArgs=""
     isRadeonPro=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI ${11}:" | grep -E "Pro|PRO" | wc -l)
 
@@ -236,10 +230,12 @@ if [ $1 ]; then
     fi
 
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
-      smc_pptable/DpmDescriptor/0/VoltageMode=2 overdrive_table/max/8=1200 overdrive_table/max/6=1200 overdrive_table/max/7=1200 overdrive_table/min/3=600 overdrive_table/min/5=600 overdrive_table/min/7=600 \
-      smc_pptable/MinVoltageGfx=2400 smc_pptable/VcBtcEnabled=0 $pmvdd $pvddci $psoc \
-      smc_pptable/FanStopTemp=35 smc_pptable/FanStartTemp=20 smc_pptable/FanZeroRpmEnable=0 smc_pptable/FanTargetTemperature=$TT smc_pptable/FanTargetGfxclk=1000 smc_pptable/dBtcGbGfxDfllModelSelect=2 --write
-    #smc_pptable/FanGain/0=100 smc_pptable/FanGain/1=100 smc_pptable/FanGain/2=100 smc_pptable/FanGain/3=100 smc_pptable/FanGain/4=100 smc_pptable/FanGain/5=100 smc_pptable/FanGain/6=100 smc_pptable/FanGain/7=100 smc_pptable/FanGain/8=100 smc_pptable/FanGain/9=100 smc_pptable/FanPwmMin=1 --write
+      overdrive_table/max/8=1200 overdrive_table/max/6=1200 overdrive_table/max/7=1200 overdrive_table/min/3=600 overdrive_table/min/5=600 overdrive_table/min/7=600 \
+      smc_pptable/FreqTableGfx/1=1300 smc_pptable/MinVoltageGfx=2700 smc_pptable/MaxVoltageGfx=2800 $pmvdd $pvddci $psoc \
+      smc_pptable/FanStopTemp=35 smc_pptable/FanStartTemp=20 smc_pptable/FanZeroRpmEnable=0   \
+      smc_pptable/DpmDescriptor/0/SsCurve/a=0.359800010919572 smc_pptable/DpmDescriptor/0/SsCurve/b=-0.988608590409728 \
+      smc_pptable/TdcLimit/1=33 \
+      smc_pptable/DpmDescriptor/0/SsCurve/c=1.23081934633134 smc_pptable/DpmDescriptor/0/VoltageMode=2 --write
   fi
 
   # Apply powerlimit
