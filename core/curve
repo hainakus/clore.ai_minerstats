@@ -101,7 +101,7 @@ loop() {
 
       echo "Debug: FANMIN: $FANMIN2 | FANMAX: $FANMAX2"
 
-      QUERY=$(sudo /home/minerstat/minerstat-os/bin/amdinfo)
+      QUERY=$(sudo /home/minerstat/minerstat-os/bin/amdinfo --show-extra)
       TEST_AMD=$NUM_AMD
       if [ ! -z "$QUERY" ]; then
         x="0"
@@ -120,13 +120,25 @@ loop() {
               fi
             fi
           fi
+
+          # Create temp cache
+          YID="$y"
+
           TEMP=$(echo $QUERY | /home/minerstat/minerstat-os/bin/jq -r .[\"$x\"] | awk '{print $1}' | sed 's/[^0-9.]*//g' | cut -d. -f1 | xargs)
           FAN=$(echo $QUERY | /home/minerstat/minerstat-os/bin/jq -r .[\"$x\"] | awk '{print $2}' | sed 's/[^0-9.]*//g' | cut -d. -f1 | xargs)
+
+          # Check if Unique ID (VID) exists in API
+          UIDS=$(echo $QUERY | /home/minerstat/minerstat-os/bin/jq -r .[\"$x\"] | awk -F',' '{print $9}' | sed 's/[^0-9.]*//g' | cut -d. -f1 | xargs)
+          if [[ ! -z "$UIDS" ]]; then
+            echo "UIDS changed from $YID to $UIDS"
+            YID="$UIDS"
+          fi
+
           # Trick for memtemp
-          MEMTEMP=$(cat /sys/class/drm/card$y/device/hwmon/hwmon*/temp3_input 2>/dev/null | sed 's|[^0-9]||g' | xargs)
+          MEMTEMP=$(cat /sys/class/drm/card$YID/device/hwmon/hwmon*/temp3_input 2>/dev/null | sed 's|[^0-9]||g' | xargs)
           if [[ ! -z "$MEMTEMP" ]]; then
             MEMTEMP=$((MEMTEMP/1000))
-            echo "memtemp found for $y, val: $MEMTEMP"
+            echo "memtemp found for $YID, val: $MEMTEMP"
             if [[ "$MEMTEMP" -gt "$TARGET_MEM" ]]; then
               echo "memtemp is higher, masking current temp to memtemp to cool down"
               TEMP=$MEMTEMP
@@ -211,11 +223,11 @@ loop() {
             if [ ! -z "$PARAM" ]; then
               #sudo nvidia-settings -c :0 $PARAM &> /dev/null
               if [ "$MSG" != "ON TARGET" ]; then
-                MAXFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_max)
-                CURRFAN=$(cat /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1)
+                MAXFAN=$(cat /sys/class/drm/card$YID/device/hwmon/hwmon*/pwm1_max)
+                CURRFAN=$(cat /sys/class/drm/card$YID/device/hwmon/hwmon*/pwm1)
 
                 CURRFANFIVE=$((CURRFAN-5))
-                echo "MAXFAN FOR $x $y : $MAXFAN"
+                echo "MAXFAN FOR $x $YID : $MAXFAN"
                 FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $NEWFAN}" | cut -f1 -d".")
                 FANVALUE=$(printf "%.0f\n" $FANVALUE)
                 FANVALUE=$(awk -v n="$FANVALUE" 'BEGIN{print int((n+5)/10) * 10}')
@@ -230,10 +242,10 @@ loop() {
                 #if [ "$CURRFAN" != "$FANVALUE" ]; then
                 if [ "$CURRFAN" != "$FANVALUE" ] && [ "$CURRFANFIVE" != "$FANVALUE" ]; then
                   if [ "$PWM" = "1" ]; then
-                    sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable"
-                    sudo su -c "echo $FANVALUE > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1"
+                    sudo su -c "echo 1 > /sys/class/drm/card$YID/device/hwmon/hwmon*/pwm1_enable"
+                    sudo su -c "echo $FANVALUE > /sys/class/drm/card$YID/device/hwmon/hwmon*/pwm1"
                     sleep 2
-                    RB=$(cat /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1)
+                    RB=$(cat /sys/class/drm/card$YID/device/hwmon/hwmon*/pwm1)
                     echo "Set $FANVALUE, Read back: $RB"
                     if [ "$RB" -gt "$FANVALUE" ]; then
                       DIFFERENCE=$((RB-FANVALUE))
@@ -241,17 +253,17 @@ loop() {
                         NEW_ATTEMPT=$((FANVALUE-DIFFERENCE))
                         echo "Read back is higher, some driver issue detected. Attempting to auto offset it"
                         echo "Diff: $DIFFERENCE, New val: $NEW_ATTEMPT"
-                        sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable"
-                        sudo su -c "echo $NEW_ATTEMPT > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1"
+                        sudo su -c "echo 1 > /sys/class/drm/card$YID/device/hwmon/hwmon*/pwm1_enable"
+                        sudo su -c "echo $NEW_ATTEMPT > /sys/class/drm/card$YID/device/hwmon/hwmon*/pwm1"
                         sleep 2
-                        RB=$(cat /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1)
+                        RB=$(cat /sys/class/drm/card$YID/device/hwmon/hwmon*/pwm1)
                         echo "Set $NEW_ATTEMPT, Read back: $RB"
                       fi
                     fi
                   else
-                    sudo su -c "echo 2 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable"
-                    sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable"
-                    sudo su -c "echo 255 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1"
+                    sudo su -c "echo 2 > /sys/class/drm/card$YID/device/hwmon/hwmon*/pwm1_enable"
+                    sudo su -c "echo 1 > /sys/class/drm/card$YID/device/hwmon/hwmon*/pwm1_enable"
+                    sudo su -c "echo 255 > /sys/class/drm/card$YID/device/hwmon/hwmon*/pwm1"
                   fi
                 fi
               fi
@@ -268,7 +280,7 @@ loop() {
               TEST_AMD=$((TEST_AMD+1))
             fi
           fi
-          echo "GPU$x [RID: $y] [$TEMP C / $FAN% ] [MSG:$MSG]"
+          echo "GPU$x [RID: old: $y / new: $YID] [$TEMP C / $FAN% ] [MSG:$MSG]"
           x=$((x+1))
           y=$((y+1))
         done

@@ -318,7 +318,7 @@ do
 
     if [ "$MONITOR_TYPE" = "amd" ]; then
       AMDINFO=$(sudo timeout 15 /home/minerstat/minerstat-os/bin/gpuinfo amd3)
-      QUERYPOWER=$(sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi -P | grep 'Average Graphics Package Power:' | sort -V | sed 's/.*://' | sed 's/W/''/g' | xargs)
+      #QUERYPOWER=$(sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi -P | grep 'Average Graphics Package Power:' | sort -V | sed 's/.*://' | sed 's/W/''/g' | xargs)
       HWMEMORY=$(cat /home/minerstat/minerstat-os/bin/amdmeminfo.txt)
       sudo chmod 777 /dev/shm/amdmeminfo.txt
       if [ ! -f "/dev/shm/amdmeminfo.txt" ]; then
@@ -340,7 +340,7 @@ do
       fi
       HWSTRAPS=$(cd /home/minerstat/minerstat-os/bin/; sudo ./"$STRAPFILENAME" --current-minerstat)
       # ?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&freemem=$STR5&teleid=$TELEID&systime=$SYSTIME&mobo=$MOBO_TYPE&bios=$BIOS_VERSION&msos=$MSOS_VERSION&mac=$MAC_ADDRESS&cputype=$CPU_TYPE&cpu_usage=$CPU_USAGE&cpu_temp=$CPU_TEMP&disk_type=$DISK_TYPE&nvidiad=$NVIDIA_DRIVER&amdd=$AMD_DRIVER&kernel=$KERNEL_VERSION&ubuntu=$UBUNTU_VERSION"
-      RESPONSE=$(sudo curl --insecure --connect-timeout 15 --max-time 25 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=amd" --data "hwData=$AMDINFO" --data "hwPower=$QUERYPOWER" --data "hwMemory=$HWMEMORY" --data "hwStrap=$HWSTRAPS" --data "mineLog=$RAMLOG" --data "space=$STR1" --data "cpu=$STR2" --data "localip=$STR3" --data "freemem=$STR5" --data "teleid=$TELEID" --data "systime=$SYSTIME" --data "mobo=$MOBO_TYPE" --data "bios=$BIOS_VERSION" --data "msos=$MSOS_VERSION" --data "mac=$MAC_ADDRESS" --data "cputype=$CPU_TYPE" --data "cpu_usage=$CPU_USAGE" --data "cpu_temp=$CPU_TEMP" --data "disk_type=$DISK_TYPE" --data "nvidiad=$NVIDIA_DRIVER" --data "amdd=$AMD_DRIVER" --data "kernel=$KERNEL_VERSION" --data "ubuntu=$UBUNTU_VERSION" --data "uefi=$BOOTED" --data "consumption=$PSUMETER" "https://api.minerstat.com:2053/v2/set_node_config_os2.php")
+      RESPONSE=$(sudo curl --insecure --connect-timeout 15 --max-time 25 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=amd" --data "hwData=$AMDINFO" --data "hwMemory=$HWMEMORY" --data "hwStrap=$HWSTRAPS" --data "mineLog=$RAMLOG" --data "space=$STR1" --data "cpu=$STR2" --data "localip=$STR3" --data "freemem=$STR5" --data "teleid=$TELEID" --data "systime=$SYSTIME" --data "mobo=$MOBO_TYPE" --data "bios=$BIOS_VERSION" --data "msos=$MSOS_VERSION" --data "mac=$MAC_ADDRESS" --data "cputype=$CPU_TYPE" --data "cpu_usage=$CPU_USAGE" --data "cpu_temp=$CPU_TEMP" --data "disk_type=$DISK_TYPE" --data "nvidiad=$NVIDIA_DRIVER" --data "amdd=$AMD_DRIVER" --data "kernel=$KERNEL_VERSION" --data "ubuntu=$UBUNTU_VERSION" --data "uefi=$BOOTED" --data "consumption=$PSUMETER" "https://api.minerstat.com:2053/v2/set_node_config_os2.php")
     fi
 
     if [ "$MONITOR_TYPE" = "nvidia" ]; then
@@ -389,10 +389,10 @@ do
   if [ -f "/dev/shm/maintenance.pid" ]; then
     echo "Maintenance mode, enabled !!"
     if [[ $RESPONSE = "CONSOLE" ]] || [[ $RESPONSE = "DIRECT" ]] || [[ $RESPONSE = "UPDATE" ]] || [[ $RESPONSE = "DIAG" ]]; then
-        echo "accepted: $RESPONSE"
-      else 
-        echo "denied: $RESPONSE"
-        RESPONSE="null"
+      echo "accepted: $RESPONSE"
+    else
+      echo "denied: $RESPONSE"
+      RESPONSE="null"
     fi
   fi
 

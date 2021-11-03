@@ -205,7 +205,16 @@ if [[ $1 == "amd2" ]]; then
         POWERCAP=$POWERF
       fi
 
-      NEWSTRING="$STRING, $currentVDDC, $currentMVDD, $VRAM_MB, $MEMTEMP, $POWERCAP"
+      # Current Power
+      CPOWER=0
+      CPOWER=$(timeout 5 sudo su -c "cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/power1_average")
+      CPOWER=$((CPOWER / 1000000))
+
+      if [ -z "$CPOWER" ]; then
+        CPOWER=0
+      fi
+
+      NEWSTRING="$STRING, $currentVDDC, $currentMVDD, $VRAM_MB, $MEMTEMP, $POWERCAP, $CPOWER"
       #echo $NEWSTRING
       I=$((i + 1))
       TEST=$(echo $AMDINFO_ORIGINAL | $JQ_PATH -r .[\"$I\"])
@@ -398,7 +407,16 @@ if [[ $1 == "amd3" ]]; then
         POWERCAP=$POWERF
       fi
 
-      NEWSTRING="$STRING, $currentVDDC, $currentMVDD, $VRAM_MB, $MEMTEMP, $POWERCAP"
+      # Current Power
+      CPOWER=0
+      CPOWER=$(timeout 5 sudo su -c "cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/power1_average")
+      CPOWER=$((CPOWER / 1000000))
+
+      if [ -z "$CPOWER" ]; then
+        CPOWER=0
+      fi
+
+      NEWSTRING="$STRING, $currentVDDC, $currentMVDD, $VRAM_MB, $MEMTEMP, $POWERCAP, $CPOWER"
       if [[ $2 == "debug" ]]; then
         echo "Debug: $NEWSTRING | CORESTATE: $currentCoreState , MEMSTATE: $currentMemState, VDDC: $currentVDDC, MVDD: $currentMVDD, VRAM: $VRAM, GPUID: $GPUID, VID: $NID"
       fi
