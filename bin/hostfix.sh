@@ -76,7 +76,7 @@ $SSERVERC labs.minerstat.farm
     TEST=$(sudo wc -c /home/minerstat/mining-pool-whitelist.txt | awk '{print $1}')
     TEST2=$(cat /home/minerstat/mining-pool-whitelist.txt | grep -c "ethermine")
     TEST3=$(cat /home/minerstat/mining-pool-whitelist.txt | grep -c "2miners")
-    TEST4=$(cat /home/minerstat/mining-pool-whitelist.txt | grep -c "nanopool")
+    TEST4=$(cat /home/minerstat/mining-pool-whitelist.txt | grep -c "luxor")
     if [[ "$TEST" -gt 1000 ]] && [[ "$TEST2" -gt 0 ]] && [[ "$TEST3" -gt 0 ]] && [[ "$TEST4" -gt 0 ]]; then
       echo "[OK] Cache valid"
       sudo cat /home/minerstat/mining-pool-whitelist.txt >> /etc/hosts
