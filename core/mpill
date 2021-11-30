@@ -1,5 +1,10 @@
 #!/bin/bash
 
+echo
+echo
+
+echo "Reading settings .."
+
 STATUS=$(sudo cat /media/storage/settings.txt | grep "OHGODADELAY=" | sed 's/[^=]*\(=.*\)/\1/' | tr --delete = | xargs)
 ETHPILLARGS=$(sudo cat /media/storage/settings.txt | grep "OHGODARGS=" | sed 's/[^=]*\(=.*\)/\1/' | tr --delete = | xargs)
 
@@ -9,7 +14,13 @@ PID=$(timeout 5 sudo ls /var/run/screen/S-root | grep ethboost | sed 's/[^0-9]*/
 sudo screen -XS $PID quit > /dev/null 2>&1
 PID=$(timeout 5 sudo ls /var/run/screen/S-root | grep ethboost | sed 's/[^0-9]*//g' | head -n1 | xargs)
 sudo screen -XS $PID quit > /dev/null 2>&1
-sudo killall OhGodAnETHlargementPill-r2
+sudo killall OhGodAnETHlargementPill-r2 > /dev/null 2>&1
+
+
+echo
+echo "OHGODADELAY=$STATUS"
+echo "OHGODARGS=$ETHPILLARGS"
+
 
 if [ -z "$STATUS" ]; then
   STATUS_ORIGIN="ON"
@@ -31,7 +42,7 @@ if [[ "$STATUS" == *"999"* ]]; then
 fi
 
 #if [ "$STATUS" = "10" ]; then
-if [[ "$STATUS" == *"10"* ]]; then
+if [[ "$STATUS" == *"10"* ]] || [[ "$STATUS" == *"15"* ]]; then
   STATUS_ORIGIN="ON"
   STATUS_NEW="OFF"
   sudo sed -i '/OHGODADELAY/d' /media/storage/settings.txt
