@@ -22,7 +22,8 @@ echo "OHGODADELAY=$STATUS"
 echo "OHGODARGS=$ETHPILLARGS"
 
 
-if [ -z "$STATUS" ]; then
+# If no data, turn it off
+if [[ -z "$STATUS" ]]; then
   STATUS_ORIGIN="ON"
   STATUS_NEW="OFF"
   sudo echo "TURNING OFF OHGODAPILL..."
@@ -31,7 +32,7 @@ if [ -z "$STATUS" ]; then
   sudo echo "OHGODADELAY=999" >> /media/storage/settings.txt
 fi
 
-#if [ "$STATUS" = "999" ]; then
+# If disabled, turn it on
 if [[ "$STATUS" == *"999"* ]]; then
   STATUS_ORIGIN="OFF"
   STATUS_NEW="ON"
@@ -41,8 +42,8 @@ if [[ "$STATUS" == *"999"* ]]; then
   screen -A -m -d -S ethboost sudo sh /home/minerstat/minerstat-os/bin/ethpill.sh "$ETHPILLARGS"
 fi
 
-#if [ "$STATUS" = "10" ]; then
-if [[ "$STATUS" == *"10"* ]] || [[ "$STATUS" == *"15"* ]]; then
+# If enabled, turn it off
+if [[ ! -z "$STATUS" ]] && [[ "$STATUS" != *"999"* ]]; then
   STATUS_ORIGIN="ON"
   STATUS_NEW="OFF"
   sudo sed -i '/OHGODADELAY/d' /media/storage/settings.txt
