@@ -35,6 +35,16 @@ global.memoryloc;
 global.minerVersion;
 global.cpuVersion;
 global.logPath;
+// Versioning Vars
+global.selectedVersion = "";
+global.selectedFork = "";
+global.cpuSelectedVersion = "";
+global.cpuSelectedFork = "";
+global.validVersion = false;
+global.validFork = false;
+global.cpuValidVersion = false;
+global.cpuValidFork = false;
+
 var colors = require('colors'),
   exec = require('child_process').exec,
   fs = require('fs'),
@@ -308,6 +318,17 @@ module.exports = {
 
           }
 
+          // versioning
+          try {
+            global.selectedVersion = response.body.selectedVersion;
+            global.selectedFork = response.body.selectedFork;
+            global.cpuSelectedVersion = response.body.cpuSelectedVersion;
+            global.cpuSelectedFork = response.body.cpuSelectedFork;
+          } catch (err) {
+
+          }
+
+          // Custom miner settings
           try {
             global.PrivateMiner = response.body.private;
             if (global.PrivateMiner == "True" && global.benchmark.toString() == 'false') {
@@ -405,69 +426,167 @@ module.exports = {
             console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + error + ")\x1b[0m");
             clearInterval(global.timeout);
             clearInterval(global.hwmonitor);
-            console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;33mWaiting for static server\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;33mWaiting for static server (version)\x1b[0m");
             sleep.sleep(10);
             tools.restart();
           } else {
-            var parseData = JSON.parse(body);
-            if (global.PrivateMiner == "True") {
-              gpuServerVersion = global.PrivateMinerURL;
-            } else {
-              gpuServerVersion = parseData[gpuMiner.toLowerCase()];
-            }
-            if (isCpu.toString() == "true" || isCpu.toString() == "True") {
-              cpuServerVersion = parseData[cpuMiner.toLowerCase()];
-            }
-            // main Miner Check's
-            var dir = 'clients/' + gpuMiner.toLowerCase() + '/msVersion.txt';
-            if (fs.existsSync(dir)) {
-              fs.readFile(dir, 'utf8', function(err, data) {
-                if (err) {
-                  gpuLocalVersion = "0";
+
+            // Versioning reset
+            global.validVersion = false;
+            global.validFork = false;
+            global.cpuValidVersion = false;
+            global.cpuValidFork = false;
+
+            // Make second request for fork versions
+            request.get({
+              url: 'https://static-ssl.minerstat.farm/miners/linux/gpu_forks.json',
+              timeout: 15000,
+              rejectUnauthorized: false,
+            }, function(errorFork, responseFork, bodyFork) {
+              if (errorFork != null) {
+                console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + error + ")\x1b[0m");
+                clearInterval(global.timeout);
+                clearInterval(global.hwmonitor);
+                console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;33mWaiting for static server (version Fork)\x1b[0m");
+                sleep.sleep(10);
+                tools.restart();
+              } else {
+
+                var parseData = JSON.parse(body);
+                var parseFork = JSON.parse(bodyFork);
+
+                // Custom miner
+                if (global.PrivateMiner == "True") {
+                  gpuServerVersion = global.PrivateMinerURL;
+                } else {
+                  gpuServerVersion = parseData[gpuMiner.toLowerCase()];
                 }
-                gpuLocalVersion = data;
-                if (gpuLocalVersion == undefined) {
-                  gpuLocalVersion = "0";
+                if (isCpu.toString() == "true" || isCpu.toString() == "True") {
+                  cpuServerVersion = parseData[cpuMiner.toLowerCase()];
                 }
-                if (gpuServerVersion == gpuLocalVersion) {
-                  dlGpu = false;
+                // main Miner Check's
+                var dir = 'clients/' + gpuMiner.toLowerCase() + '/msVersion.txt';
+                if (fs.existsSync(dir)) {
+                  fs.readFile(dir, 'utf8', function(err, data) {
+                    if (err) {
+                      gpuLocalVersion = "0";
+                    }
+                    gpuLocalVersion = data;
+                    if (gpuLocalVersion == undefined) {
+                      gpuLocalVersion = "0";
+                    }
+
+                    // Versioning
+                    if (global.selectedFork != "") {
+                      var testVersion = JSON.stringify(parseFork[gpuMiner.toLowerCase()].forks);
+                      if (testVersion.includes(global.selectedFork) && testVersion.includes(global.selectedVersion)) {
+                        // Change version if valid
+                        gpuServerVersion = global.selectedVersion;
+                        global.minerVersion = global.selectedVersion;
+                        // Validate
+                        global.validFork = true;
+                        global.validVersion = true;
+                      } else {
+                        // Reject this version
+                        global.validFork = false;
+                        global.validVersion = false;
+                      }
+                    }
+
+                    if (global.selectedVersion != "" && global.selectedFork == "") {
+                      var testVersion = parseFork[gpuMiner.toLowerCase()].versions;
+                      if (testVersion.includes(global.selectedVersion)) {
+                        // Change version if valid
+                        gpuServerVersion = global.selectedVersion;
+                        global.minerVersion = global.selectedVersion;
+                        // Validate
+                        global.validVersion = true;
+                      } else {
+                        // Reject this version
+                        global.validVersion = false;
+                      }
+                    }
+
+                    // Compare
+                    if (gpuServerVersion == gpuLocalVersion) {
+                      dlGpu = false;
+                    } else {
+                      dlGpu = true;
+                    }
+
+                    // Callback
+                    callbackVersion(dlGpu, false, false, "gpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
+                  });
                 } else {
                   dlGpu = true;
+                  // Callback
+                  callbackVersion(dlGpu, false, false, "gpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
                 }
-                // Callback
-                callbackVersion(dlGpu, false, false, "gpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
-              });
-            } else {
-              dlGpu = true;
-              // Callback
-              callbackVersion(dlGpu, false, false, "gpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
-            }
-            // cpu Miner Check's
-            if (isCpu.toString() == "true" || isCpu.toString() == "True") {
-              var dir = 'clients/' + cpuMiner.toLowerCase() + '/msVersion.txt';
-              if (fs.existsSync(dir)) {
-                fs.readFile(dir, 'utf8', function(err, data) {
-                  if (err) {
-                    cpuLocalVersion = "0";
-                  }
-                  cpuLocalVersion = data;
-                  if (cpuLocalVersion == undefined) {
-                    cpuLocalVersion = "0";
-                  }
-                  if (cpuServerVersion == cpuLocalVersion) {
-                    dlCpu = false;
+                // cpu Miner Check's
+                if (isCpu.toString() == "true" || isCpu.toString() == "True") {
+                  var dir = 'clients/' + cpuMiner.toLowerCase() + '/msVersion.txt';
+                  if (fs.existsSync(dir)) {
+                    fs.readFile(dir, 'utf8', function(err, data) {
+                      if (err) {
+                        cpuLocalVersion = "0";
+                      }
+                      cpuLocalVersion = data;
+                      if (cpuLocalVersion == undefined) {
+                        cpuLocalVersion = "0";
+                      }
+
+                      // Versioning
+                      if (!cpuMiner.toLowerCase().includes("disabled") && global.cpuSelectedFork != "") {
+                        var testVersion = JSON.stringify(parseFork[cpuMiner.toLowerCase()].forks);
+
+                        if (testVersion.includes(global.cpuSelectedFork) && testVersion.includes(global.cpuSelectedVersion)) {
+                          // Change version if valid
+                          cpuServerVersion = global.cpuSelectedVersion;
+                          global.cpuVersion = global.cpuServerVersion;
+                          // Validate
+                          global.cpuValidVersion = true;
+                          global.cpuValidFork = true;
+                        } else {
+                          // Reject this version
+                          global.cpuValidVersion = false;
+                          global.cpuValidFork = false;
+                        }
+                      }
+
+                      if (!cpuMiner.toLowerCase().includes("disabled") && global.cpuSelectedVersion != "" && global.cpuSelectedFork == "") {
+                        var testVersion = parseFork[cpuMiner.toLowerCase()].versions;
+                        if (testVersion.includes(global.cpuSelectedVersion)) {
+                          // Change version if valid
+                          cpuServerVersion = global.cpuSelectedVersion;
+                          global.cpuVersion = global.cpuServerVersion;
+                          // Validate
+                          global.cpuValidVersion = true;
+                        } else {
+                          // Reject this version
+                          global.cpuValidVersion = false;
+                        }
+                      }
+
+                      // Compare
+                      if (cpuServerVersion == cpuLocalVersion) {
+                        dlCpu = false;
+                      } else {
+                        dlCpu = true;
+                      }
+
+                      // Callback
+                      callbackVersion(false, true, dlCpu, "cpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
+                    });
                   } else {
                     dlCpu = true;
+                    // Callback
+                    callbackVersion(false, true, dlCpu, "cpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
                   }
-                  // Callback
-                  callbackVersion(false, true, dlCpu, "cpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
-                });
-              } else {
-                dlCpu = true;
-                // Callback
-                callbackVersion(false, true, dlCpu, "cpu", gpuMiner, cpuMiner, gpuServerVersion, cpuServerVersion);
+                }
+
               }
-            }
+
+            });
           }
         });
       } catch (error) {
@@ -598,6 +717,23 @@ module.exports = {
     async function downloadCore(miner, clientType, serverVersion) {
       var miner = miner;
       var dlURL = 'https://static-ssl.minerstat.farm/miners/linux/' + miner + '.zip';
+
+      if (clientType == "cpu") {
+        if (global.cpuValidVersion) {
+          dlURL = 'https://static-ssl.minerstat.farm/miners/linux/forks/' + miner + "/" + global.cpuSelectedVersion + "/" + miner + '.zip';
+        }
+        if (global.cpuValidFork) {
+          dlURL = 'https://static-ssl.minerstat.farm/miners/linux/forks/' + global.cpuSelectedFork + '/' + global.cpuSelectedVersion + "/" + miner + '.zip';
+        }
+      } else {
+        if (global.validVersion) {
+          dlURL = 'https://static-ssl.minerstat.farm/miners/linux/forks/' + miner + '/' + global.selectedVersion + "/" + miner + '.zip';
+        }
+        if (global.validFork) {
+          dlURL = 'https://static-ssl.minerstat.farm/miners/linux/forks/' + global.selectedFork + '/' + global.selectedVersion + "/" + miner + '.zip';
+        }
+      }
+
       var dlURL_type = "zip";
       var fullFileName = "";
       var lastSlash = dlURL.lastIndexOf("/");

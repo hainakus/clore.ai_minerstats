@@ -37,6 +37,11 @@ fi
 sudo ifconfig eth0 $ADDRESS netmask $NETMASK
 sudo route add default gw $GATEWAY eth0
 
+# Validate
+sleep 1
+
+echo -e "\033[1;34m==\033[0m Networking: \033[1;32m Validating the connection ... \033[0m"
+
 TEST="$(ping api.minerstat.com -w 1 | grep '1 packets transmitted' | xargs)"
 if [[ "$TEST" == *"0% packet loss"* ]]; then
   echo -e ""
@@ -44,4 +49,5 @@ if [[ "$TEST" == *"0% packet loss"* ]]; then
 else
   echo -e ""
   echo -e "\033[1;34m==\033[0m Internet connection: \033[1;31mOFFLINE\033[0m"
+  NETRESTART="YES"
 fi

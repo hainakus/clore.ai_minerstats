@@ -984,9 +984,11 @@ module.exports = {
           if (global.watchnum > 1) {
             console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
             console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + err.message + ")\x1b[0m");
-            console.log("\x1b[1;94m== \x1b[0mMiner not hashing, Possible reasons:\x1b[0m");
-            console.log("\x1b[1;94m== \x1b[0m- Bad ClockTune Profile\x1b[0m");
-            console.log("\x1b[1;94m== \x1b[0m- Invalid miner configuration on Config Editor\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m- Mining client got invalid configuration.\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m- Mining client doesn't support your hardware/driver.\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m- Mining client crashed due to intense overclocking or missing overclocking profile.\x1b[0m");         
+            console.log("\x1b[1;94m== \x1b[0m- Find tips on: https://minerstat.com/help/miner-is-not-running\x1b[0m");
+            console.log("");
           }
         });
       }
@@ -1007,9 +1009,12 @@ module.exports = {
             if (global.watchnum > 1) {
               console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
               console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + error + ")\x1b[0m");
-              console.log("\x1b[1;94m== \x1b[0mMiner not hashing, Possible reasons:\x1b[0m");
-              console.log("\x1b[1;94m== \x1b[0m- Bad ClockTune Profile\x1b[0m");
-              console.log("\x1b[1;94m== \x1b[0m- Invalid miner configuration on Config Editor\x1b[0m");
+              console.log("\x1b[1;94m== \x1b[0mUnable to start mining. Possible reasons:\x1b[0m");
+              console.log("\x1b[1;94m== \x1b[0m- Mining client got invalid configuration.\x1b[0m");
+              console.log("\x1b[1;94m== \x1b[0m- Mining client doesn't support your hardware/driver.\x1b[0m");
+              console.log("\x1b[1;94m== \x1b[0m- Mining client crashed due to intense overclocking or missing overclocking profile.\x1b[0m");
+              console.log("\x1b[1;94m== \x1b[0m- Find tips on: https://minerstat.com/help/miner-is-not-running\x1b[0m");
+              console.log("");
             }
           }
         });
@@ -1037,9 +1042,11 @@ module.exports = {
           restartNode();
           if (global.watchnum > 1) {
             console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
-            console.log("\x1b[1;94m== \x1b[0m- Mining client or API not started\x1b[0m");
-            console.log("\x1b[1;94m== \x1b[0m- Too much Overclock / Undervolt\x1b[0m");
-            console.log("\x1b[1;94m== \x1b[0m- Invalid mining client config\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m- Mining client got invalid configuration.\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m- Mining client doesn't support your hardware/driver.\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m- Mining client crashed due to intense overclocking or missing overclocking profile.\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m- Find tips on: https://minerstat.com/help/miner-is-not-running\x1b[0m");
+            console.log("");
           }
         });
         ccminerClient.on('end', () => {

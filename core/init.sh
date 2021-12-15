@@ -7,7 +7,7 @@ DETECT="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | s
 PART=$DETECT"1"
 
 if [ "$DETECT" = "nvmenp" ]; then
-  echo "Changeing header, NVM drive detected.."
+  echo "Changeing header, NVME drive detected.."
   DETECT="$(df -h | grep "20M" | grep "/dev/" | cut -f1 -d"2" | sed 's/dev//g' | sed 's/\///g' | xargs | sed 's/.$//' | sed 's/\s.*$//' | xargs | sed 's/\p//g')"
   PART=$DETECT"p1"
 fi

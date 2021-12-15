@@ -71,7 +71,7 @@ $SSERVERC labs.minerstat.farm
   sudo rm /home/minerstat/mining-pool-whitelist.txt 2>/dev/null
   timeout 10 wget -o /dev/null https://minerstat.com/mining-pool-whitelist.txt -O /home/minerstat/mining-pool-whitelist.txt
   if [ $? -ne 0 ]; then
-    echo "[INFO] Cache wget failed. Trying next time"
+    echo "[INFO] Downloading Pool DNS Cache failed. Trying next hour"
   else
     TEST=$(sudo wc -c /home/minerstat/mining-pool-whitelist.txt | awk '{print $1}')
     TEST2=$(cat /home/minerstat/mining-pool-whitelist.txt | grep -c "ethermine")
