@@ -33,7 +33,7 @@ if [[ -z "$AUTOLOGIN" ]] || [[ "$AUTOLOGINE" != "1" ]]; then
 fi
 timeout 10 sudo systemctl daemon-reload > /dev/null &
 # Kernel panic auto reboot and clean older miner logs
-timeout 10 sudo su -c "sudo echo 1 > /proc/sys/kernel/sysrq; sudo echo 20 > /proc/sys/kernel/panic; echo '' > /dev/shm/miner.log"
+timeout 10 sudo su -c "sudo echo 1 > /proc/sys/kernel/sysrq; sudo echo 20 > /proc/sys/kernel/panic; echo '' > /dev/shm/miner.log; echo '' > /var/mail/minerstat"
 # Remove logs
 timeout 10 find '/home/minerstat/minerstat-os/clients/claymore-eth' -name "*log.txt" -type f -delete
 timeout 10 sudo find /var/log -type f -name "*.journal" -delete
@@ -49,6 +49,7 @@ sudo su -c "cp /home/minerstat/minerstat-os/core/minerstat /var/spool/cron/cront
 sudo chmod 1730 /var/spool/cron/crontabs
 sudo chown root:crontab /var/spool/cron/crontabs
 sudo service cron restart
+unset MAILCHECK
 sudo sed -i s/"TimeoutStartSec=5min"/"TimeoutStartSec=5sec"/ /etc/systemd/system/network-online.target.wants/networking.service
 #sudo sed -i s/"timeout 300"/"timeout 5"/ /etc/dhcp/dhclient.conf
 sudo sed -i s/"timeout 5"/"timeout 25"/ /etc/dhcp/dhclient.conf
