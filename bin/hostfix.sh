@@ -6,6 +6,11 @@ SERVERA="104.26.9.16"
 SERVERB="104.26.8.16"
 SERVERF="172.67.68.245"
 SERVERC="$SERVERB"
+
+# If global resolve working may not use host cache
+GLOBAL_RESOLVE=$(ping -4 -c 1 api.minerstat.com. | grep "ttl=" | sed 's/^[^(]*(//' | cut -f1 -d")" | xargs)
+
+# DNS For Main connection
 DNSA=$(ping -c 1 $SERVERA &> /dev/null && echo success || echo fail)
 if [ "$DNSA" = "success" ]; then
   SERVERC="$SERVERA"
@@ -15,6 +20,15 @@ else
     SERVERC="$SERVERF"
   else
     SERVERC="$SERVERA"
+  fi
+fi
+
+# Uncomment main connection cache if global resolve working
+# But verify IP first
+
+if [[ ! -z "$GLOBAL_RESOLVE" ]]; then
+  if [[ "$GLOBAL_RESOLVE" = "104.26.9.16" ]] || [[ "$GLOBAL_RESOLVE" = "104.26.8.16" ]] || [[ "$GLOBAL_RESOLVE" = "172.67.68.245" ]]; then
+    SERVERC="#$SERVERC"
   fi
 fi
 
