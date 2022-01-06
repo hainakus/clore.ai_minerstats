@@ -108,16 +108,18 @@ if [ "$NSCHECK" != "nameserver 1.1.1.1" ] || [ ! -z "$GET_GATEWAY" ] || [ "$RES_
   if [ ! -z "$GET_GATEWAY" ]; then
     # Detect IP blocker DNS
     BLOCK_TEST=$(nslookup eu1.ethermine.org $GET_GATEWAY | grep Address: | grep "0.0.0.0" | head -n1 | awk '{print $2}' | xargs | xargs)
+    BLOCK_TEST_API=$(nslookup api.minerstat.com $GET_GATEWAY | grep Address: | grep "0.0.0.0" | head -n1 | awk '{print $2}' | xargs | xargs)
 
     # Second test
     BLOCK_TEST_TIME=$(timeout 3 nslookup eu1.ethermine.org $GET_GATEWAY | grep Address: | xargs)
-    if [[ -z "$BLOCK_TEST_TIME" ]]; then
+    BLOCK_TEST_TIME_API=$(timeout 3 nslookup api.minerstat.com $GET_GATEWAY | grep Address: | xargs)
+    if [[ -z "$BLOCK_TEST_TIME" ]] || [[ -z "$BLOCK_TEST_TIME_API" ]]; then
       # If failing to respond in x second use upstream
       BLOCK_TEST="::"
     fi
 
     # Write new DNS settings
-    if [[ "$BLOCK_TEST" = "0.0.0.0" ]] || [[ "$BLOCK_TEST" = "::" ]]; then
+    if [[ "$BLOCK_TEST" = "0.0.0.0" ]] || [[ "$BLOCK_TEST" = "::" ]] || [[ "$BLOCK_TEST_API" = "0.0.0.0" ]] || [[ "$BLOCK_TEST_API" = "::" ]]; then
       sudo su -c "echo -n > /etc/resolv.conf; echo 'nameserver 1.1.1.1' >> /etc/resolv.conf; echo 'nameserver 1.0.0.1' >> /etc/resolv.conf; echo 'nameserver 8.8.8.8' >> /etc/resolv.conf; echo 'nameserver 8.8.4.4' >> /etc/resolv.conf; echo 'nameserver 114.114.114.114' >> /etc/resolv.conf; echo 'nameserver 114.114.115.115' >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf;" 2>/dev/null
     else
       sudo su -c "echo -n > /etc/resolv.conf; echo 'nameserver $GET_GATEWAY' >> /etc/resolv.conf; echo 'nameserver 1.1.1.1' >> /etc/resolv.conf; echo 'nameserver 1.0.0.1' >> /etc/resolv.conf; echo 'nameserver 8.8.8.8' >> /etc/resolv.conf; echo 'nameserver 8.8.4.4' >> /etc/resolv.conf; echo 'nameserver 114.114.114.114' >> /etc/resolv.conf; echo 'nameserver 114.114.115.115' >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1111 >> /etc/resolv.conf; echo nameserver 2606:4700:4700::1001 >> /etc/resolv.conf;" 2>/dev/null
