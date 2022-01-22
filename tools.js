@@ -83,6 +83,13 @@ function restartNode() {
   }
 }
 var MINER_JSON = {
+  "bzminer": {
+    "args": "auto",
+    "execFile": "bzminer",
+    "apiPort": 4014,
+    "apiPath": "/status",
+    "apiType": "http"
+  },
   "cast-xmr": {
     "args": "auto",
     "execFile": "cast_xmr-vega",
@@ -986,7 +993,7 @@ module.exports = {
             console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + err.message + ")\x1b[0m");
             console.log("\x1b[1;94m== \x1b[0m- Mining client got invalid configuration.\x1b[0m");
             console.log("\x1b[1;94m== \x1b[0m- Mining client doesn't support your hardware/driver.\x1b[0m");
-            console.log("\x1b[1;94m== \x1b[0m- Mining client crashed due to intense overclocking or missing overclocking profile.\x1b[0m");         
+            console.log("\x1b[1;94m== \x1b[0m- Mining client crashed due to intense overclocking or missing overclocking profile.\x1b[0m");
             console.log("\x1b[1;94m== \x1b[0m- Find tips on: https://minerstat.com/help/miner-is-not-running\x1b[0m");
             console.log("");
           }

@@ -845,6 +845,7 @@ module.exports = {
       // IF START ARGS start.bash if external config then use that.
       const MINER_CONFIG_FILE = {
         "bminer": "start.bash",
+        "bzminer": "start.bash",
         "cast-xmr": "start.bash",
         "ccminer-alexis": "start.bash",
         "ccminer-djm34": "start.bash",
