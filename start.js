@@ -868,6 +868,7 @@ module.exports = {
         "progpowminer": "start.bash",
         "sgminer-avermore": "sgminer.conf",
         "sgminer-gm": "sgminer.conf",
+        "teamblackminer": "start.bash",
         "teamredminer": "start.bash",
         "trex": "config.json",
         "wildrig-multi": "start.bash",

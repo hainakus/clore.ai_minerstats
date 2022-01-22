@@ -251,6 +251,13 @@ var MINER_JSON = {
     "apiType": "tcp",
     "apiCArg": "summary+pools+devs"
   },
+  "teamblackminer": {
+    "args": "auto",
+    "execFile": "TBMiner",
+    "apiPort": 4068,
+    "apiPath": "/summary",
+    "apiType": "http"
+  },
   "teamredminer": {
     "args": "auto",
     "execFile": "teamredminer",
