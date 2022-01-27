@@ -208,6 +208,8 @@ if [ $1 ]; then
   if [[ ! -z "$MEMLOCK" ]] && [[ "$MEMLOCK" != "0" ]] && [[ "$MEMLOCK" != "skip" ]]; then
     echo "Applying Memory Clock Lock to All GPUs [$MEMLOCK Mhz]"
     sudo nvidia-smi -lmc $MEMLOCK
+  else
+    timeout 5 sudo nvidia-smi -rmc > /dev/null 2>&1
   fi
 
   #################################£

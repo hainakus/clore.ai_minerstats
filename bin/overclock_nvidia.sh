@@ -28,7 +28,7 @@ if [ $1 ]; then
   # Lock core clock
   CORELOCK=$7
   # Lock memory clock
-  MEMLOCK=$7
+  MEMLOCK=$8
 
   ## BULIDING QUERIES
   STR1=""
@@ -221,6 +221,8 @@ if [ $1 ]; then
   if [[ ! -z "$MEMLOCK" ]] && [[ "$MEMLOCK" != "0" ]] && [[ "$MEMLOCK" != "skip" ]]; then
     echo "Applying Memory Clock Lock to GPU $GPUID [$MEMLOCK Mhz]"
     sudo nvidia-smi -i $GPUID -lmc $MEMLOCK
+  else
+    timeout 5 sudo nvidia-smi -i $GPUID -lmc  > /dev/null 2>&1
   fi
 
   #################################£
