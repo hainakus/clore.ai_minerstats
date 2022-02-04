@@ -88,7 +88,7 @@ done
 bar+="\e[0m]"
 echo -e "${bar}" | sed -e 's/^/  /'
 
-#sudo bash /home/minerstat/minerstat-os/core/gputable
+timeout 3 sudo bash /home/minerstat/minerstat-os/core/gputable
 
 printf "\n"
 printf "  Type $(tput -T xterm smul)mhelp$(tput -T xterm sgr0) for all available commands."

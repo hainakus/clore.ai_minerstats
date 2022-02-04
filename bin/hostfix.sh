@@ -9,6 +9,7 @@ SERVERC="$SERVERB"
 
 # If global resolve working may not use host cache
 GLOBAL_RESOLVE=$(ping -4 -c 1 api.minerstat.com. | grep "ttl=" | sed 's/^[^(]*(//' | cut -f1 -d")" | xargs)
+S_GLOBAL_RESOLVE=$(ping -4 -c 1 static-ssl.minerstat.farm. | grep "ttl=" | sed 's/^[^(]*(//' | cut -f1 -d")" | xargs)
 
 # DNS For Main connection
 DNSA=$(ping -c 1 $SERVERA &> /dev/null && echo success || echo fail)
@@ -49,15 +50,24 @@ else
   fi
 fi
 
+# Uncomment static connection cache if global resolve working
+# But verify IP first
+if [[ ! -z "$S_GLOBAL_RESOLVE" ]]; then
+  if [[ "$S_GLOBAL_RESOLVE" = "104.26.1.235" ]] || [[ "$S_GLOBAL_RESOLVE" = "104.26.0.235" ]] || [[ "$S_GLOBAL_RESOLVE" = "172.67.70.62" ]]; then
+    SSERVERC="#$SSERVERC"
+  fi
+fi
+
 # Change hostname
 # /etc/hosts
 HCHECK=$(cat /etc/hosts | grep "$SERVERC minerstat.com" | xargs)
+SCHECK=$(cat /etc/hosts | grep "$SSERVERC static-ssl.minerstat.farm" | xargs)
 WCHECK=$(cat /etc/hosts | grep "127.0.1.1 $WNAME" | xargs)
 CCHECK=$(cat /home/minerstat/cache_date 2>/dev/null)
 
 CURRENT_DATE=$(date +'%Y-%m-%d %H:00')
 WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
-if [ "$HCHECK" != "$SERVERC minerstat.com" ] || [ "$WCHECK" != "127.0.1.1 $WNAME" ] || [ "$CCHECK" != "$CURRENT_DATE" ]; then
+if [[ "$HCHECK" != "$SERVERC minerstat.com" ]] || [[ "$SCHECK" != "$SSERVERC static-ssl.minerstat.farm" ]] || [[ "$WCHECK" != "127.0.1.1 $WNAME" ]] || [[ "$CCHECK" != "$CURRENT_DATE" ]]; then
   sudo echo "
 127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1     ip6-localhost ip6-loopback
