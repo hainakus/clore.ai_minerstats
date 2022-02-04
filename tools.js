@@ -32,7 +32,7 @@ function runMiner(miner, execFile, args, modifierArg, modifierExt) {
     var setChmod = chmodQuery(isCMD, function(error, stdout, stderr) {
       global.minerRunning = true;
       if (isCPU == "true") {
-        execa.shell("/home/minerstat/minerstat-os/clients/" + miner + "/start.bash", {
+        execa.shell("sudo killall xmrig; sudo bash /home/minerstat/minerstat-os/clients/" + miner + "/start.bash", {
           cwd: process.cwd(),
           detached: false,
           stdio: "inherit"
