@@ -956,6 +956,15 @@ module.exports = {
               modifierExt = " --apiport 3333";
               // str =
               MINER_CONFIG_FILE[miner.toLowerCase()] = "start.bash";
+              // lolminer bug remove user_config.json
+              try {
+              var execl = require('execa');
+                execl.shell("sudo rm /home/minerstat/minerstat-os/clients/lolminer/user_config.json", {
+                  cwd: process.cwd(),
+                  detached: false,
+                  stdio: "inherit"
+                });
+              } catch (lerr) {}
             } else {
               console.log("\x1b[1;94m== \x1b[0mlolminer config type: JSON\x1b[0m");
               modifierArg = '--profile MINERSTAT';
