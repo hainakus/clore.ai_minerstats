@@ -197,9 +197,16 @@ if [ $1 ]; then
       done
     fi
 
+    # Thermal Design Current
+    TdcLimit=""
+    TDC=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get smc_pptable/TdcLimit/1 2> /dev/null | xargs | grep -c "30")
+    if [[ "$TDC" = "1" ]]; then
+      TdcLimit="smc_pptable/TdcLimit/1=33"
+    fi
+
     # Apply new table
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
-      smc_pptable/DpmDescriptor/0/VoltageMode=2 overdrive_table/max/8=1200 overdrive_table/max/6=1200 overdrive_table/max/7=1200 overdrive_table/min/3=600 overdrive_table/min/5=600 overdrive_table/min/7=600 \
+      smc_pptable/DpmDescriptor/0/VoltageMode=2 overdrive_table/max/8=1200 overdrive_table/max/6=1200 overdrive_table/max/7=1200 overdrive_table/min/3=600 overdrive_table/min/5=600 overdrive_table/min/7=600 $TdcLimit \
       smc_pptable/MinVoltageGfx=2400 smc_pptable/MinVoltageUlvGfx=2500 smc_pptable/MinVoltageUlvSoc=825 smc_pptable/VcBtcEnabled=0 smc_pptable/FreqTableFclk/0=1550 $pmvdd $pvddci $psoc \
       smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=10 smc_pptable/FanZeroRpmEnable=0 smc_pptable/FanTargetTemperature=$TT smc_pptable/FanTargetGfxclk=1000 smc_pptable/dBtcGbGfxDfllModelSelect=2 $proArgs --write
   fi
@@ -391,9 +398,9 @@ if [ $1 ]; then
   if [ "$TEST" = "0" ]; then
     screen -A -m -D -S soctimer sudo bash /home/minerstat/minerstat-os/bin/soctimer $GPUID &
     echo "#!/bin/bash" > /home/minerstat/clock_cache
-    echo "sudo bash /home/minerstat/minerstat-os/bin/overclock_sienna.sh $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10}" >> /home/minerstat/clock_cache
+    echo "sudo bash /home/minerstat/minerstat-os/bin/overclock_sienna.sh $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11}" >> /home/minerstat/clock_cache
   else
-    echo "sudo bash /home/minerstat/minerstat-os/bin/overclock_sienna.sh $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10}" >> /home/minerstat/clock_cache
+    echo "sudo bash /home/minerstat/minerstat-os/bin/overclock_sienna.sh $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11}" >> /home/minerstat/clock_cache
   fi
 
   exit 1
