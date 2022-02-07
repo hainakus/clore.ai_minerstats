@@ -40,18 +40,20 @@ if [ $1 ]; then
 
   echo "--**--**-- GPU $1 : VEGA VII --**--**--"
 
-  # Reset
-  #sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "r"
+  # Enable overdrive
+  # Radeon Pro Patch
+  proArgs=""
+  isRadeonPro=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI ${11}:" | grep -E "Pro|PRO" | wc -l)
 
-  #for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-  #  TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
-  #  if [ ! -z "$TEST" ]; then
-  #    MAXFAN=$TEST
-  #  fi
-  #done
-  MAXFAN="255"
+  if [[ "$isRadeonPro" -gt "0" ]]; then
+    for (( i=0; i<=13; i+=1 )); do
+      proArgs+="overdrive_table/cap/$i=1 "
+    done
+    sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set $proArgs --write
+  fi
 
   # FANS
+  MAXFAN="255"
   if [ "$FANSPEED" != 0 ]; then
     FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $FANSPEED}" | cut -f1 -d".")
     FANVALUE=$(printf "%.0f\n" $FANVALUE)
@@ -108,7 +110,7 @@ if [ $1 ]; then
     fi
   fi
 
-  # comit
+  # Commit
   sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "c"
   sudo su -c "echo 'c' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
 
@@ -143,11 +145,10 @@ if [ $1 ]; then
   # Check current states
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
 
-  #for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+  # Apply fans via sysfs
   sudo timeout 5 /home/minerstat/minerstat-os/bin/rocm-smi --setfan $FANVALUE -d $GPUID
   sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
   sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
-  #done
 
   exit 1
 

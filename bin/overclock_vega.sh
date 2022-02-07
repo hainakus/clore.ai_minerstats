@@ -33,21 +33,9 @@ if [ $1 ]; then
   SOC=${10}
   version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
 
-  if [ -z "$COREINDEX" ]; then
+  if [[ -z "$COREINDEX" ]] || [[ "$COREINDEX" = "skip" ]]; then
     COREINDEX="7"
   fi
-
-  if [ "$COREINDEX" = "skip" ]; then
-    COREINDEX="7"
-  fi
-
-  # FANS (for safety) from Radeon VII solution
-  #for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-  #  TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
-  #  if [ ! -z "$TEST" ]; then
-  #    MAXFAN=$TEST
-  #  fi
-  #done
 
   MAXFAN="255"
 
@@ -67,17 +55,13 @@ if [ $1 ]; then
 
   echo "--**--**-- GPU $1 : VEGA 56/64 --**--**--"
 
-  # Reset
-  #sudo bash -c "echo r > /sys/class/drm/card$GPUID/device/pp_od_clk_voltage"
-
   # Requirements
   sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon0/pwm1_enable"
   sudo su -c "echo manual > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
   sudo su -c "echo 5 > /sys/class/drm/card$GPUID/device/pp_power_profile_mode" # Compute Mode
-  #sudo su -c "echo $COREINDEX > /sys/class/drm/card$GPUID/device/pp_mclk_od" # test
+
 
   # Core clock & VDDC
-
   if [ "$VDDC" = "0" ] || [ "$VDDC" = "skip" ] || [ -z "$VDDC" ]; then
     VDDC="1000" # DEFAULT FOR 1801Mhz @1114mV
   fi
@@ -90,36 +74,9 @@ if [ $1 ]; then
   SOCMIN=600
   SOCMAX=1240
 
-
-  # PP_TABLE MOD
-
-  CHECKPY=$(dpkg -l | grep python3-pip)
-  if [[ -z $CHECKPY ]]; then
-    sudo apt-get update
-    sudo apt-get -y install python3-pip --fix-missing
-    sudo su minerstat -c "pip3 install setuptools"
-    sudo su minerstat -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
-    sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
-  fi
-
-  # Check UPP installed
-  FILE=/home/minerstat/.local/bin/upp
-  if [ -f "$FILE" ]; then
-    echo "UPP exists."
-  else
-    sudo su minerstat -c "pip3 install setuptools"
-    sudo su minerstat -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
-    sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
-  fi
-
   if [ "$MEMCLOCK" != "skip" ]; then
     mclk="MclkDependencyTable/entries/3/MemClk=$((MEMCLOCK*100))"
   fi
-
-  #TESTGFX=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get GfxclkDependencyTable/entries/7/Clk 2> /dev/null | grep -c "ERROR")
-  #if [ "$TESTGFX" -lt 1 ]; then
-  #  gfx="GfxclkDependencyTable/entries/7/Clk=$VDDC GfxclkDependencyTable/entries/6/Clk=$VDDC GfxclkDependencyTable/entries/4/Clk=$VDDC"
-  #fi
 
   TESTMV=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get VddmemLookupTable/entries/0 2> /dev/null | grep -c "ERROR")
   if [[ "$TESTMV" -lt 1 ]]; then
@@ -174,18 +131,27 @@ if [ $1 ]; then
     sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
   fi
 
+  # Radeon Pro Patch
+  proArgs=""
+  isRadeonPro=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI ${11}:" | grep -E "Pro|PRO" | wc -l)
+
+  if [[ "$isRadeonPro" -gt "0" ]]; then
+    for (( i=0; i<=13; i+=1 )); do
+      proArgs+="overdrive_table/cap/$i=1 "
+    done
+  fi
+
   sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
     VddcLookupTable/entries/0=$VDDC VddcLookupTable/entries/1=$VDDC VddcLookupTable/entries/2=$VDDC VddcLookupTable/entries/3=$VDDC VddcLookupTable/entries/4=$VDDC VddcLookupTable/entries/5=$VDDC VddcLookupTable/entries/6=$VDDC VddcLookupTable/entries/7=$VDDC \
     MclkDependencyTable/entries/3/VddInd=4 PowerTuneTable/SocketPowerLimit=300 PowerTuneTable/BatteryPowerLimit=300 PowerTuneTable/SmallPowerLimit=300 $vddci $cclk $mclk $mvdd $gfx $psoc \
-    StateArray/states/0/MemClockIndexLow=3 StateArray/states/0/MemClockIndexHigh=3 StateArray/states/1/MemClockIndexLow=3 StateArray/states/1/MemClockIndexHigh=3 StateArray/states/1/GfxClockIndexLow=7 \
+    StateArray/states/0/MemClockIndexLow=3 StateArray/states/0/MemClockIndexHigh=3 StateArray/states/1/MemClockIndexLow=3 StateArray/states/1/MemClockIndexHigh=3 StateArray/states/1/GfxClockIndexLow=7 $proArgs \
     --write
 
-  #for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+  # Apply fans sysfs
   sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
   sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
-  #done
 
-  # FANS
+  # FANS failover rocm
   if [ "$FANSPEED" != 0 ]; then
     sudo ./rocm-smi -d $GPUID --setfan $FANSPEED"%"
   else
@@ -215,7 +181,6 @@ if [ $1 ]; then
   fi
 
   # Memory Clock
-
   if [ "$MEMCLOCK" != "skip" ]; then
     echo "INFO: SETTING MEMCLOCK : $MEMCLOCK Mhz"
     sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "m 2 $MEMCLOCK $MVDD"

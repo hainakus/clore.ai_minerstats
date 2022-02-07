@@ -190,8 +190,6 @@ if [ $1 ]; then
   # Lock core clock
   if [[ ! -z "$CORELOCK" ]] && [[ "$CORELOCK" != "0" ]] && [[ "$CORELOCK" != "skip" ]]; then
     echo "Applying Core Clock Lock to All GPUs [$CORELOCK Mhz]"
-    #STR3="-a GPUGraphicsClockOffset["$PLEVEL"]=0 -a GPUGraphicsClockOffsetAllPerformanceLevels=0 $E2"
-    # SET MEMCLOCK BACK AFTER MINER STARTED 40 sec
     if [[ "$INSTANT" != "instant" ]]; then
       sudo echo "ALL:$CORELOCK" >> /dev/shm/nv_lockcache.txt
       # check lock delay process
@@ -214,14 +212,9 @@ if [ $1 ]; then
 
   #################################£
   # APPLY THIS GPU SETTINGS AT ONCE
-  #echo "nvidia-settings --verbose -c :0 $STR1 $STR2 $STR3 $STR5"
   STR5="-a GPUPowerMizerMode=1"
   echo "$STR1 $STR2 $STR3 $STR5 " >> /dev/shm/nv_clkcache.txt
   DISPLAY=:0
   export DISPLAY=:0
-  #sudo su minerstat -c "DISPLAY=:0 nvidia-settings --verbose -c :0 $STR1 $STR2 $STR3 $STR5"
-
-  #sleep 2
-  #sudo chvt 1
 
 fi

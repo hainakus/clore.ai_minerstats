@@ -5,10 +5,7 @@ echo "*-*-* Overclocking in progress *-*-*"
 # To keep libs inside screen too
 cd /home/minerstat/minerstat-os/bin/
 
-#NVIDIADEVICE=$(timeout 5 sudo lspci -k | grep VGA | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van" | grep -c "NVIDIA")
-#if [ "$NVIDIADEVICE" = "0" ]; then
 NVIDIADEVICE=$(timeout 40 sudo lshw -C display | grep "driver=nvidia" | wc -l)
-#fi
 if [ "$NVIDIADEVICE" = "0" ]; then
   NVIDIADEVICE=$(timeout 40 sudo lshw -C display | grep NVIDIA | wc -l)
 fi
@@ -19,7 +16,6 @@ fi
 NVIDIA="$(timeout 1 nvidia-smi -L)"
 
 if [ "$NVIDIADEVICE" != "0" ]; then
-  #if echo "$NVIDIA" | grep -iq "^GPU 0:" ;then
   DONVIDIA="YES"
   # Check XSERVER
   XORG=$(timeout 5 nvidia-smi | grep -c Xorg)
@@ -90,7 +86,6 @@ if [ "$NVIDIADEVICE" != "0" ]; then
     echo "Xorg started - Applying clocks.."
 
   fi
-  #fi
 fi
 
 INSTANT=$1
@@ -207,15 +202,6 @@ if [ ! -z "$DOAMD" ]; then
   # First AMD GPU ID. 0 OR 1 Usually
   STARTS=$START_ID
 
-  #FILE="/sys/class/drm/card0/device/pp_dpm_sclk"
-  #if [ -f "$FILE" ]
-  #then
-  #	STARTS=0
-  #else
-  #	STARTS=1
-  #fi
-
-
   echo "STARTS WITH ID: $STARTS"
 
   i=0
@@ -237,22 +223,10 @@ if [ ! -z "$DOAMD" ]; then
     echo "Integrated Graphics ID: "$SKIP
   fi
 
+  # Apply
   sudo rm /media/storage/fans.txt > /dev/null
   sudo killall curve > /dev/null
-
-  #isThisVega=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
-  #isThisVegaII=$(sudo /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
-
-  #sudo su minerstat -c "screen -X -S minerstat-console quit";
-  #sudo su -c "sudo screen -X -S minew quit";
-  #sudo su -c "echo "" > /dev/shm/miner.log";
-
-  #if [ "$isThisVega" = "Vega" ] || [ "$isThisVegaII" = "VegaFrontierEdition" ]; then
-  #sudo /home/minerstat/minerstat-os/core/autotune
-  #fi
-
   sudo wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 5 -o /dev/null -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=amd&token=$TOKEN&worker=$WORKER&nums=$AMDDEVICE&instant=$INSTANT&starts=$STARTS"
-
   sleep 1.5
   sudo bash doclock.sh
 

@@ -36,8 +36,6 @@ if [ $1 ]; then
   STR3=""
   STR4="-c :0"
 
-
-
   if [ "$INSTANT" = "instant" ]; then
     echo "INSTANT OVERRIDE"
     echo "GPU ID => $1"
@@ -227,11 +225,9 @@ if [ $1 ]; then
 
   #################################£
   # APPLY THIS GPU SETTINGS AT ONCE
-  #echo "nvidia-settings --verbose -c :0 $STR1 $STR2 $STR3 $STR5"
   STR5="-a [gpu:"$GPUID"]/GPUPowerMizerMode=1"
   echo "$STR1 $STR2 $STR3 $STR5 " >> /dev/shm/nv_clkcache.txt
   DISPLAY=:0
   export DISPLAY=:0
-  #sudo su minerstat -c "DISPLAY=:0 nvidia-settings --verbose -c :0 $STR1 $STR2 $STR3 $STR5"
 
 fi

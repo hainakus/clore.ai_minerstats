@@ -178,6 +178,26 @@ if [ $1 ]; then
     isThisSienna=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID:" | grep -E "6000|6600|6700|6800|6900|SIENNA" | wc -l)
   fi
 
+  # Check Python3 PIP
+  CHECKPY=$(dpkg -l | grep python3-pip)
+  if [[ -z $CHECKPY ]]; then
+    sudo apt-get update
+    sudo apt-get -y install python3-pip --fix-missing
+    sudo su minerstat -c "pip3 install setuptools"
+    sudo su minerstat -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
+    sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
+  fi
+
+  # Check UPP installed
+  FILE=/home/minerstat/.local/bin/upp
+  if [ -f "$FILE" ]; then
+    echo "UPP exists."
+  else
+    sudo su minerstat -c "pip3 install setuptools"
+    sudo su minerstat -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
+    sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
+  fi
+
   ########## NAVI ##################
   if [ "$isThisNavi" -gt "0" ]; then
     echo "--**--**-- NAVI --**--**--"
@@ -202,7 +222,7 @@ if [ $1 ]; then
   if [ "$isThisVega" = "Vega" ]; then
     echo "--**--**-- VEGA --**--**--"
     echo "Loading VEGA OC Script.."
-    sudo ./overclock_vega.sh $GPUID $2 $3 $4 $5 $7 ${10} $6 ${11} ${12}
+    sudo ./overclock_vega.sh $GPUID $2 $3 $4 $5 $7 ${10} $6 ${11} ${12} $GID
     exit 1
   fi
   ################################
@@ -211,7 +231,7 @@ if [ $1 ]; then
   if [ "$isThisVegaVII" = "VII" ]; then
     echo "--**--**-- VII --**--**--"
     echo "Loading VEGA VII OC Script.."
-    sudo ./overclock_vega7.sh $GPUID $2 $3 $4 $5 $7 ${10} ${11}
+    sudo ./overclock_vega7.sh $GPUID $2 $3 $4 $5 $7 ${10} ${11} ${12} $GID
     exit 1
   fi
   ################################
@@ -220,7 +240,7 @@ if [ $1 ]; then
   if [ "$isThisVegaII" = "VegaFrontierEdition" ]; then
     echo "--**--**-- VEGA FRONTIER --**--**--"
     echo "Loading VEGA OC Script.."
-    sudo ./overclock_vega.sh $GPUID $2 $3 $4 $5 $7 ${10} $6 ${11} ${12}
+    sudo ./overclock_vega.sh $GPUID $2 $3 $4 $5 $7 ${10} $6 ${11} ${12} $GID
     exit 1
   fi
   ################################
@@ -238,24 +258,6 @@ if [ $1 ]; then
 
     if [ "$R9" != "" ]; then
       sudo ./amdcovc $R9 | grep "Setting"
-    fi
-
-    # Check Python3 PIP
-    CHECKPY=$(dpkg -l | grep python3-pip)
-    if [[ -z $CHECKPY ]]; then
-      sudo apt-get update
-      sudo apt-get -y install python3-pip --fix-missing
-      sudo su minerstat -c "pip3 install setuptools"
-      sudo su minerstat -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
-    fi
-
-    # Check UPP installed
-    FILE=/home/minerstat/.local/bin/upp
-    if [ -f "$FILE" ]; then
-      echo "UPP exists."
-    else
-      sudo su minerstat -c "pip3 install setuptools"
-      sudo su minerstat -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
     fi
 
     # Setting up limits

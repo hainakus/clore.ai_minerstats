@@ -44,38 +44,12 @@ if [ $1 ]; then
   SOCMIN=507
   SOCMAX=1267
 
-  # Check Python3 PIP
-  CHECKPY=$(dpkg -l | grep python3-pip)
-  if [[ -z $CHECKPY ]]; then
-    sudo apt-get update
-    sudo apt-get -y install python3-pip --fix-missing
-    sudo su minerstat -c "pip3 install setuptools"
-    sudo su minerstat -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
-    sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
-  fi
-
-  # Check UPP installed
-  FILE=/home/minerstat/.local/bin/upp
-  if [ -f "$FILE" ]; then
-    echo "UPP exists."
-  else
-    sudo su minerstat -c "pip3 install setuptools"
-    sudo su minerstat -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
-    sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
-  fi
-
-  if [ -z "$COREINDEX" ]; then
+  # Manage states
+  if [[ -z "$COREINDEX" ]] || [[ "$COREINDEX" = "skip" ]] || [[ "$COREINDEX" = "5" ]]; then
     COREINDEX="2"
   fi
 
-  if [ "$COREINDEX" = "skip" ]; then
-    COREINDEX="2"
-  fi
-
-  if [ "$COREINDEX" = "5" ]; then
-    COREINDEX="2"
-  fi
-
+  # Leftover code for older versions
   if [ "$version" = "1.4" ] || [ "$version" = "1.4.5" ] || [ "$version" = "1.4.6" ] || [ "$version" = "1.4.7" ] || [ "$version" = "1.4.8" ] || [ "$version" = "1.5.3" ] || [ "$version" = "1.4.9" ] || [ "$version" = "1.5.2" ]; then
     if [ "$COREINDEX" = "1" ]; then
       COREINDEX="2"
@@ -99,20 +73,13 @@ if [ $1 ]; then
     VDDC="900"
   fi
 
-
-
-  #for fid in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-  #  TEST=$(cat "/sys/class/drm/card$GPUID/device/hwmon/hwmon$fid/pwm1_max" 2>/dev/null)
-  #  if [ ! -z "$TEST" ]; then
-  #    MAXFAN=$TEST
-  #  fi
-  #done
+  #######################
+  # FANS
   MAXFAN="255"
   RPMMIN=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/fan1_min)
   RPMMAX=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/fan1_max)
   RPMVAL="0"
 
-  # FANS
   if [ "$FANSPEED" != 0 ]; then
     FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $FANSPEED}" | cut -f1 -d".")
     FANVALUE=$(printf "%.0f\n" $FANVALUE)
@@ -140,7 +107,7 @@ if [ $1 ]; then
 
   echo "--**--**-- GPU $1 : NAVI --**--**--"
 
-  # Compare user input and apply min/max
+  # Memory Voltage controller
   if [[ ! -z $VDDCI && $VDDCI != "0" && $VDDCI != "skip" ]]; then
     PARSED_VDDCI=$VDDCI
     if [[ $VDDCI -gt $MCMAX ]]; then
@@ -156,6 +123,7 @@ if [ $1 ]; then
     fi
   fi
 
+  # Memory Voltage
   if [[ ! -z $MVDD && $MVDD != "0" && $MVDD != "skip" ]]; then
     PARSED_MVDD=$MVDD
     if [[ $MVDD -gt $MVMAX ]]; then
@@ -171,6 +139,7 @@ if [ $1 ]; then
     fi
   fi
 
+  # SoC Clock
   if [[ ! -z $SOC && $SOC != "0" && $SOC != "skip" ]]; then
     PARSED_SOC=$SOC
     if [[ $SOC -gt $SOCMAX ]]; then
@@ -189,7 +158,6 @@ if [ $1 ]; then
   if [ "$version" = "1.5.4" ]; then
     echo "To enable PP_Table unlock flash to v1.6 or higher"
   else
-
     # Target temp
     FILE=/media/storage/fans.txt
     TT=69
@@ -205,9 +173,9 @@ if [ $1 ]; then
       TT=69
     fi
 
+    # Reinstall upp if error
     sudo rm /dev/shm/safetycheck.txt &> /dev/null
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get smc_pptable/MinVoltageGfx &> /dev/shm/safetycheck.txt
-    # Reinstall upp if error
     SAFETY=$(cat /dev/shm/safetycheck.txt)
     if [[ $SAFETY == *"has no attribute"* ]] || [[ $SAFETY == *"ModuleNotFoundError"* ]] || [[ $SAFETY == *"table version"* ]]; then
       sudo su minerstat -c "yes | sudo pip3 uninstall setuptools"
@@ -219,27 +187,21 @@ if [ $1 ]; then
       sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
     fi
 
-    #sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set smc_pptable/FreqTableUclk/3=1025 DcModeMaxFreq=1025 overdrive_table/max/2=1025 overdrive_table/min/2=1025 --write
-    #sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set smc_pptable/FreqTableUclk/3=1025 smc_pptable/DcModeMaxFreq/2=1025 overdrive_table/max/2=1025 overdrive_table/min/2=1025 --write
-
-    # smc_pptable/FanTargetTemperature=$TT
-    # smc_pptable/FanThrottlingRpm=3000
-
+    # Radeon Pro Patch
     proArgs=""
     isRadeonPro=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI ${11}:" | grep -E "Pro|PRO" | wc -l)
 
     if [[ "$isRadeonPro" -gt "0" ]]; then
-      proArgs="overdrive_table/cap/0=1 overdrive_table/cap/1=1 overdrive_table/cap/2=1 overdrive_table/cap/3=1 overdrive_table/cap/4=1 overdrive_table/cap/5=1 overdrive_table/cap/6=1 overdrive_table/cap/7=1 "
-      proArgs+="overdrive_table/cap/8=1 overdrive_table/cap/9=1 overdrive_table/cap/10=1 overdrive_table/cap/11=1 overdrive_table/cap/12=1 overdrive_table/cap/13=1"
-      sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
-        $proArgs --write
+      for (( i=0; i<=13; i+=1 )); do
+        proArgs+="overdrive_table/cap/$i=1 "
+      done
     fi
 
+    # Apply new table
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
       smc_pptable/DpmDescriptor/0/VoltageMode=2 overdrive_table/max/8=1200 overdrive_table/max/6=1200 overdrive_table/max/7=1200 overdrive_table/min/3=600 overdrive_table/min/5=600 overdrive_table/min/7=600 \
-      smc_pptable/MinVoltageGfx=2400 smc_pptable/VcBtcEnabled=0 $pmvdd $pvddci $psoc \
-      smc_pptable/FanStopTemp=35 smc_pptable/FanStartTemp=20 smc_pptable/FanZeroRpmEnable=0 smc_pptable/FanTargetTemperature=$TT smc_pptable/FanTargetGfxclk=1000 smc_pptable/dBtcGbGfxDfllModelSelect=2 --write
-    #smc_pptable/FanGain/0=100 smc_pptable/FanGain/1=100 smc_pptable/FanGain/2=100 smc_pptable/FanGain/3=100 smc_pptable/FanGain/4=100 smc_pptable/FanGain/5=100 smc_pptable/FanGain/6=100 smc_pptable/FanGain/7=100 smc_pptable/FanGain/8=100 smc_pptable/FanGain/9=100 smc_pptable/FanPwmMin=1 --write
+      smc_pptable/MinVoltageGfx=2400 smc_pptable/MinVoltageUlvGfx=2500 smc_pptable/MinVoltageUlvSoc=825 smc_pptable/VcBtcEnabled=0 smc_pptable/FreqTableFclk/0=1550 $pmvdd $pvddci $psoc \
+      smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=10 smc_pptable/FanZeroRpmEnable=0 smc_pptable/FanTargetTemperature=$TT smc_pptable/FanTargetGfxclk=1000 smc_pptable/dBtcGbGfxDfllModelSelect=2 $proArgs --write
   fi
 
   # Apply powerlimit
@@ -335,18 +297,7 @@ if [ $1 ]; then
     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
     sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
-    #RB=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1)
-    #if [[ "$RB" = "0" ]]; then
-    #  sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
-    #fi
   fi
-
-  #if [ "$FANSPEED" = "100" ]; then
-  #  echo "2" > /dev/shm/fantype.txt
-  #  sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
-  #  sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
-  #  sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
-  #fi
 
   # Requirements
   sudo su -c "echo manual > /sys/class/drm/card$GPUID/device/power_dpm_force_performance_level"
@@ -356,10 +307,6 @@ if [ $1 ]; then
   if [ "$VDDC" = "0" ] || [ "$VDDC" = "skip" ] || [ -z "$VDDC" ]; then
     VDDC="850"
   fi
-
-  #if [ "$MVDD" = "0" ] || [ "$MVDD" = "skip" ] || [ -z "$MVDD" ]; then
-  #  MVDD="1350"
-  #fi
 
   # MemoryClock
   if [ "$MEMCLOCK" != "skip" ]; then
@@ -408,7 +355,7 @@ if [ $1 ]; then
       echo "GPU$GPUID : CORECLOCK => $CORECLOCK Mhz ($VDDC mV, state: $COREINDEX)"
 
       sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 1 $CORECLOCK"
-      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "vc 2 $CORECLOCK $VDDC"
+      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "vc 2 $CORECLOCK"
 
       sudo su -c "echo '0' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
       sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
@@ -424,18 +371,10 @@ if [ $1 ]; then
     sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
     sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   fi
-  #if [ "$version" = "1.5.3" ]; then
-  #  sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-  #  sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-  #fi
-  ##########################################################################
 
   # Apply Changes
   sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-  #sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
-  #sudo su -c "echo '3' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "c"
-
 
   sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
   sudo su -c "echo '2' > /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
