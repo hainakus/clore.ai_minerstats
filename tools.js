@@ -263,7 +263,7 @@ var MINER_JSON = {
     "execFile": "teamredminer",
     "apiPort": 4028,
     "apiType": "tcp",
-    "apiCArg": "summary+pools+devs"
+    "apiCArg": "summary+pools+devs+summary2+pools2+devs2"
   },
   "sgminer-avermore": {
     "args": "-c sgminer.conf --gpu-reorder --api-listen",
