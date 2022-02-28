@@ -33,6 +33,7 @@ if [ $1 ]; then
   POWERLIMIT=$9
   SOC=${10}
   version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
+  version_r=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^0-9]*//g'`
 
   # Setting up limits
   MCMIN=600  #minimum vddci
@@ -70,7 +71,7 @@ if [ $1 ]; then
   fi
 
   if [[ -z "$VDDC" ]] || [[ "$VDDC" = "" ]] || [[ "$VDDC" = "skip" ]]; then
-    VDDC="900"
+    VDDC="785"
   fi
 
   #######################
@@ -151,13 +152,11 @@ if [ $1 ]; then
       # Ignore if set below limit
       echo "SOCCLK value ignored as below $SOCMIN Mhz limit"
     else
-      psoc="smc_pptable/FreqTableSocclk/0=$PARSED_SOC smc_pptable/FreqTableSocclk/1=$PARSED_SOC smc_pptable/FreqTableSocclk/2=$PARSED_SOC smc_pptable/FreqTableSocclk/3=$PARSED_SOC smc_pptable/FreqTableSocclk/4=$PARSED_SOC smc_pptable/FreqTableSocclk/5=$PARSED_SOC smc_pptable/FreqTableSocclk/6=$PARSED_SOC smc_pptable/FreqTableSocclk/7=$PARSED_SOC"
+      psoc="smc_pptable/FreqTableSocclk/0=$PARSED_SOC smc_pptable/FreqTableSocclk/1=$PARSED_SOC smc_pptable/FreqTableSocclk/2=0 smc_pptable/FreqTableSocclk/3=0 smc_pptable/FreqTableSocclk/4=0 smc_pptable/FreqTableSocclk/5=0 smc_pptable/FreqTableSocclk/6=0 smc_pptable/FreqTableSocclk/7=0"
     fi
   fi
 
-  if [ "$version" = "1.5.4" ]; then
-    echo "To enable PP_Table unlock flash to v1.6 or higher"
-  else
+  if [[ "$version" != "1.5.4" ]]; then
     # Target temp
     FILE=/media/storage/fans.txt
     TT=69
@@ -181,8 +180,10 @@ if [ $1 ]; then
       sudo su minerstat -c "yes | sudo pip3 uninstall setuptools"
       sudo su minerstat -c "yes | sudo pip3 uninstall click"
       sudo su minerstat -c "yes | sudo pip3 uninstall upp"
+      sudo su minerstat -c "yes | sudo pip3 uninstall sympy"
       sudo su -c "yes | sudo pip3 uninstall upp"
       sudo su minerstat -c "pip3 install setuptools"
+      sudo su minerstat -c "pip3 install sympy"
       sudo su minerstat -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
       sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
     fi
@@ -204,11 +205,17 @@ if [ $1 ]; then
       TdcLimit="smc_pptable/TdcLimit/1=33"
     fi
 
+    # Apply VDDGFX
+    # Only above 1.8.0 msOS package versions
+    if [[ "$version_r" -gt "179" ]]; then
+      sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table vddgfx $CORECLOCK $VDDC --write
+    fi
+
     # Apply new table
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
-      smc_pptable/DpmDescriptor/0/VoltageMode=2 overdrive_table/max/8=1200 overdrive_table/max/6=1200 overdrive_table/max/7=1200 overdrive_table/min/3=600 overdrive_table/min/5=600 overdrive_table/min/7=600 $TdcLimit \
-      smc_pptable/MinVoltageGfx=2400 smc_pptable/MinVoltageUlvGfx=2500 smc_pptable/MinVoltageUlvSoc=825 smc_pptable/VcBtcEnabled=0 smc_pptable/FreqTableFclk/0=1550 $pmvdd $pvddci $psoc \
-      smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=10 smc_pptable/FanZeroRpmEnable=0 smc_pptable/FanTargetTemperature=$TT smc_pptable/FanTargetGfxclk=1000 smc_pptable/dBtcGbGfxDfllModelSelect=2 $proArgs --write
+      overdrive_table/max/8=10 overdrive_table/max/6=1075 overdrive_table/max/7=1075 overdrive_table/min/3=0 overdrive_table/min/5=500 overdrive_table/min/7=$VDDC $TdcLimit \
+      smc_pptable/MinVoltageUlvSoc=825 smc_pptable/VcBtcEnabled=1 smc_pptable/FreqTableFclk/0=1550 $pmvdd $pvddci $psoc \
+      smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=10 smc_pptable/FanZeroRpmEnable=0 smc_pptable/FanTargetTemperature=90 smc_pptable/FanTargetGfxclk=500 smc_pptable/dBtcGbGfxDfllModelSelect=2 smc_pptable/FreqTableUclk/3=$MEMCLOCK $proArgs --write
   fi
 
   # Apply powerlimit
@@ -343,34 +350,17 @@ if [ $1 ]; then
 
   fi
 
-  if [ "$VDDC" != "skip" ]; then
-    if [ "$CORECLOCK" != "skip" ]; then
-      if [ "$version" = "1.5.4" ]; then
-        if [ "$VDDC" -lt "800" ]; then
-          echo "Driver accept VDDC range until 800mV, you have set $VDDC and it got adjusted to 800mV"
-          echo "You can set Core State 1 or Core State 2 for lower voltages or flash to v1.6 or higher where lowest possible value is 700mv"
-          VDDC=850
-        fi
-      else
-        if [ "$VDDC" -lt "649" ]; then
-          echo "Driver accept VDDC range until 650mV, you have set $VDDC and it got adjusted to 800mV"
-          echo "You can set Core State 1 or Core State 2 for lower voltages"
-          VDDC=850
-        fi
-      fi
+  if [[ "$CORECLOCK" != "skip" ]]; then
+    echo "GPU$GPUID : CORECLOCK => $CORECLOCK Mhz ($VDDC mV, state: $COREINDEX)"
 
-      echo "GPU$GPUID : CORECLOCK => $CORECLOCK Mhz ($VDDC mV, state: $COREINDEX)"
+    sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 1 $CORECLOCK"
+    sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "vc 2 $CORECLOCK"
 
-      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "s 1 $CORECLOCK"
-      sudo /home/minerstat/minerstat-os/bin/msos_od_clk $GPUID "vc 2 $CORECLOCK"
+    sudo su -c "echo '0' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
+    sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
 
-      sudo su -c "echo '0' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
-      sudo su -c "echo '1' > /sys/class/drm/card$GPUID/device/pp_sclk_od"
-
-      sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-      sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
-
-    fi
+    sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
+    sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/pp_dpm_sclk"
   fi
 
   ###########################################################################

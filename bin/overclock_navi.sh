@@ -33,6 +33,7 @@ if [ $1 ]; then
   POWERLIMIT=$9
   SOC=${10}
   version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
+  version_r=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^0-9]*//g'`
 
   # Setting up limits
   MCMIN=600  #minimum vddci
@@ -229,7 +230,8 @@ if [ $1 ]; then
     sudo su -c "echo $FANVALUE > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
     sudo rm /dev/shm/fantype.txt 2>/dev/null
 
-    if [[ "$version" = "1.7.4" ]] || [[ "$version" = "1.7.3" ]] || [[ "$version" = "1.7.2" ]] || [[ "$version" = "1.7.1" ]] || [[ "$version" = "1.7.0" ]]; then
+    # Above OS package version
+    if [[ "$version_r" -gt "169" ]]; then
 
       RB=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1 | xargs)
       echo "Reading back fan value .. $RB"

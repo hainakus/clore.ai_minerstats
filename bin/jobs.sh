@@ -377,6 +377,7 @@ if [ "$1" -gt 0 ] || [ "$AMDDEVICE" -gt 0 ]; then
     sudo apt-get update
     sudo apt-get -y install python3-pip --fix-missing
     sudo su minerstat -c "pip3 install setuptools"
+    sudo su minerstat -c "pip3 install sympy"
     sudo su minerstat -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
     sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
   fi
@@ -384,6 +385,7 @@ if [ "$1" -gt 0 ] || [ "$AMDDEVICE" -gt 0 ]; then
   FILE=/home/minerstat/.local/bin/upp
   if [ ! -f "$FILE" ]; then
     sudo su minerstat -c "pip3 install setuptools"
+    sudo su minerstat -c "pip3 install sympy"
     sudo su minerstat -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
     sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
   fi
