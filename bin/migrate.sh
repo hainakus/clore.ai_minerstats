@@ -535,12 +535,12 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
     MEM_AVAIL=$(free -m | grep "Mem:" | awk '{print $7}' | xargs)
     MEM_SVN=$((MEM_AVAIL / 100 * 70))
 
-    printfo info "Memory Available: [$MEM_AVAIL]"
-    printfo info "Memory Hard limit: [$MEM_SVN]"
+    printfo info "Memory Available: $MEM_AVAIL Mb"
+    printfo info "Memory Hard limit: $MEM_SVN Mb"
 
     if [[ "$MEM_SVN" -lt 3700 ]]; then
       TMPFS_SIZE="3700M"
-      printfo warn "Memory below recommended size. [>4096Mb]"
+      printfo warn "Memory below recommended size [>4096 Mb]."
     else
       TMPFS_SIZE="$MEM_SVN"M
     fi
