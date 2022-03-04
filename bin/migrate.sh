@@ -356,9 +356,11 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
       fi
     fi
   fi
+  # Drop caches
+  timeout 10 sudo su -c "sync; echo 3 > /proc/sys/vm/drop_caches"
   # Free memory check
-  if [[ "$FREE_MEM" -lt 3900 ]]; then
-    printfo fail "Error: At least 3900Mb RAM is required"
+  if [[ "$FREE_MEM" -lt 3880 ]]; then
+    printfo fail "Error: At least 3880Mb RAM is required"
     if [[ "$FORCE" = "NO" ]]; then
       exit
     fi
@@ -527,7 +529,20 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
 
     # Create Virtual filesystem
     sudo mkdir $FR > /dev/null 2>&1
-    sudo mount -t tmpfs -o rw,size=3900M tmpfs $FR > /dev/null 2>&1
+
+    # Dynamic Tmpfs size
+    TMPFS_SIZE="3880M"
+    MEM_AVAIL=$(free -m | grep "Mem:" | awk '{print $7}' | xargs)
+    MEM_SVN=$((MEM_AVAIL / 100 * 70))
+
+    if [[ "$MEM_SVN" -lt 3880 ]]; then
+      TMPFS_SIZE="3880M"
+    else
+      TMPFS_SIZE="$MEM_SVN"M
+    fi
+
+    # Create TMPFS
+    sudo mount -t tmpfs -o rw,size=$TMPFS_SIZE tmpfs $FR > /dev/null 2>&1
 
     # Create VFS folders
     mkdir $FR/proc $FR/sys $FR/dev $FR/usr $FR/run $FR/var $FR/bin $FR/sbin $FR/lib $FR/tmp $FR/usr $FR/opt > /dev/null 2>&1
