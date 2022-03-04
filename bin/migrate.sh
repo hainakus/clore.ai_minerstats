@@ -359,8 +359,8 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
   # Drop caches
   timeout 10 sudo su -c "sync; echo 3 > /proc/sys/vm/drop_caches"
   # Free memory check
-  if [[ "$FREE_MEM" -lt 3880 ]]; then
-    printfo fail "Error: At least 3880Mb RAM is required"
+  if [[ "$FREE_MEM" -lt 3700 ]]; then
+    printfo fail "Error: At least 3700Mb RAM is required"
     if [[ "$FORCE" = "NO" ]]; then
       exit
     fi
@@ -531,17 +531,22 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
     sudo mkdir $FR > /dev/null 2>&1
 
     # Dynamic Tmpfs size
-    TMPFS_SIZE="3880M"
+    TMPFS_SIZE="3700M"
     MEM_AVAIL=$(free -m | grep "Mem:" | awk '{print $7}' | xargs)
     MEM_SVN=$((MEM_AVAIL / 100 * 70))
 
-    if [[ "$MEM_SVN" -lt 3880 ]]; then
-      TMPFS_SIZE="3880M"
+    printfo info "Memory Available: [$MEM_AVAIL]"
+    printfo info "Memory Hard limit: [$MEM_SVN]"
+
+    if [[ "$MEM_SVN" -lt 3700 ]]; then
+      TMPFS_SIZE="3700M"
+      printfo warn "Memory below recommended size. [>4096Mb]"
     else
       TMPFS_SIZE="$MEM_SVN"M
     fi
 
     # Create TMPFS
+    printfo info "Creating tmpfs with size of [$TMPFS_SIZE] ..."
     sudo mount -t tmpfs -o rw,size=$TMPFS_SIZE tmpfs $FR > /dev/null 2>&1
 
     # Create VFS folders
