@@ -154,8 +154,8 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
     echo "--version $FIRST"
     echo "--version $CR"
     echo "--version $zipname"
-    echo "--smb-share //192.168.0.110/myshare --smb-file myfolder/msos-v1-7-4-K54-N465-A2110.zip"
-    echo "--smb-user myuser --smb-pass mypass --smb-share //192.168.0.110/myshare --smb-file myfolder/msos-v1-7-4-K54-N465-A2110.zip"
+    echo "--smb-share //192.168.0.110/myshare --smb-file myfolder/$FIRST"
+    echo "--smb-user myuser --smb-pass mypass --smb-share //192.168.0.110/myshare --smb-file myfolder/$FIRST"
   }
 
   function list {
@@ -357,8 +357,8 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
     fi
   fi
   # Free memory check
-  if [[ "$FREE_MEM" -lt 3800 ]]; then
-    printfo fail "Error: At least 3800Mb RAM is required"
+  if [[ "$FREE_MEM" -lt 3900 ]]; then
+    printfo fail "Error: At least 3900Mb RAM is required"
     if [[ "$FORCE" = "NO" ]]; then
       exit
     fi
@@ -527,7 +527,7 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
 
     # Create Virtual filesystem
     sudo mkdir $FR > /dev/null 2>&1
-    sudo mount -t tmpfs -o rw,size=3820M tmpfs $FR > /dev/null 2>&1
+    sudo mount -t tmpfs -o rw,size=3900M tmpfs $FR > /dev/null 2>&1
 
     # Create VFS folders
     mkdir $FR/proc $FR/sys $FR/dev $FR/usr $FR/run $FR/var $FR/bin $FR/sbin $FR/lib $FR/tmp $FR/usr $FR/opt > /dev/null 2>&1
