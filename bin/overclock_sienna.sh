@@ -207,15 +207,20 @@ if [ $1 ]; then
 
     # Apply VDDGFX
     # Only above 1.8.0 msOS package versions
+    OREV="smc_pptable/VcBtcEnabled=1 overdrive_table/min/7=$VDDC overdrive_table/min/5=500 smc_pptable/FanTargetTemperature=90 smc_pptable/FanTargetGfxclk=500"
     if [[ "$version_r" -gt "179" ]]; then
       sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table vddgfx $CORECLOCK $VDDC --write
+    else
+      # Only apply this for < v1.8.0 OS versions
+      OREV="smc_pptable/VcBtcEnabled=0 overdrive_table/min/7=600 overdrive_table/min/5=600 smc_pptable/FanTargetTemperature=$TT smc_pptable/FanTargetGfxclk=1000 smc_pptable/DpmDescriptor/0/VoltageMode=2 smc_pptable/MinVoltageGfx=2400 smc_pptable/MinVoltageUlvGfx=2500 smc_pptable/FreqTableGfx/1=$CORECLOCK"
     fi
 
     # Apply new table
+    sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set smc_pptable/FreqTableGfx/0=1150
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
-      overdrive_table/max/8=10 overdrive_table/max/6=1200 overdrive_table/max/7=1200 overdrive_table/min/3=0 overdrive_table/min/5=500 overdrive_table/min/7=$VDDC $TdcLimit \
-      smc_pptable/MinVoltageUlvSoc=825 smc_pptable/VcBtcEnabled=1 smc_pptable/FreqTableFclk/0=1550 $pmvdd $pvddci $psoc \
-      smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=10 smc_pptable/FanZeroRpmEnable=0 smc_pptable/FanTargetTemperature=90 smc_pptable/FanTargetGfxclk=500 smc_pptable/dBtcGbGfxDfllModelSelect=2 smc_pptable/FreqTableUclk/3=$MEMCLOCK smc_pptable/FreqTableGfx/1=$CORECLOCK $proArgs --write
+      overdrive_table/max/8=1200 overdrive_table/max/6=1200 overdrive_table/max/7=1200 overdrive_table/min/3=0 $OREV $TdcLimit \
+      smc_pptable/MinVoltageUlvSoc=825 smc_pptable/FreqTableFclk/0=1550 $pmvdd $pvddci $psoc \
+      smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=10 smc_pptable/FanZeroRpmEnable=0 smc_pptable/FanTargetTemperature=90 smc_pptable/FanTargetGfxclk=500 smc_pptable/dBtcGbGfxDfllModelSelect=2 smc_pptable/FreqTableUclk/3=$MEMCLOCK $proArgs --write
   fi
 
   # Apply powerlimit
