@@ -213,7 +213,7 @@ if [ $1 ]; then
 
     # Apply new table
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
-      overdrive_table/max/8=10 overdrive_table/max/6=1075 overdrive_table/max/7=1075 overdrive_table/min/3=0 overdrive_table/min/5=500 overdrive_table/min/7=$VDDC $TdcLimit \
+      overdrive_table/max/8=10 overdrive_table/max/6=1200 overdrive_table/max/7=1200 overdrive_table/min/3=0 overdrive_table/min/5=500 overdrive_table/min/7=$VDDC $TdcLimit \
       smc_pptable/MinVoltageUlvSoc=825 smc_pptable/VcBtcEnabled=1 smc_pptable/FreqTableFclk/0=1550 $pmvdd $pvddci $psoc \
       smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=10 smc_pptable/FanZeroRpmEnable=0 smc_pptable/FanTargetTemperature=90 smc_pptable/FanTargetGfxclk=500 smc_pptable/dBtcGbGfxDfllModelSelect=2 smc_pptable/FreqTableUclk/3=$MEMCLOCK $proArgs --write
   fi
