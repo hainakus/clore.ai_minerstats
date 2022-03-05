@@ -16,6 +16,9 @@ fi
 NVIDIA="$(timeout 1 nvidia-smi -L)"
 
 if [ "$NVIDIADEVICE" != "0" ]; then
+
+  echo "NVIDIA Hardware detected ..."
+
   DONVIDIA="YES"
   # Check XSERVER
   XORG=$(timeout 5 nvidia-smi | grep -c Xorg)
@@ -105,6 +108,7 @@ fi
 
 if [ "$AMDDEVICE" -gt "0" ]; then
   DOAMD="YES"
+  echo "AMD Hardware detected ..."
 fi
 
 #echo "FOUND AMD: $AMDDEVICE || FOUND NVIDIA: $NVIDIADEVICE"
@@ -126,20 +130,33 @@ sleep 1
 
 if [ ! -z "$DONVIDIA" ]; then
   #sudo nvidia-smi -pm 1
+
+  echo "[0%] Removing cache ..."
+
   sudo killall memdelay > /dev/null 2>&1
   sudo rm /dev/shm/nv_memcache.txt > /dev/null 2>&1
   sudo rm /dev/shm/nv_lockcache.txt > /dev/null 2>&1
   sudo rm /dev/shm/nv_clkcache.txt > /dev/null 2>&1
 
-  sudo wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 5 -o /dev/null -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=nvidia&token=$TOKEN&worker=$WORKER&nums=$NVIDIADEVICE&instant=$INSTANT"
+  echo "[10%] Fetching Overclock data ..."
+
+  sudo wget --retry-connrefused --waitretry=1 --read-timeout=25 --timeout=18 -t 5 -o /dev/null -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=nvidia&token=$TOKEN&worker=$WORKER&nums=$NVIDIADEVICE&instant=$INSTANT"
+
+  echo "[20%] Data: $NVIDIADEVICE, $INSTANT"
+
   sleep 3
+
+  echo "[30%] Attempt to apply"
   sudo bash doclock.sh
 
+  # Apply
   if [ -f "/dev/shm/nv_clkcache.txt" ]; then
+    echo "[40%] Applying from Clock cache"
     DISPLAY=:0
     export DISPLAY=:0
     STR=$(sudo cat /dev/shm/nv_clkcache.txt | sed  '/^$/d' | xargs)
     echo "DISPLAY=:0 nvidia-settings --verbose -c :0 $STR"
+    echo "[60%] Passing data to the drivers ..."
     sudo su minerstat -c "DISPLAY=:0 nvidia-settings --verbose -c :0 $STR" &> /dev/shm/nvapplyclk.txt
     VALIDATE=$(cat /dev/shm/nvapplyclk.txt | sed  '/^$/d' | xargs)
     cat /dev/shm/nvapplyclk.txt | sed  '/^$/d'
@@ -152,6 +169,9 @@ if [ ! -z "$DONVIDIA" ]; then
     fi
     sleep 1
     sudo chvt 1
+    echo "[100%] ClockTune finished"
+  else
+    echo "[ERR] Clock cache empty, ClockTune failed"
   fi
 
   QUERYNVIDIA=$(sudo /home/minerstat/minerstat-os/bin/gpuinfo nvidia)
@@ -178,6 +198,7 @@ if [ ! -z "$DOAMD" ]; then
   # Cache this and update every few months
   # timeout 15 sudo update-pciids &
 
+  echo "[0%] Removing cache ..."
   echo "#!/bin/bash" > /home/minerstat/clock_cache
 
   HWMEMORY=$(cd /home/minerstat/minerstat-os/bin/; cat amdmeminfo.txt)
@@ -201,6 +222,8 @@ if [ ! -z "$DOAMD" ]; then
   START_ID="$(sudo ./amdcovc | grep "Adapter" | cut -f1 -d':' | sed '1q' | sed 's/[^0-9]//g')"
   # First AMD GPU ID. 0 OR 1 Usually
   STARTS=$START_ID
+
+  echo "[10%] Cache generated ..."
 
   echo "STARTS WITH ID: $STARTS"
 
@@ -226,10 +249,17 @@ if [ ! -z "$DOAMD" ]; then
   # Apply
   sudo rm /media/storage/fans.txt > /dev/null
   sudo killall curve > /dev/null
-  sudo wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 5 -o /dev/null -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=amd&token=$TOKEN&worker=$WORKER&nums=$AMDDEVICE&instant=$INSTANT&starts=$STARTS"
+
+
+  echo "[20%] Fetching Overclock data ..."
+  sudo wget --retry-connrefused --waitretry=1 --read-timeout=25 --timeout=18 -t 5 -o /dev/null -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=amd&token=$TOKEN&worker=$WORKER&nums=$AMDDEVICE&instant=$INSTANT&starts=$STARTS"
   sleep 1.5
+
+  echo "[30%] Attempt to apply"
   sudo bash doclock.sh
 
+  echo "[100%] Clocktune finished"
+  
   ###################
   AMDINFO=$(sudo /home/minerstat/minerstat-os/bin/gpuinfo amd2)
   QUERYPOWER=$(cd /home/minerstat/minerstat-os/bin/; sudo ./rocm-smi -P | grep 'Average Graphics Package Power:' | sed 's/.*://' | sed 's/W/''/g' | xargs)
