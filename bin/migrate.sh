@@ -34,6 +34,17 @@ SMB_FILE=""
 XIN=$(ps aux | grep -c xinit)
 CPU_COUNT=$(grep ^cpu\\scores /proc/cpuinfo | uniq | awk '{print $4}')
 BOOT_DISK=$(mount | grep ' / ' | awk '{print $1}' | sed 's/[0-9]//g')
+
+# nvme disk protection
+# Likely invalid target try to check and fix
+if [[ "$BOOT_DISK" = "/dev/nvmenp" ]] ||; then
+  TESTVME=$(sudo fdisk -l 2> /dev/null)
+  if [[ $TESTVME == *"nvme0n1"* ]]; then
+    BOOT_DISK="/dev/nvme0n1"
+    printfo info "Write target corrected: $BOOT_DISK"
+  fi
+fi
+
 BOOT_PART=$(mount | grep ' / ' | awk '{print $1}')
 FREE_TMP=$(df -hm | grep "$BOOT_PART" | grep -vE "/media/storage|/boot" | awk '{print $4}')
 FREE_MEM=$(free -m | grep "Mem:" | awk '{print $2}')
@@ -632,6 +643,8 @@ else
   if [ -z "$BOOT_DISK" ]; then
     printfo fail "Boot disk not detected, unable to flash the target."
     exit
+  else
+    printfo ok "Flash Target: $BOOT_DISK"
   fi
 
   if [ ! -z "$ACCESS_KEY" ]; then
