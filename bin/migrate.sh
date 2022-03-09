@@ -727,7 +727,22 @@ else
     # check current partition for config file and mount it
     CONFIG_PART=$(fdisk -l $BOOT_DISK 2>/dev/null | grep "$BOOT_DISK" | grep "basic data" | head -n1 | awk '{print $1}' | xargs)
     printfo info "Detected config partition on new flash [$CONFIG_PART]"
-    mount /dev/sda2 /opt/mnt
+
+    # nvme double check
+    if [[ $BOOT_DISK == *"/dev/nvme0n1"* ]] && [[ -z $CONFIG_PART ]]; then
+      CONFIG_PART="/dev/nvme0n1p2"
+      printfo info "Corrected config partition on new flash [$CONFIG_PART]"
+    fi
+
+    # sata double check
+    if [[ $BOOT_DISK == *"/dev/sda"* ]] && [[ -z $CONFIG_PART ]]; then
+      CONFIG_PART="/dev/sda2"
+      printfo info "Corrected config partition on new flash [$CONFIG_PART]"
+    fi
+
+    # mount config part
+    mount $CONFIG_PART /opt/mnt
+
     sleep 1
     if [[ -f "/opt/mnt/config.js" ]]; then
       printfo ok "Config file exists on newly mounted partition."
