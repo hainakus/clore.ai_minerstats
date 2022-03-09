@@ -576,6 +576,7 @@ if [[ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]]; then
     cp -aR /usr/lib/sudo $FR/usr/lib > /dev/null 2>&1
     cp -aR /usr/lib/ssl $FR/usr/lib > /dev/null 2>&1
     cp -aR /usr/lib/tar $FR/usr/lib > /dev/null 2>&1
+    cp -a /bin/bash $FR/bin > /dev/null 2>&1
     cp -a /usr/lib/x86_64-linux-gnu/libsigsegv* $FR/usr/lib/x86_64-linux-gnu > /dev/null 2>&1
     cp -a /usr/lib/x86_64-linux-gnu/liblz4* $FR/usr/lib/x86_64-linux-gnu > /dev/null 2>&1
     cp -a /usr/lib/x86_64-linux-gnu/libstdc++* $FR/usr/lib/x86_64-linux-gnu > /dev/null 2>&1
