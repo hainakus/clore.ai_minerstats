@@ -37,7 +37,7 @@ BOOT_DISK=$(mount | grep ' / ' | awk '{print $1}' | sed 's/[0-9]//g')
 
 # nvme disk protection
 # Likely invalid target try to check and fix
-if [[ "$BOOT_DISK" = "/dev/nvmenp" ]] ||; then
+if [[ "$BOOT_DISK" = "/dev/nvmenp" ]]; then
   TESTVME=$(sudo fdisk -l 2> /dev/null)
   if [[ $TESTVME == *"nvme0n1"* ]]; then
     BOOT_DISK="/dev/nvme0n1"
