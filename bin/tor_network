@@ -77,8 +77,8 @@ function tor_test {
   # export https_proxy=localhost:8123
 
   # Validate if IP changed
-  IP_PRO=$(wget -qO - https://api.ipify.org; echo)
-  IP_TOR=$(torsocks wget -qO - https://api.ipify.org; echo)
+  #IP_PRO=$(wget -qO - https://api.ipify.org; echo)
+  IP_TN=$(torsocks wget -qO - https://api.ipify.org; echo)
   printfo info "Proxy IP: $IP_TN"
   # Proxy IP if empty
   if [[ -z "$IP_TN" ]]; then
