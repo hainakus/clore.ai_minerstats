@@ -94,7 +94,7 @@ MAC_ADDRESS=$(cat /sys/class/net/$(ip route show default | awk '/default/ {print
 if [ -z "$MAC_ADDRESS" ]; then
   MAC_ADDRESS=$(timeout 5 ifconfig -a | grep : | grep -vE "eth0|lo|wlan0" | grep ether | awk '{print $2}')
 fi
-CPU_TYPE=$(sudo timeout 15 dmidecode --string processor-version)
+CPU_TYPE=$(sudo timeout 15 dmidecode --string processor-version | head -n1 | xargs)
 
 # For Ryzen CPUS
 # lm-sensor need to be installed
@@ -271,6 +271,10 @@ do
     CPU_TEMP=$(timeout 5 cat /sys/class/thermal/thermal_zone*/temp 2> /dev/null | column -s $'\t' -t | sed 's/\(.\)..$/.\1/' | tac | head -n 1)
   else
     CPU_TEMP=$(timeout 5 sudo sensors 2> /dev/null | grep -A 2 k10temp-pci | grep -E "temp1|Tdie" | awk '{print $2}' | sed 's/[^0-9.]//g')
+    # Fix for Ryzen second type of temps
+    if [ -z "$CPU_TEMP" ]; then
+      CPU_TEMP=$(timeout 5 sudo sensors 2> /dev/null | grep -A 2 zenpower-pci | grep -E "temp1|Tdie" | awk '{print $2}' | sed 's/[^0-9.]//g')
+    fi
   fi
 
   if [ -z "$CPU_TEMP" ]; then
