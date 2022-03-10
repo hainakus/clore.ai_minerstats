@@ -71,6 +71,7 @@ else
   echo -e "${BLUE}dhcp${NC}\t\tSwitch back to Dynamic IP"
   echo -e "${BLUE}e1000-update${NC}\tUpdate e1000 driver"
   echo -e "${BLUE}igb-update${NC}\tUpdate Intel IGB Ethernet drivers"
+  echo -e "${BLUE}tor-network${NC}\tToggle TOR Proxy"
   echo -e ""
   echo -e "======= Mining settings ======="
   echo -e "${BLUE}mpill${NC}\t\tToggle ETHPill ON/OFF"

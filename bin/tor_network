@@ -1,0 +1,225 @@
+#!/bin/bash
+
+# Hello
+echo
+echo "========== minerstat TOR network =========="
+echo "This tool designed to easily switch to TOR network."
+echo "Keep in mind if enabled all requests will be forwarded trought TOR network."
+echo
+
+# Reset
+Color_Off='\033[0m'       # Text Reset
+
+# Regular Colors
+Red='\033[0;31m'          # Red
+Green='\033[0;32m'        # Green
+Yellow='\033[0;33m'       # Yellow
+
+function printfo() {
+  mark="i"
+  if [[ "$1" = "info" ]]; then
+    mark="INFO"
+  elif [[ "$1" = "fail" ]]; then
+    mark="$Red"'FAIL'"$Color_Off"
+  elif [[ "$1" = "ok" ]]; then
+    mark="$Green OK $Color_Off"
+  elif [[ "$1" = "warn" ]]; then
+    mark="$Yellow"'WARN'"$Color_Off"
+  fi
+  echo -n ""
+  echo -e "  [$mark] $2 \r"
+  echo -n ""
+}
+
+function help {
+  printfo info "Loading help menu ..."
+  echo
+  echo "==========   COMMANDS =============="
+  echo "--help                                    |     Showing this menu"
+  echo "--enable                                  |     Installing and enabling TOR network"
+  echo "--disable                                 |     Disabling TOR network"
+  echo
+  echo
+}
+
+function tor_test {
+  # Check tor running
+  # Results are 0 | 1
+  SOCK_TEST=$(sudo ss -nlt | grep -c 4096)
+
+  # Tor version
+  TOR_VERSION=$(tor --version)
+
+  # Echo results
+  printfo info "TOR Version: $TOR_VERSION"
+
+  if [[ "$SOCK_TEST" = "1" ]]; then
+    printfo ok "TOR Running: Yes"
+    #printfo info "$SOCK_TEST"
+  else
+    printfo fail "TOR Running: No"
+  fi
+
+  # Validate main IP
+  ORIGIN_IP=$(wget -qO - https://api.ipify.org; echo)
+  printfo info "Origin IP: $ORIGIN_IP"
+  # Origin IP if empty
+  if [[ -z "$ORIGIN_IP" ]]; then
+    printfo warn "Origin IP is empty. IPIfy not reachable."
+  else
+    printfo ok "Origin IP check passed!"
+  fi
+
+  # unset .env
+  unset http_proxy
+  unset https_proxy
+  # export http_proxy=localhost:8123
+  # export https_proxy=localhost:8123
+
+  # Validate if IP changed
+  IP_PRO=$(wget -qO - https://api.ipify.org; echo)
+  IP_TOR=$(torsocks wget -qO - https://api.ipify.org; echo)
+  printfo info "Proxy IP: $IP_TN"
+  # Proxy IP if empty
+  if [[ -z "$IP_TN" ]]; then
+    printfo warn "TOR IP is empty. Network available?"
+    printfo info "Try to enter: netcheck"
+  else
+    printfo ok "TOR IP check passed!"
+    printfo ok "TOR Network Enabled and Available!"
+  fi
+
+}
+
+# If no args help
+if [[ -z "$1" ]]; then
+  help
+  exit 1
+fi
+
+# ARG Parser
+ACTION=""
+while (( "$#" )); do
+  case "$1" in
+    -h|--help)
+      help
+      shift
+      ;;
+    -e|--enable)
+      printfo info "Option: Enable"
+      ACTION="1"
+      shift
+      ;;
+    -d|--disable)
+      printfo info "Option: Disable"
+      ACTION="0"
+      shift
+      ;;
+    -*|--*=) # unsupported flags
+      echo "================="
+      echo "Error: Unsupported flag $1" >&2
+      echo "================="
+      exit 1
+      ;;
+    *) # preserve positional arguments
+      PARAMS="$PARAMS $1"
+      shift
+      ;;
+  esac
+done
+# set positional arguments in their proper place
+eval set -- "$PARAMS"
+
+################################################
+######################
+##################
+# STARTS FROM HERE
+##############
+############
+
+# If install and enable selected
+if [[ "$ACTION" = "1" ]]; then
+
+  # Validation
+  TOR_INSTALL=$(which torsocks)
+
+  if [[ -z "$TOR_INSTALL" ]]; then
+
+    # Install
+    sudo apt-get update
+    sudo apt-get -y install tor proxychains polipo --fix-missing
+
+    # Edit polipo
+    ip=`sudo ifconfig | grep "inet" | grep -v "inet6" | grep -vE "127.0.0.1|169.254|172.17." | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | head -n 1 | grep -o -E '[.0-9]+'`
+    sudo chmod 777 /etc/polipo/config
+    sudo echo "logSyslog = false" > /etc/polipo/config
+    sudo echo "allowedClients = 127.0.0.1, $ip/24" >> /etc/polipo/config
+    sudo echo 'socksParentProxy = "localhost:9050"' >> /etc/polipo/config
+    sudo echo "socksProxyType = socks5" >> /etc/polipo/config
+    sudo echo 'proxyAddress = "0.0.0.0"' >> /etc/polipo/config
+    sudo echo 'diskCacheRoot = ""' >> /etc/polipo/config
+    sudo chmod 644 /etc/polipo/config
+
+    # Restart polipo
+    sudo service polipo restart
+    sudo service polipo status
+
+    # Edit TOR
+    sudo chmod 777 /etc/tor/torrc
+    sudo "SocksPort 9050" >> /etc/tor/torrc
+    sudo chmod 644 /etc/tor/torrc
+    sudo service tor restart
+    sudo service tor status
+
+    # Run TOR tests
+    echo
+    tor_test
+
+    TOR_INSTALL=$(which torsocks)
+    if [[ -z "$TOR_INSTALL" ]]; then
+      printfo info "TOR Installed."
+
+      # Create TOR Pid
+      sudo su -c "sudo echo '1' > /media/storage/tor.txt"
+
+      # (Re)Enable Torsocks
+      # sudo source torsocks on
+
+    else
+      printfo fail "TOR Installation failed."
+    fi
+
+  else
+    echo
+    # Create TOR Pid
+    sudo su -c "sudo echo '1' > /media/storage/tor.txt"
+    # Echo
+    printfo info "TOR Already Installed."
+    # Tun TOR tests
+    echo
+    tor_test
+    # (Re)Enable Torsocks
+    # sudo source torsocks on
+    echo
+  fi
+fi
+
+# If disable selected turn off TOR
+if [[ "$ACTION" = "0" ]]; then
+  printfo info "Disabling TOR ..."
+
+  # Remove TOR Pid
+  sudo su -c "sudo rm /media/storage/tor.txt"
+
+  # Disable Torsocks
+  unset http_proxy
+  unset https_proxy
+  # sudo source torsocks off
+
+  # Echo
+  printfo ok "TOR Disabled"
+  printfo info "To take full effect reboot may required"
+fi
+
+echo
+exit 1

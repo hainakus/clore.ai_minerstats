@@ -497,27 +497,43 @@ module.exports = {
       }
     }
 
+    // Tor Network
+    isTor = "";
+
+    try {
+      var getTOR = require('child_process').exec,
+        getTORProc = getTOR("cat /media/storage/tor.txt 2>/dev/null", function(error, stdout, stderr) {
+          var torlog = stdout;
+          if (torlog.includes("1")) {
+            console.log("\x1b[1;94m== \x1b[0mTor Network: \x1b[1;32m Enabled\x1b[0m");
+            isTor = "torsocks";
+          } else {
+            console.log("\x1b[1;94m== \x1b[0mTor Network: \x1b[1;32m Disabled " + torlog + "\x1b[0m");
+          }
+        });
+    } catch (getTORError) {}
+
     // FOR SAFE RUNNING MINER NEED TO CREATE START.BASH
     var writeStream = fs.createWriteStream(global.path + "/" + "clients/" + miner + "/start.bash"),
       str = "";
     if (args == "") {
       if (miner == "xmr-stak" || miner == "xmr-stak-randomx") {
-        str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + " --noCPU " + logInFile + "; sleep 20";
+        str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; "+ isTor +" ./" + execFile + " --noCPU " + logInFile + "; sleep 20";
       } else {
-        str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + "" + logInFile + "; sleep 20 ";
+        str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; "+ isTor +" ./" + execFile + "" + logInFile + "; sleep 20 ";
       }
     } else {
       if (miner == "progpowminer") {
         if (global.gputype === "nvidia") {
-          str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + " " + args + "" + logInFile + "; sleep 20";
+          str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; "+ isTor +" ./" + execFile + " " + args + "" + logInFile + "; sleep 20";
         } else {
-          str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + "-opencl " + args + "" + logInFile + "; sleep 20";
+          str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; "+ isTor +" ./" + execFile + "-opencl " + args + "" + logInFile + "; sleep 20";
         }
       } else {
         if (miner == "srbminer-multi") {
-          str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; sudo ./" + execFile + " " + args + "" + logInFile + "; sleep 20";
+          str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; sudo "+ isTor +" ./" + execFile + " " + args + "" + logInFile + "; sleep 20";
         } else {
-          str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; ./" + execFile + " " + args + "" + modifierExt + "" + logInFile + "; sleep 20";
+          str = "echo '' > /dev/shm/miner.log; export LD_LIBRARY_PATH=/home/minerstat/minerstat-os/clients/" + miner + "; cd /home/minerstat/minerstat-os/clients/" + miner + "/; "+ isTor +" ./" + execFile + " " + args + "" + modifierExt + "" + logInFile + "; sleep 20";
         }
       }
     }
