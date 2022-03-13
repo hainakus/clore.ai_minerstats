@@ -115,7 +115,13 @@ fi
 if [ -z "$NVIDIA_DRIVER" ]; then
   NVIDIA_DRIVER=$(timeout 5 dpkg -l | grep nvidia-driver | grep ii | awk '{print $3}' | xargs | cut -d '-' -f 1)
 fi
+# Pin version (old method)
 AMD_DRIVER=$(timeout 5 dpkg -l | grep amdgpu-pin | head -n1 | awk '{print $3}' | xargs)
+# DKMS version
+if [ -z "$AMD_DRIVER" ]; then
+  AMD_DRIVER=$(timeout 5 dpkg -l | grep amdgpu-dkms | head -n1 | awk '{print $3}' | xargs | sed 's/.*://g' | cut -f1 -d"-")
+fi
+# OpenCL version
 if [ -z "$AMD_DRIVER" ]; then
   AMD_DRIVER=$(timeout 5 dpkg -l | grep opencl-amdgpu-pro-icd | head -n1 | awk '{print $3}' | xargs)
 fi
