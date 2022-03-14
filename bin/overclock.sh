@@ -140,6 +140,11 @@ if [ ! -z "$DONVIDIA" ]; then
 
   echo "[10%] Fetching Overclock data ..."
 
+  # Clearing old cache
+  sudo rm -rf doclock.sh > /dev/null 2>&1
+  sudo rm doclock.sh > /dev/null 2>&1
+
+  # Fetching new cache
   sudo wget --retry-connrefused --waitretry=1 --read-timeout=25 --timeout=18 -t 5 -o /dev/null -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=nvidia&token=$TOKEN&worker=$WORKER&nums=$NVIDIADEVICE&instant=$INSTANT"
 
   echo "[20%] Data: $NVIDIADEVICE, $INSTANT"
@@ -252,6 +257,12 @@ if [ ! -z "$DOAMD" ]; then
 
 
   echo "[20%] Fetching Overclock data ..."
+
+  # Clearing old cache
+  sudo rm -rf doclock.sh > /dev/null 2>&1
+  sudo rm doclock.sh > /dev/null 2>&1
+
+  # Fetching new cache
   sudo wget --retry-connrefused --waitretry=1 --read-timeout=25 --timeout=18 -t 5 -o /dev/null -qO doclock.sh "https://api.minerstat.com/v2/getclock.php?type=amd&token=$TOKEN&worker=$WORKER&nums=$AMDDEVICE&instant=$INSTANT&starts=$STARTS"
   sleep 1.5
 
@@ -259,7 +270,7 @@ if [ ! -z "$DOAMD" ]; then
   sudo bash doclock.sh
 
   echo "[100%] Clocktune finished"
-  
+
   ###################
   AMDINFO=$(sudo /home/minerstat/minerstat-os/bin/gpuinfo amd2)
   QUERYPOWER=$(cd /home/minerstat/minerstat-os/bin/; sudo ./rocm-smi -P | grep 'Average Graphics Package Power:' | sed 's/.*://' | sed 's/W/''/g' | xargs)
