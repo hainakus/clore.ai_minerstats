@@ -6,6 +6,13 @@ cd /home/minerstat/minerstat-os/core/
 echo "Waiting 20..."
 sleep 20
 
+# Control timers
+LOCK_DELAY=$(cat /dev/shm/env_clk_delay.txt 2>/dev/null | xargs)
+if [[ -z "$LOCK_DELAY" ]]; then
+  LOCK_DELAY=40
+fi
+
+# Check for miner running
 TEST=$(sudo screen -list | grep -wc minew)
 
 until [ $TEST = 1 ]
@@ -15,14 +22,8 @@ do
   sleep 1
 done
 # Miner up and running
-echo "Miner started, wait 30 sec, then apply clocks"
-sleep 5
-echo "30 sec wait left.."
-sleep 5
-echo "20 sec wait left.."
-sleep 10
-echo "10 sec wait left.."
-sleep 10
+echo "Miner started, wait $LOCK_DELAY sec, then apply clocks"
+sleep $LOCK_DELAY
 echo "Working on it..."
 
 

@@ -88,6 +88,26 @@ if [ $1 ]; then
     fi
   fi
 
+  # ClockTune Memory/Core Lock Delay
+  # If 0 means disabled
+
+  CLK_DELAY=$(cat /dev/shm/env_clk_delay.txt 2>/dev/null | xargs)
+
+  echo "Env Clock Delay: $CLK_DELAY"
+
+  if [[ "$CLK_DELAY" = "0" ]]; then
+    INSTANT="instant"
+  fi
+
+  if [[ -z "$CLK_DELAY" ]]; then
+    CLK_DELAY=40
+  fi
+
+  echo "Clock Delay: $CLK_DELAY, Instant: $INSTANT"
+
+  # Write out to memory
+  # echo $CLK_DELAY > /dev/shm/env_clk_delay.txt
+
   # DETECTING VIDEO CARD FOR PERFORMACE LEVEL
 
   QUERY="$(sudo nvidia-smi -i "$GPUID" --query-gpu=name --format=csv,noheader | tail -n1)"

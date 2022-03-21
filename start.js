@@ -44,6 +44,8 @@ global.validVersion = false;
 global.validFork = false;
 global.cpuValidVersion = false;
 global.cpuValidFork = false;
+// Timer
+global.syncInterval = 10;
 
 var colors = require('colors'),
   exec = require('child_process').exec,
@@ -99,6 +101,16 @@ function jsFriendlyJSONStringify(s) {
 }
 
 function setSyncInterval() {
+  // Validate value in memory
+  if (global.syncInterval < 10) {
+    console.log("\x1b[1;94m== \x1b[0mInvalid Sync Interval: \x1b[1;31mError (" + global.syncInterval  + "×)\x1b[0m");
+    console.log("\x1b[1;94m== \x1b[0mSync Interval: Applying defaults ...");
+    global.syncInterval = 10;
+  }
+  // Caclulate interval
+  var syncIntVal = global.syncInterval;
+  console.log("\x1b[1;94m== \x1b[0mSync Interval: \x1b[1;32m" + syncIntVal + "s\x1b[0m");
+  // Sync amount
   if (global.benchmark.toString() == "false") {
     global.timeout = setInterval(function() {
       // Start sync after compressing has been finished
@@ -107,7 +119,7 @@ function setSyncInterval() {
         global.sync_num++;
         tools.fetch(global.client, global.minerCpu, global.cpuDefault);
       }
-    }, 10000);
+    }, syncIntVal * 1000);
   }
 }
 module.exports = {
@@ -326,6 +338,25 @@ module.exports = {
             global.cpuSelectedFork = response.body.cpuSelectedFork;
           } catch (err) {
 
+          }
+
+          // Sync interval
+          try {
+            var clkDelay = response.body.syncInterval;
+            // Prevent invalid user config
+            if (clkDelay.includes(" ")) {
+              clkDelay = clkDelay.split(" ")[0];
+            }
+            // Validate
+            var isnum = /^\d+$/.test(clkDelay);
+            if (isnum) {
+              global.syncInterval = clkDelay;
+            } else {
+              global.syncInterval = 10;
+            }
+          } catch (err) {
+            // If failing use default
+            global.syncInterval = 10;
           }
 
           // Custom miner settings

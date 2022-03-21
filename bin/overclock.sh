@@ -137,6 +137,7 @@ if [ ! -z "$DONVIDIA" ]; then
   sudo rm /dev/shm/nv_memcache.txt > /dev/null 2>&1
   sudo rm /dev/shm/nv_lockcache.txt > /dev/null 2>&1
   sudo rm /dev/shm/nv_clkcache.txt > /dev/null 2>&1
+  sudo rm /dev/shm/env_clk_delay.txt > /dev/null 2>&1
 
   echo "[10%] Fetching Overclock data ..."
 

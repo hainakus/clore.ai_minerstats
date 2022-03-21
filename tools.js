@@ -505,10 +505,10 @@ module.exports = {
         getTORProc = getTOR("cat /media/storage/tor.txt 2>/dev/null", function(error, stdout, stderr) {
           var torlog = stdout;
           if (torlog.includes("1")) {
-            console.log("\x1b[1;94m== \x1b[0mTor Network: \x1b[1;32m Enabled\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0mTor Network: \x1b[1;32mEnabled\x1b[0m");
             isTor = "torsocks";
           } else {
-            console.log("\x1b[1;94m== \x1b[0mTor Network: \x1b[1;32m Disabled " + torlog + "\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0mTor Network: \x1b[1;32mDisabled " + torlog + "\x1b[0m");
           }
         });
     } catch (getTORError) {}
