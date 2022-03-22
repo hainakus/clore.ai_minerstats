@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Todo rewrite
+
 NVIDIA="$(nvidia-smi -L)"
 AMDDEVICE=$(lsmod | grep amdgpu | wc -l)
 
@@ -52,6 +54,10 @@ SNUM=$(sudo su minerstat -c "screen -list | grep -c sockets")
 if [ "$SNUM" != "1" ]; then
   sudo su minerstat -c "screen -ls | grep sockets | cut -d. -f1 | awk '{print $1}' | xargs kill -9; screen -wipe; sudo killall sockets; sleep 0.5; sudo killall sockets; screen -A -m -d -S sockets sudo bash /home/minerstat/minerstat-os/core/sockets" > /dev/null
 fi
+
+# Apply fans on boot for Octominer
+sudo /home/minerstat/minerstat-os/core/octoctrl --boot > /dev/null 2>&1 &
+
 cd /home/minerstat/minerstat-os/bin
 sudo bash jobs.sh $AMDDEVICE
 

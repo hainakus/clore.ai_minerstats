@@ -1,10 +1,42 @@
 #!/bin/bash
 
+# Hello
+echo
+echo "========== Octominer | minerdude =========="
+echo "This tool helps to control chassis fans and leds."
+echo
+
+# Reset
+Color_Off='\033[0m' # Text Reset
+
+# Regular Colors
+Red='\033[0;31m' # Red
+Green='\033[0;32m' # Green
+Yellow='\033[0;33m' # Yellow
+
+function printfo() {
+ mark="i"
+ if [[ "$1" = "info" ]]; then
+ mark="INFO"
+ elif [[ "$1" = "fail" ]]; then
+ mark="$Red"'FAIL'"$Color_Off"
+ elif [[ "$1" = "ok" ]]; then
+ mark="$Green OK $Color_Off"
+ elif [[ "$1" = "warn" ]]; then
+ mark="$Yellow"'WARN'"$Color_Off"
+ fi
+ echo -n ""
+ echo -e " [$mark] $2 \r"
+ echo -n ""
+}
+
 # Arg parser
 PARAMS=""
 ID=""
 VAL=""
 MIN=""
+SAVE_VAL="0"
+LIST_VAL="0"
 
 ###############
 ##
@@ -21,6 +53,9 @@ help () {
   echo "-r  | --reboot       : Reboot via chassis"
   echo "-p  | --ping         : Blink blue light for x minutes. (e.g: octo-ping --min 5)"
   echo "-f  | --fan          : Control chasis fans. (e.g: octo-fan --id 1 --val 200)"
+  echo "    | --save         : Save fan value and apply on boot"
+  echo "    | --list         : List saved fan values on console"
+  echo "    | --clear        : Remove all saved fan values"
   echo
   exit 255
 }
@@ -90,55 +125,125 @@ odisplay () {
   timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -o 0,7,2 -v "Chassis: $C1  $C2"
 }
 
+# Shutdown via chassis
 oshutdown () {
-  # Shutdown via chasis
   timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -p
 }
 
+# Print Info
 oinfo () {
-  # Reboot via chasis
   timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -h
 }
 
+# Reboot via chassis
 oreboot () {
-  # Reboot via chasis
   timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -x
 }
 
+# Flash blue lights
 oping () {
-  # Flash blue lights
-  echo "Raw: $MIN"
+  printfo info "Raw: $MIN"
   MIN=$((MIN*60))
-  echo "Will be turned off after: $MIN second"
+  printfo info "Will be turned off after: $MIN second"
   timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -l 1 -v 2
   screen -A -m -d -S kill_ping sudo /home/minerstat/minerstat-os/core/octoctrl --kping $MIN
 }
 
+# Flash red error lights
 oerr() {
-  # Flash red error lights
   sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -l 0 -v 3
 }
 
+# Ping Leds
 kping () {
   sleep $MIN
   timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -l 0 -v 0
   timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -l 1 -v 0
 }
 
+# List fan speeds
+ofan_list() {
+    printfo info "Listing Saved FAN Values ..."
+    sudo chmod 777 /home/minerstat/octo_fans.txt 2>/dev/null
+    if [[ -f "/home/minerstat/octo_fans.txt" ]]; then
+      while read line; do
+        FAN_VAL=$(echo $line | rev | cut -d: -f1 | rev)
+        FAN_ID=$(echo $line | cut -d: -f1)
+        printfo ok "Found: FAN #$FAN_ID, VALUE: $FAN_VAL"
+      done </home/minerstat/octo_fans.txt
+      echo
+      printfo info "To Clear All values and start over"
+      printfo info "Enter: octo-fan --clear"
+    else
+      printfo fail "No Fan value found."
+    fi
+}
+
+# List fan speeds
+ofan_boot() {
+    printfo info "Listing Saved FAN Values ..."
+    sudo chmod 777 /home/minerstat/octo_fans.txt 2>/dev/null
+    if [[ -f "/home/minerstat/octo_fans.txt" ]]; then
+      while read line; do
+        FAN_VAL=$(echo $line | rev | cut -d: -f1 | rev)
+        FAN_ID=$(echo $line | cut -d: -f1)
+        printfo ok "Found: FAN #$FAN_ID, VALUE: $FAN_VAL"
+        timeout 15 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -f $FAN_ID -v $FAN_VAL
+        sleep 0.25
+      done </home/minerstat/octo_fans.txt
+    else
+      printfo fail "No Fan value saved."
+    fi
+}
+
+# Set fan speed and apply
 ofan () {
-  # Set fans
-  # fan ids: 0-8
-  # val range: 0-255
-  echo "db: $ID, $VAL"
-  if [[ "$ID" -gt "8" ]] || [[ "$ID" -lt "0" ]]; then
-    echo "Invalid ID"
-    exit 1
+  if [[ "$LIST_VAL" = "0" ]]; then
+    # Set fans
+    # fan ids: 0-8
+    # val range: 0-255
+    # echo "db: $ID, $VAL"
+    if [[ "$ID" -gt "8" ]] || [[ "$ID" -lt "0" ]]; then
+      printfo fail "Invalid ID"
+      exit 1
+    fi
+    if [[ "$VAL" -gt "255" ]] || [[ "$VAL" -lt "0" ]]; then
+      printfo fail "Invalid VAL"
+      exit 1
+    fi
+    timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -f $ID -v $VALUE
+    echo
+    # If saving enabled
+    if [[ "$SAVE_VAL" = "1" ]]; then
+      READIN=$(cat /home/minerstat/octo_fans.txt 2>/dev/null)
+      printfo info "Saving: FAN #$ID, VALUE: $VAL"
+      if [[ "$READIN" == *"$ID:"* ]]; then
+        printfo warn "Warning: FAN #$ID already had value. Replacing with new one."
+        OLD_VAR=$(cat /home/minerstat/octo_fans.txt | grep "$ID:")
+        printfo info "Previous: $OLD_VAR"
+        printfo info "New: $ID:$VAL"
+        sudo chmod 777 /home/minerstat/octo_fans.txt 2>/dev/null
+        sudo sed -i "/$ID:/d" /home/minerstat/octo_fans.txt
+        sudo echo "$ID:$VAL" >> /home/minerstat/octo_fans.txt
+      else
+        if [[ ! -z "$ID" ]]; then
+          sudo echo "$ID:$VAL" >> /home/minerstat/octo_fans.txt
+        else
+          printfo fail "Unable to save empty data. Verify your input parameters."
+        fi
+      fi
+      echo
+      # List saved values
+      ofan_list
+    fi
   fi
-  if [[ "$VAL" -gt "255" ]] || [[ "$VAL" -lt "0" ]]; then
-    echo "Invalid VAL"
-    exit 1
-  fi
-  timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -f $ID -v $VAL
+}
+
+# Clear fan speeds to apply from boot
+ofan_clear() {
+  printfo info "Clearing Saved Fan Values ..."
+  sudo chmod 777 /home/minerstat/octo_fans.txt 2>/dev/null
+  sudo echo -n > /home/minerstat/octo_fans.txt
 }
 
 ##
@@ -235,6 +340,23 @@ while (( "$#" )); do
       ;;
     -f|--fan)
       ISFAN=1
+      shift
+      ;;
+    --save)
+      SAVE_VAL=1
+      shift
+      ;;
+    --clear)
+      ofan_clear
+      shift
+      ;;
+    --boot)
+      ofan_boot
+      shift
+      ;;
+    --list)
+      LIST_VAL=1
+      ofan_list
       shift
       ;;
     -*|--*=) # unsupported flags
