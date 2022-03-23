@@ -211,7 +211,7 @@ ofan () {
       printfo fail "Invalid VAL"
       exit 1
     fi
-    timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -f $ID -v $VALUE
+    timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -f $ID -v $VAL
     echo
     # If saving enabled
     if [[ "$SAVE_VAL" = "1" ]]; then

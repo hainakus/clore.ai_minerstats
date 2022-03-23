@@ -56,7 +56,7 @@ if [ "$SNUM" != "1" ]; then
 fi
 
 # Apply fans on boot for Octominer
-sudo /home/minerstat/minerstat-os/core/octoctrl --boot > /dev/null 2>&1 &
+sudo /home/minerstat/minerstat-os/core/octoctrl --boot
 
 cd /home/minerstat/minerstat-os/bin
 sudo bash jobs.sh $AMDDEVICE
