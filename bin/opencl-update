@@ -1,0 +1,142 @@
+#!/bin/bash
+
+# Global ARGS
+REBOOT="no"
+INSTALL="no"
+OCL_VER=""
+
+# Hello
+echo
+echo "========== OpenCL Update Utility =========="
+echo "Disclaimer: Use at your own risk. If rig unable to mine after process, you may have to reflash."
+echo
+
+# Print help menu function
+help() {
+  echo
+  echo "==== Help ===="
+  echo "-h   | --help         : Printing this menu"
+  echo "-l   | --list         : Listing all available openCL versions to install"
+  echo "-i   | --install      : Install selected version"
+  echo "-r   | --reboot       : Reboot after successful install"
+  echo
+  echo
+  echo "========================================================================="
+  echo
+  echo "Update to latest: opencl-update --install 21.50"
+  echo
+  echo "========================================================================="
+  echo
+  exit 9
+}
+
+# List all pre-coded versions function
+list() {
+  echo
+  echo "==== Versions ===="
+  echo "--install 20.30         : Supports RX400, RX500, Vega, RX5000"
+  echo "--install 20.40         : Supports RX400, RX500, Vega, RX5000, RX6000"
+  echo "--install 21.10         : Supports Vega, RX5000, RX6000"
+  echo "--install 21.20         : Supports Vega, RX5000, RX6000"
+  echo "--install 21.30         : Supports Vega, RX5000, RX6000"
+  echo "--install 21.50         : Supports Vega, RX5000, RX6000"
+  echo
+}
+
+# Install function
+install() {
+  echo
+  echo "Installing $OCL_VER OpenCL"
+  # Remove previous installation
+  sudo rm /tmp/$OCL_VER.tar.xz >/dev/null 2>&1
+  # Download
+  wget "https://static-ssl.minerstat.farm/drivers/amd/1804/opencl/$OCL_VER.tar.xz" -P /tmp
+  # If download failed exit
+  if [[ $? -ne 0 ]]; then
+    echo "Download opencl installer failed.."
+    echo "Try again ..."
+    sudo rm /tmp/$OCL_VER.tar.xz >/dev/null 2>&1
+    exit 1
+  fi
+  # Replace binaries
+  sudo chmod 777 /tmp/$OCL_VER.tar.xz >/dev/null 2>&1
+  sudo tar xvf /tmp/$OCL_VER.tar.xz -C /tmp
+  sudo ls /tmp/amdgpu-pro
+  sudo cp -Rf /tmp/amdgpu-pro/* /opt/amdgpu-pro
+  # Run clinfo
+  sudo clinfo | grep ver
+  # Apply openCL
+  sudo su -c "echo '/opt/amdgpu-pro/lib/x86_64-linux-gnu/libamdocl64.so' > /etc/OpenCL/vendors/amdocl64.icd"
+  sudo su -c "echo $OCL_VER > /opt/ocl_ver.txt"
+  # Echo
+  echo
+  echo "================="
+  echo "openCL $OCL_VER successfully installed. Reboot with: forcereboot"
+  echo "================="
+  echo
+  # If Reboot passed
+  if [[ "$REBOOT" == "yes" ]]; then
+    echo "Everything went fine, rebooting"
+    sync
+    sleep 3
+    sudo bash /home/minerstat/minerstat-os/bin/reboot.sh
+  fi
+  echo
+}
+
+# check if EMPTY input
+if [[ -z "$1" ]]; then
+  list
+  help
+  exit 1
+fi
+
+# Arg parser
+PARAMS=""
+while (("$#")); do
+  case "$1" in
+  -i | --install)
+    if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
+      OCL_VER=$2
+      INSTALL="yes"
+      shift 2
+    else
+      echo
+      echo "================="
+      echo "Error: Please, select a version to install" >&2
+      echo "================="
+      echo
+      exit 1
+    fi
+    ;;
+  -h | --help)
+    help
+    shift
+    ;;
+  -r | --reboot)
+    echo -e "  [i] Reboot after valid install \r"
+    REBOOT="yes"
+    shift
+    ;;
+  -l | --list)
+    list
+    shift
+    ;;
+  -* | --*=) # unsupported flags
+    echo "================="
+    echo "Error: Unsupported flag $1" >&2
+    echo "================="
+    exit 1
+    ;;
+  *) # preserve positional arguments
+    PARAMS="$PARAMS $1"
+    shift
+    ;;
+  esac
+done
+if [[ "$INSTALL" = "yes" ]]; then
+  install
+fi
+# set positional arguments in their proper place
+eval set -- "$PARAMS"
+echo

@@ -193,3 +193,4 @@ else
 fi
 
 alias nvflash='sudo /home/minerstat/minerstat-os/bin/nvflash_linux'
+alias opencl-update='sudo /home/minerstat/minerstat-os/bin/opencl-update'
