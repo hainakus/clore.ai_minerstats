@@ -32,8 +32,12 @@ if [ $1 ]; then
   VDDCI=$8
   POWERLIMIT=$9
   SOC=${10}
-  version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
-  version_r=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^0-9]*//g'`
+  # ID 11 is for GPUID PRO
+  SOCVDD=${12}
+  TDCMAX=${13}
+
+  version=$(cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g')
+  version_r=$(cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^0-9]*//g')
 
   # Setting up limits
   MCMIN=600  #minimum vddci
@@ -44,6 +48,8 @@ if [ $1 ]; then
   #MVDEF=1300 #default mvdd
   SOCMIN=507
   SOCMAX=1267
+  SOCVDDMIN=600
+  SOCVDDMAX=1100
 
   # Manage states
   if [[ -z "$COREINDEX" ]] || [[ "$COREINDEX" = "skip" ]] || [[ "$COREINDEX" = "5" ]]; then
@@ -156,6 +162,23 @@ if [ $1 ]; then
     fi
   fi
 
+  # SoC Voltage
+  if [[ ! -z $SOCVDD && $SOCVDD != "0" && $SOCVDD != "skip" ]]; then
+    PARSED_SOCVDD=$SOCVDD
+    if [[ $SOCVDD -gt $SOCVDDMAX ]]; then
+      PARSED_SOCVDD=1050
+      echo "SoC can't be higher than $SOCVDDMAX using safe value 950"
+    fi
+    if [[ $SOCVDD -lt $SOCVDDMIN ]]; then
+      PARSED_SOCVDD=$SOCVDDMIN
+      # Ignore if set below limit
+      echo "SOCCLK value ignored as below $SOCVDDMIN mV limit"
+    else
+      PARSED_SOCVDD_MAX=$((PARSED_SOCVDD * 4))
+      psocvolt="smc_pptable/MinVoltageSoc=2400 smc_pptable/MaxVoltageSoc=$PARSED_SOCVDD_MAX"
+    fi
+  fi
+
   if [[ "$version" != "1.5.4" ]]; then
     # Target temp
     FILE=/media/storage/fans.txt
@@ -173,8 +196,8 @@ if [ $1 ]; then
     fi
 
     # Reinstall upp if error
-    sudo rm /dev/shm/safetycheck.txt &> /dev/null
-    sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get smc_pptable/MinVoltageGfx &> /dev/shm/safetycheck.txt
+    sudo rm /dev/shm/safetycheck.txt &>/dev/null
+    sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get smc_pptable/MinVoltageGfx &>/dev/shm/safetycheck.txt
     SAFETY=$(cat /dev/shm/safetycheck.txt)
     if [[ $SAFETY == *"has no attribute"* ]] || [[ $SAFETY == *"ModuleNotFoundError"* ]] || [[ $SAFETY == *"table version"* ]]; then
       sudo su minerstat -c "yes | sudo pip3 uninstall setuptools"
@@ -193,16 +216,29 @@ if [ $1 ]; then
     isRadeonPro=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI ${11}:" | grep -E "Pro|PRO" | wc -l)
 
     if [[ "$isRadeonPro" -gt "0" ]]; then
-      for (( i=0; i<=13; i+=1 )); do
+      for ((i = 0; i <= 13; i += 1)); do
         proArgs+="overdrive_table/cap/$i=1 "
       done
     fi
 
     # Thermal Design Current
     TdcLimit=""
-    TDC=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get smc_pptable/TdcLimit/1 2> /dev/null | xargs | grep -c "30")
+    TDC=$(sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table get smc_pptable/TdcLimit/1 2>/dev/null | xargs | grep -c "30")
     if [[ "$TDC" = "1" ]]; then
       TdcLimit="smc_pptable/TdcLimit/1=33"
+    fi
+    # Manual input
+    if [[ ! -z $TDCMAX && $TDCMAX != "0" && $TDCMAX != "skip" ]]; then
+      if [[ $TDCMAX -lt 25 ]]; then
+        echo "Error: TdcLimit can't be lower than 25"
+      else
+        if [[ $TDCMAX -lt 50 ]]; then
+          TdcLimit="smc_pptable/TdcLimit/1=$TDCMAX"
+        else
+          echo "Error: TdcLimit can't be more than 50"
+        fi
+      fi
+
     fi
 
     # Apply VDDGFX
@@ -219,7 +255,7 @@ if [ $1 ]; then
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set smc_pptable/FreqTableGfx/0=1150
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
       overdrive_table/max/8=1200 overdrive_table/max/6=1200 overdrive_table/max/7=1200 overdrive_table/min/3=0 $OREV $TdcLimit \
-      smc_pptable/MinVoltageUlvSoc=825 smc_pptable/FreqTableFclk/0=1550 $pmvdd $pvddci $psoc \
+      smc_pptable/MinVoltageUlvSoc=825 smc_pptable/FreqTableFclk/0=1550 $pmvdd $pvddci $psoc $psocvolt \
       smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=10 smc_pptable/FanZeroRpmEnable=0 smc_pptable/FanTargetTemperature=90 smc_pptable/FanTargetGfxclk=500 smc_pptable/dBtcGbGfxDfllModelSelect=2 smc_pptable/FreqTableUclk/3=$MEMCLOCK $proArgs --write
   fi
 
@@ -288,7 +324,7 @@ if [ $1 ]; then
     RB=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1 | xargs)
     echo "Reading back fan value .. $RB"
     if [[ "$RB" = "0" ]]; then
-      echo "2" > /dev/shm/fantype.txt
+      echo "2" >/dev/shm/fantype.txt
       echo "Driver autofan kick .."
       sleep 1
       sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
@@ -304,7 +340,7 @@ if [ $1 ]; then
     RB=$(cat /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1 | xargs)
     if [[ "$RB" = "0" ]]; then
       # 100% fans
-      echo "2" > /dev/shm/fantype.txt
+      echo "2" >/dev/shm/fantype.txt
       echo "Nothing worked 100% fans then auto"
       sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
       sleep 1
@@ -312,7 +348,7 @@ if [ $1 ]; then
     fi
 
   else
-    echo "2" > /dev/shm/fantype.txt
+    echo "2" >/dev/shm/fantype.txt
     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
     sudo su -c "echo 1 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
     sudo su -c "echo 255 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1" 2>/dev/null # 70%
@@ -333,7 +369,7 @@ if [ $1 ]; then
     # Windows is memclock * 2
     if [[ $MEMCLOCK -gt "2300" ]]; then
       echo "!! MEMORY CLOCK CONVERTED TO LINUX FORMAT [WINDOWS_MEMCLOCK/2]"
-      MEMCLOCK=$((MEMCLOCK/2))
+      MEMCLOCK=$((MEMCLOCK / 2))
     fi
     if [[ $MEMCLOCK -gt "2300" ]]; then
       echo "!! Invalid memory clock detected, auto fixing.."
@@ -392,10 +428,10 @@ if [ $1 ]; then
   TEST=$(screen -list | grep -wc soctimer)
   if [ "$TEST" = "0" ]; then
     screen -A -m -D -S soctimer sudo bash /home/minerstat/minerstat-os/bin/soctimer $GPUID &
-    echo "#!/bin/bash" > /home/minerstat/clock_cache
-    echo "sudo bash /home/minerstat/minerstat-os/bin/overclock_sienna.sh $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11}" >> /home/minerstat/clock_cache
+    echo "#!/bin/bash" >/home/minerstat/clock_cache
+    echo "sudo bash /home/minerstat/minerstat-os/bin/overclock_sienna.sh $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13}" >>/home/minerstat/clock_cache
   else
-    echo "sudo bash /home/minerstat/minerstat-os/bin/overclock_sienna.sh $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11}" >> /home/minerstat/clock_cache
+    echo "sudo bash /home/minerstat/minerstat-os/bin/overclock_sienna.sh $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13}" >>/home/minerstat/clock_cache
   fi
 
   exit 1
