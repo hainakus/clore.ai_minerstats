@@ -182,7 +182,12 @@ if [[ ! -z "$INF_AMD" ]]; then
   done < "/dev/shm/amdcache.txt"
 fi
 
+# Sort data and add headers
 cat /dev/shm/gpudata.txt | sort  > /dev/shm/gpudata_sort.txt
 sed  -i "1i bus,$Reset hardware,power,temp,fans,core,mem" /dev/shm/gpudata_sort.txt
+
+# remove colors
+cp -r /dev/shm/gpudata_sort.txt /dev/shm/gpudata_sort_nc.txt
+sed -i -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g" /dev/shm/gpudata_sort_nc.txt
 
 printTable ',' "$(cat /dev/shm/gpudata_sort.txt)"
