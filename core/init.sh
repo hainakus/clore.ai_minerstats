@@ -98,7 +98,7 @@ CPU_TYPE=$(sudo timeout 15 dmidecode --string processor-version | head -n1 | xar
 
 # For Ryzen CPUS
 # lm-sensor need to be installed
-if [[ "$CPU_TYPE" == *"Ryzen"* ]]; then
+if [[ "$CPU_TYPE" == *"Ryzen"* ]] || [[ "$CPU_TYPE" == *"Athlon"* ]]; then
   SENTEST=$(timeout 3 which sensors)
   if [[ -z "$SENTEST" ]]; then
     sudo apt-get install -y lm-sensors >/dev/null 2>&1 &
@@ -273,7 +273,7 @@ do
 
   # Extended Query with loop
 
-  if [[ "$CPU_TYPE" != *"Ryzen"* ]]; then
+  if [[ "$CPU_TYPE" != *"Ryzen"* ]] && [[ "$CPU_TYPE" != *"Athlon"* ]]; then
     CPU_TEMP=$(timeout 5 cat /sys/class/thermal/thermal_zone*/temp 2> /dev/null | column -s $'\t' -t | sed 's/\(.\)..$/.\1/' | tac | head -n 1)
   else
     CPU_TEMP=$(timeout 5 sudo sensors 2> /dev/null | grep -A 2 k10temp-pci | grep -E "temp1|Tdie" | awk '{print $2}' | sed 's/[^0-9.]//g')
