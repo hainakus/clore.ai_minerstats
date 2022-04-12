@@ -43,7 +43,7 @@ function printTable()
 
         for ((j = 1; j <= "${numberOfColumns}"; j = j + 1))
         do
-          table="${table}$(printf '#  | %s' "$(cut -d "${delimiter}" -f "${j}" <<< "${line}")")"
+          table="${table}$(printf '#| %s' "$(cut -d "${delimiter}" -f "${j}" <<< "${line}")")"
         done
 
         table="${table}#\n"
@@ -124,11 +124,17 @@ if [[ ! -z "$INF_NV" ]]; then
     TEMP=${array[1]}" C"
     TEMP=$(echo $TEMP | xargs)
     FAN=${array[2]}
-    FAN=$(echo $FAN| cut -f1 -d"." | xargs)
+    FAN=$(echo $FAN | cut -f1 -d"." | xargs)
+    PWR=${array[3]}
+    PWR=$(echo $PWR | cut -f1 -d"." | xargs)
+    CORECLK=${array[4]}
+    CORECLK=$(echo $CORECLK | cut -f1 -d"." | xargs)
+    MEMCLK=${array[5]}
+    MEMCLK=$(echo $MEMCLK | cut -f1 -d"." | xargs)
     BUS=${array[7]}
     BUS=$(echo $BUS | sed 's/00000000://')
     HID=$((HID+1))
-    echo "$BUS,$NAME,$TEMP,$FAN" >> /dev/shm/gpudata.txt
+    echo "$BUS,$NAME,$PWR W,$TEMP,$FAN,$CORECLK,$MEMCLK" >> /dev/shm/gpudata.txt
   done < "/dev/shm/nvcache.txt"
 
 fi
@@ -145,6 +151,12 @@ if [[ ! -z "$INF_AMD" ]]; then
     TEMP=$(echo $TEMP | xargs)
     FAN=${array[1]}
     FAN=$(echo $FAN| cut -f1 -d"." | xargs)" %"
+    PWR=${array[12]}
+    PWR=$(echo $PWR | cut -f1 -d"." | xargs)" W"
+    CORECLK=${array[2]}
+    CORECLK=$(echo $CORECLK | cut -f1 -d"." | xargs)" Mhz"
+    MEMCLK=${array[3]}
+    MEMCLK=$(echo $MEMCLK | cut -f1 -d"." | xargs)" Mhz"
     BUS=${array[6]}
     BUS=$(echo $BUS | sed 's/00000000://')
     # EXTENDED CALL
@@ -164,13 +176,13 @@ if [[ ! -z "$INF_AMD" ]]; then
     NAME=${arrays[2]}
     NAME=$(echo $Red$NAME$Reset | xargs | xargs)
     BUSEDIT=${arrays[1]}
-    echo "$BUSEDIT,$NAME,$TEMP,$FAN" >> /dev/shm/gpudata.txt
+    echo "$BUSEDIT,$NAME,$PWR,$TEMP,$FAN,$CORECLK,$MEMCLK" >> /dev/shm/gpudata.txt
     NUM=$((NUM+1))
     HID=$((HID+1))
   done < "/dev/shm/amdcache.txt"
 fi
 
 cat /dev/shm/gpudata.txt | sort  > /dev/shm/gpudata_sort.txt
-sed  -i "1i bus,$Reset name,temp,fan" /dev/shm/gpudata_sort.txt
+sed  -i "1i bus,$Reset hardware,power,temp,fans,core,mem" /dev/shm/gpudata_sort.txt
 
 printTable ',' "$(cat /dev/shm/gpudata_sort.txt)"
