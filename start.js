@@ -758,7 +758,7 @@ module.exports = {
         }
       } else {
         if (global.validVersion) {
-          dlURL = 'https://static-ssl.minerstat.farm/miners/linux/forks/' + miner + '/' + global.selectedVersion + "/" + miner + '.zip';
+          dlURL = 'https://static-ssl.minerstat.farm/miners/linux/forks/' + miner.toLowerCase().replace("_10", "").replace("_11", "") + '/' + global.selectedVersion + "/" + miner + '.zip';
         }
         if (global.validFork) {
           dlURL = 'https://static-ssl.minerstat.farm/miners/linux/forks/' + global.selectedFork + '/' + global.selectedVersion + "/" + miner + '.zip';
