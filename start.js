@@ -509,7 +509,7 @@ module.exports = {
 
                     // Versioning
                     if (global.selectedFork != "") {
-                      var testVersion = JSON.stringify(parseFork[gpuMiner.toLowerCase()].forks);
+                      var testVersion = JSON.stringify(parseFork[gpuMiner.toLowerCase().replace("_10", "").replace("_11", "")].forks);
                       if (testVersion.includes(global.selectedFork) && testVersion.includes(global.selectedVersion)) {
                         // Change version if valid
                         gpuServerVersion = global.selectedVersion;
@@ -525,7 +525,7 @@ module.exports = {
                     }
 
                     if (global.selectedVersion != "" && global.selectedFork == "") {
-                      var testVersion = parseFork[gpuMiner.toLowerCase()].versions;
+                      var testVersion = parseFork[gpuMiner.toLowerCase().replace("_10", "").replace("_11", "")].versions;
                       if (testVersion.includes(global.selectedVersion)) {
                         // Change version if valid
                         gpuServerVersion = global.selectedVersion;
