@@ -46,10 +46,12 @@ if [ $1 ]; then
   MVMAX=1350 #max mvdd
   #MCDEF=820  #default vddci
   #MVDEF=1300 #default mvdd
-  SOCMIN=507
+  # Soc Frequency
+  SOCMIN=535
   SOCMAX=1267
-  SOCVDDMIN=600
-  SOCVDDMAX=1100
+  # Soc VDD
+  SOCVDDMIN=650
+  SOCVDDMAX=1200
 
   # Manage states
   if [[ -z "$COREINDEX" ]] || [[ "$COREINDEX" = "skip" ]] || [[ "$COREINDEX" = "5" ]]; then
@@ -146,7 +148,7 @@ if [ $1 ]; then
     fi
   fi
 
-  # SoC Clock
+  # SoC Clock Frequency
   if [[ ! -z $SOC && $SOC != "0" && $SOC != "skip" ]]; then
     PARSED_SOC=$SOC
     if [[ $SOC -gt $SOCMAX ]]; then
@@ -158,7 +160,17 @@ if [ $1 ]; then
       # Ignore if set below limit
       echo "SOCCLK value ignored as below $SOCMIN Mhz limit"
     else
-      psoc="smc_pptable/FreqTableSocclk/0=$PARSED_SOC smc_pptable/FreqTableSocclk/1=$PARSED_SOC smc_pptable/FreqTableSocclk/2=0 smc_pptable/FreqTableSocclk/3=0 smc_pptable/FreqTableSocclk/4=0 smc_pptable/FreqTableSocclk/5=0 smc_pptable/FreqTableSocclk/6=0 smc_pptable/FreqTableSocclk/7=0"
+      # Calculate Soc Curve
+      soc_s0=$SOCMIN
+      for soc_sl in 532 604 644 738 802; do
+        if [[ $soc_sl -lt $SOC ]]; then
+          soc_s0=$soc_sl
+        else
+          break
+        fi
+      done
+      soc_p0="smc_pptable/FreqTableSocclk/0=$soc_s0"
+      psoc="$soc_p0 smc_pptable/FreqTableSocclk/1=$PARSED_SOC"
     fi
   fi
 
@@ -175,7 +187,7 @@ if [ $1 ]; then
       echo "SOCCLK value ignored as below $SOCVDDMIN mV limit"
     else
       PARSED_SOCVDD_MAX=$((PARSED_SOCVDD * 4))
-      psocvolt="smc_pptable/MinVoltageSoc=2400 smc_pptable/MaxVoltageSoc=$PARSED_SOCVDD_MAX"
+      psocvolt="smc_pptable/MaxVoltageSoc=$PARSED_SOCVDD_MAX"
     fi
   fi
 
@@ -244,7 +256,7 @@ if [ $1 ]; then
     # Apply VDDGFX
     # Only above 1.8.0 msOS package versions
     OREV="smc_pptable/VcBtcEnabled=1 overdrive_table/min/7=$VDDC overdrive_table/min/5=500 smc_pptable/FanTargetTemperature=90 smc_pptable/FanTargetGfxclk=500"
-    if [[ "$version_r" -gt "179" ]]; then
+    if [[ "$version_r" -gt "176" ]]; then
       sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table vddgfx $CORECLOCK $VDDC --write
     else
       # Only apply this for < v1.8.0 OS versions
