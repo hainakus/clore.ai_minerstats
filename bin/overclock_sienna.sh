@@ -161,7 +161,7 @@ if [ $1 ]; then
       echo "SOCCLK value ignored as below $SOCMIN Mhz limit"
     else
       # Calculate Soc Curve
-      soc_s0=$SOCMIN
+      soc_s0=$PARSED_SOC
       for soc_sl in 532 604 644 738 802; do
         if [[ $soc_sl -lt $SOC ]]; then
           soc_s0=$soc_sl
