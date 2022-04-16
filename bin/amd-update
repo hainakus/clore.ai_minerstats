@@ -8,7 +8,7 @@ echo "Hint: 8GB RAM recommended for sucessfull DKMS build."
 echo
 
 # Warning
-version=`cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g'`
+version=$(cat /etc/lsb-release | grep "DISTRIB_RELEASE=" | sed 's/[^.0-9]*//g')
 if [[ "$version" == *"1.8"* ]]; then
   echo
   echo "v1.8.0 already contains the latest available drivers."
@@ -32,7 +32,7 @@ S_DIR="1804"
 MEM_MB=$(free -m | grep "Mem:" | awk '{print $2}')
 
 # Free Space in MB
-FREE_IN_MB=$(df -hm --no-sync "."  | awk 'NR==2{print $4}')
+FREE_IN_MB=$(df -hm --no-sync "." | awk 'NR==2{print $4}')
 
 if [[ $U_VER == *"16.04"* ]]; then
   S_DIR="1604"
@@ -97,7 +97,7 @@ if [ "$SNUM" != "1" ]; then
 fi
 
 # Help
-help () {
+help() {
   echo
   echo "==== Help ===="
   echo "-h   | --help         : Printing this menu"
@@ -119,7 +119,7 @@ help () {
 }
 
 # List
-list () {
+list() {
   # List drivers line by line
   echo
   echo "==== Available Versions ====="
@@ -145,7 +145,7 @@ list () {
       add="$add[Recommended] "
     fi
     echo "$vers $add"
-  done < $VLIST_FILE
+  done <$VLIST_FILE
   echo
   echo "======= Current driver: v$CURRENT_DRIVER, openCL: v$CURRENT_OPENCL =========="
   echo
@@ -156,7 +156,7 @@ list () {
 }
 
 # List
-wlist () {
+wlist() {
   # List drivers line by line
   echo
   echo "==== Available Versions ====="
@@ -164,7 +164,7 @@ wlist () {
     vers=$(echo $ver | sed -e 's#^amdgpu-pro-##;' | cut -f1 -d"-")
     add=""
     echo "$vers $add"
-  done < $VLIST_PRO_FILE
+  done <$VLIST_PRO_FILE
   echo
   echo "======= Current driver: v$CURRENT_DRIVER, openCL: v$CURRENT_OPENCL =========="
   echo
@@ -181,7 +181,7 @@ if [[ -z "$1" ]]; then
 fi
 
 # List
-install () {
+install() {
   echo
   # RAM Check for DKMS build
   if [[ "$MEM_MB" -lt 7701 ]]; then
@@ -192,7 +192,7 @@ install () {
     else
       read -p "Are you sure you want to attempt to install? (y/n): " CONT
       if [ "$CONT" = "y" ]; then
-        echo "All right, if installation failes you will need to reflash";
+        echo "All right, if installation failes you will need to reflash"
       else
         exit 2
       fi
@@ -207,7 +207,7 @@ install () {
     else
       read -p "Are you sure you want to attempt to install? (y/n): " CONT
       if [ "$CONT" = "y" ]; then
-        echo "All right, if installation failes you will need to reflash";
+        echo "All right, if installation failes you will need to reflash"
       else
         exit 2
       fi
@@ -268,6 +268,19 @@ install () {
     else
       sudo /tmp/$FULL_CUT/amdgpu-pro-install -y --opencl=legacy,pal --headless
     fi
+
+    # 21.20 DKMS Replace
+    if [[ $FULL_CUT == *"21.20"* ]]; then
+      wget "https://static-ssl.minerstat.farm/drivers/amd/$S_DIR/dkms/amdgpu-dkms_5.11.5.30-1292798_all.deb" -P /tmp
+      if [[ $? -ne 0 ]]; then
+        echo "Download dkms driver failed.."
+        sudo rm /tmp/amdgpu-dkms_5.11.5.30-1292798_all.deb
+        exit 1
+      fi
+      sudo chmod 777 /tmp/amdgpu-dkms_5.11.5.30-1292798_all.deb >/dev/null 2>&1
+      sudo dpkg -i amdgpu-dkms_5.11.5.30-1292798_all.deb
+    fi
+
     # Initramfs
     sudo update-initramfs -u
     # sudo clinfo
@@ -277,23 +290,20 @@ install () {
     if [[ "$OCLSWITCH" = "yes" ]]; then
       echo
       echo "Installing 20.40 OpenCL"
-      wget "https://static-ssl.minerstat.farm/drivers/amd/1804/opencl_2040.zip" -P /tmp
-      if [[ $? -ne 0 ]]; then
-        echo "Download opencl installer failed.."
-        echo "Start amd-update again"
-        sudo rm /tmp/opencl_2040.zip >/dev/null 2>&1
-        exit 1
-      fi
-      sudo chmod 777 /tmp/opencl_2040.zip >/dev/null 2>&1
-      #sudo mkdir /tmp/opencl_2040
-      sudo unzip -o /tmp/opencl_2040.zip -d /tmp/opencl_2040
-      sudo ls /tmp/opencl_2040
-      cd /tmp/opencl_2040
-      sudo dpkg --force-all -i /tmp/opencl_2040/*
-      sudo apt -y --fix-broken install
-      sudo rm -rf /tmp/opencl_2040 >/dev/null 2>&1
-      echo
+      sudo /home/minerstat/minerstat-os/bin/opencl-update --install 20.40
     fi
+
+    # Check Python3 PIP
+    # Install / Update
+    echo "Updating Apt-get"
+    sudo apt-get update
+    echo "Installing/Updating python"
+    sudo apt-get -y install python3-pip --fix-missing
+    echo "Installing UPP and site packages"
+    sudo su minerstat -c "pip3 install setuptools"
+    sudo su minerstat -c "pip3 install sympy"
+    sudo su minerstat -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
+    sudo su -c "pip3 install git+https://labs.minerstat.farm/repo/upp"
 
     # force amd opencl
     sudo su -c "echo '/opt/amdgpu-pro/lib/x86_64-linux-gnu/libamdocl64.so' > /etc/OpenCL/vendors/amdocl64.icd"
@@ -336,64 +346,64 @@ install () {
 # Arg parser
 PARAMS=""
 INSTALL="no"
-while (( "$#" )); do
+while (("$#")); do
   case "$1" in
-    -i|--install)
-      if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
-        SELECTED_VERSION=$2
-        INSTALL="yes"
-        shift 2
-      else
-        echo
-        echo "================="
-        echo "Error: Please, select a version to install" >&2
-        echo "================="
-        echo
-        exit 1
-      fi
-      ;;
-    -h|--help)
-      help
-      shift
-      ;;
-    -s|--silent)
-      echo -e "  [i] Silent mode \r"
-      SILENT="yes"
-      shift
-      ;;
-    -r|--reboot)
-      echo -e "  [i] Reboot after valid install \r"
-      REBOOT="yes"
-      shift
-      ;;
-    -i|--ignore)
-      echo -e "  [i] Ignore version check \r"
-      IGNORE="yes"
-      shift
-      ;;
-    --workstation)
-      echo -e "  [i] Workstation list selected \r"
-      WORKSTATION="yes"
-      shift
-      ;;
-    -l|--list)
-      list
-      shift
-      ;;
-    -wl|--wlist)
-      wlist
-      shift
-      ;;
-    -*|--*=) # unsupported flags
+  -i | --install)
+    if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
+      SELECTED_VERSION=$2
+      INSTALL="yes"
+      shift 2
+    else
+      echo
       echo "================="
-      echo "Error: Unsupported flag $1" >&2
+      echo "Error: Please, select a version to install" >&2
       echo "================="
+      echo
       exit 1
-      ;;
-    *) # preserve positional arguments
-      PARAMS="$PARAMS $1"
-      shift
-      ;;
+    fi
+    ;;
+  -h | --help)
+    help
+    shift
+    ;;
+  -s | --silent)
+    echo -e "  [i] Silent mode \r"
+    SILENT="yes"
+    shift
+    ;;
+  -r | --reboot)
+    echo -e "  [i] Reboot after valid install \r"
+    REBOOT="yes"
+    shift
+    ;;
+  -i | --ignore)
+    echo -e "  [i] Ignore version check \r"
+    IGNORE="yes"
+    shift
+    ;;
+  --workstation)
+    echo -e "  [i] Workstation list selected \r"
+    WORKSTATION="yes"
+    shift
+    ;;
+  -l | --list)
+    list
+    shift
+    ;;
+  -wl | --wlist)
+    wlist
+    shift
+    ;;
+  -* | --*=) # unsupported flags
+    echo "================="
+    echo "Error: Unsupported flag $1" >&2
+    echo "================="
+    exit 1
+    ;;
+  *) # preserve positional arguments
+    PARAMS="$PARAMS $1"
+    shift
+    ;;
   esac
 done
 if [[ "$INSTALL" = "yes" ]]; then

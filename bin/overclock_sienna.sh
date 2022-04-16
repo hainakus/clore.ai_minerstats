@@ -255,8 +255,9 @@ if [ $1 ]; then
 
     # Apply VDDGFX
     # Only above 1.8.0 msOS package versions
+    SYMP=$(ls /home/minerstat/.local/lib/python*/site-packages/ | grep -c "sympy")
     OREV="smc_pptable/VcBtcEnabled=1 overdrive_table/min/7=$VDDC overdrive_table/min/5=500 smc_pptable/FanTargetTemperature=90 smc_pptable/FanTargetGfxclk=500"
-    if [[ "$version_r" -gt "176" ]]; then
+    if [[ "$version_r" -gt "176" ]] || [[ "$SYMP" -gt "0" ]]; then
       sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table vddgfx $CORECLOCK $VDDC --write
     else
       # Only apply this for < v1.8.0 OS versions
