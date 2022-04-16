@@ -280,7 +280,7 @@ install() {
         exit 1
       fi
       sudo chmod 777 /tmp/amdgpu-dkms_5.11.5.30-1292798_all.deb >/dev/null 2>&1
-      sudo dpkg -i amdgpu-dkms_5.11.5.30-1292798_all.deb
+      sudo dpkg -i /tmp/amdgpu-dkms_5.11.5.30-1292798_all.deb
     fi
 
     # Initramfs
