@@ -239,6 +239,8 @@ install() {
     echo
     sudo /usr/bin/amdgpu-pro-uninstall -y
     sleep 2
+    # Fix for 21.50 and higher uninstallation
+    sudo /usr/bin/amdgpu-uninstall -y
     # make sure it is removed
     sudo /usr/bin/amdgpu-pro-uninstall -y >/dev/null 2>&1
     # apt-get update
