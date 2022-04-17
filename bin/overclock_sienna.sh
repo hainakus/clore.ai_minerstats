@@ -307,7 +307,7 @@ if [ $1 ]; then
   sudo su -c "echo 0 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/fan1_enable" 2>/dev/null
   sleep 1
 
-  if [ "$TESTD" = "20.30" ] || [ "$TESTD" = "20.40" ] || [ "$TESTD" = "20.45" ] || [ "$TESTD" = "20.50" ]; then
+  if [ "$TESTD" = "20.30" ] || [ "$TESTD" = "20.40" ] || [ "$TESTD" = "20.45" ] || [ "$TESTD" = "20.50" ] || [ "$TESTD" = "21.10" ] || [ "$TESTD" = "21.20" ] || [ "$TESTD" = "21.30" ] || [ "$TESTD" = "21.50" ]; then
 
     # Enable fan and manual control
     sudo su -c "echo 2 > /sys/class/drm/card$GPUID/device/hwmon/hwmon*/pwm1_enable" 2>/dev/null
