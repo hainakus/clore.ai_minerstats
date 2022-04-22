@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# To keep libs inside screen too
+cd /home/minerstat/minerstat-os/core/
+
+echo "Waiting 10..."
+sleep 10
+
+# Control timers
+#LOCK_DELAY=$(cat /dev/shm/env_clk_delay.txt 2>/dev/null | xargs)
+#if [[ -z "$LOCK_DELAY" ]]; then
+#  LOCK_DELAY=40
+#fi
+
+# Check for miner running
+TEST=$(sudo screen -list | grep -wc minew)
+
+until [ $TEST = 1 ]; do
+  TEST=$(sudo screen -list | grep -wc minew)
+  echo "Waiting miner to start..."
+  sleep 1
+done
+# Miner up and running
+echo "Miner started, wait 30 sec, then apply clocks"
+sleep 30
+echo "Working on it..."
+
+sudo chmod 777 /dev/shm/amd_vddcache.txt
+sudo awk '!a[$0]++' /dev/shm/amd_vddcache.txt >/dev/shm/amd_vddcache_unique.txt
+sudo chmod 777 /dev/shm/amd_vddcache_unique.txt
+
+cat /dev/shm/amd_vddcache_unique.txt
+READIN=$(cat /dev/shm/amd_vddcache_unique.txt)
+JOB=""
+
+echo "Appling vddgfx per gpu basis"
+while read line; do
+  CORECLOCK=$(echo $line | rev | cut -d: -f1 | rev | awk -F'-' '{print $1}')
+  VDDC=$(echo $line | rev | cut -d: -f1 | rev | awk -F'-' '{print $2}')
+  GPUID=$(echo $line | cut -d: -f1)
+  if [[ "$CORECLOCK" != "skip" ]]; then
+    echo "Applying $VDDC mV for $CORECLOCK Mhz on GPU #$GPUID"
+    sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table vddgfx $CORECLOCK $VDDC --write
+  fi
+done </dev/shm/amd_vddcache_unique.txt

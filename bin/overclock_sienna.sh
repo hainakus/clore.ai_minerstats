@@ -162,7 +162,7 @@ if [ $1 ]; then
     else
       # Calculate Soc Curve
       soc_s0=$PARSED_SOC
-      for soc_sl in 532 604 644 738 802; do
+      for soc_sl in 532 602 644 738 802 844 872 940 972 1002 1038; do
         if [[ $soc_sl -lt $SOC ]]; then
           soc_s0=$soc_sl
         else
@@ -187,7 +187,7 @@ if [ $1 ]; then
       echo "SOCCLK value ignored as below $SOCVDDMIN mV limit"
     else
       PARSED_SOCVDD_MAX=$((PARSED_SOCVDD * 4))
-      psocvolt="smc_pptable/MaxVoltageSoc=$PARSED_SOCVDD_MAX"
+      psocvolt="smc_pptable/MinVoltageUlvSoc=3100 smc_pptable/MaxVoltageSoc=$PARSED_SOCVDD_MAX"
     fi
   fi
 
@@ -256,19 +256,34 @@ if [ $1 ]; then
     # Apply VDDGFX
     # Only above 1.8.0 msOS package versions
     SYMP=$(ls /home/minerstat/.local/lib/python*/site-packages/ | grep -c "sympy")
-    OREV="smc_pptable/VcBtcEnabled=1 overdrive_table/min/7=$VDDC overdrive_table/min/5=500 smc_pptable/FanTargetTemperature=90 smc_pptable/FanTargetGfxclk=500"
+    OREV="smc_pptable/VcBtcEnabled=0 overdrive_table/min/7=$VDDC overdrive_table/min/5=500 smc_pptable/FanTargetTemperature=90 smc_pptable/FanTargetGfxclk=500"
     if [[ "$version_r" -gt "176" ]] || [[ "$SYMP" -gt "0" ]]; then
-      sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table vddgfx $CORECLOCK $VDDC --write
+      # Check miner running or not
+      MINER_RUNNING=$(sudo screen -list | grep -wc minew)
+      # If miner not running start on higher voltage then tune down
+      if [[ "$MINER_RUNNING" = "0" ]]; then
+        echo "Miner not running, delaying voltage curve"
+        sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table vddgfx $CORECLOCK 740 --write
+        # After mining started apply this
+        sudo echo "$GPUID:$CORECLOCK-$VDDC" >>/dev/shm/amd_vddcache.txt
+        # check lock delay process
+        TEST=$(sudo screen -list | grep -wc gfxdelay)
+        if [ "$TEST" = "0" ]; then
+          sudo screen -A -m -d -S gfxdelay sudo bash /home/minerstat/minerstat-os/core/gfxdelay &
+        fi
+      else
+        # Miner running apply now
+        echo "Miner running applying voltage curve"
+        sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table vddgfx $CORECLOCK $VDDC --write
+      fi
     else
       # Only apply this for < v1.8.0 OS versions
       OREV="smc_pptable/VcBtcEnabled=0 overdrive_table/min/7=600 overdrive_table/min/5=600 smc_pptable/FanTargetTemperature=$TT smc_pptable/FanTargetGfxclk=1000 smc_pptable/DpmDescriptor/0/VoltageMode=2 smc_pptable/MinVoltageGfx=2400 smc_pptable/MinVoltageUlvGfx=2500 smc_pptable/FreqTableGfx/1=$CORECLOCK"
     fi
-
     # Apply new table
-    sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set smc_pptable/FreqTableGfx/0=1150
     sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table set \
       overdrive_table/max/8=1200 overdrive_table/max/6=1200 overdrive_table/max/7=1200 overdrive_table/min/3=0 $OREV $TdcLimit \
-      smc_pptable/MinVoltageUlvSoc=825 smc_pptable/FreqTableFclk/0=1550 $pmvdd $pvddci $psoc $psocvolt \
+      smc_pptable/FreqTableFclk/0=1550 $pmvdd $pvddci $psoc $psocvolt \
       smc_pptable/FanStopTemp=0 smc_pptable/FanStartTemp=10 smc_pptable/FanZeroRpmEnable=0 smc_pptable/FanTargetTemperature=90 smc_pptable/FanTargetGfxclk=500 smc_pptable/dBtcGbGfxDfllModelSelect=2 smc_pptable/FreqTableUclk/3=$MEMCLOCK $proArgs --write
   fi
 
@@ -438,14 +453,14 @@ if [ $1 ]; then
   echo "-÷-*-****** MEM  CLOCKS *****-*-*÷-"
   sudo su -c "cat /sys/class/drm/card$GPUID/device/pp_dpm_mclk"
 
-  TEST=$(screen -list | grep -wc soctimer)
-  if [ "$TEST" = "0" ]; then
-    screen -A -m -D -S soctimer sudo bash /home/minerstat/minerstat-os/bin/soctimer $GPUID &
-    echo "#!/bin/bash" >/home/minerstat/clock_cache
-    echo "sudo bash /home/minerstat/minerstat-os/bin/overclock_sienna.sh $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13}" >>/home/minerstat/clock_cache
-  else
-    echo "sudo bash /home/minerstat/minerstat-os/bin/overclock_sienna.sh $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13}" >>/home/minerstat/clock_cache
-  fi
+  #TEST=$(screen -list | grep -wc soctimer)
+  #if [ "$TEST" = "0" ]; then
+  #  screen -A -m -D -S soctimer sudo bash /home/minerstat/minerstat-os/bin/soctimer $GPUID &
+  #  echo "#!/bin/bash" >/home/minerstat/clock_cache
+  #  echo "sudo bash /home/minerstat/minerstat-os/bin/overclock_sienna.sh $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13}" >>/home/minerstat/clock_cache
+  #else
+  #  echo "sudo bash /home/minerstat/minerstat-os/bin/overclock_sienna.sh $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13}" >>/home/minerstat/clock_cache
+  #fi
 
   exit 1
 

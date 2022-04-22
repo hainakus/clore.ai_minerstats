@@ -12,11 +12,11 @@ GLOBAL_RESOLVE=$(ping -4 -c 1 api.minerstat.com. | grep "ttl=" | sed 's/^[^(]*(/
 S_GLOBAL_RESOLVE=$(ping -4 -c 1 static-ssl.minerstat.farm. | grep "ttl=" | sed 's/^[^(]*(//' | cut -f1 -d")" | xargs)
 
 # DNS For Main connection
-DNSA=$(ping -c 1 $SERVERA &> /dev/null && echo success || echo fail)
+DNSA=$(ping -c 1 $SERVERA &>/dev/null && echo success || echo fail)
 if [ "$DNSA" = "success" ]; then
   SERVERC="$SERVERA"
 else
-  DNSF=$(ping -c 1 $SERVERF &> /dev/null && echo success || echo fail)
+  DNSF=$(ping -c 1 $SERVERF &>/dev/null && echo success || echo fail)
   if [ "$DNSF" = "success" ]; then
     SERVERC="$SERVERF"
   else
@@ -38,11 +38,11 @@ SSERVERA="104.26.1.235"
 SSERVERB="104.26.0.235"
 SSERVERF="172.67.70.62"
 SSERVERC="$SSERVERB"
-SDNSA=$(ping -c 1 $SSERVERA &> /dev/null && echo success || echo fail)
+SDNSA=$(ping -c 1 $SSERVERA &>/dev/null && echo success || echo fail)
 if [ "$SDNSA" = "success" ]; then
   SSERVERC="$SSERVERA"
 else
-  SDNSF=$(ping -c 1 $SSERVERF &> /dev/null && echo success || echo fail)
+  SDNSF=$(ping -c 1 $SSERVERF &>/dev/null && echo success || echo fail)
   if [ "$SDNSF" = "success" ]; then
     SSERVERC="$SSERVERF"
   else
@@ -68,6 +68,9 @@ CCHECK=$(cat /home/minerstat/cache_date 2>/dev/null)
 CURRENT_DATE=$(date +'%Y-%m-%d %H:00')
 WNAME=$(cat /media/storage/config.js | grep 'global.worker' | sed 's/global.worker =/"/g' | sed 's/"//g' | sed 's/;//g' | xargs)
 if [[ "$HCHECK" != "$SERVERC minerstat.com" ]] || [[ "$SCHECK" != "$SSERVERC static-ssl.minerstat.farm" ]] || [[ "$WCHECK" != "127.0.1.1 $WNAME" ]] || [[ "$CCHECK" != "$CURRENT_DATE" ]]; then
+  # Previous hostname
+  HOSTP=$(cat /etc/hostname)
+  # Write new host file
   sudo echo "
 127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1     ip6-localhost ip6-loopback
@@ -87,10 +90,12 @@ $SSERVERC static-ssl.minerstat.farm
 162.159.200.1 ntp.ubuntu.com
 134.209.234.128 lanflare.com
 $SSERVERC labs.minerstat.farm
-  " > /etc/hosts
+  " >/etc/hosts
   # Set hostname after new hosts file
   sudo su -c "echo '$WNAME' > /etc/hostname"
   sudo hostname -F /etc/hostname
+  # New hostname
+  HOSTN=$(cat /etc/hostname)
   # Manage CACHE
   sudo rm /home/minerstat/mining-pool-whitelist.txt 2>/dev/null
   timeout 10 wget -o /dev/null https://minerstat.com/mining-pool-whitelist.txt -O /home/minerstat/mining-pool-whitelist.txt
@@ -103,15 +108,33 @@ $SSERVERC labs.minerstat.farm
     TEST4=$(cat /home/minerstat/mining-pool-whitelist.txt | grep -c "luxor")
     if [[ "$TEST" -gt 1000 ]] && [[ "$TEST2" -gt 0 ]] && [[ "$TEST3" -gt 0 ]] && [[ "$TEST4" -gt 0 ]]; then
       echo "[OK] Cache valid"
-      sudo cat /home/minerstat/mining-pool-whitelist.txt >> /etc/hosts
-      sudo echo "$CURRENT_DATE" > /home/minerstat/cache_date
+      sudo cat /home/minerstat/mining-pool-whitelist.txt >>/etc/hosts
+      sudo echo "$CURRENT_DATE" >/home/minerstat/cache_date
       sync &
+    fi
+  fi
+  # Reload lease if hostname changed
+  if [[ "$HOSTP" != "$HOSTN" ]]; then
+    echo "Old hostname: $HOSTP, New hostname: $HOSTN"
+    SSID=$(cat /media/storage/network.txt | grep 'WIFISSID="' | sed 's/WIFISSID="//g' | sed 's/"//g' | xargs | wc -L)
+    DHCP=$(cat /media/storage/network.txt | grep "DHCP=" | sed 's/DHCP=//g' | sed 's/"//g')
+    if [[ "$SSID" -gt 0 ]]; then
+      echo "Wifi"
+    else
+      echo "Lan - Renew"
+      if [[ "$DHCP" != "NO" ]]; then
+        echo "DHCP - Renew"
+      else
+        echo "Static - Renew"
+      fi
+      # Restart networking
+      sudo su -c "/etc/init.d/networking restart" 1>/dev/null
     fi
   fi
 fi
 
 GET_GATEWAY=$(timeout 5 route -n -e -4 | awk {'print $2'} | grep -vE "0.0.0.0|IP|Gateway" | head -n1 | xargs)
-RES_TEST=$(timeout 5 ping -c1 l.root-servers.net > /dev/null && echo "ok" || echo "failed")
+RES_TEST=$(timeout 5 ping -c1 l.root-servers.net >/dev/null && echo "ok" || echo "failed")
 NSCHECK=$(cat /etc/resolv.conf | grep "nameserver 1.1.1.1" | xargs)
 if [ "$NSCHECK" != "nameserver 1.1.1.1" ] || [ ! -z "$GET_GATEWAY" ] || [ "$RES_TEST" = "failed" ]; then
   #GCHECK=$(cat /etc/resolv.conf | grep "nameserver $GET_GATEWAY" | xargs)
