@@ -21,8 +21,10 @@ until [ $TEST = 1 ]; do
   sleep 1
 done
 # Miner up and running
-echo "Miner started, wait 30 sec, then apply clocks"
-sleep 30
+echo "Miner started - 20 sec until applying clocks"
+sleep 10
+echo "Miner started - 10 sec until applying clocks"
+sleep 10
 echo "Working on it..."
 
 sudo chmod 777 /dev/shm/amd_vddcache.txt
