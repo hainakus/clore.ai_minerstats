@@ -93,7 +93,9 @@ $SSERVERC labs.minerstat.farm
   " >/etc/hosts
   # Set hostname after new hosts file
   sudo su -c "echo '$WNAME' > /etc/hostname"
+  # Update hostname
   sudo hostname -F /etc/hostname
+  sudo hostnamectl set-hostname $WNAME
   # New hostname
   HOSTN=$(cat /etc/hostname)
   # Manage CACHE

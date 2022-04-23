@@ -37,6 +37,7 @@ sudo cat /media/storage/config.js
 echo "Reinitalize, hostname etc.."
 echo
 
+sudo bash /home/minerstat/minerstat-os/bin/hostfix.sh
 sudo bash /home/minerstat/minerstat-os/bin/jobs.sh
 
 echo "Applying ClockTune Profile"
