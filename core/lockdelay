@@ -28,6 +28,9 @@ echo "Working on it..."
 
 sudo chmod 777 /dev/shm/nv_lockcache.txt
 sudo awk '!a[$0]++' /dev/shm/nv_lockcache.txt > /dev/shm/nv_lockcache_unique.txt
+sleep 2
+sudo awk '!a[$0]++' /dev/shm/nv_lockcache.txt > /dev/shm/nv_lockcache_unique.txt
+sleep 1
 sudo chmod 777 /dev/shm/nv_lockcache_unique.txt
 
 cat /dev/shm/nv_lockcache_unique.txt

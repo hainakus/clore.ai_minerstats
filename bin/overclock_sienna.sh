@@ -265,7 +265,7 @@ if [ $1 ]; then
         echo "Miner not running, delaying voltage curve"
         sudo /home/minerstat/.local/bin/upp -p /sys/class/drm/card$GPUID/device/pp_table vddgfx $CORECLOCK 740 --write
         # After mining started apply this
-        sudo echo "$GPUID:$CORECLOCK-$VDDC" >>/dev/shm/amd_vddcache.txt
+        sudo echo "$GPUID:$CORECLOCK-$VDDC,$MEMCLOCK" >>/dev/shm/amd_vddcache.txt
         # check lock delay process
         TEST=$(sudo screen -list | grep -wc gfxdelay)
         if [ "$TEST" = "0" ]; then

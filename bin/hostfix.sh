@@ -115,19 +115,21 @@ $SSERVERC labs.minerstat.farm
   fi
   # Reload lease if hostname changed
   if [[ "$HOSTP" != "$HOSTN" ]]; then
-    echo "Old hostname: $HOSTP, New hostname: $HOSTN"
+    echo "[OK] Old hostname: $HOSTP, New hostname: $HOSTN"
     SSID=$(cat /media/storage/network.txt | grep 'WIFISSID="' | sed 's/WIFISSID="//g' | sed 's/"//g' | xargs | wc -L)
     DHCP=$(cat /media/storage/network.txt | grep "DHCP=" | sed 's/DHCP=//g' | sed 's/"//g')
     if [[ "$SSID" -gt 0 ]]; then
-      echo "Wifi"
+      echo "[OK] Wifi - Lease"
     else
-      echo "Lan - Renew"
+      echo "[OK] Lan - Renew"
       if [[ "$DHCP" != "NO" ]]; then
-        echo "DHCP - Renew"
+        echo "[OK] DHCP - Renew"
+        sudo bash /home/minerstat/minerstat-os/core/dhcp
       else
-        echo "Static - Renew"
+        echo "[OK] Static - Renew"
+        sudo bash /home/minerstat/minerstat-os/bin/static.sh
       fi
-      # Restart networking
+      # Reload networking
       sudo su -c "/etc/init.d/networking restart" 1>/dev/null
     fi
   fi
