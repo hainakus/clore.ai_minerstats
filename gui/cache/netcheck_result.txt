@@ -1,0 +1,67 @@
+[0m
+=== Ping check ===
+  [[0;32m OK [0m] 192.168.0.1 
+  [[0;32m OK [0m] 1.1.1.1 
+  [[0;32m OK [0m] 1.0.0.1 
+  [[0;32m OK [0m] 8.8.8.8 
+  [[0;32m OK [0m] 8.8.4.4 
+  [[0;32m OK [0m] 114.114.114.114 
+  [[0;32m OK [0m] 114.114.115.115 
+
+=== Resolve check ===
+  [[0;32m OK [0m] l.root-servers.net 
+  [INFO] testing all nameserver with l.root-servers.net 
+  [[0;32m OK [0m] 192.168.0.1 
+  [[0;32m OK [0m] 1.1.1.1 
+  [[0;32m OK [0m] 1.0.0.1 
+  [[0;32m OK [0m] 8.8.8.8 
+  [[0;32m OK [0m] 8.8.4.4 
+  [[0;32m OK [0m] 114.114.114.114 
+  [[0;32m OK [0m] 114.114.115.115 
+
+=== Hosts check ===
+  [[0;32m OK [0m] minerstat.com 
+  [0m[INFO] 104.26.9.16 resolved for minerstat.com 
+  [[0;32m OK [0m] www.minerstat.com 
+  [0m[INFO] 104.26.9.16 resolved for www.minerstat.com 
+  [[0;32m OK [0m] api.minerstat.com 
+  [0m[INFO] 104.26.9.16 resolved for api.minerstat.com 
+  [[0;32m OK [0m] static-ssl.minerstat.farm 
+  [0m[INFO] 104.26.1.235 resolved for static-ssl.minerstat.farm 
+  [[0;32m OK [0m] eu.pool.ms 
+  [0m[INFO] 68.183.74.40 resolved for eu.pool.ms 
+  [[0;32m OK [0m] us.pool.ms 
+  [0m[INFO] 167.71.240.6 resolved for us.pool.ms 
+  [[0;32m OK [0m] eu.sandbox.pool.ms 
+  [0m[INFO] 68.183.74.40 resolved for eu.sandbox.pool.ms 
+  [[0;32m OK [0m] us.sandbox.pool.ms 
+  [0m[INFO] 167.71.240.6 resolved for us.sandbox.pool.ms 
+  [[0;32m OK [0m] labs.minerstat.farm 
+  [0m[INFO] 104.26.1.235 resolved for labs.minerstat.farm 
+  [[0;32m OK [0m] ca.stratu.ms 
+  [0m[INFO] 68.183.195.129 resolved for ca.stratu.ms 
+  [[0;32m OK [0m] de.stratu.ms 
+  [0m[INFO] 134.122.86.59 resolved for de.stratu.ms 
+  [[0;32m OK [0m] eu.pool.ms 
+  [0m[INFO] 68.183.74.40 resolved for eu.pool.ms 
+  [[0;32m OK [0m] eu.sandbox.pool.ms 
+  [0m[INFO] 68.183.74.40 resolved for eu.sandbox.pool.ms 
+  [[0;32m OK [0m] in.stratu.ms 
+  [0m[INFO] 134.209.156.206 resolved for in.stratu.ms 
+  [[0;32m OK [0m] nl.stratu.ms 
+  [0m[INFO] 134.209.82.176 resolved for nl.stratu.ms 
+  [[0;32m OK [0m] pool.ms 
+  [0m[INFO] 172.67.131.189 resolved for pool.ms 
+  [[0;32m OK [0m] sandbox.pool.ms 
+  [0m[INFO] 104.21.10.244 resolved for sandbox.pool.ms 
+  [[0;32m OK [0m] sg.stratu.ms 
+  [0m[INFO] 128.199.157.196 resolved for sg.stratu.ms 
+  [[0;32m OK [0m] uk.stratu.ms 
+  [0m[INFO] 134.209.177.184 resolved for uk.stratu.ms 
+  [[0;32m OK [0m] us.pool.ms 
+  [0m[INFO] 167.71.240.6 resolved for us.pool.ms 
+  [[0;32m OK [0m] us.stratu.ms 
+  [0m[INFO] 157.245.218.222 resolved for us.stratu.ms 
+  [[0;32m OK [0m] us1.stratu.ms 
+  [0m[INFO] 157.245.183.239 resolved for us1.stratu.ms 
+

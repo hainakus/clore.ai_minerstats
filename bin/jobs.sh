@@ -239,6 +239,14 @@ NPT=$(ps aux | grep -c nvidia-persistenced)
 if [[ "$NPT" -lt 2 ]]; then
   DISPLAY=:0 sudo nvidia-persistenced
 fi
+# Webserver 
+WPY=$(sudo screen -list | grep -c webpy)
+echo "[65%] Checking Local Server ..."
+if [[ "$WPY" -lt 1 ]]; then
+  sudo kill -9 $(ps aux | grep web.py | grep webpy | awk '{print $2}') 2> /dev/null
+  sudo screen -wipe > /dev/null
+  sudo screen -A -m -d -S webpy sudo bash /home/minerstat/minerstat-os/core/webpy.sh
+fi
 # Check XSERVERr
 XINST=$(which X)
 if [[ -z "$XINST" ]]; then

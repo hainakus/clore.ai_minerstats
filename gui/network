@@ -1,0 +1,125 @@
+    <div class="content">
+		<div class="navbar">
+			<div class="logo"></div>
+			<a href="index" title="Hardware" class="navel">Hardware</a>
+			<a href="software" title="Software" class="navel">Software</a>
+			<a href="logs" title="Logs" class="navel">Logs</a>
+			<a href="network" title="Network" class="navel selected">Network</a>
+			<a href="console" title="Console" class="navel" target="_blank">Console</a>
+			<a href="tools" title="Tools" class="navel">Tools</a>
+		</div>
+      <div class="grid network_grid">
+        <div class="gridel">
+			<div class="box">
+				<div class="box_head">
+					<div class="illustration network"></div>
+					<div class="title">Network</div>
+					<div class="subtitle">Ethernet</div>
+				</div>
+				<div class="box_content">
+					<div class="button" onclick="openNetworkConfiguration();"><div class="icon configure"></div> Configure network</div>
+					<div class="row">
+						<div class="label">IP address</div>
+						<div class="value valueCheck">{network_ip}</div>
+					</div>
+					<div class="row">
+						<div class="label">Netmask</div>
+						<div class="value valueCheck">{network_netmask}</div>
+					</div>
+					<div class="row">
+						<div class="label">Gateway</div>
+						<div class="value valueCheck">{network_gateway}</div>
+					</div>
+					<div class="row">
+						<div class="label">DHCP</div>
+						<div class="value">{network_dhcp}</div>
+					</div>
+					<div class="divider wifiDivider"></div>
+					<div class="row wifiUsernameHover">
+						<div class="label">WiFi username</div>
+						<div class="value valueCheck wifiUsername" data-username="{wifi_username}"></div>
+					</div>
+					<div class="row wifiPasswordHover">
+						<div class="label">WiFi password</div>
+						<div class="value valueCheck wifiPassword" data-password="{wifi_password}"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="gridel">
+			<div class="box">
+				<div class="box_head">
+					<div class="illustration netcheck"></div>
+					<div class="title">Accessibility</div>
+					<div class="subtitle">Network check</div>
+				</div>
+				<div class="box_content">
+					<div class="button" onclick="netcheck();"><div class="icon recheck"></div> Recheck network</div>
+					<div class="netcheck">
+						<div class="label">Netcheck</div>
+						{netcheck}
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="gridel gridel_large">
+			<div class="gridel_title">Detected msOS rigs in local network</div>
+			<div class="table">
+				{msos_list}
+			</div>
+		</div>
+      </div>
+    </div>
+
+	<div class="popup" id="networkConfiguration">
+		<div class="popup_header">
+			<div id="popupTitle">Network configuration</div>
+			<div class="icon_box"><div onclick="closePopup();" class="icon close"></div></div>
+		</div>
+		<div class="popup_text">
+			<div class="popup_row">
+				<label>DHCP</label>
+				{network_dhcp_select}
+			</div>
+			<div class="dhcp_box" style="display:none;">
+				<div class="popup_row">
+					<label>IP address</label>
+					<input type="text" id="network_ip" value="{network_ip}"/>
+				</div>
+				<div class="popup_row">
+					<label>Netmask</label>
+					<input type="text" id="network_netmask" value="{network_netmask}"/>
+				</div>
+				<div class="popup_row">
+					<label>Gateway</label>
+					<input type="text" id="network_gateway" value="{network_gateway}"/>
+				</div>
+			</div>
+			<div class="divider"></div>
+			<div class="popup_row">
+				<label>WiFi</label>
+				{network_wifi_select}
+			</div>
+			<div class="wifi_box" style="display:none;">
+				<div class="popup_row">
+					<label>WiFi username</label>
+					<input type="text" id="network_wifi_username" value="{wifi_username}"/>
+				</div>
+				<div class="popup_row">
+					<label>WiFi password</label>
+					<input type="text" id="network_wifi_password" value="{wifi_password}"/>
+				</div>
+			</div>
+		</div>
+		<div class="popup_loader" id="popupLoaderNetwork">
+			<div id="popupLoaderNetworkSpinner" class="loader_spinner"></div>
+			<div class="loader_progress"><div class="loader_bar" style="width:30%;"></div></div>
+			<div class="loader_text">Please wait ...</div>
+		</div> 
+		<div class="popup_buttons">
+			<div onclick="closePopup();" class="button">Cancel</div>
+			<div onclick="setNetwork();" class="button blue">Save changes</div>
+		</div> 
+	</div>
+</body>
+</html>

@@ -1,0 +1,88 @@
+ <div class="content">
+	<div class="navbar">
+		<div class="logo"></div>
+		<a href="index" title="Hardware" class="navel">Hardware</a>
+		<a href="software" title="Software" class="navel">Software</a>
+		<a href="logs" title="Logs" class="navel">Logs</a>
+		<a href="network" title="Network" class="navel">Network</a>
+		<a href="console" title="Console" class="navel" target="_blank">Console</a>
+		<a href="tools" title="Tools" class="navel selected">Tools</a>
+	</div>
+      <div class="grid tools_grid">
+		<div class="gridel">
+			<div class="box">
+				<a href="https://my.minerstat.com/worker/{worker_name}" target="_blank" class="box_head">
+					<div class="illustration profile"></div>
+					<div class="title">Worker's profile</div>
+					<div class="subtitle">Check your worker from your minerstat dashboard.</div>
+				</a>
+			</div>
+		</div>
+		<div class="gridel">
+			<div class="box">
+				<a href="https://my.minerstat.com/config/{worker_name}" target="_blank" class="box_head">
+					<div class="illustration config"></div>
+					<div class="title">Worker's config</div>
+					<div class="subtitle">Configure your worker from your minerstat dashboard.</div>
+				</a>
+			</div>
+		</div>
+		<div class="gridel">
+			<div class="box">
+				<a href="https://minerstat.com/mining-calculator" target="_blank" class="box_head">
+					<div class="illustration calculator"></div>
+					<div class="title">Mining calculator</div>
+					<div class="subtitle">Easy to use mining calculator that allows full customization.</div>
+				</a>
+			</div>
+		</div>
+		<div class="gridel">
+			<div class="box">
+				<a href="https://minerstat.com/coins" target="_blank" class="box_head">
+					<div class="illustration coins"></div>
+					<div class="title">Coins</div>
+					<div class="subtitle">List of coins you can mine with your GPU mining rig or ASIC machine.</div>
+				</a>
+			</div>
+		</div>
+		<div class="gridel">
+			<div class="box">
+				<a href="https://minerstat.com/hardware" target="_blank" class="box_head">
+					<div class="illustration hardware"></div>
+					<div class="title">Hardware</div>
+					<div class="subtitle">List of hardware with mining calculators and specifications.</div>
+				</a>
+			</div>
+		</div>
+		<div class="gridel">
+			<div class="box">
+				<a href="https://minerstat.com/software" target="_blank" class="box_head">
+					<div class="illustration software"></div>
+					<div class="title">Software</div>
+					<div class="subtitle">Browse numerous software and tools provided to you by minerstat.</div>
+				</a>
+			</div>
+		</div>
+		<div class="gridel">
+			<div class="box">
+				<a href="https://minerstat.com/help" target="_blank" class="box_head">
+					<div class="illustration help"></div>
+					<div class="title">Help</div>
+					<div class="subtitle">Extensive knowledge base on every minerstat related topic.</div>
+				</a>
+			</div>
+		</div>
+		<div class="gridel">
+			<div class="box">
+				<a href="https://minerstat.com/discord" target="_blank" class="box_head">
+					<div class="illustration discord"></div>
+					<div class="title">Discord</div>
+					<div class="subtitle">Join exclusive mining community and chat with fellow miners.</div>
+				</a>
+			</div>
+		</div>
+      </div>
+    </div>
+
+</body>
+</html>

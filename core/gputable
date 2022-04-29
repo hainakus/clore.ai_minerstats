@@ -104,13 +104,13 @@ function trimString()
 
 #####################################################################
 
-sudo rm /dev/shm/gpudata.txt
-sudo rm /dev/shm/gpudata_sort.txt
-
 INF_NV=$(timeout 5 sudo bash /home/minerstat/minerstat-os/bin/gpuinfo nvidia)
 INF_AMD=$(timeout 5 sudo bash /home/minerstat/minerstat-os/bin/gpuinfo amd3)
 
 HID=0
+
+sudo rm /dev/shm/gpudata.txt
+sudo rm /dev/shm/gpudata_sort.txt
 
 if [[ ! -z "$INF_NV" ]]; then
   # name,temperature.gpu,fan.speed,power.draw,clocks.current.sm,clocks.current.memory,utilization.gpu,pci.bus_id,clocks.max.sm,clocks.max.memory,power.min_limit,power.max_limit,power.default_limit,memory.total
@@ -187,7 +187,8 @@ cat /dev/shm/gpudata.txt | sort  > /dev/shm/gpudata_sort.txt
 sed  -i "1i bus,$Reset hardware,power,temp,fans,core,mem" /dev/shm/gpudata_sort.txt
 
 # remove colors
-cp -r /dev/shm/gpudata_sort.txt /dev/shm/gpudata_sort_nc.txt
-sed -i -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g" /dev/shm/gpudata_sort_nc.txt
+cp -r /dev/shm/gpudata_sort.txt /dev/shm/gpudata_sort_nc2.txt
+sed -i -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g" /dev/shm/gpudata_sort_nc2.txt
+sudo awk '!a[$0]++' /dev/shm/gpudata_sort_nc2.txt > /dev/shm/gpudata_sort_nc.txt
 
 printTable ',' "$(cat /dev/shm/gpudata_sort.txt)"

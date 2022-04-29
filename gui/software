@@ -1,0 +1,67 @@
+    <div class="content">
+      <div class="navbar">
+        <div class="logo"></div>
+        <a href="index" title="Hardware" class="navel">Hardware</a>
+        <a href="software" title="Software" class="navel selected">Software</a>
+        <a href="logs" title="Logs" class="navel">Logs</a>
+        <a href="network" title="Network" class="navel">Network</a>
+        <a href="console" title="Console" class="navel" target="_blank">Console</a>
+        <a href="tools" title="Tools" class="navel">Tools</a>
+      </div>
+      <div class="grid software_grid">
+        <div class="gridel">
+          <div class="box">
+            <div class="box_head">
+              <div class="illustration msos"></div>
+              <div class="title">msOS</div>
+              <div class="subtitle">v{msos_version}</div>
+            </div>
+            <div class="box_content">
+              <div class="button" onclick="updateOS();"><div class="icon update"></div> Update</div>
+                <div class="row">
+                  <div class="label">Ubuntu</div>
+                  <div class="value">{ubuntu_version}</div>
+                </div>
+                <div class="row">
+                  <div class="label">Kernel</div>
+                  <div class="value">{kernel_version}</div>
+                </div>
+                <div class="divider"></div>
+                <div class="reflash_versions"><div class="scroll_frame">
+                  {reflash_versions}
+                </div></div>
+            </div>
+          </div>
+        </div>
+		<div class="gridel">
+			<div class="box">
+			  <div class="box_head">
+				<div class="illustration drivers_amd"></div>
+				<div class="title">AMD drivers</div>
+			  </div>
+			  <div class="box_content amd_box"><div class="scroll_frame">
+				{drivers_amd_list}
+			  </div></div>
+			</div>
+		</div>
+		<div class="gridel">
+			<div class="box">
+			  <div class="box_head">
+				<div class="illustration drivers_nvidia"></div>
+				<div class="title">Nvidia drivers</div>
+			  </div>
+			  <div class="box_content nvidia_box"><div class="scroll_frame">
+				{drivers_nvidia_list}
+			  </div></div>
+			</div>
+		</div>
+		<div class="gridel gridel_large">
+			<div class="gridel_title">Mining clients downloaded to drive</div>
+			<div class="table">
+				{clients_list}
+			</div>
+		</div>
+      </div>
+    </div>
+</body>
+</html>

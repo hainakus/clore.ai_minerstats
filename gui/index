@@ -1,0 +1,88 @@
+	<div class="content">
+		<div class="navbar">
+			<div class="logo"></div>
+			<a href="index" title="Hardware" class="navel selected">Hardware</a>
+			<a href="software" title="Software" class="navel">Software</a>
+			<a href="logs" title="Logs" class="navel">Logs</a>
+			<a href="network" title="Network" class="navel">Network</a>
+			<a href="console" title="Console" class="navel" target="_blank">Console</a>
+			<a href="tools" title="Tools" class="navel">Tools</a>
+		</div>
+	 <div class="grid hardware_grid">
+        <div class="gridel">
+			<div class="box">
+				<div class="box_head">
+					<div class="illustration hardware"></div>
+					<div class="title">Hardware</div>
+					<div class="subtitle">&nbsp;</div>
+				</div>
+				<div class="box_content">
+					<div class="row">
+						<div class="label">Motherboard</div>
+						<div class="value">{motherboard_name}</div>
+					</div>
+					<div class="row">
+						<div class="label">MAC address</div>
+						<div class="value">{mac_address}</div>
+					</div>
+					<div class="large_wheel">
+						<svg width="100%" height="100%" viewBox="0 0 42 42" class="donut">
+							<circle class="donut-ring" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#404963" stroke-width="2"></circle>
+							<circle class="donut-segment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#ff7a8a" stroke-width="2" stroke-dasharray="{ram_percent_free} {ram_percent_used}" stroke-dashoffset="25" stroke-linecap="round"></circle>
+						</svg>
+						<div class="large_wheel_text">
+							<div class="label">{ram_free} <small>GB</small></div>
+							<div class="value">Free RAM</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="gridel">
+			<div class="box">
+				<div class="box_head">
+				<div class="illustration drive"></div>
+				<div class="title">Drive</div>
+				<div class="subtitle">{drive_name}</div>
+				</div>
+				<div class="box_content">
+				<div class="button" onclick="expandDrive();"><div class="icon expand"></div> Expand</div>
+				<div class="large_wheel">
+					<svg width="100%" height="100%" viewBox="0 0 42 42" class="donut">
+						<circle class="donut-ring" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#404963" stroke-width="2"></circle>
+						<circle class="donut-segment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#ff7a8a" stroke-width="2" stroke-dasharray="{drive_percent_free} {drive_percent_used}" stroke-dashoffset="25" stroke-linecap="round"></circle>
+					</svg>
+					<div class="large_wheel_text">
+						<div class="label">{drive_free} <small>GB</small></div>
+						<div class="value">Free space</div>
+					</div>
+				</div>
+				
+				</div>
+			</div>
+		</div>
+		<div class="gridel gridel_large">
+			<div class="table">
+				<div class="tr cpu">
+					<div class="td flexTag">
+						<div class="tag">CPU</div>
+					</div>
+					<div class="td flexName">
+						<div class="name">{cpu_name}</div>
+					</div>
+					<div class="td flexInfo">
+						<div class="data_row">
+							<div class="tiny_icon temperature"></div>
+							<div class="value">{cpu_temperature}°C</div>
+						</div>
+					</div>
+					<div class="td flexClocks"></div>
+					<div class="td flexLoad">{cpu_load}%</div>
+				</div>
+				{gpus_list}
+			</div>
+        </div>
+      </div>
+    </div>
+</body>
+</html>
