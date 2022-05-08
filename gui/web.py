@@ -424,6 +424,9 @@ class MyHttpRequestHandler(http.server.SimpleHTTPRequestHandler):
         elif ".zip" in pathUrl:
             type = "application/zip"
             if 'logs' in pathUrl:
+                if os.path.exists('/home/minerstat/minerstat-os/logs') == False:
+                    os.mkdir('/home/minerstat/minerstat-os/logs')
+                    sleep(1)
                 shutil.make_archive("/home/minerstat/minerstat-os/gui/logs", "zip", "/home/minerstat/minerstat-os/logs")
                 time.sleep(2)
             elif 'dmesg' in pathUrl:
