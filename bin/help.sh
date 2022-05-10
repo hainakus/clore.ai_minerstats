@@ -58,6 +58,7 @@ else
   echo -e "${BLUE}mclock${NC}\t\tApply ClockTune profile for the worker."
   echo -e "${BLUE}fan-apply${NC}\tApply FAN settings only"
   echo -e "${BLUE}fan-force${NC}\tForce 100% Fan (AMD RX6000)"
+  echo -e "${BLUE}amdmode${NC}\t\tChange between R, C or N mode."
   echo -e ""
   echo -e "======= Debugging ======="
   echo -e "${BLUE}logs${NC}\t\tToogle logs between RAM/Storage"
