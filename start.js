@@ -359,6 +359,17 @@ module.exports = {
             global.syncInterval = 10;
           }
 
+          // Timezone
+          try {
+            var timezone = response.body.timezone;
+            console.log("\x1b[1;94m== \x1b[0mTimezone: \x1b[1;32m" + timezone + "\x1b[0m");
+
+            var getTZ = require('child_process').exec,
+            getTZProc = getTZ("sudo timedatectl set-timezone " + timezone, function(error, stdout, stderr) { });
+          } catch (err) {
+
+          }
+
           // Custom miner settings
           try {
             global.PrivateMiner = response.body.private;
