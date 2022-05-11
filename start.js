@@ -363,11 +363,14 @@ module.exports = {
           try {
             var timezone = response.body.timezone;
             console.log("\x1b[1;94m== \x1b[0mTimezone: \x1b[1;32m" + timezone + "\x1b[0m");
-
-            var getTZ = require('child_process').exec,
-            getTZProc = getTZ("sudo timedatectl set-timezone " + timezone, function(error, stdout, stderr) { });
+            try {
+              var getTZ = require('child_process').exec,
+              getTZProc = getTZ("sudo timedatectl set-timezone " + timezone, function(error, stdout, stderr) { });
+            } catch (errtz) {
+              console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError ("+errtz+")\x1b[0m");
+            }
           } catch (err) {
-
+            console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError ("+err+")\x1b[0m");
           }
 
           // Custom miner settings
