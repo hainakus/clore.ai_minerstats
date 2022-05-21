@@ -271,6 +271,18 @@ install() {
       sudo /tmp/$FULL_CUT/amdgpu-pro-install -y --opencl=legacy,pal --headless
     fi
 
+    # 21.10 DKMS Replace
+    if [[ $FULL_CUT == *"21.10"* ]]; then
+      wget "https://static-ssl.minerstat.farm/drivers/amd/$S_DIR/dkms/amdgpu-dkms_5.9.20.102-1244864_all.deb" -P /tmp
+      if [[ $? -ne 0 ]]; then
+        echo "Download dkms driver failed.."
+        sudo rm /tmp/amdgpu-dkms_5.9.20.102-1244864_all.deb
+        exit 1
+      fi
+      sudo chmod 777 /tmp/amdgpu-dkms_5.9.20.102-1244864_all.deb >/dev/null 2>&1
+      sudo dpkg -i /tmp/amdgpu-dkms_5.9.20.102-1244864_all.deb
+    fi
+
     # 21.20 DKMS Replace
     if [[ $FULL_CUT == *"21.20"* ]]; then
       wget "https://static-ssl.minerstat.farm/drivers/amd/$S_DIR/dkms/amdgpu-dkms_5.11.5.30-1292798_all.deb" -P /tmp
