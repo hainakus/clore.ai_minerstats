@@ -139,6 +139,7 @@ module.exports = {
     var sync = global.sync,
       res_data = global.res_data,
       cpu_data = global.cpu_data;
+      //console.log("DATA => " + global.cpu_data);
     //console.log(res_data);         //SHOW SYNC OUTPUT
     // SEND LOG TO SERVER
     //console.log("MINER:" + global.minerVersion + ", CPU:" + global.cpuVersion);
@@ -186,7 +187,7 @@ module.exports = {
           }
           global.watchnum++;
         }
-        if (global.minerCpu.toString() === "true") {
+        if (global.minerCpu.toString() === "True") {
           if (cpuSync.toString() === "true") {
             console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32m" + global.worker + " (" + global.cpuDefault.toLowerCase() + ") synced\x1b[0m");
           } else {
@@ -783,7 +784,7 @@ module.exports = {
       var fullFileName = "";
       var lastSlash = dlURL.lastIndexOf("/");
       fullFileName = dlURL.substring(lastSlash + 1);
-      if (global.PrivateMiner == "True" && miner != "xmrig" && miner != "cpuminer-opt") {
+      if (global.PrivateMiner == "True" && miner != "xmrig" && miner != "cpuminer-opt" && miner != "srbminer-multi-cpu") {
         dlURL = global.PrivateMinerURL;
         if (dlURL.includes(".tar.gz")) {
           dlURL_type = "tar";
