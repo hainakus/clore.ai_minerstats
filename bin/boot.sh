@@ -150,7 +150,7 @@ if ! screen -list | grep -q "dummy"; then
   # <IF EXPERIMENTAL
   if grep -q experimental "/etc/lsb-release"; then
 
-    AMDDEVICE=$(timeout 40 sudo lspci -k | grep -E "VGA|Display" | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van|RS880|Wani|Wrestler|X1200|RS780L" | grep -c "AMD")
+    AMDDEVICE=$(timeout 40 sudo lspci -k | grep -E "VGA|Display" | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van|RS880|Wani|Wrestler|X1200|RS780L|RV710" | grep -c "AMD")
     if [ -z "$AMDDEVICE" ]; then
       AMDDEVICE=$(timeout 3 sudo lshw -C display | grep AMD | wc -l)
     fi
