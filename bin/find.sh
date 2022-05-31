@@ -21,7 +21,7 @@ else
   if [ "$RESULT" = "0" ]; then
     #################################£
     # Detect GPU's
-    AMDDEVICE=$(timeout 40 sudo lspci -k | grep -E "VGA|Display" | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van|RS880|Wrestler|X1200|RS780L|RV710" | grep -c "AMD")
+    AMDDEVICE=$(timeout 40 sudo lspci -k | grep -E "VGA|Display" | grep -vE "Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven|Renoir|Picasso|Van|RS880|Wrestler|X1200|RS780L|RV710|Cezanne" | grep -c "AMD")
     if [ -z "$AMDDEVICE" ]; then
       AMDDEVICE=$(timeout 3 sudo lshw -C display | grep AMD | wc -l)
     fi
