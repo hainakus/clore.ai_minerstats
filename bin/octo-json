@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo cp output.txt /dev/shm/octo_cache.txt
+# sudo cp output.txt /dev/shm/octo_cache.txt
 
 OCTO_JSON="{"
 #OCTO_DATA=$(timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -h > /dev/shm/octo_cache.txt 2>&1)
