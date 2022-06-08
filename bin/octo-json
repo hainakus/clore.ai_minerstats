@@ -1,0 +1,105 @@
+#!/bin/bash
+
+sudo cp output.txt /dev/shm/octo_cache.txt
+
+OCTO_JSON="{"
+#OCTO_DATA=$(timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -h > /dev/shm/octo_cache.txt 2>&1)
+
+# Serial
+SERIAL=$(cat /dev/shm/octo_cache.txt | grep "Serial No." | awk '{print $3}')
+
+# Reset counter
+RESET_COUNTER=$(cat /dev/shm/octo_cache.txt | grep "Reset." | awk '{print $7}')
+
+# Temperatures
+TEMP_0=$(cat /dev/shm/octo_cache.txt | grep "Temperatures:" | awk '{print $2}' | grep -o '[0-9.-]\+')
+TEMP_1=$(cat /dev/shm/octo_cache.txt | grep "Temperatures:" | awk '{print $3}' | grep -o '[0-9.-]\+')
+TEMP_2=$(cat /dev/shm/octo_cache.txt | grep "Temperatures:" | awk '{print $4}' | grep -o '[0-9.-]\+')
+TEMP_3=$(cat /dev/shm/octo_cache.txt | grep "Temperatures:" | awk '{print $5}' | grep -o '[0-9.-]\+')
+
+# Climate
+# Temp; Humid; Press
+TEMP_C=$(cat /dev/shm/octo_cache.txt | grep "Temp:" | awk '{print $2}' | grep -o '[0-9.-]\+')
+TEMP_H=$(cat /dev/shm/octo_cache.txt | grep "Temp:" | awk '{print $4}' | grep -o '[0-9.-]\+')
+TEMP_P=$(cat /dev/shm/octo_cache.txt | grep "Temp:" | awk '{print $6}' | grep -o '[0-9.-]\+')
+
+# Fans
+# 0 - currentRPM, percentage, maxRPM
+# Comment: Create loop from 0 ---> 11
+FAN_JSON=''
+COMMA=","
+ID=0
+for ID in 0 1 2 3 4 5 6 7 8 9 10 11
+do
+	# PWM
+	PWM_D=$(cat /dev/shm/octo_cache.txt | grep -A 17 "percent" | grep "^$ID " | head -n 1 | awk '{print $2}')
+	PWM_C=$(cat /dev/shm/octo_cache.txt | grep -A 17 "percent" | grep "^$ID " | head -n 1 | awk '{print $3}')
+	# RPM
+	RPM_C=$(cat /dev/shm/octo_cache.txt | grep -A 17 "percent" | grep "^$ID " | head -n 1 | awk '{print $4}')
+	RPM_P=$(cat /dev/shm/octo_cache.txt | grep -A 17 "percent" | grep "^$ID " | head -n 1 | awk '{print $5}')
+	RPM_M=$(cat /dev/shm/octo_cache.txt | grep -A 17 "percent" | grep "^$ID " | head -n 1 | awk '{print $6}')
+	# Handle JSON Endings
+	if [[ "$ID" = "11" ]]; then
+		COMMA=""
+	fi
+	# Fix invalid reporting from Octominer script
+	if [[ "$RPM_P" = "-nan" ]]; then
+		RPM_P="-1"
+	fi
+	FAN_JSON=$FAN_JSON'{"id": "'$ID'","current_rpm":"'$RPM_C'","max_rpm":"'$RPM_M'","percent":"'$RPM_P'", "pwm_default": "'$PWM_D'", "pwm_curr": "'$PWM_C'"}'$COMMA
+done
+
+
+# PSU Metrics
+# Comment: Create loop from 0 ---> 2
+PSU_JSON=''
+COMMA=","
+ID=0
+for ID in 0 1 2
+do
+	###########
+	# PSMI
+	##########
+	# AC
+	PSMI_PSU_VAC=$(cat /dev/shm/octo_cache.txt | grep -A 5 "PSMI PSU #$ID" | grep "AC:" | grep "Vac" | awk '{print $4}' | sed 's/[^0-9.]//g' | xargs)
+	PSMI_PSU_IAC=$(cat /dev/shm/octo_cache.txt | grep -A 5 "PSMI PSU #$ID" | grep "AC:" | grep "Iac" | awk '{print $7}' | sed 's/[^0-9.]//g' | xargs)
+	PSMI_PSU_PAC=$(cat /dev/shm/octo_cache.txt | grep -A 5 "PSMI PSU #$ID" | grep "AC:" | grep "Pac" | awk '{print $10}' | sed 's/[^0-9.]//g' | xargs)
+	# DC
+	PSMI_PSU_VDC=$(cat /dev/shm/octo_cache.txt | grep -A 5 "PSMI PSU #$ID" | grep "DC:" | grep "Vdc" | awk '{print $4}' | sed 's/[^0-9.]//g' | xargs)
+	PSMI_PSU_IDC=$(cat /dev/shm/octo_cache.txt | grep -A 5 "PSMI PSU #$ID" | grep "DC:" | grep "Idc" | awk '{print $7}' | sed 's/[^0-9.]//g' | xargs)
+	PSMI_PSU_PDC=$(cat /dev/shm/octo_cache.txt | grep -A 5 "PSMI PSU #$ID" | grep "DC:" | grep "Pdc" | awk '{print $10}' | sed 's/[^0-9.]//g' | xargs)
+	# Temps
+	PSMI_PSU_T1=$(cat /dev/shm/octo_cache.txt | grep -A 5 "PSMI PSU #$ID" | grep "TEMPS:" | grep "T1" | awk '{print $4}' | sed 's/[^0-9.]//g' | xargs)
+	PSMI_PSU_T2=$(cat /dev/shm/octo_cache.txt | grep -A 5 "PSMI PSU #$ID" | grep "TEMPS:" | grep "T1" | awk '{print $7}' | sed 's/[^0-9.]//g' | xargs)
+	PSMI_PSU_FAN=$(cat /dev/shm/octo_cache.txt | grep -A 5 "PSMI PSU #$ID" | grep "TEMPS:" | grep "FAN" | awk '{print $10}' | sed 's/[^0-9.]//g' | xargs)
+	###########
+	# PMBUS
+	##########
+	# AC
+	PMBUS_PSU_VAC=$(cat /dev/shm/octo_cache.txt | grep -A 5 "PMBUS PSU #$ID" | grep "AC:" | grep "Vac" | awk '{print $4}' | sed 's/[^0-9.]//g' | xargs)
+	PMBUS_PSU_IAC=$(cat /dev/shm/octo_cache.txt | grep -A 5 "PMBUS PSU #$ID" | grep "AC:" | grep "Iac" | awk '{print $7}' | sed 's/[^0-9.]//g' | xargs)
+	PMBUS_PSU_PAC=$(cat /dev/shm/octo_cache.txt | grep -A 5 "PMBUS PSU #$ID" | grep "AC:" | grep "Pac" | awk '{print $10}' | sed 's/[^0-9.]//g' | xargs)
+	# DC
+	PMBUS_PSU_VDC=$(cat /dev/shm/octo_cache.txt | grep -A 5 "PMBUS PSU #$ID" | grep "DC:" | grep "Vdc" | awk '{print $4}' | sed 's/[^0-9.]//g' | xargs)
+	PMBUS_PSU_IDC=$(cat /dev/shm/octo_cache.txt | grep -A 5 "PMBUS PSU #$ID" | grep "DC:" | grep "Idc" | awk '{print $7}' | sed 's/[^0-9.]//g' | xargs)
+	PMBUS_PSU_PDC=$(cat /dev/shm/octo_cache.txt | grep -A 5 "PMBUS PSU #$ID" | grep "DC:" | grep "Pdc" | awk '{print $10}' | sed 's/[^0-9.]//g' | xargs)
+	# Temps
+	PMBUS_PSU_T1=$(cat /dev/shm/octo_cache.txt | grep -A 5 "PMBUS PSU #$ID" | grep "TEMPS:" | grep "T1" | awk '{print $4}' | sed 's/[^0-9.]//g' | xargs)
+	PMBUS_PSU_T2=$(cat /dev/shm/octo_cache.txt | grep -A 5 "PMBUS PSU #$ID" | grep "TEMPS:" | grep "T1" | awk '{print $7}' | sed 's/[^0-9.]//g' | xargs)
+	PMBUS_PSU_FAN=$(cat /dev/shm/octo_cache.txt | grep -A 5 "PMBUS PSU #$ID" | grep "TEMPS:" | grep "FAN" | awk '{print $10}' | sed 's/[^0-9.]//g' | xargs)
+	if [[ "$ID" = "2" ]]; then
+		COMMA=""
+	fi
+	PSU_JSON=$PSU_JSON'{"psmi_pac_w":"'$PSMI_PSU_PAC'","psmi_vac_v":"'$PSMI_PSU_VAC'","psmi_iac_a":"'$PSMI_PSU_IAC'","psmi_vdc_v":"'$PSMI_PSU_VDC'","psmi_idc_a":"'$PSMI_PSU_IDC'","psmi_pdc_w":"'$PSMI_PSU_PDC'","psmi_t1_c":"'$PSMI_PSU_T1'","psmi_t2_c":"'$PSMI_PSU_T2'","psmi_fan_rpm":"'$PSMI_PSU_FAN'","pmbus_pac_w":"'$PMBUS_PSU_PAC'","pmbus_vac_v":"'$PMBUS_PSU_VAC'","pmbus_iac_a":"'$PMBUS_PSU_IAC'","pmbus_vdc_v":"'$PMBUS_PSU_VDC'","pmbus_idc_a":"'$PMBUS_PSU_IDC'","pmbus_pdc_w":"'$PMBUS_PSU_PDC'","pmbus_t1_c":"'$PMBUS_PSU_T1'","pmbus_t2_c":"'$PMBUS_PSU_T2'","pmbus_fan_rpm":"'$PMBUS_PSU_FAN'"}'$COMMA
+done
+
+# JSON ADD Fixed values
+OCTO_JSON=$OCTO_JSON'"serial":"'$SERIAL'","reset_counter":"'$RESET_COUNTER'","temperatures":["'$TEMP_0'","'$TEMP_1'","'$TEMP_2'","'$TEMP_3'"],"climate":{"temp_c":"'$TEMP_C'","humid_percent":"'$TEMP_H'","press_hpa":"'$TEMP_P'"},"fans":['$FAN_JSON'],"psu":['$PSU_JSON']'
+
+# End
+OCTO_JSON="$OCTO_JSON }"
+
+# Echo results
+#echo $OCTO_JSON | /home/minerstat/minerstat-os/bin/jq
+OCTO_JSON=${OCTO_JSON//.00/.0}
+echo $OCTO_JSON
