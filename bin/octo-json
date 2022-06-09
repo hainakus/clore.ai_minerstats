@@ -55,7 +55,7 @@ done
 PSU_JSON=''
 COMMA=","
 ID=0
-for ID in 0 1 2
+for ID in 0 1 2 3
 do
 	###########
 	# PSMI
