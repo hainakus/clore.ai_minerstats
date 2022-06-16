@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Skip some results on the first round
+FIRST=0
+
+# Global
 OFFLINE_COUNT=0
 OFFLINE_NUM=36
 IS_ONLINE="YES"
@@ -323,7 +327,9 @@ do
     # If octominer
     if [[ -f "/dev/shm/octo.pid" ]]; then
       # Generate fresh octominer data
-      timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -h > /dev/shm/octo_cache.txt 2>&1
+      timeout 10 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -h > /dev/shm/octo_cache.txt 2>&1
+      # Wait a bit for storage
+      sleep 1
       # Fetch data from all PSUs
       PSUMETER_RAW=$(cat /dev/shm/octo_cache.txt | grep Pac | grep -vE "PEAKS" | awk '{print $10}' | sed 's/[^0-9.]//g' | cut -f1 -d"." | xargs)
       PSUMETER=0
@@ -332,7 +338,13 @@ do
         echo "octo psu $psu_watt W"
         PSUMETER=$((PSUMETER + psu_watt))
       done
-    
+      # If first round just ignore, may some data missing
+      if [[ "$FIRST" = "0" ]]; then
+        PSUMETER=""
+        FIRST=1
+      fi
+      # Echo 
+      echo "Total octo psu: $PSUMETER"
       # Send full OCTO-JSON Data to the server
       OCTOJSON=$(timeout 10 sudo bash /home/minerstat/minerstat-os/bin/octo-json)
     fi
