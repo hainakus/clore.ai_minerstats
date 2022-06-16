@@ -32,12 +32,12 @@ ID=0
 for ID in 0 1 2 3 4 5 6 7 8 9 10 11
 do
 	# PWM
-	PWM_D=$(cat /dev/shm/octo_cache.txt | grep -A 17 "percent" | grep "^$ID " | head -n 1 | awk '{print $2}')
-	PWM_C=$(cat /dev/shm/octo_cache.txt | grep -A 17 "percent" | grep "^$ID " | head -n 1 | awk '{print $3}')
+	PWM_D=$(cat /dev/shm/octo_cache.txt | grep -A 17 "percent" | grep "^$ID" | head -n 1 | awk '{print $2}')
+	PWM_C=$(cat /dev/shm/octo_cache.txt | grep -A 17 "percent" | grep "^$ID" | head -n 1 | awk '{print $3}')
 	# RPM
-	RPM_C=$(cat /dev/shm/octo_cache.txt | grep -A 17 "percent" | grep "^$ID " | head -n 1 | awk '{print $4}')
-	RPM_P=$(cat /dev/shm/octo_cache.txt | grep -A 17 "percent" | grep "^$ID " | head -n 1 | awk '{print $5}')
-	RPM_M=$(cat /dev/shm/octo_cache.txt | grep -A 17 "percent" | grep "^$ID " | head -n 1 | awk '{print $6}')
+	RPM_C=$(cat /dev/shm/octo_cache.txt | grep -A 17 "percent" | grep "^$ID" | head -n 1 | awk '{print $4}')
+	RPM_P=$(cat /dev/shm/octo_cache.txt | grep -A 17 "percent" | grep "^$ID" | head -n 1 | awk '{print $5}')
+	RPM_M=$(cat /dev/shm/octo_cache.txt | grep -A 17 "percent" | grep "^$ID" | head -n 1 | awk '{print $6}')
 	# Handle JSON Endings
 	if [[ "$ID" = "11" ]]; then
 		COMMA=""
