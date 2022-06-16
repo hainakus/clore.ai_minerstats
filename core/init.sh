@@ -324,7 +324,15 @@ do
     if [[ -f "/dev/shm/octo.pid" ]]; then
       # Generate fresh octominer data
       timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -h > /dev/shm/octo_cache.txt 2>&1
-      PSUMETER=$(cat /dev/shm/octo_cache.txt | grep Pac | awk '{print $10}' | sed 's/[^0-9.]//g' | cut -f1 -d"." | xargs)
+      # Fetch data from all PSUs
+      PSUMETER_RAW=$(cat /dev/shm/octo_cache.txt | grep Pac | grep -vE "PEAKS" | awk '{print $10}' | sed 's/[^0-9.]//g' | cut -f1 -d"." | xargs)
+      PSUMETER=0
+      # Loop and calculate values 
+      for psu_watt in $PSUMETER_RAW; do
+        echo "octo psu $psu_watt W"
+        PSUMETER=$((PSUMETER + psu_watt))
+      done
+    
       # Send full OCTO-JSON Data to the server
       OCTOJSON=$(timeout 10 sudo bash /home/minerstat/minerstat-os/bin/octo-json)
     fi
