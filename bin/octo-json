@@ -87,7 +87,7 @@ do
 	PMBUS_PSU_T1=$(cat /dev/shm/octo_cache.txt | grep -A 5 "PMBUS PSU #$ID" | grep "TEMPS:" | grep "T1" | awk '{print $4}' | sed 's/[^0-9.]//g' | xargs)
 	PMBUS_PSU_T2=$(cat /dev/shm/octo_cache.txt | grep -A 5 "PMBUS PSU #$ID" | grep "TEMPS:" | grep "T1" | awk '{print $7}' | sed 's/[^0-9.]//g' | xargs)
 	PMBUS_PSU_FAN=$(cat /dev/shm/octo_cache.txt | grep -A 5 "PMBUS PSU #$ID" | grep "TEMPS:" | grep "FAN" | awk '{print $10}' | sed 's/[^0-9.]//g' | xargs)
-	if [[ "$ID" = "2" ]]; then
+	if [[ "$ID" = "3" ]]; then
 		COMMA=""
 	fi
 	PSU_JSON=$PSU_JSON'{"psmi_pac_w":"'$PSMI_PSU_PAC'","psmi_vac_v":"'$PSMI_PSU_VAC'","psmi_iac_a":"'$PSMI_PSU_IAC'","psmi_vdc_v":"'$PSMI_PSU_VDC'","psmi_idc_a":"'$PSMI_PSU_IDC'","psmi_pdc_w":"'$PSMI_PSU_PDC'","psmi_t1_c":"'$PSMI_PSU_T1'","psmi_t2_c":"'$PSMI_PSU_T2'","psmi_fan_rpm":"'$PSMI_PSU_FAN'","pmbus_pac_w":"'$PMBUS_PSU_PAC'","pmbus_vac_v":"'$PMBUS_PSU_VAC'","pmbus_iac_a":"'$PMBUS_PSU_IAC'","pmbus_vdc_v":"'$PMBUS_PSU_VDC'","pmbus_idc_a":"'$PMBUS_PSU_IDC'","pmbus_pdc_w":"'$PMBUS_PSU_PDC'","pmbus_t1_c":"'$PMBUS_PSU_T1'","pmbus_t2_c":"'$PMBUS_PSU_T2'","pmbus_fan_rpm":"'$PMBUS_PSU_FAN'"}'$COMMA
