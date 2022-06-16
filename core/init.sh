@@ -2,6 +2,7 @@
 
 # Skip some results on the first round
 FIRST=0
+PSUMETER=""
 
 # Global
 OFFLINE_COUNT=0
@@ -331,7 +332,7 @@ do
       # Wait a bit for storage
       sleep 1
       # Fetch data from all PSUs
-      PSUMETER_RAW=$(cat /dev/shm/octo_cache.txt | grep Pac | grep -vE "PEAKS" | awk '{print $10}' | sed 's/[^0-9.]//g' | cut -f1 -d"." | xargs)
+      PSUMETER_RAW=$(cat /dev/shm/octo_cache.txt | grep Pac | grep -vE "PEAKS|nan" | awk '{print $10}' | sed 's/[^0-9.]//g' | cut -f1 -d"." | xargs)
       PSUMETER=0
       # Loop and calculate values 
       for psu_watt in $PSUMETER_RAW; do
