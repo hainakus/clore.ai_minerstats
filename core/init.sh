@@ -332,13 +332,23 @@ do
       # Wait a bit for storage
       sleep 1
       # Fetch data from all PSUs
-      PSUMETER_RAW=$(cat /dev/shm/octo_cache.txt | grep Pac | grep -vE "PEAKS|nan" | awk '{print $10}' | sed 's/[^0-9.]//g' | cut -f1 -d"." | xargs)
+      PSUMETER_PSMI_RAW=$(cat /dev/shm/octo_cache.txt | grep -A 2 PSMI | grep Pac | grep -vE "PEAKS|nan" | awk '{print $10}' | sed 's/[^0-9.]//g' | cut -f1 -d"." | xargs)
+      #PSUMETER_PMBUS_RAW=$(cat /dev/shm/octo_cache.txt | grep -A 2 PMBUS | grep Pac | grep -vE "PEAKS|nan" | awk '{print $10}' | sed 's/[^0-9.]//g' | cut -f1 -d"." | xargs)
+      # Cache 
       PSUMETER=0
+      PSUMETER_PSMI=0
+      #PSUMETER_PMBUS=0
       # Loop and calculate values 
-      for psu_watt in $PSUMETER_RAW; do
-        echo "octo psu $psu_watt W"
-        PSUMETER=$((PSUMETER + psu_watt))
+      for psu_watt in $PSUMETER_PSMI_RAW; do
+        echo "octo psmi $psu_watt W"
+        PSUMETER_PSMI=$((PSUMETER_PSMI + psu_watt))
       done
+      #for psu_watt in $PSUMETER_PMBUS_RAW; do
+      #  echo "octo pmbus $psu_watt W"
+      #  PSUMETER_PMBUS=$((PSUMETER_PMBUS + psu_watt))
+      #done
+      # Decide which to use
+      PSUMETER=$PSUMETER_PSMI
       # If first round just ignore, may some data missing
       if [[ "$FIRST" = "0" ]]; then
         PSUMETER=""
