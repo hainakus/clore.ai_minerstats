@@ -20,9 +20,14 @@ if [ ! -z "$P6" ]; then
 fi
 # domybest USB Watchdog Card
 # QinHeng Electronics HL-340 USB-Serial adapter
+# P2, P7 same red usb device just different ID
 P2=$(lsusb | grep "1a86:7523")
 if [ ! -z "$P2" ]; then
   check="1a86:7523"
+fi
+P7=$(lsusb | grep "0483:5750")
+if [ ! -z "$P7" ]; then
+  check="0483:5750"
 fi
 # ALLOYSEED USB Watchdog
 P3=$(lsusb | grep "0471:2379")
@@ -48,7 +53,7 @@ if [ ! -z "$check" ]; then
   devname=$(udevadm info -q name -p $pathedit 2>/dev/null)
 fi
 
-if [ ! -z "$P1" ] || [ ! -z "$P2" ] || [ ! -z "$P3" ] || [ ! -z "$P6" ]; then
+if [ ! -z "$P1" ] || [ ! -z "$P2" ] || [ ! -z "$P3" ] || [ ! -z "$P6" ] || [ ! -z "$P7" ]; then
   echo "USB Watchdog detected.. Sending signal"
   while true
   do
