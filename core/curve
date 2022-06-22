@@ -7,11 +7,23 @@ TARGET=$(cat /media/storage/fans.txt 2>/dev/null | grep "TARGET_TEMP=" | head -n
 TARGET_MEM=$(cat /media/storage/fans.txt 2>/dev/null | grep "TARGET_MEM=" | head -n1 | xargs | sed 's/[^0-9]*//g' | xargs -0)
 FANDIFF=$(cat /media/storage/fans.txt 2>/dev/null | grep "FANDIFF=" | head -n1 | xargs | sed 's/[^0-9]*//g' | xargs -0)
 
+# Octominer settings
+OCTO_TYPE=$(cat /media/storage/fans.txt 2>/dev/null | grep "OCTO_TYPE=" | head -n1 | xargs | sed 's/[^0-9]*//g' | xargs -0)
+OCTO_FANMIN=$(cat /media/storage/fans.txt 2>/dev/null | grep "OCTO_FANMIN=" | head -n1 | xargs | sed 's/[^0-9]*//g' | xargs -0)
+OCTO_FANMAX=$(cat /media/storage/fans.txt 2>/dev/null | grep "OCTO_FANMAX=" | head -n1 | xargs | sed 's/[^0-9]*//g' | xargs -0)
+OCTO_TARGET=$(cat /media/storage/fans.txt 2>/dev/null | grep "OCTO_TARGET=" | head -n1 | xargs | sed 's/[^0-9]*//g' | xargs -0)
+OCTO_TARGET_MEM=$(cat /media/storage/fans.txt 2>/dev/null | grep "OCTO_TARGET_MEM=" | head -n1 | xargs | sed 's/[^0-9]*//g' | xargs -0)
+
 # Override on static
 FANSTATIC=0
 
 # Just started
 JUSTSTART="0"
+
+# For octo cache
+HIGHEST=0
+HIGHEST_TYPE="core"
+HIGHEST_TYPE_CACHE="core"
 
 echo "Debug read: min: $FANMIN max: $FANMAX tar: $TARGET"
 
@@ -49,6 +61,33 @@ if [ -z "$TARGET_MEM" ] || [ "$TARGET_MEM" = "0" ]; then
   echo "TARGET_MEM has no value [Set to $TARGET_MEM]"
 fi
 
+# If no settings for octo
+if [ -z "$OCTO_TYPE" ]; then
+  OCTO_TYPE="static"
+  echo "OCTO_TYPE has no value [Set to $OCTO_TYPE]"
+fi
+
+if [ -z "$OCTO_FANMIN" ]; then
+  OCTO_FANMIN=80
+  echo "OCTO_FANMIN has no value [Set to $OCTO_FANMIN]"
+fi
+
+if [ -z "$OCTO_FANMAX" ]; then
+  OCTO_FANMAX=100
+  echo "OCTO_FANMAX has no value [Set to $OCTO_FANMAX]"
+fi
+
+if [ -z "$OCTO_TARGET" ] || [ "$OCTO_TARGET" = "0" ]; then
+  OCTO_TARGET=55
+  echo "OCTO_TARGET_TEMP has no value [Set to $OCTO_TARGET]"
+fi
+
+if [ -z "$OCTO_TARGET_MEM" ] || [ "$OCTO_TARGET_MEM" = "0" ]; then
+  OCTO_TARGET_MEM=80
+  echo "OCTO_TARGET_MEM has no value [Set to $OCTO_TARGET_MEM]"
+fi
+
+# Cache
 TARGETM="$TARGET"
 
 if [ "$FANMIN" = "$FANMAX" ]; then
@@ -81,12 +120,19 @@ fi
 loop() {
   echo "---------------"
 
+  # Reset cache
+  HIGHEST=0
+  HIGHEST_TYPE="core"
+  HIGHEST_TYPE_CACHE="core"
+
   if [ $FANDIFF != "1" ]; then
 
+    # IF AMD
     if [ $NUM_AMD -gt 0 ]; then
 
       # restore
       TARGET=$TARGETM
+      HIGHEST_TYPE="core"
 
       #FANMIN n MAX
       FANMIN2=$(echo $FANMIN | cut -f1 -d".")
@@ -112,11 +158,11 @@ loop() {
         until [ $TEST_AMD == "$x" ]; do
           if [ ! -f "/sys/class/drm/card$x/device/pp_table" ]; then
             echo "$x not exist, iGPU ?"
-            y=$((y+1))
+            y=$((y + 1))
             if [ ! -f "/sys/class/drm/card$y/device/pp_table" ]; then
-              y=$((y+1))
+              y=$((y + 1))
               if [ ! -f "/sys/class/drm/card$y/device/pp_table" ]; then
-                y=$((y+1))
+                y=$((y + 1))
               fi
             fi
           fi
@@ -137,20 +183,23 @@ loop() {
           # Trick for memtemp
           MEMTEMP=$(cat /sys/class/drm/card$YID/device/hwmon/hwmon*/temp3_input 2>/dev/null | sed 's|[^0-9]||g' | xargs)
           if [[ ! -z "$MEMTEMP" ]]; then
-            MEMTEMP=$((MEMTEMP/1000))
+            MEMTEMP=$((MEMTEMP / 1000))
             echo "memtemp found for $YID, val: $MEMTEMP"
             if [[ "$MEMTEMP" -gt "$TARGET_MEM" ]]; then
               echo "memtemp is higher, masking current temp to memtemp to cool down"
               TEMP=$MEMTEMP
               TARGET=$TARGET_MEM
+              HIGHEST_TYPE="mem"
             else
               TARGET=$TARGETM
+              HIGHEST_TYPE="core"
             fi
           else
             TARGET=$TARGETM
+            HIGHEST_TYPE="core"
           fi
           if [ ! -z "$TEMP" ]; then
-            DIFF=$((TARGET-TEMP))
+            DIFF=$((TARGET - TEMP))
             MSG="COLD >$DIFF C!"
             # Colder than target temp
             if [ $DIFF -gt 1 ]; then
@@ -174,7 +223,7 @@ loop() {
               if [[ "$FAN" = "0" ]]; then
                 CHANGE=100
               fi
-              NEWFAN=$((FAN-CHANGE))
+              NEWFAN=$((FAN - CHANGE))
               # Hotter than target temp
             elif [ $DIFF -lt -1 ]; then
               MSG="WARM >$DIFF C!"
@@ -198,7 +247,7 @@ loop() {
               if [[ "$FAN" = "0" ]]; then
                 CHANGE=100
               fi
-              NEWFAN=$((FAN+CHANGE))
+              NEWFAN=$((FAN + CHANGE))
             else
               # No fan changes needed
               #NEWFAN=$FANMIN
@@ -214,7 +263,7 @@ loop() {
               if [ $NEWFAN -gt 100 ]; then
                 NEWFAN="100"
               fi
-              FANMOD=$((FAN+2))
+              FANMOD=$((FAN + 2))
               if [ ! $FAN -eq $NEWFAN ] && [ ! $FANMOD -eq $NEWFAN ]; then
                 PARAM="SET"
                 MSG="$MSG,NEWFAN: $NEWFAN%"
@@ -226,7 +275,7 @@ loop() {
                 MAXFAN=$(cat /sys/class/drm/card$YID/device/hwmon/hwmon*/pwm1_max)
                 CURRFAN=$(cat /sys/class/drm/card$YID/device/hwmon/hwmon*/pwm1)
 
-                CURRFANFIVE=$((CURRFAN-5))
+                CURRFANFIVE=$((CURRFAN - 5))
                 echo "MAXFAN FOR $x $YID : $MAXFAN"
                 FANVALUE=$(echo - | awk "{print $MAXFAN / 100 * $NEWFAN}" | cut -f1 -d".")
                 FANVALUE=$(printf "%.0f\n" $FANVALUE)
@@ -248,9 +297,9 @@ loop() {
                     RB=$(cat /sys/class/drm/card$YID/device/hwmon/hwmon*/pwm1)
                     echo "Set $FANVALUE, Read back: $RB"
                     if [ "$RB" -gt "$FANVALUE" ]; then
-                      DIFFERENCE=$((RB-FANVALUE))
+                      DIFFERENCE=$((RB - FANVALUE))
                       if [ "$DIFFERENCE" -gt "59" ]; then
-                        NEW_ATTEMPT=$((FANVALUE-DIFFERENCE))
+                        NEW_ATTEMPT=$((FANVALUE - DIFFERENCE))
                         echo "Read back is higher, some driver issue detected. Attempting to auto offset it"
                         echo "Diff: $DIFFERENCE, New val: $NEW_ATTEMPT"
                         sudo su -c "echo 1 > /sys/class/drm/card$YID/device/hwmon/hwmon*/pwm1_enable"
@@ -274,18 +323,24 @@ loop() {
           else
             if [ ! -f "/sys/class/drm/card$x/device/pp_table" ]; then
               echo "$x not exist, iGPU ?"
-              if [ $TEST_AMD -gt 16 ];then
+              if [ $TEST_AMD -gt 16 ]; then
                 x=$TEST_AMD
               fi
-              TEST_AMD=$((TEST_AMD+1))
+              TEST_AMD=$((TEST_AMD + 1))
             fi
           fi
           echo "GPU$x [RID: old: $y / new: $YID] [$TEMP C / $FAN% ] [MSG:$MSG]"
-          x=$((x+1))
-          y=$((y+1))
+          x=$((x + 1))
+          y=$((y + 1))
+          # If this current temp higher than max in this round
+          if [[ "$TEMP" -gt "$HIGHEST" ]]; then
+            HIGHEST=$TEMP
+            HIGHEST_TYPE_CACHE=$HIGHEST_TYPE
+          fi
         done
       fi
     fi
+    # If NVIDIA
     if [[ $TEST_NVIDIA == *"GPU 0"* ]]; then
       # Check XSERVER
       SNUMD=$(sudo su minerstat -c "screen -list | grep -c display2")
@@ -293,8 +348,8 @@ loop() {
         sudo su minerstat -c "screen -A -m -d -S display2 sudo X"
       fi
       NVIDIA_NUM=$(nvidia-smi --query-gpu=count --format=csv,noheader | tail -n1 | xargs | sed 's/[^0-9]*//g')
-      NVIDIA_INUM=$((NVIDIA_NUM-1))
-      NVIDIA2X=$((NVIDIA_NUM*2))
+      NVIDIA_INUM=$((NVIDIA_NUM - 1))
+      NVIDIA2X=$((NVIDIA_NUM * 2))
       PARAM=""
       PARAMS=""
       PARAMSAFETY=""
@@ -311,7 +366,7 @@ loop() {
         TEMP=$(nvidia-smi -i $x --query-gpu=temperature.gpu --format=csv,noheader | tail -n1 | xargs | sed 's/[^0-9]*//g')
         FAN=$(nvidia-smi -i $x --query-gpu=fan.speed --format=csv,noheader | tail -n1 | xargs | sed 's/[^0-9]*//g')
         if [ ! -z "$TEMP" ]; then
-          DIFF=$((TARGET-TEMP))
+          DIFF=$((TARGET - TEMP))
           MSG="COLD >$DIFF C!"
           # Colder than target temp
           if [ $DIFF -gt 1 ]; then
@@ -335,7 +390,7 @@ loop() {
             if [[ "$FAN" = "0" ]]; then
               CHANGE=100
             fi
-            NEWFAN=$((FAN-CHANGE))
+            NEWFAN=$((FAN - CHANGE))
             # Hotter than target temp
           elif [ $DIFF -lt -1 ]; then
             MSG="WARM >$DIFF C!"
@@ -359,7 +414,7 @@ loop() {
             if [[ "$FAN" = "0" ]]; then
               CHANGE=100
             fi
-            NEWFAN=$((FAN+CHANGE))
+            NEWFAN=$((FAN + CHANGE))
           else
             # No fan changes needed
             #NEWFAN=$FANMIN
@@ -392,7 +447,7 @@ loop() {
                 PARAM="$PARAM -a [gpu:$x]/GPUFanControlState=1"
                 PARAMS="$PARAMS -a [fan:"$z"]/GPUTargetFanSpeed="$NEWFAN""
                 if [ "$NVIDIA_FAN_NUM" -gt "$NVIDIA_NUM" ]; then
-                  edit=$((z+1))
+                  edit=$((z + 1))
                   PARAMSAFETY="$PARAMSAFETY -a [fan:"$edit"]/GPUTargetFanSpeed="$NEWFAN""
                 fi
               else
@@ -409,13 +464,18 @@ loop() {
             fi
           fi
           echo "GPU$x [$TEMP C / $FAN%] [MSG:$MSG]"
+          # If this current temp higher than max in this round
+          if [[ "$TEMP" -gt "$HIGHEST" ]]; then
+            HIGHEST=$TEMP
+            HIGHEST_TYPE_CACHE=$HIGHEST_TYPE
+          fi
         fi
-        x=$((x+1))
-        y=$((y+1))
+        x=$((x + 1))
+        y=$((y + 1))
         if [ "$NVIDIA_FAN_NUM" -gt "$NVIDIA_NUM" ]; then
-          z=$((z+1))
+          z=$((z + 1))
         fi
-        z=$((z+1))
+        z=$((z + 1))
       done
       if [ ! -z "$PARAM" ]; then
         sudo su -c "nvidia-settings -c :0 $PARAM"
@@ -423,9 +483,8 @@ loop() {
       fi
     fi
 
+    # Wait for x seconds
     sleep $SLEEP
-    loop
-
   else
 
     echo "Curve process is blocked by ClockTune because different static fan ranges"
@@ -435,22 +494,28 @@ loop() {
       #timeout 25 screen -A -m -d -S fan sudo bash /home/minerstat/minerstat-os/bin/setfans.sh &
     fi
 
+    # Wait for x seconds
     sleep $SLEEP
-    loop
-
   fi
 
+  # Octominer Static / Auto-fans
+  # Not activated yet
+
+  #if [[ -f "/dev/shm/octo.pid" ]]; then
+  #  sudo /home/minerstat/minerstat-os/bin/octo-fan $OCTO_TYPE $OCTO_FANMIN $OCTO_FANMAX $OCTO_TARGET $OCTO_TARGET_MEM $HIGHEST $HIGHEST_TYPE_CACHE
+  #fi
+
+  loop
 }
 
 if [[ "$PWM" = "3" ]]; then
-  while true
-  do
+  while true; do
     for y in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
-      sudo su -c "echo 0 > /sys/class/drm/card$y/device/hwmon/hwmon*/fan1_enable" &> /dev/null
-      sudo su -c "echo 2 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable" &> /dev/null
-      sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable" &> /dev/null
-      sudo su -c "echo 255 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1" &> /dev/null
-      sudo su -c "echo 0 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable" &> /dev/null
+      sudo su -c "echo 0 > /sys/class/drm/card$y/device/hwmon/hwmon*/fan1_enable" &>/dev/null
+      sudo su -c "echo 2 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable" &>/dev/null
+      sudo su -c "echo 1 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable" &>/dev/null
+      sudo su -c "echo 255 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1" &>/dev/null
+      sudo su -c "echo 0 > /sys/class/drm/card$y/device/hwmon/hwmon*/pwm1_enable" &>/dev/null
     done
     sleep 2
   done

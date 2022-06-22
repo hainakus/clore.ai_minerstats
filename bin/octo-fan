@@ -1,0 +1,193 @@
+#!/bin/bash
+
+# Reset
+Color_Off='\033[0m' # Text Reset
+
+# Regular Colors
+Red='\033[0;31m'   # Red
+Green='\033[0;32m' # Green
+
+echo -e "$Color_Off"
+
+function printfo() {
+  mark="INFO"
+  if [[ "$1" = "info" ]]; then
+    mark="INFO"
+  elif [[ "$1" = "fail" ]]; then
+    mark="$Red"'FAIL'"$Color_Off"
+  elif [[ "$1" = "ok" ]]; then
+    mark="$Green OK $Color_Off"
+  fi
+  echo -n ""
+  echo -e "  [$mark] $2 \r"
+  if [[ ! -z "$3" ]]; then
+    echo -e "  $Color_Off[INFO] $3 resolved for $2 \r"
+  fi
+  echo -n ""
+}
+
+# RPM Settings
+RPMVAL=0
+RPMMAX=255
+
+# Idea: Clear values (previous user cli method)
+# sudo /home/minerstat/minerstat-os/core/octoctrl --fan --clear
+
+####################################
+##### AUTOMATION STARTS HERE #######
+####################################
+
+# Save variables
+TYPE=$1
+FANMIN=$2
+FANMAX=$3
+TARGET=$4
+TARGET_MEM=$5
+HIGHEST=$6
+HIGHEST_TYPE=$7
+
+# Get JSON Data
+OCTOJSON=$(timeout 10 sudo bash /home/minerstat/minerstat-os/bin/octo-json)
+
+if [[ ! -z "$OCTOJSON" ]]; then
+
+  # Idea: Save for next boot only if static
+  #SAVE=""
+  #if [[ "$TYPE" = "static" ]]; then
+  #  SAVE="--save"
+  #fi
+
+  # Loop all fans and change if needed
+  # 12 fan ID in total
+  for i in {0..11}; do
+    MAX_RPM=$(echo $OCTOJSON | jq -c .fans[$i].max_rpm | sed 's/"//g' | xargs)
+    if [[ ! -z "$MAX_RPM" ]] && [[ "$MAX_RPM" != "0" ]]; then
+      ID=$(echo $OCTOJSON | jq -c .fans[$i].id | sed 's/"//g' | xargs)
+      CPWM=$(echo $OCTOJSON | jq -c .fans[$i].pwm_curr | sed 's/"//g' | xargs)
+      printfo info "FAN $ID => Current PWM: $CPWM, Target: $PWM"
+
+      # Get new fanspeed
+      if [[ "$TYPE" = "auto" ]]; then
+        # Calculate new fanspeed
+        PPWM=$(echo $OCTOJSON | jq -c .fans[$i].percent | sed 's/"//g' | xargs)
+        # Octominer code is bugged with pwm/percentage conversion 255 is sometimes reported over 100%
+        if [[ "$PPWM" -gt 100 ]]; then
+          PPWM=100
+        fi
+        # Calculate new fan value
+        # Starting here
+
+        # If samping memory temp
+        FAN=$PPWM
+        TEMP=$HIGHEST
+        if [[ "$HIGHEST_TYPE" = "mem" ]]; then
+          TARGET=$TARGET
+        fi
+        # If sampling core temp
+        if [[ "$HIGHEST_TYPE" = "core" ]]; then
+          TARGET=$TARGET_MEM
+        fi
+
+        # If not empty continue;
+        DIFF=$((TARGET - TEMP))
+        printfo info "COLD >$DIFF C!"
+        # Colder than target temp
+        if [ $DIFF -gt 1 ]; then
+          CHANGE=5
+          if [ $DIFF -gt 2 ]; then
+            CHANGE=8
+          fi
+          if [ $DIFF -gt 5 ]; then
+            CHANGE=10
+          fi
+          if [ $DIFF -gt 10 ]; then
+            CHANGE=12
+          fi
+          if [ $DIFF -gt 20 ]; then
+            CHANGE=25
+          fi
+          if [ $DIFF -gt 30 ]; then
+            CHANGE=35
+          fi
+          # 0% fan protection
+          if [[ "$FAN" = "0" ]]; then
+            CHANGE=$FANMIN
+          fi
+          NEWFAN=$((FAN - CHANGE))
+          # Hotter than target temp
+        elif [ $DIFF -lt -1 ]; then
+          printfo info "WARM >$DIFF C!"
+          CHANGE=5
+          if [ $DIFF -lt -2 ]; then
+            CHANGE=8
+          fi
+          if [ $DIFF -lt -5 ]; then
+            CHANGE=10
+          fi
+          if [ $DIFF -lt -10 ]; then
+            CHANGE=12
+          fi
+          if [ $DIFF -lt -20 ]; then
+            CHANGE=25
+          fi
+          if [ $DIFF -lt -30 ]; then
+            CHANGE=35
+          fi
+          # 0% fan protection
+          if [[ "$FAN" = "0" ]]; then
+            CHANGE=$FANMAX
+          fi
+          NEWFAN=$((FAN + CHANGE))
+        else
+          NEWFAN="$FAN"
+        fi
+
+        # Protections
+        # If higher than max
+        if [[ "$NEWFAN" -gt "$FANMAX" ]]; then
+          NEWFAN=$FANMAX
+        fi
+        # If lower than min
+        if [[ "$NEWFAN" -lt "$FANMIN" ]]; then
+          NEWFAN=$FANMIN
+        fi
+        #################################
+        # Desired fan speed in percentage
+        FANSPEED=$NEWFAN
+      else
+        #################################
+        # Desired fan speed in percentage
+        # This is for STATIC FAN VALUE
+        FANSPEED=$FANMAX
+      fi
+
+      # Convert % to PWM
+      RPMVAL=$(python3 -c "print($RPMMAX / 100 * $FANSPEED)")
+      RPMVAL=$(printf "%.0f\n" $RPMVAL)
+
+      # Protection for null
+      # Allowing 0 value to turn case fans off
+      if [[ -z "$RPMVAL" ]] || [[ "$RPMVAL" -gt "255" ]]; then
+        RPMVAL=255
+      fi
+
+      # Print results
+      printfo info "FANSPEED => $FANSPEED% ($FANVALUE percent) [RPM: $RPMVAL pwm]"
+
+      # Set PWM Target to calculated value for loop
+      PWM=$RPMVAL
+
+      if [[ "$CPWM" != "$PWM" ]]; then
+        printfo ok "FAN $ID => SETTING: $CPWM->$PWM pwm"
+        sudo /home/minerstat/minerstat-os/core/octoctrl --fan --id $ID --val $PWM
+      else
+        printfo ok "FAN $ID => ON TARGET: $PWM<>$CPWM pwm"
+      fi
+    fi
+  done
+else
+  printfo fail "EMPTY JSON"
+fi
+
+# Clean exit
+exit 1
