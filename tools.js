@@ -853,16 +853,21 @@ module.exports = {
             main.main();
           }
           break;
-        case 'RESTARTWATTS':
         case 'DOWNLOADWATTS':
-          console.log("\x1b[1;94m== \x1b[0mOverclocking/Undervolting ...");
+          console.log("\x1b[1;94m== \x1b[0mClockTune started ...");
+          var queryWattResX = exec("cd " + global.path + "/bin; sudo bash " + global.path + "/bin/overclock.sh", function (error, stdout, stderr) {
+            console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;32mNew clocks applied\x1b[0m");
+            console.log(stdout + " " + stderr);
+          });
+        case 'RESTARTWATTS':
+          console.log("\x1b[1;94m== \x1b[0mClockTune and restart ...");
           clearInterval(global.timeout);
           clearInterval(global.hwmonitor);
           main.killall();
           sleep.sleep(3);
           main.killall();
           sleep.sleep(2);
-          var queryWattRes = exec("cd " + global.path + "/bin; sudo sh " + global.path + "/bin/overclock.sh", function (error, stdout, stderr) {
+          var queryWattRes = exec("cd " + global.path + "/bin; sudo bash " + global.path + "/bin/overclock.sh", function (error, stdout, stderr) {
             console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;32mNew clocks applied\x1b[0m");
             console.log(stdout + " " + stderr);
             sleep.sleep(2);
