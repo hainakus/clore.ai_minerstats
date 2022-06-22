@@ -538,7 +538,9 @@ while true; do
     sleep 1
     TELEID=$(sudo /home/minerstat/minerstat-os/bin/tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}' | cut -f1 -d"@" | sed 's/.* //')
     echo "TeleID: $TELEID"
-    RESPONSE=$(sudo curl --insecure --connect-timeout 15 --max-time 25 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=amd" --data "hwData=$AMDINFO" --data "hwMemory=$HWMEMORY" --data "hwStrap=$HWSTRAPS" --data "mineLog=$RAMLOG" --data "space=$STR1" --data "cpu=$STR2" --data "localip=$STR3" --data "freemem=$STR5" --data "teleid=$TELEID" --data "systime=$SYSTIME" --data "mobo=$MOBO_TYPE" --data "bios=$BIOS_VERSION" --data "msos=$MSOS_VERSION" --data "mac=$MAC_ADDRESS" --data "cputype=$CPU_TYPE" --data "cpu_usage=$CPU_USAGE" --data "cpu_temp=$CPU_TEMP" --data "disk_type=$DISK_TYPE" --data "nvidiad=$NVIDIA_DRIVER" --data "amdd=$AMD_DRIVER" --data "kernel=$KERNEL_VERSION" --data "ubuntu=$UBUNTU_VERSION" --data "uefi=$BOOTED" --data "consumption=$PSUMETER" --data "octominer=$OCTOJSON" "https://api.minerstat.com:2053/v2/set_node_config_os2.php")
+    wget -o /dev/null -qO- "https://api.minerstat.com:2053/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&teleid=$TELEID"
+    echo
+    RESPONSE=$(sudo curl --insecure --connect-timeout 15 --max-time 25 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "teleid=$TELEID" "https://api.minerstat.com:2053/v2/set_node_config_os2.php")
     echo
   fi
 
@@ -561,7 +563,7 @@ while true; do
       TEST=$(sudo screen -list | grep -wc overclocks)
       echo "Waiting overclock to finish [$XZ/40] ..."
       # Break if more than 40 sec
-      XZ=$((XZ+1))
+      XZ=$((XZ + 1))
       if [[ "$XZ" = "40" ]]; then
         break
       fi
