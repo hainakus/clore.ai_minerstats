@@ -56,12 +56,12 @@ if [[ $RESPONSE == *"WORKERNAME"* ]]; then
   echo "New AccessKey: $TOKEN"
   echo "New Worker Name: $WN"
   echo
-  echo "stop" > /tmp/stop.pid;
+  echo "stop" >/tmp/stop.pid
   sudo node /home/minerstat/minerstat-os/stop.js
-  sudo su minerstat -c "screen -X -S minerstat-console quit";
+  sudo su minerstat -c "screen -X -S minerstat-console quit"
   sudo su -c "sudo screen -X -S minew quit"
-  sudo echo global.accesskey = '"'$TOKEN'";' > /media/storage/config.js
-  sudo echo global.worker = '"'$WN'";' >> /media/storage/config.js
+  sudo echo global.accesskey = '"'$TOKEN'";' >/media/storage/config.js
+  sudo echo global.worker = '"'$WN'";' >>/media/storage/config.js
   sudo cp /media/storage/config.js /home/minerstat/minerstat-os/
   echo "Validate Config..."
   echo
@@ -82,12 +82,15 @@ if [ $RESPONSE = "SETFANS" ]; then
   echo "-------------------------------------------"
 fi
 
-if [ $RESPONSE = "DOWNLOADWATTS" ] || [ $RESPONSE = "RESTARTWATTS" ]; then
+if [ $RESPONSE = "DOWNLOADWATTS" ]; then
   echo "-------------------------------------------"
-  screen -A -m -d -S overclocks sudo /home/minerstat/minerstat-os/bin/overclock.sh &
-  if [ ! -f "/tmp/stop.pid" ]; then
-    RESPONSE="RESTART"
-  fi
+  screen -A -m -d -S overclocks sudo bash /home/minerstat/minerstat-os/bin/overclock.sh &
+  echo "-------------------------------------------"
+fi
+
+if [ $RESPONSE = "RESTARTWATTS" ]; then
+  echo "-------------------------------------------"
+  RESPONSE="RESTART2"
   echo "-------------------------------------------"
 fi
 
@@ -100,16 +103,16 @@ fi
 if [ $RESPONSE = "CONSOLE" ]; then
   sudo killall tmate
   sudo killall tmate
-  sudo kill -9 $(pidof tmate)
-  sleep 1
   sudo su minerstat -c "sudo /bin/sh /home/minerstat/minerstat-os/core/rmate"
-  sleep 3
+  sleep 1
   TELEID=$(sudo /home/minerstat/minerstat-os/bin/tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}' | cut -f1 -d"@" | sed 's/.* //')
   echo "TeleID: $TELEID"
-  wget -o /dev/null -qO- "https://api.minerstat.com:2053/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&teleid=$TELEID" ; echo
+  RESPONSE=$(sudo curl --insecure --connect-timeout 15 --max-time 25 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=amd" --data "hwData=$AMDINFO" --data "hwMemory=$HWMEMORY" --data "hwStrap=$HWSTRAPS" --data "mineLog=$RAMLOG" --data "space=$STR1" --data "cpu=$STR2" --data "localip=$STR3" --data "freemem=$STR5" --data "teleid=$TELEID" --data "systime=$SYSTIME" --data "mobo=$MOBO_TYPE" --data "bios=$BIOS_VERSION" --data "msos=$MSOS_VERSION" --data "mac=$MAC_ADDRESS" --data "cputype=$CPU_TYPE" --data "cpu_usage=$CPU_USAGE" --data "cpu_temp=$CPU_TEMP" --data "disk_type=$DISK_TYPE" --data "nvidiad=$NVIDIA_DRIVER" --data "amdd=$AMD_DRIVER" --data "kernel=$KERNEL_VERSION" --data "ubuntu=$UBUNTU_VERSION" --data "uefi=$BOOTED" --data "consumption=$PSUMETER" --data "octominer=$OCTOJSON" "https://api.minerstat.com:2053/v2/set_node_config_os2.php")
+  echo
 fi
 
-if [ $RESPONSE = "RESTART" ] || [ $RESPONSE = "START" ] || [ $RESPONSE = "NODERESTART" ] || [ $RESPONSE = "RESTARTNODE" ]; then
+if [ $RESPONSE = "RESTART" ] || [ $RESPONSE = "START" ] || [ $RESPONSE = "NODERESTART" ] || [ $RESPONSE = "RESTARTNODE" ] || [ $RESPONSE = "RESTART2" ]; then
+  # Stop miner
   sudo su -c "sudo rm /tmp/stop.pid"
   sudo su -c "sudo screen -X -S minew quit"
   sudo su -c "sudo screen -X -S fakescreen quit"
@@ -117,6 +120,12 @@ if [ $RESPONSE = "RESTART" ] || [ $RESPONSE = "START" ] || [ $RESPONSE = "NODERE
   sudo su minerstat -c "screen -X -S fakescreen quit"
   sudo su minerstat -c "screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
   sudo killall node
+  # Apply clocks if RESTART2
+  screen -A -m -d -S overclocks sudo bash /home/minerstat/minerstat-os/bin/overclock.sh &
+  # May replace this function later or create check for .pid
+  # for now wait 25 seconds
+  sleep 25
+  # Start miner
   sudo su minerstat -c "screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh"
   sleep 2
   sudo su minerstat -c "screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh"
@@ -124,18 +133,18 @@ if [ $RESPONSE = "RESTART" ] || [ $RESPONSE = "START" ] || [ $RESPONSE = "NODERE
 fi
 
 if [ $RESPONSE = "STOP" ]; then
-  echo "stop" > /tmp/stop.pid;
+  echo "stop" >/tmp/stop.pid
   sudo su -c "echo "" > /dev/shm/miner.log"
   sudo su -c "echo 'stop' > /tmp/stop.pid"
-  sudo su minerstat -c "screen -X -S minerstat-console quit";
+  sudo su minerstat -c "screen -X -S minerstat-console quit"
   sudo su -c "sudo screen -X -S minew quit"
   sudo node /home/minerstat/minerstat-os/stop.js
   sleep 2
   sudo su -c "sudo screen -X -S minew quit"
-  sudo su minerstat -c "screen -X -S minerstat-console quit";
+  sudo su minerstat -c "screen -X -S minerstat-console quit"
   timeout 20 sudo nvidia-settings -a GPUPowerMizerMode=0 -c :0
 fi
 
 if [ $RESPONSE = "null" ]; then
-  echo "No remote command pending..";
+  echo "No remote command pending.."
 fi

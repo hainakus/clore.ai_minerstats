@@ -24,7 +24,6 @@ STRAPFILENAME="amdmemorytweak-stable"
 DETECTA=$(lsmod | grep nvidia | wc -l)
 DETECTB=$(lsmod | grep amdgpu | wc -l)
 
-
 if grep -q experimental "/etc/lsb-release"; then
   STRAPFILENAME="amdmemorytweak"
 fi
@@ -204,8 +203,7 @@ else
 fi
 DISK_TYPE="$DISK_TYPE$USBD"
 
-while true
-do
+while true; do
 
   echo "-*- BACKGROUND SERVICE -*-"
 
@@ -279,12 +277,12 @@ do
   # Extended Query with loop
 
   if [[ "$CPU_TYPE" != *"Ryzen"* ]] && [[ "$CPU_TYPE" != *"Athlon"* ]]; then
-    CPU_TEMP=$(timeout 5 cat /sys/class/thermal/thermal_zone*/temp 2> /dev/null | column -s $'\t' -t | sed 's/\(.\)..$/.\1/' | tac | head -n 1)
+    CPU_TEMP=$(timeout 5 cat /sys/class/thermal/thermal_zone*/temp 2>/dev/null | column -s $'\t' -t | sed 's/\(.\)..$/.\1/' | tac | head -n 1)
   else
-    CPU_TEMP=$(timeout 5 sudo sensors 2> /dev/null | grep -A 2 k10temp-pci | grep -E "temp1|Tdie" | awk '{print $2}' | sed 's/[^0-9.]//g')
+    CPU_TEMP=$(timeout 5 sudo sensors 2>/dev/null | grep -A 2 k10temp-pci | grep -E "temp1|Tdie" | awk '{print $2}' | sed 's/[^0-9.]//g')
     # Fix for Ryzen second type of temps
     if [ -z "$CPU_TEMP" ]; then
-      CPU_TEMP=$(timeout 5 sudo sensors 2> /dev/null | grep -A 2 zenpower-pci | grep -E "temp1|Tdie" | awk '{print $2}' | sed 's/[^0-9.]//g')
+      CPU_TEMP=$(timeout 5 sudo sensors 2>/dev/null | grep -A 2 zenpower-pci | grep -E "temp1|Tdie" | awk '{print $2}' | sed 's/[^0-9.]//g')
     fi
   fi
 
@@ -328,17 +326,17 @@ do
     # If octominer
     if [[ -f "/dev/shm/octo.pid" ]]; then
       # Generate fresh octominer data
-      timeout 10 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -h > /dev/shm/octo_cache.txt 2>&1
+      timeout 10 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -h >/dev/shm/octo_cache.txt 2>&1
       # Wait a bit for storage
       sleep 1
       # Fetch data from all PSUs
       PSUMETER_PSMI_RAW=$(cat /dev/shm/octo_cache.txt | grep -A 2 PSMI | grep Pac | grep -vE "PEAKS|nan" | awk '{print $10}' | sed 's/[^0-9.]//g' | cut -f1 -d"." | xargs)
       #PSUMETER_PMBUS_RAW=$(cat /dev/shm/octo_cache.txt | grep -A 2 PMBUS | grep Pac | grep -vE "PEAKS|nan" | awk '{print $10}' | sed 's/[^0-9.]//g' | cut -f1 -d"." | xargs)
-      # Cache 
+      # Cache
       PSUMETER=0
       PSUMETER_PSMI=0
       #PSUMETER_PMBUS=0
-      # Loop and calculate values 
+      # Loop and calculate values
       for psu_watt in $PSUMETER_PSMI_RAW; do
         echo "octo psmi $psu_watt W"
         PSUMETER_PSMI=$((PSUMETER_PSMI + psu_watt))
@@ -354,7 +352,7 @@ do
         PSUMETER=""
         FIRST=1
       fi
-      # Echo 
+      # Echo
       echo "Total octo psu: $PSUMETER"
       # Send full OCTO-JSON Data to the server
       OCTOJSON=$(timeout 10 sudo bash /home/minerstat/minerstat-os/bin/octo-json)
@@ -366,7 +364,7 @@ do
       HWMEMORY=$(cat /home/minerstat/minerstat-os/bin/amdmeminfo.txt)
       sudo chmod 777 /dev/shm/amdmeminfo.txt
       if [ ! -f "/dev/shm/amdmeminfo.txt" ]; then
-        timeout 30 sudo timeout 10 /home/minerstat/minerstat-os/bin/amdmeminfo -s -q > /dev/shm/amdmeminfo.txt &
+        timeout 30 sudo timeout 10 /home/minerstat/minerstat-os/bin/amdmeminfo -s -q >/dev/shm/amdmeminfo.txt &
         sudo cp -rf /dev/shm/amdmeminfo.txt /home/minerstat/minerstat-os/bin
         sudo chmod 777 /home/minerstat/minerstat-os/bin/amdmeminfo.txt
         # fix issue with meminfo file
@@ -382,7 +380,10 @@ do
       if [ -z "$AMDINFO" ]; then
         AMDINFO=$(sudo /home/minerstat/minerstat-os/bin/amdcovc)
       fi
-      HWSTRAPS=$(cd /home/minerstat/minerstat-os/bin/; sudo ./"$STRAPFILENAME" --current-minerstat)
+      HWSTRAPS=$(
+        cd /home/minerstat/minerstat-os/bin/
+        sudo ./"$STRAPFILENAME" --current-minerstat
+      )
       # ?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&freemem=$STR5&teleid=$TELEID&systime=$SYSTIME&mobo=$MOBO_TYPE&bios=$BIOS_VERSION&msos=$MSOS_VERSION&mac=$MAC_ADDRESS&cputype=$CPU_TYPE&cpu_usage=$CPU_USAGE&cpu_temp=$CPU_TEMP&disk_type=$DISK_TYPE&nvidiad=$NVIDIA_DRIVER&amdd=$AMD_DRIVER&kernel=$KERNEL_VERSION&ubuntu=$UBUNTU_VERSION"
       RESPONSE=$(sudo curl --insecure --connect-timeout 15 --max-time 25 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=amd" --data "hwData=$AMDINFO" --data "hwMemory=$HWMEMORY" --data "hwStrap=$HWSTRAPS" --data "mineLog=$RAMLOG" --data "space=$STR1" --data "cpu=$STR2" --data "localip=$STR3" --data "freemem=$STR5" --data "teleid=$TELEID" --data "systime=$SYSTIME" --data "mobo=$MOBO_TYPE" --data "bios=$BIOS_VERSION" --data "msos=$MSOS_VERSION" --data "mac=$MAC_ADDRESS" --data "cputype=$CPU_TYPE" --data "cpu_usage=$CPU_USAGE" --data "cpu_temp=$CPU_TEMP" --data "disk_type=$DISK_TYPE" --data "nvidiad=$NVIDIA_DRIVER" --data "amdd=$AMD_DRIVER" --data "kernel=$KERNEL_VERSION" --data "ubuntu=$UBUNTU_VERSION" --data "uefi=$BOOTED" --data "consumption=$PSUMETER" --data "octominer=$OCTOJSON" "https://api.minerstat.com:2053/v2/set_node_config_os2.php")
     fi
@@ -414,7 +415,7 @@ do
     if [[ "$SYSTIME" -lt "70" ]]; then
       # Check for pid in memory
       if [[ ! -f "/dev/shm/boot_signal.pid" ]]; then
-        sudo echo '1' > /dev/shm/boot_signal.pid
+        sudo echo '1' >/dev/shm/boot_signal.pid
       fi
     fi
 
@@ -480,12 +481,12 @@ do
     echo "New AccessKey: $TOKEN"
     echo "New Worker Name: $WN"
     echo
-    echo "stop" > /tmp/stop.pid;
+    echo "stop" >/tmp/stop.pid
     sudo node /home/minerstat/minerstat-os/stop.js
-    sudo su minerstat -c "screen -X -S minerstat-console quit";
+    sudo su minerstat -c "screen -X -S minerstat-console quit"
     sudo su -c "sudo screen -X -S minew quit"
-    sudo echo global.accesskey = '"'$TOKEN'";' > /media/storage/config.js
-    sudo echo global.worker = '"'$WN'";' >> /media/storage/config.js
+    sudo echo global.accesskey = '"'$TOKEN'";' >/media/storage/config.js
+    sudo echo global.worker = '"'$WN'";' >>/media/storage/config.js
     sudo cp /media/storage/config.js /home/minerstat/minerstat-os/
     echo "Validate Config..."
     echo
@@ -496,7 +497,7 @@ do
 
   if [ $RESPONSE = "INSTANTOC" ]; then
     echo "-------------------------------------------"
-    screen -A -m -d -S instantoc sudo /home/minerstat/minerstat-os/bin/overclock.sh instant &
+    screen -A -m -d -S instantoc sudo bash /home/minerstat/minerstat-os/bin/overclock.sh instant &
     echo "-------------------------------------------"
   fi
 
@@ -506,12 +507,15 @@ do
     echo "-------------------------------------------"
   fi
 
-  if [ $RESPONSE = "DOWNLOADWATTS" ] || [ $RESPONSE = "RESTARTWATTS" ]; then
+  if [ $RESPONSE = "DOWNLOADWATTS" ]; then
     echo "-------------------------------------------"
-    screen -A -m -d -S overclocks sudo /home/minerstat/minerstat-os/bin/overclock.sh &
-    if [ ! -f "/tmp/stop.pid" ]; then
-      RESPONSE="RESTART"
-    fi
+    screen -A -m -d -S overclocks sudo bash /home/minerstat/minerstat-os/bin/overclock.sh &
+    echo "-------------------------------------------"
+  fi
+
+  if [ $RESPONSE = "RESTARTWATTS" ]; then
+    echo "-------------------------------------------"
+    RESPONSE="RESTART2"
     echo "-------------------------------------------"
   fi
 
@@ -534,10 +538,12 @@ do
     sleep 1
     TELEID=$(sudo /home/minerstat/minerstat-os/bin/tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}' | cut -f1 -d"@" | sed 's/.* //')
     echo "TeleID: $TELEID"
-    wget -o /dev/null -qO- "https://api.minerstat.com:2053/v2/set_os_status.php?token=$TOKEN&worker=$WORKER&space=$STR1&cpu=$STR2&localip=$STR3&freemem=$STR5&teleid=$TELEID&systime=$SYSTIME&mobo=$MOBO_TYPE&bios=$BIOS_VERSION&msos=$MSOS_VERSION&mac=$MAC_ADDRESS&cputype=$CPU_TYPE&cpu_usage=$CPU_USAGE&cpu_temp=$CPU_TEMP&disk_type=$DISK_TYPE&nvidiad=$NVIDIA_DRIVER&amdd=$AMD_DRIVER&kernel=$KERNEL_VERSION&ubuntu=$UBUNTU_VERSION" ; echo
+    RESPONSE=$(sudo curl --insecure --connect-timeout 15 --max-time 25 --retry 0 --header "Content-type: application/x-www-form-urlencoded" --request POST --data "htoken=$TOKEN" --data "hworker=$WORKER" --data "hwType=amd" --data "hwData=$AMDINFO" --data "hwMemory=$HWMEMORY" --data "hwStrap=$HWSTRAPS" --data "mineLog=$RAMLOG" --data "space=$STR1" --data "cpu=$STR2" --data "localip=$STR3" --data "freemem=$STR5" --data "teleid=$TELEID" --data "systime=$SYSTIME" --data "mobo=$MOBO_TYPE" --data "bios=$BIOS_VERSION" --data "msos=$MSOS_VERSION" --data "mac=$MAC_ADDRESS" --data "cputype=$CPU_TYPE" --data "cpu_usage=$CPU_USAGE" --data "cpu_temp=$CPU_TEMP" --data "disk_type=$DISK_TYPE" --data "nvidiad=$NVIDIA_DRIVER" --data "amdd=$AMD_DRIVER" --data "kernel=$KERNEL_VERSION" --data "ubuntu=$UBUNTU_VERSION" --data "uefi=$BOOTED" --data "consumption=$PSUMETER" --data "octominer=$OCTOJSON" "https://api.minerstat.com:2053/v2/set_node_config_os2.php")
+    echo
   fi
 
-  if [ $RESPONSE = "RESTART" ] || [ $RESPONSE = "START" ] || [ $RESPONSE = "NODERESTART" ] || [ $RESPONSE = "RESTARTNODE" ]; then
+  if [ $RESPONSE = "RESTART" ] || [ $RESPONSE = "START" ] || [ $RESPONSE = "NODERESTART" ] || [ $RESPONSE = "RESTARTNODE" ] || [ $RESPONSE = "RESTART2" ]; then
+    # Stop miner
     sudo su -c "sudo rm /tmp/stop.pid"
     sudo su -c "sudo screen -X -S minew quit"
     sudo su -c "sudo screen -X -S fakescreen quit"
@@ -545,6 +551,12 @@ do
     sudo su minerstat -c "screen -X -S fakescreen quit"
     sudo su minerstat -c "screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
     sudo killall node
+    # Apply clocks if RESTART2
+    screen -A -m -d -S overclocks sudo bash /home/minerstat/minerstat-os/bin/overclock.sh &
+    # May replace this function later or create check for .pid
+    # for now wait 25 seconds
+    sleep 25
+    # Start miner
     sudo su minerstat -c "screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh"
     sleep 2
     sudo su minerstat -c "screen -A -m -d -S minerstat-console sudo /home/minerstat/minerstat-os/launcher.sh"
@@ -552,15 +564,15 @@ do
   fi
 
   if [ $RESPONSE = "STOP" ]; then
-    echo "stop" > /tmp/stop.pid;
+    echo "stop" >/tmp/stop.pid
     sudo su -c "echo "" > /dev/shm/miner.log"
     sudo su -c "echo 'stop' > /tmp/stop.pid"
-    sudo su minerstat -c "screen -X -S minerstat-console quit";
+    sudo su minerstat -c "screen -X -S minerstat-console quit"
     sudo su -c "sudo screen -X -S minew quit"
     sudo node /home/minerstat/minerstat-os/stop.js
     sleep 2
     sudo su -c "sudo screen -X -S minew quit"
-    sudo su minerstat -c "screen -X -S minerstat-console quit";
+    sudo su minerstat -c "screen -X -S minerstat-console quit"
     timeout 20 udo nvidia-settings -a GPUPowerMizerMode=0 -c :0
   fi
 
@@ -569,7 +581,7 @@ do
   #fi
 
   if [ $RESPONSE = "null" ]; then
-    echo "No remote command pending..";
+    echo "No remote command pending.."
   fi
 
   sleep 17
