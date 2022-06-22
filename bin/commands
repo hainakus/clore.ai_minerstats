@@ -121,10 +121,21 @@ if [ $RESPONSE = "RESTART" ] || [ $RESPONSE = "START" ] || [ $RESPONSE = "NODERE
   sudo su minerstat -c "screen -ls minerstat-console | grep -E '\s+[0-9]+\.' | awk -F ' ' '{print $1}' | while read s; do screen -XS $s quit; done"
   sudo killall node
   # Apply clocks if RESTART2
-  screen -A -m -d -S overclocks sudo bash /home/minerstat/minerstat-os/bin/overclock.sh &
-  # May replace this function later or create check for .pid
-  # for now wait 25 seconds
-  sleep 25
+  sudo screen -A -m -d -S overclocks sudo bash /home/minerstat/minerstat-os/bin/overclock.sh
+  # Check process running
+  TEST=$(sudo screen -list | grep -wc overclocks)
+  # Wait for finish
+  XZ=0
+  until [ $TEST = 0 ]; do
+    TEST=$(sudo screen -list | grep -wc overclocks)
+    echo "Waiting overclock to finish [$XZ/40] ..."
+    # Break if more than 40 sec
+    XZ=$((XZ + 1))
+    if [[ "$XZ" = "40" ]]; then
+      break
+    fi
+    sleep 1
+  done
   # Start miner
   sudo su minerstat -c "screen -A -m -d -S fakescreen sh /home/minerstat/minerstat-os/bin/fakescreen.sh"
   sleep 2
