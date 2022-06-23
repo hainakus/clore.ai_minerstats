@@ -122,7 +122,7 @@ if [[ ! -z "$OCTOJSON" ]]; then
             NEWFAN=$FANMIN
           fi
           # Print debug
-          printfo info "COLD >$DIFF C! [$FAN/$CHANGE/$DIFF/$TARGET/$TEMP]"
+          printfo info "FAN $ID => COLD >$DIFF C! [$FAN/$CHANGE/$DIFF/$TARGET/$TEMP]"
           # Hotter than target temp
         elif [ $DIFF -lt -1 ]; then
           #printfo info "WARM >$DIFF C!"
@@ -149,7 +149,7 @@ if [[ ! -z "$OCTOJSON" ]]; then
             NEWFAN=$FANMAX
           fi
           # Print debug
-          printfo info "WARM >$DIFF C! [$FAN/$CHANGE/$DIFF/$TARGET/$TEMP]"
+          printfo info "FAN $ID => WARM >$DIFF C! [$FAN/$CHANGE/$DIFF/$TARGET/$TEMP]"
         else
           NEWFAN="$FAN"
         fi
@@ -184,11 +184,10 @@ if [[ ! -z "$OCTOJSON" ]]; then
       fi
 
       # Print results
-      printfo info "FANSPEED => $FANSPEED% ($PPWM%) [RPM: $RPMVAL pwm]"
+      printfo info "FAN $ID => $FANSPEED% ($CPWM <> $PPWM%) [RPM: $RPMVAL pwm]"
 
       # Set PWM Target to calculated value for loop
       PWM=$RPMVAL
-      printfo info "FAN $ID => Current PWM: $CPWM, Target: $PWM"
 
       if [[ "$CPWM" != "$PWM" ]]; then
         printfo ok "FAN $ID => SETTING: $CPWM->$PWM pwm"
