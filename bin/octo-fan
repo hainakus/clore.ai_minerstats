@@ -66,13 +66,13 @@ if [[ ! -z "$OCTOJSON" ]]; then
   # Loop all fans and change if needed
   # 12 fan ID in total
   for i in {0..11}; do
-    MAX_RPM=$(echo $OCTOJSON | jq -c .fans[$i].max_rpm | sed 's/"//g' | xargs)
+    MAX_RPM=$(echo $OCTOJSON | /home/minerstat/minerstat-os/bin/jq -c .fans[$i].max_rpm | sed 's/"//g' | xargs)
     if [[ ! -z "$MAX_RPM" ]] && [[ "$MAX_RPM" != "0" ]]; then
-      ID=$(echo $OCTOJSON | jq -c .fans[$i].id | sed 's/"//g' | xargs)
-      CPWM=$(echo $OCTOJSON | jq -c .fans[$i].pwm_curr | sed 's/"//g' | xargs)
+      ID=$(echo $OCTOJSON | /home/minerstat/minerstat-os/bin/jq -c .fans[$i].id | sed 's/"//g' | xargs)
+      CPWM=$(echo $OCTOJSON | /home/minerstat/minerstat-os/bin/jq -c .fans[$i].pwm_curr | sed 's/"//g' | xargs)
 
       # Get new fanspeed
-      PPWM=$(echo $OCTOJSON | jq -c .fans[$i].percent | sed 's/"//g' | xargs)
+      PPWM=$(echo $OCTOJSON | /home/minerstat/minerstat-os/bin/jq -c .fans[$i].percent | sed 's/"//g' | xargs)
       if [[ "$TYPE" = "auto" ]]; then
         # Calculate new fanspeed
         # Octominer code is bugged with pwm/percentage conversion 255 is sometimes reported over 100%
