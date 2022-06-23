@@ -70,7 +70,6 @@ if [[ ! -z "$OCTOJSON" ]]; then
     if [[ ! -z "$MAX_RPM" ]] && [[ "$MAX_RPM" != "0" ]]; then
       ID=$(echo $OCTOJSON | jq -c .fans[$i].id | sed 's/"//g' | xargs)
       CPWM=$(echo $OCTOJSON | jq -c .fans[$i].pwm_curr | sed 's/"//g' | xargs)
-      printfo info "FAN $ID => Current PWM: $CPWM, Target: $PWM"
 
       # Get new fanspeed
       PPWM=$(echo $OCTOJSON | jq -c .fans[$i].percent | sed 's/"//g' | xargs)
@@ -99,7 +98,7 @@ if [[ ! -z "$OCTOJSON" ]]; then
         DIFF=$((TARGET - TEMP))
         # Colder than target temp
         if [ $DIFF -gt 1 ]; then
-          printfo info "COLD >$DIFF C!"
+          #printfo info "COLD >$DIFF C!"
           CHANGE=5
           if [ $DIFF -gt 2 ]; then
             CHANGE=8
@@ -123,10 +122,10 @@ if [[ ! -z "$OCTOJSON" ]]; then
             NEWFAN=$FANMIN
           fi
           # Print debug
-          printfo info "COLD Debug [$FAN/$CHANGE/$DIFF/$TARGET/$TEMP]"
+          printfo info "COLD >$DIFF C! [$FAN/$CHANGE/$DIFF/$TARGET/$TEMP]"
           # Hotter than target temp
         elif [ $DIFF -lt -1 ]; then
-          printfo info "WARM >$DIFF C!"
+          #printfo info "WARM >$DIFF C!"
           CHANGE=5
           if [ $DIFF -lt -2 ]; then
             CHANGE=8
@@ -150,7 +149,7 @@ if [[ ! -z "$OCTOJSON" ]]; then
             NEWFAN=$FANMAX
           fi
           # Print debug
-          printfo info "WARM Debug [$FAN/$CHANGE/$DIFF/$TARGET/$TEMP]"
+          printfo info "WARM >$DIFF C! [$FAN/$CHANGE/$DIFF/$TARGET/$TEMP]"
         else
           NEWFAN="$FAN"
         fi
@@ -185,10 +184,11 @@ if [[ ! -z "$OCTOJSON" ]]; then
       fi
 
       # Print results
-      printfo info "FANSPEED => $FANSPEED% ($PPWM percent) [RPM: $RPMVAL pwm]"
+      printfo info "FANSPEED => $FANSPEED% ($PPWM%) [RPM: $RPMVAL pwm]"
 
       # Set PWM Target to calculated value for loop
       PWM=$RPMVAL
+      printfo info "FAN $ID => Current PWM: $CPWM, Target: $PWM"
 
       if [[ "$CPWM" != "$PWM" ]]; then
         printfo ok "FAN $ID => SETTING: $CPWM->$PWM pwm"

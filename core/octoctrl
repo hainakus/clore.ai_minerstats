@@ -10,24 +10,24 @@ echo
 Color_Off='\033[0m' # Text Reset
 
 # Regular Colors
-Red='\033[0;31m' # Red
-Green='\033[0;32m' # Green
+Red='\033[0;31m'    # Red
+Green='\033[0;32m'  # Green
 Yellow='\033[0;33m' # Yellow
 
 function printfo() {
- mark="i"
- if [[ "$1" = "info" ]]; then
- mark="INFO"
- elif [[ "$1" = "fail" ]]; then
- mark="$Red"'FAIL'"$Color_Off"
- elif [[ "$1" = "ok" ]]; then
- mark="$Green OK $Color_Off"
- elif [[ "$1" = "warn" ]]; then
- mark="$Yellow"'WARN'"$Color_Off"
- fi
- echo -n ""
- echo -e " [$mark] $2 \r"
- echo -n ""
+  mark="i"
+  if [[ "$1" = "info" ]]; then
+    mark="INFO"
+  elif [[ "$1" = "fail" ]]; then
+    mark="$Red"'FAIL'"$Color_Off"
+  elif [[ "$1" = "ok" ]]; then
+    mark="$Green OK $Color_Off"
+  elif [[ "$1" = "warn" ]]; then
+    mark="$Yellow"'WARN'"$Color_Off"
+  fi
+  echo -n ""
+  echo -e " [$mark] $2 \r"
+  echo -n ""
 }
 
 # Arg parser
@@ -44,7 +44,7 @@ LIST_VAL="0"
 ##
 ##
 
-help () {
+help() {
   echo
   echo "==== Help ===="
   echo "-h  | --help         : Printing this menu"
@@ -60,28 +60,28 @@ help () {
   exit 255
 }
 
-odetect () {
-  timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -h > /dev/shm/octo_cache.txt 2>&1
+odetect() {
+  timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -h >/dev/shm/octo_cache.txt 2>&1
   VALIDATE=$(sudo cat /dev/shm/octo_cache.txt)
   if [[ $VALIDATE == *"libusb-0.1"* ]]; then
     if [[ ! -f "/tmp/libusb-0.1-4_0.1.12-31_amd64.deb" ]]; then
       wget https://static-ssl.minerstat.farm/miners/libusb-0.1-4_0.1.12-31_amd64.deb -P /tmp
     fi
     sudo dpkg --force-all -i /tmp/libusb-0.1-4_0.1.12-31_amd64.deb
-    timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -h > /dev/shm/octo_cache.txt 2>&1
+    timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -h >/dev/shm/octo_cache.txt 2>&1
     VALIDATE=$(sudo cat /dev/shm/octo_cache.txt)
   fi
   if [[ $VALIDATE != *"cannot"* ]]; then
     echo "true"
-    sudo echo "true" > /dev/shm/octo.pid
+    sudo echo "true" >/dev/shm/octo.pid
     timeout 5 sudo /home/minerstat/minerstat-os/core/octoctrl --display
   fi
 }
 
-odisplay () {
+odisplay() {
   # Collect Data
   WORKER="$(timeout 5 cat /home/minerstat/minerstat-os/config.js | grep 'global.worker' | sed 's/global.worker =//g' | sed 's/;//g' | sed 's/"//g')"
-  IP=`ifconfig | grep "inet" | grep -v "inet6" | grep -vE "127.0.0.1|169.254|172.17." | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | head -n 1 | grep -o -E '[.0-9]+'`
+  IP=$(ifconfig | grep "inet" | grep -v "inet6" | grep -vE "127.0.0.1|169.254|172.17." | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | head -n 1 | grep -o -E '[.0-9]+')
   PID=$(timeout 5 sudo ls /var/run/screen/S-root | grep minew | sed 's/[^0-9]*//g')
   MINER=$(timeout 5 sudo pstree $PID | xargs | rev | cut -d+ -f1 | rev | cut -d* -f1 | sed "s/[^a-zA-Z']/ /g" | xargs | cut -d " " -f 1)
 
@@ -126,24 +126,24 @@ odisplay () {
 }
 
 # Shutdown via chassis
-oshutdown () {
+oshutdown() {
   timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -p
 }
 
 # Print Info
-oinfo () {
+oinfo() {
   timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -h
 }
 
 # Reboot via chassis
-oreboot () {
+oreboot() {
   timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -x
 }
 
 # Flash blue lights
-oping () {
+oping() {
   printfo info "Raw: $MIN"
-  MIN=$((MIN*60))
+  MIN=$((MIN * 60))
   printfo info "Will be turned off after: $MIN second"
   timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -l 1 -v 2
   screen -A -m -d -S kill_ping sudo /home/minerstat/minerstat-os/core/octoctrl --kping $MIN
@@ -155,7 +155,7 @@ oerr() {
 }
 
 # Ping Leds
-kping () {
+kping() {
   sleep $MIN
   timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -l 0 -v 0
   timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -l 1 -v 0
@@ -163,41 +163,41 @@ kping () {
 
 # List fan speeds
 ofan_list() {
-    printfo info "Listing Saved FAN Values ..."
-    sudo chmod 777 /home/minerstat/octo_fans.txt 2>/dev/null
-    if [[ -f "/home/minerstat/octo_fans.txt" ]]; then
-      while read line; do
-        FAN_VAL=$(echo $line | rev | cut -d: -f1 | rev)
-        FAN_ID=$(echo $line | cut -d: -f1)
-        printfo ok "Found: FAN #$FAN_ID, VALUE: $FAN_VAL"
-      done </home/minerstat/octo_fans.txt
-      echo
-      printfo info "To Clear All values and start over"
-      printfo info "Enter: octo-fan --clear"
-    else
-      printfo fail "No Fan value found."
-    fi
+  printfo info "Listing Saved FAN Values ..."
+  sudo chmod 777 /home/minerstat/octo_fans.txt 2>/dev/null
+  if [[ -f "/home/minerstat/octo_fans.txt" ]]; then
+    while read line; do
+      FAN_VAL=$(echo $line | rev | cut -d: -f1 | rev)
+      FAN_ID=$(echo $line | cut -d: -f1)
+      printfo ok "Found: FAN #$FAN_ID, VALUE: $FAN_VAL"
+    done </home/minerstat/octo_fans.txt
+    echo
+    printfo info "To Clear All values and start over"
+    printfo info "Enter: octo-fan --clear"
+  else
+    printfo fail "No Fan value found."
+  fi
 }
 
 # List fan speeds
 ofan_boot() {
-    printfo info "Listing Saved FAN Values ..."
-    sudo chmod 777 /home/minerstat/octo_fans.txt 2>/dev/null
-    if [[ -f "/home/minerstat/octo_fans.txt" ]]; then
-      while read line; do
-        FAN_VAL=$(echo $line | rev | cut -d: -f1 | rev)
-        FAN_ID=$(echo $line | cut -d: -f1)
-        printfo ok "Found: FAN #$FAN_ID, VALUE: $FAN_VAL"
-        timeout 15 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -f $FAN_ID -v $FAN_VAL
-        sleep 0.25
-      done </home/minerstat/octo_fans.txt
-    else
-      printfo fail "No Fan value saved."
-    fi
+  printfo info "Listing Saved FAN Values ..."
+  sudo chmod 777 /home/minerstat/octo_fans.txt 2>/dev/null
+  if [[ -f "/home/minerstat/octo_fans.txt" ]]; then
+    while read line; do
+      FAN_VAL=$(echo $line | rev | cut -d: -f1 | rev)
+      FAN_ID=$(echo $line | cut -d: -f1)
+      printfo ok "Found: FAN #$FAN_ID, VALUE: $FAN_VAL"
+      timeout 15 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -f $FAN_ID -v $FAN_VAL
+      sleep 0.25
+    done </home/minerstat/octo_fans.txt
+  else
+    printfo fail "No Fan value saved."
+  fi
 }
 
 # Set fan speed and apply
-ofan () {
+ofan() {
   if [[ "$LIST_VAL" = "0" ]]; then
     # Set fans
     # fan ids: 0-8
@@ -224,10 +224,10 @@ ofan () {
         printfo info "New: $ID:$VAL"
         sudo chmod 777 /home/minerstat/octo_fans.txt 2>/dev/null
         sudo sed -i "/$ID:/d" /home/minerstat/octo_fans.txt
-        sudo echo "$ID:$VAL" >> /home/minerstat/octo_fans.txt
+        sudo echo "$ID:$VAL" >>/home/minerstat/octo_fans.txt
       else
         if [[ ! -z "$ID" ]]; then
-          sudo echo "$ID:$VAL" >> /home/minerstat/octo_fans.txt
+          sudo echo "$ID:$VAL" >>/home/minerstat/octo_fans.txt
         else
           printfo fail "Unable to save empty data. Verify your input parameters."
         fi
@@ -243,7 +243,7 @@ ofan () {
 ofan_clear() {
   printfo info "Clearing Saved Fan Values ..."
   sudo chmod 777 /home/minerstat/octo_fans.txt 2>/dev/null
-  sudo echo -n > /home/minerstat/octo_fans.txt
+  sudo echo -n >/home/minerstat/octo_fans.txt
 }
 
 ##
@@ -253,122 +253,127 @@ ofan_clear() {
 ##
 
 ISPING=0
+ISERR=0
 ISFAN=0
 
-while (( "$#" )); do
+while (("$#")); do
   case "$1" in
-    -i|--id)
-      if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
-        ID=$2
-        shift 2
-      else
-        echo
-        echo "================="
-        echo "Error: Please provide ID" >&2
-        echo "================="
-        echo
-        exit 1
-      fi
-      ;;
-    -v|--val)
-      if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
-        VAL=$2
-        shift 2
-      else
-        echo
-        echo "================="
-        echo "Error: Please provide VAL" >&2
-        echo "================="
-        echo
-        exit 1
-      fi
-      ;;
-    -m|--min)
-      if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
-        MIN=$2
-        shift 2
-      else
-        echo
-        echo "================="
-        echo "Error: Please provide MIN" >&2
-        echo "================="
-        echo
-        exit 1
-      fi
-      ;;
-    -k|--kping)
-      if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
-        MIN=$2
-        kping
-        shift 2
-      else
-        echo
-        echo "================="
-        echo "Error: Please provide MIN" >&2
-        echo "================="
-        echo
-        exit 1
-      fi
-      ;;
-    --info)
-      oinfo
-      shift
-      ;;
-    -t|--detect)
-      odetect
-      shift
-      ;;
-    -h|--help)
-      help
-      shift
-      ;;
-    -d|--display)
-      odisplay
-      shift
-      ;;
-    -s|--shutdown)
-      oshutdown
-      shift
-      ;;
-    -r|--reboot)
-      oreboot
-      shift
-      ;;
-    -p|--ping)
-      ISPING=1
-      shift
-      ;;
-    -f|--fan)
-      ISFAN=1
-      shift
-      ;;
-    --save)
-      SAVE_VAL=1
-      shift
-      ;;
-    --clear)
-      ofan_clear
-      shift
-      ;;
-    --boot)
-      ofan_boot
-      shift
-      ;;
-    --list)
-      LIST_VAL=1
-      ofan_list
-      shift
-      ;;
-    -*|--*=) # unsupported flags
+  -i | --id)
+    if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
+      ID=$2
+      shift 2
+    else
+      echo
       echo "================="
-      echo "Error: Unsupported flag $1" >&2
+      echo "Error: Please provide ID" >&2
       echo "================="
+      echo
       exit 1
-      ;;
-    *) # preserve positional arguments
-      PARAMS="$PARAMS $1"
-      shift
-      ;;
+    fi
+    ;;
+  -v | --val)
+    if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
+      VAL=$2
+      shift 2
+    else
+      echo
+      echo "================="
+      echo "Error: Please provide VAL" >&2
+      echo "================="
+      echo
+      exit 1
+    fi
+    ;;
+  -m | --min)
+    if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
+      MIN=$2
+      shift 2
+    else
+      echo
+      echo "================="
+      echo "Error: Please provide MIN" >&2
+      echo "================="
+      echo
+      exit 1
+    fi
+    ;;
+  -k | --kping)
+    if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
+      MIN=$2
+      kping
+      shift 2
+    else
+      echo
+      echo "================="
+      echo "Error: Please provide MIN" >&2
+      echo "================="
+      echo
+      exit 1
+    fi
+    ;;
+  --info)
+    oinfo
+    shift
+    ;;
+  -t | --detect)
+    odetect
+    shift
+    ;;
+  -h | --help)
+    help
+    shift
+    ;;
+  -d | --display)
+    odisplay
+    shift
+    ;;
+  -s | --shutdown)
+    oshutdown
+    shift
+    ;;
+  -r | --reboot)
+    oreboot
+    shift
+    ;;
+  -p | --ping)
+    ISPING=1
+    shift
+    ;;
+  -e | --error)
+    ISERR=1
+    shift
+    ;;
+  -f | --fan)
+    ISFAN=1
+    shift
+    ;;
+  --save)
+    SAVE_VAL=1
+    shift
+    ;;
+  --clear)
+    ofan_clear
+    shift
+    ;;
+  --boot)
+    ofan_boot
+    shift
+    ;;
+  --list)
+    LIST_VAL=1
+    ofan_list
+    shift
+    ;;
+  -* | --*=) # unsupported flags
+    echo "================="
+    echo "Error: Unsupported flag $1" >&2
+    echo "================="
+    exit 1
+    ;;
+  *) # preserve positional arguments
+    PARAMS="$PARAMS $1"
+    shift
+    ;;
   esac
 done
 # set positional arguments in their proper place
@@ -380,4 +385,7 @@ if [[ "$ISPING" = "1" ]]; then
 fi
 if [[ "$ISFAN" = "1" ]]; then
   ofan
+fi
+if [[ "$ISERR" = "1" ]]; then
+  oerr
 fi
