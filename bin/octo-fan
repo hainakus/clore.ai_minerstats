@@ -73,9 +73,9 @@ if [[ ! -z "$OCTOJSON" ]]; then
       printfo info "FAN $ID => Current PWM: $CPWM, Target: $PWM"
 
       # Get new fanspeed
+      PPWM=$(echo $OCTOJSON | jq -c .fans[$i].percent | sed 's/"//g' | xargs)
       if [[ "$TYPE" = "auto" ]]; then
         # Calculate new fanspeed
-        PPWM=$(echo $OCTOJSON | jq -c .fans[$i].percent | sed 's/"//g' | xargs)
         # Octominer code is bugged with pwm/percentage conversion 255 is sometimes reported over 100%
         if [[ "$PPWM" -gt 100 ]]; then
           PPWM=100
@@ -97,9 +97,9 @@ if [[ ! -z "$OCTOJSON" ]]; then
 
         # If not empty continue;
         DIFF=$((TARGET - TEMP))
-        printfo info "COLD >$DIFF C!"
         # Colder than target temp
         if [ $DIFF -gt 1 ]; then
+          printfo info "COLD >$DIFF C!"
           CHANGE=5
           if [ $DIFF -gt 2 ]; then
             CHANGE=8
@@ -185,7 +185,7 @@ if [[ ! -z "$OCTOJSON" ]]; then
       fi
 
       # Print results
-      printfo info "FANSPEED => $FANSPEED% ($FANVALUE percent) [RPM: $RPMVAL pwm]"
+      printfo info "FANSPEED => $FANSPEED% ($PPWM percent) [RPM: $RPMVAL pwm]"
 
       # Set PWM Target to calculated value for loop
       PWM=$RPMVAL
