@@ -46,6 +46,12 @@ TARGET_MEM=$5
 HIGHEST=$6
 HIGHEST_TYPE=$7
 
+# Safety check, close if no args data
+if [[ -z "$TYPE" ]]; then
+  printfo fail "Missing type"
+  exit 1
+fi
+
 # Get JSON Data
 OCTOJSON=$(timeout 10 sudo bash /home/minerstat/minerstat-os/bin/octo-json)
 
@@ -81,11 +87,12 @@ if [[ ! -z "$OCTOJSON" ]]; then
         FAN=$PPWM
         TEMP=$HIGHEST
         if [[ "$HIGHEST_TYPE" = "mem" ]]; then
-          TARGET=$TARGET
+          TARGET=$TARGET_MEM
         fi
         # If sampling core temp
         if [[ "$HIGHEST_TYPE" = "core" ]]; then
-          TARGET=$TARGET_MEM
+          # Just for safety re-assign
+          TARGET=$4
         fi
 
         # If not empty continue;
@@ -109,11 +116,14 @@ if [[ ! -z "$OCTOJSON" ]]; then
           if [ $DIFF -gt 30 ]; then
             CHANGE=35
           fi
-          # 0% fan protection
-          if [[ "$FAN" = "0" ]]; then
-            CHANGE=$FANMIN
-          fi
           NEWFAN=$((FAN - CHANGE))
+          # 0% fan protection
+          if [[ "$NEWFAN" = "0" ]]; then
+            printfo warn "Protected 0% FAN [$FAN/$CHANGE/$DIFF/$TARGET/$TEMP] [$NEWFAN/$FANMIN]"
+            NEWFAN=$FANMIN
+          fi
+          # Print debug
+          printfo info "COLD Debug [$FAN/$CHANGE/$DIFF/$TARGET/$TEMP]"
           # Hotter than target temp
         elif [ $DIFF -lt -1 ]; then
           printfo info "WARM >$DIFF C!"
@@ -133,11 +143,14 @@ if [[ ! -z "$OCTOJSON" ]]; then
           if [ $DIFF -lt -30 ]; then
             CHANGE=35
           fi
-          # 0% fan protection
-          if [[ "$FAN" = "0" ]]; then
-            CHANGE=$FANMAX
-          fi
           NEWFAN=$((FAN + CHANGE))
+          # 0% fan protection
+          if [[ "$NEWFAN" = "0" ]]; then
+            printfo warn "Protected 0% FAN [$FAN/$CHANGE/$DIFF/$TARGET/$TEMP] [$NEWFAN/$FANMAX]"
+            NEWFAN=$FANMAX
+          fi
+          # Print debug
+          printfo info "WARM Debug [$FAN/$CHANGE/$DIFF/$TARGET/$TEMP]"
         else
           NEWFAN="$FAN"
         fi
