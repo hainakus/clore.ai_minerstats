@@ -1,5 +1,19 @@
 #! /usr/bin/bash
 
+# Check for lock
+LOCKFILE=/home/minerstat/minerstat-os/.git/index.lock
+if [[ -f "$LOCKFILE" ]]; then
+    echo "$LOCKFILE lockfile exists.. Checking .."
+    CHECKPID=$(sudo pidof git)
+    if [[ -z "$CHECKPID" ]]; then
+      echo "All good! git is not running, Safe to remove lockfile."
+      sudo rm $LOCKFILE
+    else
+      echo "Warning! git is running. Not safe to remove lockfile. Reboot and try mupdate again."
+    fi
+fi
+
+# Continue
 FIXIT="0"
 
 cd /home/minerstat/minerstat-os/
