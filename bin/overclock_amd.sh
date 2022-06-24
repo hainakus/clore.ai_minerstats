@@ -175,7 +175,7 @@ if [ $1 ]; then
     isThisVegaII=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID:" | grep "Vega" | sed 's/^.*Vega/Vega/' | sed 's/[^a-zA-Z]*//g')
     isThisVegaVII=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID:" | grep "VII" | sed 's/^.*VII/VII/' | sed 's/[^a-zA-Z]*//g')
     isThisNavi=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID:" | grep -E "5000|5500|5550|5600|5650|5700|5750|5800|5850|5900|5950" | wc -l)
-    isThisSienna=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID:" | grep -E "6000|6600|6700|6800|6900|SIENNA" | wc -l)
+    isThisSienna=$(sudo timeout 20 /home/minerstat/minerstat-os/bin/amdcovc | grep "PCI $GID:" | grep -E "6000|6600|6700|6800|6900|SIENNA|6300|6400|6500|6650|6750|6950" | wc -l)
   fi
 
   # Check Python3 PIP
