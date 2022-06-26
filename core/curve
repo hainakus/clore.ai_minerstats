@@ -508,20 +508,12 @@ loop() {
         sudo su -c "nvidia-settings -c :0 $PARAMS $PARAMSAFETY"
       fi
     fi
-
-    # Wait for x seconds
-    sleep $SLEEP
   else
-
     echo "Curve process is blocked by ClockTune because different static fan ranges"
-
     if [[ $JUSTSTART = "0" ]]; then
       JUSTSTART="1"
       #timeout 25 screen -A -m -d -S fan sudo bash /home/minerstat/minerstat-os/bin/setfans.sh &
     fi
-
-    # Wait for x seconds
-    sleep $SLEEP
   fi
 
   # Octominer Static / Auto-fans
@@ -533,6 +525,10 @@ loop() {
     fi
   fi
 
+  # Wait for x seconds
+  sleep $SLEEP
+
+  # Restart loop
   loop
 }
 
