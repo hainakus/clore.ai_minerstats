@@ -8,7 +8,7 @@ TARGET_MEM=$(cat /media/storage/fans.txt 2>/dev/null | grep "TARGET_MEM=" | head
 FANDIFF=$(cat /media/storage/fans.txt 2>/dev/null | grep "FANDIFF=" | head -n1 | xargs | sed 's/[^0-9]*//g' | xargs -0)
 
 # Octominer settings
-OCTO_TYPE=$(cat /media/storage/fans.txt 2>/dev/null | grep "OCTO_TYPE=" | head -n1 | xargs | sed 's/[^0-9]*//g' | xargs -0)
+OCTO_TYPE=$(cat /media/storage/fans.txt 2>/dev/null | grep "OCTO_TYPE=" | head -n1 | xargs | sed 's/[^a-z]*//g' | xargs -0)
 OCTO_FANMIN=$(cat /media/storage/fans.txt 2>/dev/null | grep "OCTO_FANMIN=" | head -n1 | xargs | sed 's/[^0-9]*//g' | xargs -0)
 OCTO_FANMAX=$(cat /media/storage/fans.txt 2>/dev/null | grep "OCTO_FANMAX=" | head -n1 | xargs | sed 's/[^0-9]*//g' | xargs -0)
 OCTO_TARGET=$(cat /media/storage/fans.txt 2>/dev/null | grep "OCTO_TARGET=" | head -n1 | xargs | sed 's/[^0-9]*//g' | xargs -0)
