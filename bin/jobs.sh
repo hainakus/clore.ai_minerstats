@@ -239,9 +239,9 @@ NPT=$(ps aux | grep -c nvidia-persistenced)
 if [[ "$NPT" -lt 2 ]]; then
   DISPLAY=:0 sudo nvidia-persistenced
 fi
-# Webserver 
+# Webserver
 WPY=$(sudo screen -list | grep -c webpy)
-echo "[65%] Checking Local Server ..."
+echo "[75%] Checking Local Server ..."
 if [[ "$WPY" -lt 1 ]]; then
   sudo kill -9 $(ps aux | grep web.py | grep webpy | awk '{print $2}') 2> /dev/null
   sudo screen -wipe > /dev/null
@@ -261,7 +261,7 @@ NVIDIADEVICE=$(timeout 5 sudo lshw -C display)
 
 if [[ $NVIDIADEVICE == *"0000:00:01.0"* ]]; then
   if [[ $NVIDIADEVICE == *"Radeon R5/R6/R7 Graphics"* ]]; then
-    echo "[75%] Disabing Radeon Internal GPU ..."
+    echo "[78%] Disabing Radeon Internal GPU ..."
     timeout 5 sudo bash /home/minerstat/minerstat-os/core/rmpci 00:01.0
   fi
 fi

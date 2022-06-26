@@ -145,19 +145,21 @@ oping() {
   printfo info "Raw: $MIN"
   MIN=$((MIN * 60))
   printfo info "Will be turned off after: $MIN second"
+  # -l ID, -v 0=off, 1=on, 2=blink 0.1s, 3=blink 1s, >=4=blink 3s
   timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -l 1 -v 2
   screen -A -m -d -S kill_ping sudo /home/minerstat/minerstat-os/core/octoctrl --kping $MIN
 }
 
 # Flash red error lights
 oerr() {
+  # -l ID, -v 0=off, 1=on, 2=blink 0.1s, 3=blink 1s, >=4=blink 3s
   sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -l 0 -v 3
 }
 
 # Ping Leds
 kping() {
   sleep $MIN
-  timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -l 0 -v 0
+  # -l ID, -v 0=off, 1=on, 2=blink 0.1s, 3=blink 1s, >=4=blink 3s
   timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -l 1 -v 0
 }
 

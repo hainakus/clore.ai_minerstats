@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Octominer led
+if [[ -f "/dev/shm/octo.pid" ]]; then
+  # -l ID, -v 0=off, 1=on, 2=blink 0.1s, 3=blink 1s, >=4=blink 3s
+  timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -l 0 -v 3
+fi

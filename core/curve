@@ -14,6 +14,32 @@ OCTO_FANMAX=$(cat /media/storage/fans.txt 2>/dev/null | grep "OCTO_FANMAX=" | he
 OCTO_TARGET=$(cat /media/storage/fans.txt 2>/dev/null | grep "OCTO_TARGET=" | head -n1 | xargs | sed 's/[^0-9]*//g' | xargs -0)
 OCTO_TARGET_MEM=$(cat /media/storage/fans.txt 2>/dev/null | grep "OCTO_TARGET_MEM=" | head -n1 | xargs | sed 's/[^0-9]*//g' | xargs -0)
 
+# Octominer LEDS
+OCTO_LED_WHITE=$(cat /media/storage/fans.txt 2>/dev/null | grep "OCTO_LED_WHITE=" | head -n1 | xargs | sed 's/[^0-9]*//g' | xargs -0)
+OCTO_LED_ERROR=$(cat /media/storage/fans.txt 2>/dev/null | grep "OCTO_LED_ERROR=" | head -n1 | xargs | sed 's/[^0-9]*//g' | xargs -0)
+
+# Only adjust leds if .pid found
+if [[ -f "/dev/shm/octo.pid" ]]; then
+  # Octominer ERROR Leds
+  if [[ "$OCTO_LED_ERROR" = "1" ]]; then
+    # Disabled -> Enabled
+    sudo su -c "echo '1' > /dev/shm/octo_led.pid"
+  else
+    # Enabled -> Disabled
+    if [[ -f "/dev/shm/octo_led.pid" ]]; then
+      sudo su -c "sudo rm /dev/shm/octo_led.pid"
+    fi
+  fi
+
+  # Octominer White leds
+  if [[ "$OCTO_LED_WHITE" = "1" ]]; then
+    # -l ID, -v 0=off, 1=on, 2=blink 0.1s, 3=blink 1s, >=4=blink 3s
+    timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -l 1 -v 2
+  else
+    timeout 5 sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -l 1 -v 0
+  fi
+fi
+
 # Override on static
 FANSTATIC=0
 
@@ -499,11 +525,13 @@ loop() {
   fi
 
   # Octominer Static / Auto-fans
-  # Not activated yet
-
-  #if [[ -f "/dev/shm/octo.pid" ]]; then
-  #  sudo /home/minerstat/minerstat-os/bin/octo-fan $OCTO_TYPE $OCTO_FANMIN $OCTO_FANMAX $OCTO_TARGET $OCTO_TARGET_MEM $HIGHEST $HIGHEST_TYPE_CACHE
-  #fi
+  # If LED_WHITE having value - user defined config
+  if [[ ! -z "$OCTO_LED_WHITE" ]]; then
+    # If PID exists - octominer case detected
+    if [[ -f "/dev/shm/octo.pid" ]]; then
+      sudo /home/minerstat/minerstat-os/bin/octo-fan $OCTO_TYPE $OCTO_FANMIN $OCTO_FANMAX $OCTO_TARGET $OCTO_TARGET_MEM $HIGHEST $HIGHEST_TYPE_CACHE
+    fi
+  fi
 
   loop
 }

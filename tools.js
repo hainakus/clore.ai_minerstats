@@ -36,7 +36,7 @@ function runMiner(miner, execFile, args, modifierArg, modifierExt) {
   try {
     var chmodQuery = require('child_process').exec;
     //console.log(miner + " => Clearing RAM, Please wait.. (1-30sec)");
-    var setChmod = chmodQuery(isCMD, function (error, stdout, stderr) {
+    var setChmod = chmodQuery(isCMD, function(error, stdout, stderr) {
       global.minerRunning = true;
       // Run only this for CPU
       if (isCPU == "true") {
@@ -55,6 +55,13 @@ function runMiner(miner, execFile, args, modifierArg, modifierExt) {
   }
 }
 
+function pingOctoErr() {
+  try {
+    var pingOcto = require('child_process').exec;
+    var pingOctoQ = pingOcto("timeout 5 sudo /home/minerstat/minerstat-os/bin/octo_eled", function(error, stdout, stderr) { });
+  } catch (err) { }
+}
+
 function restartNode() {
   //console.log(global.benchmark);
   //console.log(global.watchnum);
@@ -69,7 +76,7 @@ function restartNode() {
       clearInterval(global.hwmonitor);
       var killMinerQueryB = require('child_process').exec;
       try {
-        var killMinerQueryProcB = killMinerQueryB("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function (error, stdout, stderr) {
+        var killMinerQueryProcB = killMinerQueryB("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
           main.main();
         });
       } catch (err) {
@@ -83,7 +90,7 @@ function restartNode() {
       clearInterval(global.timeout);
       clearInterval(global.hwmonitor);
       var exec = require('child_process').exec;
-      var queryBoot = exec("sudo bash /home/minerstat/minerstat-os/bin/reboot.sh", function (error, stdout, stderr) {
+      var queryBoot = exec("sudo bash /home/minerstat/minerstat-os/bin/reboot.sh", function(error, stdout, stderr) {
         console.log(stdout + " " + stderr);
       });
     }
@@ -461,7 +468,7 @@ module.exports = {
   /*
     START MINER
   */
-  start: async function (miner, startArgs, modifierArg, modifierExt) {
+  start: async function(miner, startArgs, modifierArg, modifierExt) {
     var execFile,
       args,
       parse = require('parse-spawn-args').parse,
@@ -495,7 +502,7 @@ module.exports = {
           global.startMinerName = miner;
         }
         execFile = MINER_JSON[miner]["execFile"];
-      } catch (testMiner) { }
+      } catch (testMiner) {}
       if (args === "auto") {
         args = startArgs;
       }
@@ -517,7 +524,7 @@ module.exports = {
 
     try {
       var getTOR = require('child_process').exec,
-        getTORProc = getTOR("cat /media/storage/tor.txt 2>/dev/null", function (error, stdout, stderr) {
+        getTORProc = getTOR("cat /media/storage/tor.txt 2>/dev/null", function(error, stdout, stderr) {
           var torlog = stdout;
           if (torlog.includes("1")) {
             console.log("\x1b[1;94m== \x1b[0mTor Network: \x1b[1;32mEnabled\x1b[0m");
@@ -526,7 +533,7 @@ module.exports = {
             console.log("\x1b[1;94m== \x1b[0mTor Network: \x1b[1;32mDisabled " + torlog + "\x1b[0m");
           }
         });
-    } catch (getTORError) { }
+    } catch (getTORError) {}
 
     // FOR SAFE RUNNING MINER NEED TO CREATE START.BASH
     var writeStream = fs.createWriteStream(global.path + "/" + "clients/" + miner + "/start.bash"),
@@ -559,7 +566,7 @@ module.exports = {
     //console.log("Starting command: " + str);
     writeStream.write("" + str);
     writeStream.end();
-    writeStream.on('finish', function () {
+    writeStream.on('finish', function() {
       console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32m" + global.worker + " (" + miner + ") preparing ...\x1b[0m");
       sleep.sleep(2);
 
@@ -576,16 +583,16 @@ module.exports = {
             form: {
               dump: "minerstatOSInit"
             }
-          }, function (error, response, body) {
+          }, function(error, response, body) {
             //console.log("\x1b[1;94m================ MINERSTAT ===============\x1b[0m");
             console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32mFirst sync ...\x1b[0m");
           });
-        } catch (err) { }
+        } catch (err) {}
 
         // Start
         try {
           var killQuery = require('child_process').exec,
-            killQueryProc = killQuery("sudo timeout 30 /home/minerstat/minerstat-os/core/killport.sh " + MINER_JSON[miner]["apiPort"], function (error, stdout, stderr) {
+            killQueryProc = killQuery("sudo timeout 30 /home/minerstat/minerstat-os/core/killport.sh " + MINER_JSON[miner]["apiPort"], function(error, stdout, stderr) {
               if (global.PrivateMiner == "False") {
                 console.log(stdout);
                 //console.log("Starting miner screen...");
@@ -593,7 +600,7 @@ module.exports = {
                 runMiner(miner, execFile, args, modifierArg, modifierExt);
               }
             });
-        } catch (killError) { }
+        } catch (killError) {}
 
         if (global.PrivateMiner == "True") {
           //console.log(stdout);
@@ -607,7 +614,7 @@ module.exports = {
         console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;32mMiner delay set for " + global.minerStartDelay + " sec");
         // Get system uptime
         var getUptime = require('child_process').exec,
-          getUptimeProc = getUptime('timeout 5 awk "{print $1}" /proc/uptime | xargs | cut -f1 -d"." | xargs -0', function (error, stdout, stderr) {
+          getUptimeProc = getUptime('timeout 5 awk "{print $1}" /proc/uptime | xargs | cut -f1 -d"." | xargs -0', function(error, stdout, stderr) {
             var systemUptime = 301;
             try {
               systemUptime = stdout.replace(/(<([^>]+)>)/gi, "").trim();
@@ -632,14 +639,14 @@ module.exports = {
   /*
     AUTO UPDATE
   */
-  autoupdate: function (miner, startArgs, modifierArg, modifierExt) {
+  autoupdate: function(miner, startArgs, modifierArg, modifierExt) {
     var main = require('./start.js');
     main.boot(miner, startArgs, modifierArg, modifierExt);
   },
   /*
     BENCHMARK
   */
-  benchmark: function () {
+  benchmark: function() {
     var sleep = require('sleep'),
       main = require('./start.js'),
       request = require('request'),
@@ -648,7 +655,7 @@ module.exports = {
     clearInterval(global.hwmonitor);
     needle.get('https://api.minerstat.com/v2/benchmark/' + global.accesskey + '/' + global.worker, {
       "timeout": 15000
-    }, function (error, response) {
+    }, function(error, response) {
       if (error === null) {
         console.log(response.body);
         // Safety if customer using custom miner to turn all flags off before starting bench
@@ -689,7 +696,7 @@ module.exports = {
               form: {
                 dump: "BenchmarkInit"
               }
-            }, function (error, response, body) {
+            }, function(error, response, body) {
               console.log(body);
               if (waitingArray.length == 0) {
                 clearInterval(spec);
@@ -703,10 +710,10 @@ module.exports = {
                 global.benchmark = false;
                 try {
                   var killMinerQueryF = require('child_process').exec,
-                    killMinerQueryProcF = killMinerQueryF("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function (error, stdout, stderr) {
+                    killMinerQueryProcF = killMinerQueryF("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
                       main.main();
                     });
-                } catch (killProtectionVI) { }
+                } catch (killProtectionVI) {}
 
               } else {
                 clearInterval(spec);
@@ -755,7 +762,7 @@ module.exports = {
           console.log(waitingArray);
           try {
             var killMinerQueryE = require('child_process').exec,
-              killMinerQueryProcE = killMinerQueryE("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function (error, stdout, stderr) {
+              killMinerQueryProcE = killMinerQueryE("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
                 main.main();
               });
           } catch (killProtectionV) {
@@ -784,7 +791,7 @@ module.exports = {
           sleep.sleep(2);
           try {
             var killMinerQueryD = require('child_process').exec,
-              killMinerQueryProcD = killMinerQueryD("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function (error, stdout, stderr) {
+              killMinerQueryProcD = killMinerQueryD("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
                 main.main();
               });
           } catch (killProtectionIV) {
@@ -804,7 +811,7 @@ module.exports = {
         sleep.sleep(2);
         try {
           var killMinerQueryC = require('child_process').exec,
-            killMinerQueryProcC = killMinerQueryC("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function (error, stdout, stderr) {
+            killMinerQueryProcC = killMinerQueryC("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
               main.main();
             });
         } catch (killProtectionIII) {
@@ -817,7 +824,7 @@ module.exports = {
   /*
     REMOTE COMMAND
   */
-  remotecommand: function (command) {
+  remotecommand: function(command) {
     if (command !== "" && !command.includes("html") && !command.includes("nginx")) {
       console.log("\x1b[1;94m== \x1b[0mRemote command: " + command);
       var exec = require('child_process').exec,
@@ -846,7 +853,7 @@ module.exports = {
           global.benchmark = false;
           try {
             var killMinerQuery = require('child_process').exec,
-              killMinerQueryProc = killMinerQuery("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function (error, stdout, stderr) {
+              killMinerQueryProc = killMinerQuery("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
                 main.main();
               });
           } catch (killProtection) {
@@ -855,7 +862,7 @@ module.exports = {
           break;
         case 'DOWNLOADWATTS':
           console.log("\x1b[1;94m== \x1b[0mClockTune started ...");
-          var queryWattResX = exec("cd " + global.path + "/bin; sudo bash " + global.path + "/bin/overclock.sh", function (error, stdout, stderr) {
+          var queryWattResX = exec("cd " + global.path + "/bin; sudo bash " + global.path + "/bin/overclock.sh", function(error, stdout, stderr) {
             console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;32mNew clocks applied\x1b[0m");
             console.log(stdout + " " + stderr);
           });
@@ -867,13 +874,13 @@ module.exports = {
           sleep.sleep(3);
           main.killall();
           sleep.sleep(2);
-          var queryWattRes = exec("cd " + global.path + "/bin; sudo bash " + global.path + "/bin/overclock.sh", function (error, stdout, stderr) {
+          var queryWattRes = exec("cd " + global.path + "/bin; sudo bash " + global.path + "/bin/overclock.sh", function(error, stdout, stderr) {
             console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;32mNew clocks applied\x1b[0m");
             console.log(stdout + " " + stderr);
             sleep.sleep(2);
             try {
               var killMinerQueryA = require('child_process').exec,
-                killMinerQueryProcA = killMinerQueryA("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function (error, stdout, stderr) {
+                killMinerQueryProcA = killMinerQueryA("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
                   main.main();
                 });
             } catch (killProtectionII) {
@@ -883,23 +890,23 @@ module.exports = {
           break;
         case 'SETFANS':
           console.log("\x1b[1;94m== \x1b[0mApplying new fans ...");
-          var queryFans = exec("cd " + global.path + "/bin; sudo sh " + global.path + "/bin/setfans.sh", function (error, stdout, stderr) {
+          var queryFans = exec("cd " + global.path + "/bin; sudo sh " + global.path + "/bin/setfans.sh", function(error, stdout, stderr) {
             console.log(stdout + " " + stderr);
           });
           break;
         case 'MEMORYTWEAK':
           console.log("\x1b[1;94m== \x1b[0mApplying new memory straps ...");
-          var queryMemTool = exec("cd " + global.path + "/bin; sudo sh " + global.path + "/bin/setmem.sh", function (error, stdout, stderr) {
+          var queryMemTool = exec("cd " + global.path + "/bin; sudo sh " + global.path + "/bin/setmem.sh", function(error, stdout, stderr) {
             console.log(stdout + " " + stderr);
           });
           break;
         case 'REBOOT':
           console.log("\x1b[1;94m== \x1b[0mRebooting ...");
-          var queryBoot = exec("sudo bash /home/minerstat/minerstat-os/bin/reboot.sh", function (error, stdout, stderr) { });
+          var queryBoot = exec("sudo bash /home/minerstat/minerstat-os/bin/reboot.sh", function(error, stdout, stderr) {});
           break;
         case 'FORCEREBOOT':
           console.log("\x1b[1;94m== \x1b[0mRebooting ...");
-          var queryBoot = exec("sudo bash /home/minerstat/minerstat-os/bin/reboot.sh", function (error, stdout, stderr) { });
+          var queryBoot = exec("sudo bash /home/minerstat/minerstat-os/bin/reboot.sh", function(error, stdout, stderr) {});
           break;
         default:
           console.log("\x1b[1;94m== \x1b[0mStatus: \x1b[1;31mError (Unknown remote command: " + command + ")\x1b[0m");
@@ -909,65 +916,65 @@ module.exports = {
   /*
     KILL ALL RUNNING MINER
   */
-  killall: function () {
+  killall: function() {
     const fkill = require('fkill');
     try {
       // Kill known miner instances
-      fkill('SRBMiner-MULTI').then(() => { });
-      fkill('bminer').then(() => { });
-      fkill('ccminer').then(() => { });
-      fkill('vkminer').then(() => { });
-      fkill('cpuminer').then(() => { });
-      fkill('zecminer64').then(() => { });
-      fkill('ethminer').then(() => { });
-      fkill('ethdcrminer64').then(() => { });
-      fkill('miner').then(() => { });
-      fkill('sgminer').then(() => { });
-      fkill('nsgpucnminer').then(() => { });
-      fkill('zm').then(() => { });
-      fkill('xmr-stak').then(() => { });
-      fkill('t-rex').then(() => { });
-      fkill('CryptoDredge').then(() => { });
-      fkill('lolMiner').then(() => { });
-      fkill('mkxminer').then(() => { });
-      fkill('xmrig').then(() => { });
-      fkill('xmrig').then(() => { }); // yes twice
-      fkill('xmrig-amd').then(() => { });
-      fkill('xmrig-nvidia').then(() => { });
-      fkill('z-enemy').then(() => { });
-      fkill('PhoenixMiner').then(() => { });
-      fkill('wildrig-multi').then(() => { });
-      fkill('progpowminer').then(() => { });
-      fkill('teamredminer').then(() => { });
-      fkill('cast_xmr-vega').then(() => { });
-      fkill('zjazz_cuda').then(() => { });
-      fkill('GrinProMiner').then(() => { });
-      fkill('serominer').then(() => { });
-      fkill('nbminer').then(() => { });
-      fkill('nsfminer').then(() => { });
+      fkill('SRBMiner-MULTI').then(() => {});
+      fkill('bminer').then(() => {});
+      fkill('ccminer').then(() => {});
+      fkill('vkminer').then(() => {});
+      fkill('cpuminer').then(() => {});
+      fkill('zecminer64').then(() => {});
+      fkill('ethminer').then(() => {});
+      fkill('ethdcrminer64').then(() => {});
+      fkill('miner').then(() => {});
+      fkill('sgminer').then(() => {});
+      fkill('nsgpucnminer').then(() => {});
+      fkill('zm').then(() => {});
+      fkill('xmr-stak').then(() => {});
+      fkill('t-rex').then(() => {});
+      fkill('CryptoDredge').then(() => {});
+      fkill('lolMiner').then(() => {});
+      fkill('mkxminer').then(() => {});
+      fkill('xmrig').then(() => {});
+      fkill('xmrig').then(() => {}); // yes twice
+      fkill('xmrig-amd').then(() => {});
+      fkill('xmrig-nvidia').then(() => {});
+      fkill('z-enemy').then(() => {});
+      fkill('PhoenixMiner').then(() => {});
+      fkill('wildrig-multi').then(() => {});
+      fkill('progpowminer').then(() => {});
+      fkill('teamredminer').then(() => {});
+      fkill('cast_xmr-vega').then(() => {});
+      fkill('zjazz_cuda').then(() => {});
+      fkill('GrinProMiner').then(() => {});
+      fkill('serominer').then(() => {});
+      fkill('nbminer').then(() => {});
+      fkill('nsfminer').then(() => {});
       // Kill Custom miner
       if (global.PrivateMiner == "True") {
-        fkill(global.privateExe).then(() => { });
+        fkill(global.privateExe).then(() => {});
       }
       try {
         var killWrapper = require('child_process').exec,
-          killWrapperProc = killWrapper("ps aux | grep wrapper | grep minerstat | awk '{print $2}' | sudo xargs kill -9 && echo 'screen terminated'", function (error, stdout, stderr) { });
+          killWrapperProc = killWrapper("ps aux | grep wrapper | grep minerstat | awk '{print $2}' | sudo xargs kill -9 && echo 'screen terminated'", function(error, stdout, stderr) {});
       } catch (killWrapperProcError) {
         console.log(killWrapperProcError.toString());
       }
-    } catch (err) { }
+    } catch (err) {}
   },
   /*
     START
   */
-  restart: function () {
+  restart: function() {
     var main = require('./start.js');
     main.main();
   },
   /*
     FETCH INFO
   */
-  fetch: function (gpuMiner, isCpu, cpuMiner) {
+  fetch: function(gpuMiner, isCpu, cpuMiner) {
     var gpuSyncDone = false,
       cpuSyncDone = false,
       http = require('http');
@@ -978,7 +985,7 @@ module.exports = {
 
     if (global.PrivateMiner == "True") {
       var fetchMiner = require('child_process').exec;
-      var fetchMinerAPI = fetchMiner("sudo bash /home/minerstat/minerstat-os/clients/" + global.startMinerName + "/api", function (error, stdout, stderr) {
+      var fetchMinerAPI = fetchMiner("sudo bash /home/minerstat/minerstat-os/clients/" + global.startMinerName + "/api", function(error, stdout, stderr) {
         var statusCode = stdout;
         if (statusCode.includes("error")) {
           gpuSyncDone = false;
@@ -999,7 +1006,7 @@ module.exports = {
             global.benchmark = false;
             try {
               var killMinerQuery = require('child_process').exec,
-                killMinerQueryProc = killMinerQuery("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function (error, stdout, stderr) {
+                killMinerQueryProc = killMinerQuery("sudo /home/minerstat/minerstat-os/core/killpid " + MINER_JSON[global.startMinerName]["execFile"], function(error, stdout, stderr) {
                   main.main();
                 });
             } catch (killProtection) {
@@ -1022,19 +1029,19 @@ module.exports = {
           port: MINER_JSON[gpuMiner]["apiPort"],
           path: MINER_JSON[gpuMiner]["apiPath"]
         };
-        var req = http.get(options, function (response) {
+        var req = http.get(options, function(response) {
           res_data = '';
-          response.on('data', function (chunk) {
+          response.on('data', function(chunk) {
             global.res_data += chunk;
             gpuSyncDone = true;
             global.sync = true;
           });
-          response.on('end', function () {
+          response.on('end', function() {
             gpuSyncDone = true;
             global.sync = true;
           });
         });
-        req.on('error', function (err) {
+        req.on('error', function(err) {
           gpuSyncDone = false;
           global.sync = true;
           restartNode();
@@ -1046,6 +1053,10 @@ module.exports = {
             console.log("\x1b[1;94m== \x1b[0m- Mining client crashed due to intense overclocking or missing overclocking profile.\x1b[0m");
             console.log("\x1b[1;94m== \x1b[0m- Find tips on: https://minerstat.com/help/miner-is-not-running\x1b[0m");
             console.log("");
+            // Ping octominer error leds
+            try {
+              pingOctoErr();
+            } catch (err) {}
           }
         });
       }
@@ -1053,7 +1064,7 @@ module.exports = {
       // IF TYPE EQUALS CURL
       if (MINER_JSON[gpuMiner]["apiType"] === "curl") {
         var curlQuery = require('child_process').exec;
-        var querylolMiner = curlQuery("curl http://127.0.0.1:" + MINER_JSON[gpuMiner]["apiPort"], function (error, stdout, stderr) {
+        var querylolMiner = curlQuery("curl http://127.0.0.1:" + MINER_JSON[gpuMiner]["apiPort"], function(error, stdout, stderr) {
           if (stderr.indexOf("Failed") == -1) {
             res_data = '';
             global.res_data = "{ " + stdout;
@@ -1072,6 +1083,10 @@ module.exports = {
               console.log("\x1b[1;94m== \x1b[0m- Mining client crashed due to intense overclocking or missing overclocking profile.\x1b[0m");
               console.log("\x1b[1;94m== \x1b[0m- Find tips on: https://minerstat.com/help/miner-is-not-running\x1b[0m");
               console.log("");
+              // Ping octominer error leds
+              try {
+                pingOctoErr();
+              } catch (err) {}
             }
           }
         });
@@ -1089,7 +1104,7 @@ module.exports = {
           global.res_data = global.res_data + "" + data.toString();
           gpuSyncDone = true;
           global.sync = true;
-          setTimeout(function () {
+          setTimeout(function() {
             ccminerClient.end();
           }, 4000);
         });
@@ -1104,6 +1119,10 @@ module.exports = {
             console.log("\x1b[1;94m== \x1b[0m- Mining client crashed due to intense overclocking or missing overclocking profile.\x1b[0m");
             console.log("\x1b[1;94m== \x1b[0m- Find tips on: https://minerstat.com/help/miner-is-not-running\x1b[0m");
             console.log("");
+            // Ping octominer error leds
+            try {
+              pingOctoErr();
+            } catch (err) {}
           }
         });
         ccminerClient.on('end', () => {
@@ -1111,7 +1130,7 @@ module.exports = {
         });
       }
 
-    } catch (errorStatus) { }
+    } catch (errorStatus) {}
 
     // CPUMINER
     if (isCpu.toString() == "true" || isCpu.toString() == "True") {
@@ -1147,20 +1166,20 @@ module.exports = {
           port: MINER_JSON["srbminer-multi-cpu"]["apiPort"],
           path: MINER_JSON["srbminer-multi-cpu"]["apiPath"]
         };
-        var req_cpu = http.get(options_cpu, function (response_cpu) {
+        var req_cpu = http.get(options_cpu, function(response_cpu) {
           res_data_cpu = '';
-          response_cpu.on('data', function (chunk_cpu) {
+          response_cpu.on('data', function(chunk_cpu) {
             // += if API buffering clearing value before
             global.cpu_data += chunk_cpu;
             cpuSyncDone = true;
             global.cpuSync = true;
           });
-          response_cpu.on('end', function () {
+          response_cpu.on('end', function() {
             cpuSyncDone = true;
             global.cpuSync = true;
           });
         });
-        req_cpu.on('error', function (err) {
+        req_cpu.on('error', function(err) {
           cpuSyncDone = false;
           global.cpuSync = true;
         });
@@ -1172,24 +1191,24 @@ module.exports = {
           port: 7887,
           path: '/2/summary'
         };
-        var req = http.get(options, function (response) {
-          response.on('data', function (chunk) {
+        var req = http.get(options, function(response) {
+          response.on('data', function(chunk) {
             global.cpu_data = chunk.toString('utf8');
             cpuSyncDone = true;
             global.cpuSync = true;
           });
-          response.on('end', function () {
+          response.on('end', function() {
             global.cpuSync = true;
           });
         });
-        req.on('error', function (err) {
+        req.on('error', function(err) {
           cpuSyncDone = false;
           global.cpuSync = true;
         });
       }
     }
     // LOOP UNTIL SYNC DONE
-    var _flagCheck = setInterval(function () {
+    var _flagCheck = setInterval(function() {
       var sync = global.sync;
       var cpuSync = global.cpuSync;
       if (isCpu.toString() == "true") {
