@@ -175,8 +175,7 @@ if [[ ! -z "$OCTOJSON" ]]; then
 
       # Convert % to PWM
       RPMVAL=$(python3 -c "print($RPMMAX / 100 * $FANSPEED)")
-      RPMVAL=$(printf "%.0f\n" $RPMVAL)
-      RPMVAL=$(echo $RPMVAL | cut -f1 -d".")
+      RPMVAL=$(printf "%.0f\n" $RPMVAL | cut -f1 -d".")
 
       # Protection for null
       # Allowing 0 value to turn case fans off
