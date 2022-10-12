@@ -270,7 +270,7 @@ module.exports = {
           console.log("\x1b[1;94m== \x1b[0mNVIDIA driver version: \x1b[1;32m" + driverversion + "\x1b[0m");
           // NVIDIA-Linux-x86_64-455.23.04.run
           // NVIDIA-Linux-x86_64-455.38.run
-          if (driverversion.includes("455.") || driverversion.includes("460.") || driverversion.includes("465.") || driverversion.includes("470.") || driverversion.includes("495.") || driverversion.includes("510.") || driverversion.includes("511.")) {
+          if (driverversion.includes("455.") || driverversion.includes("460.") || driverversion.includes("465.") || driverversion.includes("470.") || driverversion.includes("495.") || driverversion.includes("510.") || driverversion.includes("511.") || driverversion.includes("515.") || driverversion.includes("520.")) {
             global.cuda = "11";
             //console.log("set");
           }
