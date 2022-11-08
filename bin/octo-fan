@@ -101,16 +101,16 @@ if [[ ! -z "$OCTOJSON" ]]; then
           #printfo info "COLD >$DIFF C!"
           CHANGE=5
           if [ $DIFF -gt 2 ]; then
-            CHANGE=8
-          fi
-          if [ $DIFF -gt 5 ]; then
-            CHANGE=10
-          fi
-          if [ $DIFF -gt 10 ]; then
             CHANGE=12
           fi
-          if [ $DIFF -gt 20 ]; then
+          if [ $DIFF -gt 5 ]; then
+            CHANGE=18
+          fi
+          if [ $DIFF -gt 10 ]; then
             CHANGE=25
+          fi
+          if [ $DIFF -gt 20 ]; then
+            CHANGE=30
           fi
           if [ $DIFF -gt 30 ]; then
             CHANGE=35
@@ -128,16 +128,16 @@ if [[ ! -z "$OCTOJSON" ]]; then
           #printfo info "WARM >$DIFF C!"
           CHANGE=5
           if [ $DIFF -lt -2 ]; then
-            CHANGE=8
-          fi
-          if [ $DIFF -lt -5 ]; then
-            CHANGE=10
-          fi
-          if [ $DIFF -lt -10 ]; then
             CHANGE=12
           fi
-          if [ $DIFF -lt -20 ]; then
+          if [ $DIFF -lt -5 ]; then
+            CHANGE=18
+          fi
+          if [ $DIFF -lt -10 ]; then
             CHANGE=25
+          fi
+          if [ $DIFF -lt -20 ]; then
+            CHANGE=30
           fi
           if [ $DIFF -lt -30 ]; then
             CHANGE=35

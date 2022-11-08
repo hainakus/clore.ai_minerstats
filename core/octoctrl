@@ -88,8 +88,8 @@ odisplay() {
   timeout 5 sudo su -c "sudo /home/minerstat/minerstat-os/bin/fan_controller_cli -h > /dev/shm/octo_cache.txt"
   timeout 5 sudo su -c "sudo /home/minerstat/minerstat-os/core/gputable > /dev/shm/gputable_cache.txt"
 
-  GTEMP=$(timeout 5 cat /dev/shm/gputable_cache.txt | awk -F'|' '{print $4}' | xargs | sed 's/[^0-9 ]//g' | xargs)
-  GFAN=$(timeout 5 cat /dev/shm/gputable_cache.txt | awk -F'|' '{print $5}' | xargs | sed 's/[^0-9 ]//g' | xargs)
+  GTEMP=$(timeout 5 cat /dev/shm/gputable_cache.txt | awk -F'|' '{print $5}' | xargs | sed 's/[^0-9 ]//g' | xargs)
+  GFAN=$(timeout 5 cat /dev/shm/gputable_cache.txt | awk -F'|' '{print $6}' | xargs | sed 's/[^0-9 ]//g' | xargs)
 
   FANMAX=0
   TEMPMAX=0
