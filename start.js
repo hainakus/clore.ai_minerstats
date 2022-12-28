@@ -103,7 +103,7 @@ function jsFriendlyJSONStringify(s) {
 function setSyncInterval() {
   // Validate value in memory
   if (global.syncInterval < 10) {
-    console.log("\x1b[1;94m== \x1b[0mInvalid Sync Interval: \x1b[1;31mError (" + global.syncInterval  + "×)\x1b[0m");
+    console.log("\x1b[1;94m== \x1b[0mInvalid Sync Interval: \x1b[1;31mError (" + global.syncInterval + "×)\x1b[0m");
     console.log("\x1b[1;94m== \x1b[0mSync Interval: Applying defaults ...");
     global.syncInterval = 10;
   }
@@ -139,7 +139,7 @@ module.exports = {
     var sync = global.sync,
       res_data = global.res_data,
       cpu_data = global.cpu_data;
-      //console.log("DATA => " + global.cpu_data);
+    //console.log("DATA => " + global.cpu_data);
     //console.log(res_data);         //SHOW SYNC OUTPUT
     // SEND LOG TO SERVER
     //console.log("MINER:" + global.minerVersion + ", CPU:" + global.cpuVersion);
@@ -270,7 +270,7 @@ module.exports = {
           console.log("\x1b[1;94m== \x1b[0mNVIDIA driver version: \x1b[1;32m" + driverversion + "\x1b[0m");
           // NVIDIA-Linux-x86_64-455.23.04.run
           // NVIDIA-Linux-x86_64-455.38.run
-          if (driverversion.includes("455.") || driverversion.includes("460.") || driverversion.includes("465.") || driverversion.includes("470.") || driverversion.includes("495.") || driverversion.includes("510.") || driverversion.includes("511.") || driverversion.includes("515.") || driverversion.includes("520.")) {
+          if (driverversion.includes("455.") || driverversion.includes("460.") || driverversion.includes("465.") || driverversion.includes("470.") || driverversion.includes("495.") || driverversion.includes("510.") || driverversion.includes("511.") || driverversion.includes("515.") || driverversion.includes("520.") || driverversion.includes("525.")) {
             global.cuda = "11";
             //console.log("set");
           }
@@ -366,12 +366,12 @@ module.exports = {
             console.log("\x1b[1;94m== \x1b[0mTimezone: \x1b[1;32m" + timezone + "\x1b[0m");
             try {
               var getTZ = require('child_process').exec,
-              getTZProc = getTZ("sudo timedatectl set-timezone " + timezone, function(error, stdout, stderr) { });
+                getTZProc = getTZ("sudo timedatectl set-timezone " + timezone, function(error, stdout, stderr) {});
             } catch (errtz) {
-              console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError ("+errtz+")\x1b[0m");
+              console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + errtz + ")\x1b[0m");
             }
           } catch (err) {
-            console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError ("+err+")\x1b[0m");
+            console.log("\x1b[1;94m== \x1b[0m" + getDateTime() + ": \x1b[1;31mError (" + err + ")\x1b[0m");
           }
 
           // Custom miner settings
@@ -1004,7 +1004,7 @@ module.exports = {
               MINER_CONFIG_FILE[miner.toLowerCase()] = "start.bash";
               // lolminer bug remove user_config.json
               try {
-              var execl = require('execa');
+                var execl = require('execa');
                 execl.shell("sudo rm /home/minerstat/minerstat-os/clients/lolminer/user_config.json", {
                   cwd: process.cwd(),
                   detached: false,
