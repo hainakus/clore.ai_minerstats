@@ -331,6 +331,10 @@ while true; do
       sleep 1
       # Fetch data from all PSUs
       PSUMETER_PSMI_RAW=$(cat /dev/shm/octo_cache.txt | grep -A 2 PSMI | grep Pac | grep -vE "PEAKS|nan" | awk '{print $10}' | sed 's/[^0-9.]//g' | cut -f1 -d"." | xargs)
+      # Failover for old firmwares to check consumption
+      if [[ -z "$PSUMETER_PSMI_RAW" ]]; then 
+        PSUMETER_PSMI_RAW=$(cat /dev/shm/octo_cache.txt | grep -A 2 PS | grep Pac | grep -vE "PEAKS|nan" | awk '{print $10}' | sed 's/[^0-9.]//g' | cut -f1 -d"." | xargs)
+      fi
       #PSUMETER_PMBUS_RAW=$(cat /dev/shm/octo_cache.txt | grep -A 2 PMBUS | grep Pac | grep -vE "PEAKS|nan" | awk '{print $10}' | sed 's/[^0-9.]//g' | cut -f1 -d"." | xargs)
       # Cache
       PSUMETER=0
