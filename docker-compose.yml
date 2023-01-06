@@ -16,7 +16,7 @@ services:
   minerstats:
     platform: linux/amd64
     build:
-      context: ..
+      context: .
       dockerfile: Dockerfile
     deploy:
       resources:
