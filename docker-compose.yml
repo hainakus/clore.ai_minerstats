@@ -1,16 +1,35 @@
 version: '3'
 services:
-
-  minerstats:
+  nvidia:
     platform: linux/amd64
-    image: hanaik/minerstat:latest
+    image: nvidia/cuda:11.6.2-base-ubuntu20.04
+    command: nvidia-smi
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
               capabilities: [ gpu ]
+    networks:
+      - minerstats
 
+  minerstats:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [ gpu ]
+  #  env_file:
+   #   - .env
+    depends_on:
+      - nvidia
+    links:
+      - nvidia
     networks:
       - minerstats
 

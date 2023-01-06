@@ -30,7 +30,7 @@ RUN apt-get install -y build-essential
 
 RUN mkdir -p /home/minerstat
 WORKDIR /home/minerstat
-COPY .. /home/minerstat
+COPY . /home/minerstat
 RUN ls -la /
 
 
