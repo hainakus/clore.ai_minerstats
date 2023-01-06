@@ -34,5 +34,5 @@ COPY . /home/minerstat
 RUN ls -la /
 
 
-CMD node --max-old-space-size=128 start
+#CMD node --max-old-space-size=128 start
 
