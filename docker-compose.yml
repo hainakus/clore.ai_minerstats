@@ -4,6 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    command: sh cronjob.sh 06-01-2023 08-01-2023
     deploy:
       resources:
         reservations:
