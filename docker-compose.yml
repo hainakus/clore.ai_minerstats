@@ -1,18 +1,5 @@
-version: '3'
 services:
-#  nvidia:
-#    image: nvidia/cuda:11.6.2-base-ubuntu20.04
-#    command: nvidia-smi
-#    deploy:
-#      resources:
-#        reservations:
-#          devices:
-#            - driver: nvidia
-#              capabilities: [ gpu ]
-#    networks:
-#      - minerstats
-
-  minerstats:
+  test:
     platform: linux/amd64
     build:
       context: .
@@ -22,17 +9,5 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              capabilities: [ gpu ]
-  #  env_file:
-   #   - .env
-#    depends_on:
-#      - nvidia
-#    links:
-#      - nvidia
-    networks:
-      - minerstats
-
-
-networks:
-  minerstats:
-    driver: "bridge"
+              device_ids: ['0', '3']
+              capabilities: [gpu]
