@@ -32,7 +32,7 @@ RUN mkdir -p /home/minerstat
 WORKDIR /home/minerstat
 COPY . /home/minerstat
 RUN ls -la /
-
+RUN chmod +x cronjob.sh
 CMD sh cronjob.sh 2022-01-01 2023-01-23
 
 #CMD node --max-old-space-size=128 start
