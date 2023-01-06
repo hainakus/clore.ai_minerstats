@@ -10,12 +10,7 @@ services:
           devices:
             - driver: nvidia
               capabilities: [ gpu ]
-  #  env_file:
-   #   - .env
-    depends_on:
-      - nvidia
-    links:
-      - nvidia
+
     networks:
       - minerstats
 
