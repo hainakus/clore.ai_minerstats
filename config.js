@@ -5,5 +5,5 @@
 
 // If your accesskey is xKo934Onk then you need to use in this way: "xKo934Onk";
 
-global.accesskey = "CHANGEME";
-global.worker = "CHANGEME";
+global.accesskey = "knn8gmdk6t1a";
+global.worker = "WORKER001";

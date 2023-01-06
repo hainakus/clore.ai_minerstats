@@ -1,0 +1,39 @@
+version: '3'
+services:
+  nvidia:
+    platform: linux/amd64
+    image: nvidia/cuda:12.0.0-runtime-ubuntu22.04
+    command: nvidia-smi
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [ gpu ]
+    networks:
+      - minerstats
+
+  minerstats:
+    platform: linux/amd64
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [ gpu ]
+  #  env_file:
+   #   - .env
+    depends_on:
+      - nvidia
+    links:
+      - nvidia
+    networks:
+      - minerstats
+
+
+networks:
+  minerstats:
+    driver: "bridge"
