@@ -17,7 +17,7 @@ RUN apt-get install iputils-ping -y
 RUN apt-get install dmidecode -y
 RUN apt-get install net-tools -y
 #RUN apt-get install nvidia-driver-520 -y
-RUN nvidia-smi
+#RUN nvidia-smi
 RUN node --version
 RUN npm install -g json
 LABEL maintainer "Hainaku CORPORATION <djhainakosurge@gmail.com>"
