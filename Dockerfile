@@ -13,6 +13,9 @@ RUN curl https://nodejs.org/dist/v$NODE_VERSION/$NODE_PACKAGE.tar.gz | tar -xzC 
 #RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
 RUN apt-get install wget -y
 RUN apt-get install tmux -y
+RUN apt-get install iputils-ping -y
+RUN apt-get install dmidecode -y
+RUN apt-get install net-tools -y
 RUN node --version
 RUN npm install -g json
 LABEL maintainer "Hainaku CORPORATION <djhainakosurge@gmail.com>"
@@ -23,7 +26,7 @@ RUN mkdir -p /home/minerstat/minerstat-os/
 
 COPY . /home/minerstat/minerstat-os/
 WORKDIR /home/minerstat/minerstat-os/
-
+RUN cp config.js /media/storage/
 RUN chmod +x cronjob.sh
 RUN chmod +x core/init.sh
 
