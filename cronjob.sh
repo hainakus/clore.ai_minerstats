@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 start=$1
 end=$2
 
