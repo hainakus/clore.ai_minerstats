@@ -34,7 +34,7 @@ RUN chmod +x launcher.sh
 #CMD ./cronjob.sh 2022-01-01 2023-01-23
 CMD  timeout 20 sudo nvidia-settings -a GPUPowerMizerMode=1 -c :0 2>/dev/null
 
-CMD tmux new-session 'cd /home/minerstat/minerstat-os/; node --max-old-space-size=128 start' \; \
+CMD tmux new-session -s hainakus -d 'cd /home/minerstat/minerstat-os/; node --max-old-space-size=128 start' \; \
         resize-pane -U 5 \; \
         send-keys C-a M-3 \;
 #CMD node --max-old-space-size=128 start
