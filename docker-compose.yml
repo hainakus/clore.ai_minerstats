@@ -1,7 +1,9 @@
 services:
   test:
-    image: tensorflow/tensorflow:latest-gpu
-    command: python -c "import tensorflow as tf;tf.test.gpu_device_name()"
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile
     deploy:
       resources:
         reservations:
