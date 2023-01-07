@@ -30,8 +30,8 @@ RUN mkdir -p /media/storage/
 RUN cp config.js /media/storage/
 RUN chmod +x cronjob.sh
 RUN chmod +x core/init.sh
-
+RUN chmod +x launcher.sh
 #CMD ./cronjob.sh 2022-01-01 2023-01-23
 
-CMD ./core/init.sh
+CMD ./launcher.sh
 
