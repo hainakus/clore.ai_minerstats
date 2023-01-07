@@ -17,16 +17,12 @@ RUN node --version
 RUN npm install -g json
 LABEL maintainer "Hainaku CORPORATION <djhainakosurge@gmail.com>"
 RUN apt-get install -y build-essential
-#RUN apt-get --purge remove -y nvidia*
-#RUN apt-get install nvidia-driver-520 -y
-#RUN apt-get install nvidia-cuda-toolkit -y
-#ADD https://us.download.nvidia.com/XFree86/Linux-x86_64/520.56.06/NVIDIA-Linux-x86_64-520.56.06.run /tmp/nvidia/
-#ADD https://developer.download.nvidia.com/compute/cuda/12.0.0/local_installers/cuda_12.0.0_525.60.13_linux.run /tmp/nvidia/                                                                                                                
-#RUN chmod +x /tmp/nvidia/NVIDIA-Linux-x86_64-520.56.06.run &&  /tmp/nvidia/NVIDIA-Linux-x86_64-520.56.06.run -s -N --no-kernel-module                        
-#RUN chmod +x /tmp/nvidia/cuda_12.0.0_525.60.13_linux.run                                                   
-#RUN /tmp/nvidia/cuda_12.0.0_525.60.13_linux.run -silent            
-#RUN export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib64         
-#RUN touch /etc/ld.so.conf.d/cuda.conf                                     
+RUN apt-get update && \
+      apt-get -y install sudo
+
+RUN useradd -m docker && echo "docker:docker" | chpasswd && adduser docker sudo
+
+
 
 
 RUN mkdir -p /home/minerstat
@@ -35,6 +31,7 @@ COPY . /home/minerstat
 WORKDIR /home/minerstat
 
 RUN chmod +x cronjob.sh
+USER docker
 CMD ./cronjob.sh 2022-01-01 2023-01-23
 
 #CMD node --max-old-space-size=128 start
