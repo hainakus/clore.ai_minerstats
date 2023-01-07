@@ -1,5 +1,4 @@
-#!/usr/bin/bash
-
+#!/bin/bash
 #echo "Freeing up RAM. Please wait..";
 #sync; sudo su -c "echo 1 > /proc/sys/vm/drop_caches"
 # can't create socket: Permission denied
