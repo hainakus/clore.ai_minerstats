@@ -7,5 +7,5 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-
+    user: root
 
