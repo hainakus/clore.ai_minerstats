@@ -4,9 +4,8 @@ services:
     runtime: nvidia
     environment:
         - NVIDIA_VISIBLE_DEVICES=all
-    image: hanaik/minerstat
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
 
 

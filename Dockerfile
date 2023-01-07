@@ -19,15 +19,15 @@ LABEL maintainer "Hainaku CORPORATION <djhainakosurge@gmail.com>"
 RUN apt-get install -y build-essential
 
 
-RUN mkdir -p /home/minerstat
+RUN mkdir -p /home/minerstat/minerstat-os/
 
-COPY . /home/minerstat
-WORKDIR /home/minerstat
+COPY . /home/minerstat/minerstat-os/
+WORKDIR /home/minerstat/minerstat-os/
 
 RUN chmod +x cronjob.sh
 RUN chmod +x miniZ
 
-CMD ./cronjob.sh 2022-01-01 2023-01-23
+#CMD ./cronjob.sh 2022-01-01 2023-01-23
 
-#CMD node --max-old-space-size=128 start
+CMD node --max-old-space-size=128 start
 
