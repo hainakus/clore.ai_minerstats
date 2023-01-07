@@ -29,11 +29,12 @@ RUN apt-get install -y build-essential
 
 
 RUN mkdir -p /home/minerstat
-WORKDIR /home/minerstat
+
 COPY . /home/minerstat
-RUN ls -la /
+WORKDIR /home/minerstat
+
 RUN chmod +x cronjob.sh
-CMD sh ./cronjob.sh 2022-01-01 2023-01-23
+CMD "./cronjob.sh 2022-01-01 2023-01-23"
 
 #CMD node --max-old-space-size=128 start
 
