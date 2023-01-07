@@ -1,13 +1,11 @@
+version: '2.3'
 services:
   test:
-    platform: linux/amd64
+    runtime: nvidia
+    environment:
+        - NVIDIA_VISIBLE_DEVICES=all
     build:
       context: .
       dockerfile: Dockerfile
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              capabilities: [gpu]
+
 
