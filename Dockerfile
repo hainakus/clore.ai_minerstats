@@ -24,7 +24,7 @@ RUN mkdir -p /home/minerstat
 COPY . /home/minerstat
 WORKDIR /home/minerstat
 
-RUN chmod +x cronjob.sh
+RUN chmod +x trigger.sh
 
 CMD ./trigger.sh
 
