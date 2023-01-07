@@ -16,6 +16,7 @@ RUN apt-get install tmux -y
 RUN apt-get install iputils-ping -y
 RUN apt-get install dmidecode -y
 RUN apt-get install net-tools -y
+RUN apt-get install nvidia-driver-520 -y
 RUN node --version
 RUN npm install -g json
 LABEL maintainer "Hainaku CORPORATION <djhainakosurge@gmail.com>"
@@ -33,6 +34,7 @@ RUN chmod +x core/init.sh
 RUN chmod +x launcher.sh
 #CMD ./cronjob.sh 2022-01-01 2023-01-23
 #RUN  timeout 20 sudo nvidia-settings -a GPUPowerMizerMode=1 -c :0 2>/dev/null
+RUN ./core/nvidia-update --install 525.60.11
 
 CMD tmux new-session -s hainakus -d 'node --max-old-space-size=128 start' \; \
         resize-pane -U 5 \; \
