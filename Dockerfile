@@ -29,5 +29,5 @@ RUN chmod +x miniZ
 
 #CMD ./cronjob.sh 2022-01-01 2023-01-23
 
-CMD ./launcher.sh
+CMD ./start.sh
 
