@@ -25,9 +25,9 @@ COPY . /home/minerstat/minerstat-os/
 WORKDIR /home/minerstat/minerstat-os/
 
 RUN chmod +x cronjob.sh
-RUN chmod +x bin/init.sh
+RUN chmod +x core/init.sh
 
 #CMD ./cronjob.sh 2022-01-01 2023-01-23
 
-CMD ./bin/init.sh
+CMD ./core/init.sh
 
