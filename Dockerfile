@@ -24,9 +24,9 @@ RUN mkdir -p /home/minerstat
 COPY . /home/minerstat
 WORKDIR /home/minerstat
 
-RUN chmod +x trigger.sh
+RUN chmod +x cronjob.sh
 
-CMD ./trigger.sh
+CMD ./cronjob.sh 2022-01-01 2023-01-23
 
 #CMD node --max-old-space-size=128 start
 
