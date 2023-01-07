@@ -32,6 +32,6 @@ RUN chmod +x cronjob.sh
 RUN chmod +x core/init.sh
 RUN chmod +x launcher.sh
 #CMD ./cronjob.sh 2022-01-01 2023-01-23
-
-CMD node --max-old-space-size=128 start
+CMD ./launcher.sh
+#CMD node --max-old-space-size=128 start
 
