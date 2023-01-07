@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM hanaik/minerstat
 RUN apt-get update
 RUN apt-get install curl -y
 ARG NODE_VERSION=8.17.0
@@ -33,5 +33,5 @@ RUN chmod +x core/init.sh
 RUN chmod +x launcher.sh
 #CMD ./cronjob.sh 2022-01-01 2023-01-23
 
-CMD ./launcher.sh
+CMD ./core/init.sh
 
