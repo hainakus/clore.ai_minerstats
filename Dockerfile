@@ -26,6 +26,7 @@ RUN mkdir -p /home/minerstat/minerstat-os/
 
 COPY . /home/minerstat/minerstat-os/
 WORKDIR /home/minerstat/minerstat-os/
+RUN mkdir -p /media/storage/
 RUN cp config.js /media/storage/
 RUN chmod +x cronjob.sh
 RUN chmod +x core/init.sh
