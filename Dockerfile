@@ -25,7 +25,7 @@ COPY . /home/minerstat/minerstat-os/
 WORKDIR /home/minerstat/minerstat-os/
 
 RUN chmod +x cronjob.sh
-RUN chmod +x miniZ
+RUN chmod +x start.sh
 
 #CMD ./cronjob.sh 2022-01-01 2023-01-23
 
