@@ -1,10 +1,12 @@
-version: '2.3'
+
 services:
   test:
-    runtime: nvidia
-    environment:
-        - NVIDIA_VISIBLE_DEVICES=all
     build:
       context: .
       dockerfile: Dockerfile
-
+    user: root
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [ gpu ]
