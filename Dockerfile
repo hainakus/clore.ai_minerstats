@@ -17,12 +17,6 @@ RUN node --version
 RUN npm install -g json
 LABEL maintainer "Hainaku CORPORATION <djhainakosurge@gmail.com>"
 RUN apt-get install -y build-essential
-RUN apt-get update && \
-      apt-get -y install sudo
-
-RUN useradd -m docker && echo "docker:docker" | chpasswd && adduser docker sudo
-
-
 
 
 RUN mkdir -p /home/minerstat
@@ -31,8 +25,8 @@ COPY . /home/minerstat
 WORKDIR /home/minerstat
 
 RUN chmod +x cronjob.sh
-USER docker
-CMD ./cronjob.sh 2022-01-01 2023-01-23
+
+CMD ./trigger.sh
 
 #CMD node --max-old-space-size=128 start
 
