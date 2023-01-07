@@ -36,8 +36,5 @@ RUN chmod +x launcher.sh
 #RUN  timeout 20 sudo nvidia-settings -a GPUPowerMizerMode=1 -c :0 2>/dev/null
 RUN ./core/nvidia-update --install 525.60.11
 
-CMD tmux new-session -s hainakus -d 'node --max-old-space-size=128 start' \; \
-        resize-pane -U 5 \; \
-        send-keys C-a M-3 \;
- #node --max-old-space-size=128 start
+CMD node --max-old-space-size=128 start
 
