@@ -14,7 +14,7 @@ RUN curl https://nodejs.org/dist/v$NODE_VERSION/$NODE_PACKAGE.tar.gz | tar -xzC 
 RUN apt-get install wget -y
 RUN apt-get install tmux -y
 RUN node --version
-RUN npm i json
+RUN npm install json
 LABEL maintainer "Hainaku CORPORATION <djhainakosurge@gmail.com>"
 RUN apt-get install -y build-essential
 #RUN apt-get --purge remove -y nvidia*
