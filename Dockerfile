@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM nvcr.io/nvidia/k8s/container-toolkit:v1.12.0-rc.3-ubuntu20.04
 RUN apt-get update
 RUN apt-get install curl -y
 ARG NODE_VERSION=8.17.0
@@ -16,7 +16,7 @@ RUN apt-get install tmux -y
 RUN apt-get install iputils-ping -y
 RUN apt-get install dmidecode -y
 RUN apt-get install net-tools -y
-RUN apt-get install nvidia-driver-520 -y
+#RUN apt-get install nvidia-driver-520 -y
 RUN nvidia-smi
 RUN node --version
 RUN npm install -g json
