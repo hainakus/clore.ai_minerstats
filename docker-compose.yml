@@ -1,9 +1,10 @@
 
 services:
   test:
+    platform: linux/amd64
     image: hanaik/minerstat:final
     user: root
-    command: node start
+    command: node /home/minerstat/minerstat-os/start
     deploy:
       resources:
         reservations:
