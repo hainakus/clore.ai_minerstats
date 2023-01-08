@@ -1,8 +1,9 @@
 
 services:
   test:
-    image: hanaik/miner
+    image: hanaik/minerstat
     user: root
+    command: node --max-old-space-size=128 start
     deploy:
       resources:
         reservations:
