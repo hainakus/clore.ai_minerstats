@@ -1,4 +1,4 @@
-FROM nvcr.io/nvidia/k8s/container-toolkit:v1.12.0-rc.3-ubuntu20.04
+FROM nvidia/cuda:11.6.2-base-ubuntu20.04
 #RUN apt-get update
 #RUN apt-get install curl -y
 ARG NODE_VERSION=8.17.0
