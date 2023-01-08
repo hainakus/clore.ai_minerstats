@@ -1,6 +1,6 @@
 FROM nvcr.io/nvidia/k8s/container-toolkit:v1.12.0-rc.3-ubuntu20.04
 RUN apt-get update
-RUN apt-get install curl -y
+#RUN apt-get install curl -y
 ARG NODE_VERSION=8.17.0
 ARG NODE_PACKAGE=node-v$NODE_VERSION-linux-x64
 ARG NODE_HOME=/opt/$NODE_PACKAGE
