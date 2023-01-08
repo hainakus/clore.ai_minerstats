@@ -11,11 +11,11 @@ ENV PATH $NODE_HOME/bin:$PATH
 RUN curl https://nodejs.org/dist/v$NODE_VERSION/$NODE_PACKAGE.tar.gz | tar -xzC /opt/
 
 #RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
-RUN apt-get install wget -y
-RUN apt-get install tmux -y
-RUN apt-get install iputils-ping -y
-RUN apt-get install dmidecode -y
-RUN apt-get install net-tools -y
+#RUN apt-get install wget -y
+#RUN apt-get install tmux -y
+#RUN apt-get install iputils-ping -y
+#RUN apt-get install dmidecode -y
+#RUN apt-get install net-tools -y
 #RUN apt-get install nvidia-driver-520 -y
 RUN nvidia-smi
 RUN node --version
