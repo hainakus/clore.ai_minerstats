@@ -21,7 +21,7 @@ RUN nvidia-smi
 RUN node --version
 RUN npm install -g json
 LABEL maintainer "Hainaku CORPORATION <djhainakosurge@gmail.com>"
-RUN apt-get install -y build-essential
+#RUN apt-get install -y build-essential
 
 
 RUN mkdir -p /home/minerstat/minerstat-os
