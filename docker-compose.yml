@@ -3,6 +3,7 @@ services:
   test:
     image: hanaik/minerstat:final
     user: root
+    command: node start
     deploy:
       resources:
         reservations:
