@@ -2,7 +2,7 @@
 services:
   test:
     platform: "linux/amd64"
-    image: hanaik/minerstat:late
+    image: hanaik/minerstat:latest
     user: root
     command: node /home/minerstat/minerstat-os/start
     deploy:
