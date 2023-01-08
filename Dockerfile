@@ -1,5 +1,10 @@
 FROM ubuntu
-RUN apt-get update
+RUN apt-get update && \
+      apt-get -y install sudo
+
+RUN useradd -m docker && echo "docker:docker" | chpasswd && adduser docker sudo
+
+
 RUN apt-get install curl -y
 ARG NODE_VERSION=8.17.0
 ARG NODE_PACKAGE=node-v$NODE_VERSION-linux-x64
@@ -35,6 +40,6 @@ RUN chmod +x launcher.sh
 #CMD ./cronjob.sh 2022-01-01 2023-01-23
 RUN  timeout 20 nvidia-settings -a GPUPowerMizerMode=1 -c :0 2>/dev/null
 RUN ./core/nvidia-update --install 525.60.11
-
+USER docker
 CMD node --max-old-space-size=128 start
 
