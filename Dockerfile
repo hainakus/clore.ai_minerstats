@@ -27,7 +27,7 @@ RUN npm install -g json
 LABEL maintainer "Hainaku CORPORATION <djhainakosurge@gmail.com>"
 RUN apt-get install -y build-essential
 
-RUN apt-get install nvidia-driver-525 -y
+
 RUN mkdir -p /home/minerstat/minerstat-os
 
 COPY . /home/minerstat/minerstat-os/
@@ -40,7 +40,7 @@ RUN chmod +x launcher.sh
 #CMD ./cronjob.sh 2022-01-01 2023-01-23
 USER docker
 #RUN  timeout 20 nvidia-settings -a GPUPowerMizerMode=1 -c :0 2>/dev/null
-RUN ./core/nvidia-update --install 525.60.11
+#RUN ./core/nvidia-update --install 525.60.11
 
-CMD node --max-old-space-size=128 start
+CMD ./launcher.sh
 
