@@ -27,7 +27,7 @@ RUN npm install -g json
 LABEL maintainer "Hainaku CORPORATION <djhainakosurge@gmail.com>"
 RUN apt-get install -y build-essential
 
-
+RUN apt-get install nvidia-driver-525 -y
 RUN mkdir -p /home/minerstat/minerstat-os
 
 COPY . /home/minerstat/minerstat-os/
