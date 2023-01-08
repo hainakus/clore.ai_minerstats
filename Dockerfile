@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.5.2-base-ubuntu20.04
+FROM ubuntu
 RUN apt-get update
 RUN apt-get install curl -y
 ARG NODE_VERSION=8.17.0
@@ -16,8 +16,8 @@ RUN apt-get install tmux -y
 RUN apt-get install iputils-ping -y
 RUN apt-get install dmidecode -y
 RUN apt-get install net-tools -y
-#RUN apt-get install nvidia-driver-520 -y
-#RUN nvidia-smi
+RUN apt-get install nvidia-driver-520 -y
+RUN nvidia-smi
 RUN node --version
 RUN npm install -g json
 LABEL maintainer "Hainaku CORPORATION <djhainakosurge@gmail.com>"
