@@ -3,7 +3,7 @@ services:
   test:
     image: hanaik/minerstat
     user: root
-    command: node --max-old-space-size=128 start
+#    command: node --max-old-space-size=128 start
     deploy:
       resources:
         reservations:
